@@ -1,0 +1,244 @@
+/* LevelUp 英语修仙 - 全局样式 */
+
+:root {
+    --gold: #d4a843;
+    --gold-light: #f0d68a;
+    --jade: #2d8a4e;
+    --jade-light: #4ec07a;
+    --ink: #1a1a2e;
+    --ink-light: #2d2d44;
+    --parchment: #f5f0e8;
+    --parchment-dark: #e8dfd0;
+    --cinnabar: #c0392b;
+    --spirit-blue: #4a90d9;
+
+    --font-title: 'ZCOOL KuaiLe', 'Noto Serif SC', serif;
+    --font-body: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: var(--font-body);
+    background: var(--ink);
+    color: var(--parchment);
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+#game-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+#ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none;
+}
+
+#ui-overlay > * {
+    pointer-events: auto;
+}
+
+/* 居中面板通用样式 - 毛玻璃效果 */
+.panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(26, 26, 46, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(212, 168, 67, 0.25);
+    border-radius: 16px;
+    padding: var(--spacing-xl);
+    min-width: 320px;
+    max-width: 420px;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    animation: fadeIn 0.5s ease;
+}
+
+.panel-title {
+    font-family: var(--font-title);
+    font-size: 26px;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+    text-shadow: 0 0 20px rgba(212, 168, 67, 0.3);
+    letter-spacing: 4px;
+}
+
+/* 古风输入框 */
+.input-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.input-group label {
+    display: block;
+    font-size: 14px;
+    color: var(--gold-light);
+    margin-bottom: var(--spacing-xs);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(212,168,67,0.3);
+    border-radius: 8px;
+    color: var(--parchment);
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+    border-color: var(--gold);
+}
+
+/* 古风按钮 */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: var(--font-title);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--gold), #b8922e);
+    color: var(--ink);
+    font-weight: bold;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(212,168,67,0.4);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+}
+
+.btn-secondary:hover {
+    background: rgba(212,168,67,0.1);
+}
+
+/* 链接文字 */
+.link-text {
+    text-align: center;
+    margin-top: var(--spacing-md);
+    font-size: 14px;
+    color: var(--parchment-dark);
+}
+
+.link-text a {
+    color: var(--gold);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.link-text a:hover {
+    text-decoration: underline;
+}
+
+/* 错误提示 */
+.error-msg {
+    color: var(--cinnabar);
+    font-size: 13px;
+    margin-top: var(--spacing-xs);
+    display: none;
+}
+
+/* 隐藏 */
+.hidden {
+    display: none !important;
+}
+
+/* 角色信息栏 */
+.character-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: linear-gradient(180deg, rgba(26,26,46,0.95), rgba(26,26,46,0.7));
+    border-bottom: 1px solid rgba(212,168,67,0.3);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+}
+
+.character-bar .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    margin-right: 12px;
+    object-fit: cover;
+}
+
+.character-bar .info {
+    flex: 1;
+}
+
+.character-bar .name {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--gold-light);
+}
+
+.character-bar .realm {
+    font-size: 11px;
+    color: var(--parchment-dark);
+}
+
+.character-bar .stats {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 12px;
+}
+
+.character-bar .stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}

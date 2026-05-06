@@ -1,0 +1,114 @@
+/* LevelUp 英语修仙 - 移动端适配 */
+@media (max-width: 480px) {
+    :root {
+        --spacing-xs: 3px;
+        --spacing-sm: 6px;
+        --spacing-md: 12px;
+        --spacing-lg: 18px;
+        --spacing-xl: 24px;
+    }
+
+    .panel {
+        min-width: unset;
+        width: 90vw;
+        max-width: 360px;
+        padding: var(--spacing-lg);
+        border-radius: 12px;
+    }
+
+    .panel-title {
+        font-size: 20px;
+        letter-spacing: 2px;
+    }
+
+    .character-bar {
+        height: 48px;
+        padding: 0 10px;
+    }
+
+    .character-bar .avatar {
+        width: 30px;
+        height: 30px;
+        margin-right: 8px;
+    }
+
+    .character-bar .name { font-size: 12px; }
+    .character-bar .realm { font-size: 10px; }
+    .character-bar .stats { gap: 8px; font-size: 11px; }
+
+    .hall-entry {
+        bottom: 40px;
+        gap: 8px;
+        max-width: 320px;
+    }
+
+    .hall-entry .entry-btn {
+        padding: 8px 12px;
+        font-size: 11px;
+        min-width: 65px;
+    }
+
+    .level-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+    }
+
+    .level-card { padding: 10px 6px; }
+    .level-card-name { font-size: 12px; }
+    .level-card-info { font-size: 10px; }
+
+    .question-text {
+        font-size: 14px;
+        padding: 10px;
+        min-height: 50px;
+    }
+
+    .option-btn {
+        padding: 10px 12px;
+    }
+
+    .option-label {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+    }
+
+    .option-text { font-size: 14px; }
+
+    .btn { padding: 10px; font-size: 14px; }
+
+    .hermes-bubble {
+        max-width: 280px;
+        font-size: 13px;
+        padding: 10px 14px;
+        bottom: 12px;
+    }
+
+    .reward-popup {
+        width: 90vw;
+        padding: 24px;
+        min-width: unset;
+    }
+
+    .reward-icon { font-size: 36px; }
+
+    #exam-panel.panel,
+    #practice-panel.panel {
+        width: 92vw;
+        max-width: 380px;
+    }
+}
+
+@media (max-width: 360px) {
+    .hall-entry .entry-btn {
+        padding: 8px 12px;
+        font-size: 11px;
+        min-width: 60px;
+    }
+
+    .level-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .character-bar .stats { gap: 4px; font-size: 10px; }
+}
