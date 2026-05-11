@@ -9,8 +9,10 @@ use App\Http\Controllers\Api\HeartDemonController;
 use App\Http\Controllers\Api\LeaderboardController;
 use App\Http\Controllers\Api\MallController;
 use App\Http\Controllers\Api\ParentController;
+use App\Http\Controllers\Api\ReadingAdventureController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\ShareController;
+use App\Http\Controllers\Api\SkillPracticeController;
 use App\Http\Controllers\Api\SmsController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VocabController;
@@ -48,6 +50,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/questions', [GrammarController::class, 'questions']);
         Route::post('/submit-batch', [GrammarController::class, 'submitBatch']);
     });
+
+    Route::prefix('reading')->group(function () {
+        Route::get('/chapters', [ReadingAdventureController::class, 'chapters']);
+        Route::get('/chapters/{chapterId}', [ReadingAdventureController::class, 'chapter']);
+        Route::post('/submit-adventure', [ReadingAdventureController::class, 'submit']);
+    });
+
+    Route::prefix('{type}')
+        ->whereIn('type', ['listening', 'speaking', 'reading', 'writing'])
+        ->group(function () {
+            Route::get('/questions', [SkillPracticeController::class, 'questions']);
+            Route::post('/submit-batch', [SkillPracticeController::class, 'submitBatch']);
+        });
 
     Route::prefix('exam')->group(function () {
         Route::get('/current', [ExamController::class, 'current']);

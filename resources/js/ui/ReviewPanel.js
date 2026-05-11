@@ -10,6 +10,8 @@ export class ReviewPanel {
 
     /** 打开错题复习 */
     async startReview() {
+        if (this.resumeSessionIfAvailable()) return;
+
         this.game.ui.showLoading('提取错题灵脉...');
         const res = await this.game.api.get('/review/list');
         this.game.ui.hideLoading();
@@ -24,6 +26,7 @@ export class ReviewPanel {
         this.answers = {};
         this.currentIndex = 0;
         this.results = null;
+        this.persistSession();
 
         this.game.scene.switchTo('practice');
         this.game.ui.hideAllPanels();
@@ -91,6 +94,7 @@ export class ReviewPanel {
                 btn.classList.add('selected');
                 this.answers[q.question_id] = btn.dataset.value;
                 document.getElementById('review-next-btn').disabled = false;
+                this.persistSession();
             });
         });
 
@@ -131,6 +135,7 @@ export class ReviewPanel {
         document.getElementById('feedback-next-btn').addEventListener('click', () => {
             panel.remove();
             this.currentIndex++;
+            this.persistSession();
             this.showQuestion();
         });
     }
@@ -165,8 +170,54 @@ export class ReviewPanel {
             <button class="btn btn-secondary" id="review-again-btn" style="margin-top:8px;">再来一轮</button>
         `;
         this.game.ui.overlay.appendChild(panel);
+        this.clearSession();
 
         document.getElementById('review-done-btn').addEventListener('click', () => { panel.remove(); this.game.enterHall(); });
         document.getElementById('review-again-btn').addEventListener('click', () => { panel.remove(); this.startReview(); });
+    }
+
+    getSessionKey() {
+        const userId = this.game.store.getState().user?.id || 'guest';
+        return `levelup_session_review_${userId}`;
+    }
+
+    persistSession() {
+        if (!this.questions?.length) return;
+        const payload = {
+            questions: this.questions,
+            answers: this.answers,
+            currentIndex: this.currentIndex,
+            ts: Date.now(),
+        };
+        localStorage.setItem(this.getSessionKey(), JSON.stringify(payload));
+    }
+
+    loadSession() {
+        try {
+            const raw = localStorage.getItem(this.getSessionKey());
+            if (!raw) return null;
+            const data = JSON.parse(raw);
+            if (!Array.isArray(data.questions) || !data.questions.length) return null;
+            return data;
+        } catch {
+            return null;
+        }
+    }
+
+    resumeSessionIfAvailable() {
+        const data = this.loadSession();
+        if (!data) return false;
+        this.questions = data.questions;
+        this.answers = data.answers || {};
+        this.currentIndex = Math.max(0, Math.min(data.currentIndex || 0, this.questions.length - 1));
+        this.results = null;
+        this.game.scene.switchTo('practice');
+        this.game.ui.hideAllPanels();
+        this.showQuestion();
+        return true;
+    }
+
+    clearSession() {
+        localStorage.removeItem(this.getSessionKey());
     }
 }

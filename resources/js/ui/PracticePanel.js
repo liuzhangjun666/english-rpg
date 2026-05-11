@@ -1,6 +1,22 @@
 // LevelUp 英语修仙 - 答题面板（即时反馈+连击版）
 import herbIcon from '../../assets/images/herb_icon.png';
 
+const LISTENING_TEST_DIALOGUE = [
+    { role: 'A', text: 'Can I learn to play weiqi?', gender: 'female' },
+    { role: 'B', text: 'Sure, you can.', gender: 'male' },
+    { role: 'A', text: 'Do you want to join a club?', gender: 'female' },
+    { role: 'B', text: 'Yes, I want to join the music club.', gender: 'male' },
+];
+
+const MODULE_META = {
+    vocab: { title: '📖 采药识灵', shortName: '采药识灵', countText: (stageNo) => (stageNo <= 3 ? '15题' : stageNo <= 6 ? '18题' : '20题') },
+    grammar: { title: '🔮 基础功法', shortName: '基础功法', countText: () => '10题' },
+    listening: { title: '🎧 听力试炼', shortName: '听力试炼', countText: () => '10题' },
+    speaking: { title: '🗣️ 口语试炼', shortName: '口语试炼', countText: () => '10题' },
+    reading: { title: '📚 阅读试炼', shortName: '阅读试炼', countText: () => '10题' },
+    writing: { title: '✍️ 写作试炼', shortName: '写作试炼', countText: () => '10题' },
+};
+
 export class PracticePanel {
     constructor(game) {
         this.game = game;
@@ -13,6 +29,9 @@ export class PracticePanel {
         this.selectedOption = null;
         this.combo = 0;
         this.maxCombo = 0;
+        this._feedbackShown = false;
+        this.autoSpokenQuestions = new Set();
+        this.autoSpokenListeningQuestions = new Set();
     }
 
     /** 打开关卡选择列表 */
@@ -21,44 +40,36 @@ export class PracticePanel {
         this.currentLevel = null;
         this.combo = 0;
         this.maxCombo = 0;
+        this._feedbackShown = false;
 
+        const moduleMeta = this.getModuleMeta(type);
+        const { levelId, realm, stageNo, index, total } = this.getCurrentPlayableLevel(type);
+        const resumable = this.loadSession(type);
         const panel = document.createElement('div');
         panel.className = 'panel';
         panel.id = 'level-select-panel';
-        panel.style.maxWidth = '480px';
-        panel.style.maxHeight = '80vh';
-        panel.style.overflowY = 'auto';
+        panel.style.maxWidth = '420px';
         panel.innerHTML = `
-            <div class="panel-title">${type === 'vocab' ? '📖 采药识灵' : '🔮 基础功法'}</div>
-            <div class="level-grid" id="level-grid"></div>
+            <div class="panel-title">${moduleMeta.title}</div>
+            ${resumable ? `
+                <div style="padding:10px 12px;border:1px dashed rgba(78,192,122,0.55);border-radius:10px;background:rgba(78,192,122,0.08);margin-bottom:12px;">
+                    <div style="font-size:13px;color:#9ee8bf;margin-bottom:4px;">发现未完成进度</div>
+                    <div style="font-size:12px;color:var(--parchment-dark);">关卡 ${resumable.currentLevel} · 第 ${resumable.currentIndex + 1} 题</div>
+                </div>
+            ` : ''}
+            <div style="padding:12px;border:1px solid rgba(212,168,67,0.25);border-radius:10px;background:rgba(255,255,255,0.04);margin-bottom:12px;">
+                <div style="font-size:14px;color:var(--gold-light);margin-bottom:8px;">当前关卡</div>
+                <div style="font-size:20px;font-family:var(--font-title);color:var(--gold);margin-bottom:4px;">${this.game.ui.getRealmName(realm)} · 第${String(stageNo).padStart(2, '0')}关</div>
+                <div style="font-size:12px;color:var(--parchment-dark);">进度：${index + 1}/${total} · 题量：${moduleMeta.countText(stageNo)}</div>
+            </div>
+            ${resumable ? `<button class="btn btn-primary" id="level-resume-btn">继续上次进度</button>` : ''}
+            <button class="btn btn-primary" id="level-start-btn" style="${resumable ? 'margin-top:8px;' : ''}">${resumable ? '重新开始本关' : '开始本关'}</button>
             <button class="btn btn-secondary" id="level-select-back" style="margin-top:12px;">返回宗门</button>
         `;
         this.game.ui.overlay.appendChild(panel);
 
-        const grid = document.getElementById('level-grid');
-        const realms = ['L1', 'L2', 'L3'];
-
-        realms.forEach(realm => {
-            const title = document.createElement('div');
-            title.className = 'level-realm-title';
-            title.textContent = this.game.ui.getRealmName(realm);
-            grid.appendChild(title);
-
-            for (let s = 1; s <= 9; s++) {
-                const stage = String(s).padStart(2, '0');
-                const levelId = `${realm}-${stage}`;
-                const btn = document.createElement('div');
-                btn.className = 'level-card';
-                btn.dataset.level = levelId;
-                btn.dataset.type = type;
-                btn.innerHTML = `
-                    <div class="level-card-name">第${stage}关</div>
-                    <div class="level-card-info">${type === 'vocab' ? s <= 3 ? '15题' : s <= 6 ? '18题' : '20题' : '10题'}</div>
-                `;
-                btn.addEventListener('click', () => this.startLevel(type, levelId));
-                grid.appendChild(btn);
-            }
-        });
+        document.getElementById('level-resume-btn')?.addEventListener('click', () => this.resumeSession(type));
+        document.getElementById('level-start-btn')?.addEventListener('click', () => this.startLevel(type, levelId));
 
         document.getElementById('level-select-back').addEventListener('click', () => {
             panel.remove();
@@ -68,13 +79,14 @@ export class PracticePanel {
 
     /** 开始一关的答题 */
     async startLevel(type, levelId) {
-        this.game.ui.showLoading('加载灵草题库...');
+        this.game.ui.showLoading('加载题库...');
         this.currentType = type;
         this.currentLevel = levelId;
         this.currentIndex = 0;
         this.answers = {};
         this.combo = 0;
         this.maxCombo = 0;
+        this._feedbackShown = false;
 
         const [realm, stage] = levelId.split('-');
         const res = await this.game.api.get(`/${type}/questions?level=${realm}&stage=${stage}`);
@@ -97,6 +109,7 @@ export class PracticePanel {
         }
 
         // 灵力消耗确认弹窗
+        const moduleMeta = this.getModuleMeta(type);
         const confirmPanel = document.createElement('div');
         confirmPanel.className = 'panel';
         confirmPanel.id = 'spirit-confirm';
@@ -104,7 +117,7 @@ export class PracticePanel {
         confirmPanel.innerHTML = `
             <div class="panel-title">准备修炼</div>
             <div style="text-align:center;color:var(--parchment-dark);font-size:14px;line-height:2;margin:12px 0;">
-                <div>关口：${type === 'vocab' ? '采药识灵' : '基础功法'} · ${levelId}</div>
+                <div>模块：${moduleMeta.shortName} · ${levelId}</div>
                 <div>题数：${this.questions.length}题</div>
                 <div>消耗灵力：<span style="color:var(--spirit-blue);font-weight:bold;">💧 ${cost}</span>
                     ${res.data.demon_injected ? `<span style="color:var(--gold);font-size:12px;">（含${res.data.demon_injected}心魔题，不扣灵力）</span>` : ''}
@@ -122,6 +135,7 @@ export class PracticePanel {
             if (selectPanel) selectPanel.remove();
             this.renderQuestion();
             this.game.store.startLevel(type, realm, stage, this.questions);
+            this.persistSession();
         });
         document.getElementById('spirit-confirm-no').addEventListener('click', () => { confirmPanel.remove(); });
     }
@@ -135,12 +149,19 @@ export class PracticePanel {
         if (!q) return;
         const total = this.questions.length;
         const isDemon = q._is_demon;
-        const hasFeedback = this._feedbackShown; // 当前题是否已作答+显示反馈
+        const currentAnswer = q.question_id ? this.answers[q.question_id] : null;
+        const hasFeedback = !!(this._feedbackShown && currentAnswer); // 当前题是否已作答+显示反馈
+        if (this._feedbackShown && !currentAnswer) {
+            this._feedbackShown = false;
+        }
 
         const panel = document.createElement('div');
         panel.className = 'panel';
         panel.id = 'practice-panel';
         panel.style.maxWidth = '520px';
+        const pronounceWord = this.getPronounceWord(q);
+        const showPronounce = this.currentType === 'vocab' && pronounceWord;
+        const showListeningPlayer = this.currentType === 'listening';
         panel.innerHTML = `
             <div class="practice-header">
                 <span class="practice-title"><img src="${herbIcon}" class="herb-icon"> ${this.currentLevel} ${isDemon ? '🧘' : ''}</span>
@@ -150,21 +171,68 @@ export class PracticePanel {
                 <div class="progress-fill" style="width:${(this.currentIndex / total) * 100}%"></div>
             </div>
             ${this.combo >= 3 ? `<div class="combo-display">🔥 ${this.combo} 连击</div>` : ''}
+            ${showPronounce ? `
+                <div class="word-pronounce-row">
+                    <span class="word-pronounce-text">${this.game.ui.escapeHtml(pronounceWord)}</span>
+                    <button class="word-pronounce-btn" id="word-pronounce-btn" title="播放读音">🔊</button>
+                </div>
+            ` : ''}
+            ${showListeningPlayer ? `
+                <div class="listening-audio-row">
+                    <div class="listening-audio-title">🎧 听力测试对话（A 女生 / B 男生）</div>
+                    <button class="btn btn-secondary btn-sm" id="listening-play-btn">播放听力</button>
+                </div>
+            ` : ''}
             <div class="question-text">${this.game.ui.escapeHtml(q.question)}</div>
             <div class="options-container" id="options-container">
                 ${this.renderOptions(q.options, null)}
             </div>
             <div class="practice-actions">
                 <button class="btn btn-secondary btn-sm" id="practice-back-btn">退出</button>
-                <button class="btn btn-primary btn-sm" id="practice-next-btn" disabled>
+                <button class="btn btn-primary btn-sm" id="practice-next-btn" ${hasFeedback ? '' : 'disabled'}>
                     ${this.currentIndex < total - 1 ? '下一题 →' : '查看结果'}
                 </button>
             </div>
         `;
         this.game.ui.overlay.appendChild(panel);
 
+        if (showPronounce) {
+            const speak = () => this.speakWord(pronounceWord);
+            document.getElementById('word-pronounce-btn')?.addEventListener('click', speak);
+            if (!this.autoSpokenQuestions.has(q.question_id)) {
+                this.autoSpokenQuestions.add(q.question_id);
+                setTimeout(speak, 250);
+            }
+        }
+
+        if (showListeningPlayer) {
+            const autoSpeakKey = this.getAutoSpeakKey(q);
+            const playDialogue = () => this.playListeningDialogue();
+            document.getElementById('listening-play-btn')?.addEventListener('click', playDialogue);
+            if (!this.autoSpokenListeningQuestions.has(autoSpeakKey)) {
+                this.autoSpokenListeningQuestions.add(autoSpeakKey);
+                setTimeout(playDialogue, 300);
+            }
+        }
+
         // 选项点击 → 即时反馈
         const optionBtns = panel.querySelectorAll('.option-btn');
+        if (hasFeedback) {
+            optionBtns.forEach((b) => {
+                if (b.dataset.value === currentAnswer) {
+                    b.classList.add('selected');
+                    if (currentAnswer === q.correct_answer) {
+                        b.classList.add('answer-correct');
+                    } else {
+                        b.classList.add('answer-wrong');
+                    }
+                }
+                if (b.dataset.value === q.correct_answer) {
+                    b.classList.add('answer-correct');
+                }
+                b.style.pointerEvents = 'none';
+            });
+        }
         optionBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 if (this._feedbackShown) return; // 已作答，不能改
@@ -196,6 +264,7 @@ export class PracticePanel {
                 }
                 this._feedbackShown = true;
                 document.getElementById('practice-next-btn').disabled = false;
+                this.persistSession();
             });
         });
 
@@ -204,6 +273,7 @@ export class PracticePanel {
             this._feedbackShown = false;
             if (this.currentIndex < total - 1) {
                 this.currentIndex++;
+                this.persistSession();
                 this.renderQuestion();
             } else {
                 this.submitAll();
@@ -211,8 +281,15 @@ export class PracticePanel {
         });
 
         // 退出
-        document.getElementById('practice-back-btn').addEventListener('click', () => {
-            if (confirm('确定退出？当前进度不会丢失。')) {
+        document.getElementById('practice-back-btn').addEventListener('click', async () => {
+            const ok = await this.game.ui.showConfirmDialog({
+                title: '退出确认',
+                message: '确定退出？当前进度不会丢失。',
+                confirmText: '退出',
+                cancelText: '继续',
+            });
+            if (ok) {
+                this.stopSpeech();
                 panel.remove();
                 this.game.enterHall();
             }
@@ -286,6 +363,7 @@ export class PracticePanel {
         const existing = document.getElementById('reward-popup');
         if (existing) existing.remove();
 
+        const moduleMeta = this.getModuleMeta(this.currentType);
         const passed = data.passed;
         const perfect = data.accuracy === 100;
         const popup = document.createElement('div');
@@ -318,17 +396,16 @@ export class PracticePanel {
         this.game.ui.overlay.appendChild(popup);
 
         if (passed) {
+            this.clearSession(this.currentType);
+            this.unlockNextLevel(this.currentType, this.currentLevel);
             document.getElementById('reward-next-btn').addEventListener('click', () => {
                 popup.remove();
-                this.game.enterHall();
-                setTimeout(() => {
-                    this.game.shareCard.showLevelCard({
-                        level_id: this.currentLevel,
-                        accuracy: data.accuracy,
-                        exp_gained: data.total_exp,
-                        title: `${this.currentType === 'vocab' ? '采药识灵' : '基础功法'}·${this.currentLevel}`,
-                    });
-                }, 1500);
+                const next = this.getCurrentPlayableLevel(this.currentType);
+                if (next.levelId === this.currentLevel) {
+                    this.game.enterHall();
+                    return;
+                }
+                this.startLevel(this.currentType, next.levelId);
             });
         } else {
             document.getElementById('reward-retry-btn').addEventListener('click', () => {
@@ -340,5 +417,184 @@ export class PracticePanel {
             popup.remove();
             this.game.enterHall();
         });
+    }
+
+    getModuleMeta(type) {
+        return MODULE_META[type] || MODULE_META.vocab;
+    }
+
+    getPronounceWord(question) {
+        if (!question) return '';
+        if (typeof question.word === 'string' && question.word.trim()) {
+            return question.word.trim();
+        }
+        const text = String(question.question || '');
+        const m = text.match(/\b[A-Za-z][A-Za-z'-]{1,}\b/);
+        return m ? m[0] : '';
+    }
+
+    speakWord(word) {
+        if (!word || !('speechSynthesis' in window)) return;
+        const synth = window.speechSynthesis;
+        synth.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.92;
+        utterance.pitch = 1.0;
+
+        const voices = synth.getVoices();
+        const preferred = voices.find(v => /en(-|_)?(US|GB|AU)/i.test(v.lang))
+            || voices.find(v => /^en/i.test(v.lang));
+        if (preferred) utterance.voice = preferred;
+
+        synth.speak(utterance);
+    }
+
+    playListeningDialogue() {
+        if (!('speechSynthesis' in window)) return;
+        const synth = window.speechSynthesis;
+        synth.cancel();
+
+        const voices = synth.getVoices();
+        const femaleVoice = this.pickVoice(voices, 'female');
+        const maleVoice = this.pickVoice(voices, 'male');
+
+        LISTENING_TEST_DIALOGUE.forEach((line) => {
+            const utterance = new SpeechSynthesisUtterance(line.text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.92;
+            utterance.pitch = line.gender === 'female' ? 1.15 : 0.9;
+            utterance.voice = line.gender === 'female' ? femaleVoice : maleVoice;
+            synth.speak(utterance);
+        });
+    }
+
+    pickVoice(voices, targetGender) {
+        if (!Array.isArray(voices) || !voices.length) return null;
+        const english = voices.filter(v => /^en/i.test(v.lang));
+        const list = english.length ? english : voices;
+
+        const femaleHints = ['female', 'zira', 'samantha', 'victoria', 'karen', 'hazel', 'susan', 'anna', 'siri'];
+        const maleHints = ['male', 'david', 'mark', 'alex', 'tom', 'daniel', 'george', 'fred', 'james'];
+        const hints = targetGender === 'female' ? femaleHints : maleHints;
+
+        const exact = list.find(v => hints.some(h => `${v.name} ${v.voiceURI}`.toLowerCase().includes(h)));
+        if (exact) return exact;
+
+        if (list.length >= 2) {
+            return targetGender === 'female' ? list[0] : list[1];
+        }
+        return list[0];
+    }
+
+    stopSpeech() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+    }
+
+    getAutoSpeakKey(question) {
+        if (question?.question_id) return `qid:${question.question_id}`;
+        return `idx:${this.currentLevel || 'unknown'}:${this.currentIndex}`;
+    }
+
+    getLevelSequence() {
+        const levels = [];
+        ['L1', 'L2', 'L3'].forEach((realm) => {
+            for (let s = 1; s <= 9; s++) {
+                levels.push({
+                    realm,
+                    stageNo: s,
+                    levelId: `${realm}-${String(s).padStart(2, '0')}`,
+                });
+            }
+        });
+        return levels;
+    }
+
+    getProgressKey(type) {
+        return `levelup_progress_${type}`;
+    }
+
+    getCurrentPlayableLevel(type) {
+        const sequence = this.getLevelSequence();
+        const raw = Number(localStorage.getItem(this.getProgressKey(type)) || '0');
+        const index = Math.min(Math.max(raw, 0), sequence.length - 1);
+        return { ...sequence[index], index, total: sequence.length };
+    }
+
+    unlockNextLevel(type, currentLevelId) {
+        const sequence = this.getLevelSequence();
+        const currentIdx = sequence.findIndex((x) => x.levelId === currentLevelId);
+        if (currentIdx < 0) return;
+
+        const key = this.getProgressKey(type);
+        const unlocked = Number(localStorage.getItem(key) || '0');
+        const next = Math.min(sequence.length - 1, currentIdx + 1);
+        if (next > unlocked) {
+            localStorage.setItem(key, String(next));
+        }
+    }
+
+    getSessionKey(type) {
+        const userId = this.game.store.getState().user?.id || 'guest';
+        return `levelup_session_practice_${userId}_${type}`;
+    }
+
+    persistSession() {
+        if (!this.currentType || !this.currentLevel || !this.questions?.length) return;
+        const payload = {
+            currentType: this.currentType,
+            currentLevel: this.currentLevel,
+            currentIndex: this.currentIndex,
+            answers: this.answers,
+            questions: this.questions,
+            combo: this.combo,
+            maxCombo: this.maxCombo,
+            feedbackShown: !!this._feedbackShown,
+            ts: Date.now(),
+        };
+        localStorage.setItem(this.getSessionKey(this.currentType), JSON.stringify(payload));
+    }
+
+    loadSession(type) {
+        try {
+            const raw = localStorage.getItem(this.getSessionKey(type));
+            if (!raw) return null;
+            const data = JSON.parse(raw);
+            if (!data?.currentLevel || !Array.isArray(data.questions) || !data.questions.length) return null;
+            return data;
+        } catch {
+            return null;
+        }
+    }
+
+    resumeSession(type) {
+        const data = this.loadSession(type);
+        if (!data) {
+            this.game.ui.showHermesBubble('没有可恢复的进度');
+            return;
+        }
+        this.currentType = data.currentType;
+        this.currentLevel = data.currentLevel;
+        this.currentIndex = Math.max(0, Math.min(data.currentIndex || 0, data.questions.length - 1));
+        this.answers = data.answers || {};
+        this.questions = data.questions || [];
+        this.combo = data.combo || 0;
+        this.maxCombo = data.maxCombo || 0;
+        this._feedbackShown = !!data.feedbackShown;
+        const currentQuestion = this.questions[this.currentIndex];
+        if (!currentQuestion?.question_id || !this.answers[currentQuestion.question_id]) {
+            this._feedbackShown = false;
+        }
+
+        const selectPanel = document.getElementById('level-select-panel');
+        if (selectPanel) selectPanel.remove();
+        this.renderQuestion();
+    }
+
+    clearSession(type) {
+        localStorage.removeItem(this.getSessionKey(type));
     }
 }

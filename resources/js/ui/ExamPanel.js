@@ -8,10 +8,13 @@ export class ExamPanel {
         this.timerId = null;
         this.timeLeft = 600;
         this.examActive = false;
+        this.timerTick = 0;
     }
 
     /** 渡劫前检查心魔，强制强化复习 */
     async checkPreExamReview() {
+        if (this.resumeSessionIfAvailable()) return;
+
         this.game.ui.showLoading('探查心魔...');
         const res = await this.game.api.get('/demons/pre-exam');
         this.game.ui.hideLoading();
@@ -151,9 +154,11 @@ export class ExamPanel {
         this.answers = {};
         this.timeLeft = res.data.time_limit || 600;
         this.examActive = true;
+        this.timerTick = 0;
 
         this.renderExamQuestion();
         this.startTimer();
+        this.persistSession();
     }
 
     renderExamQuestion() {
@@ -203,12 +208,14 @@ export class ExamPanel {
                 this.answers[q.question_id] = btn.dataset.value;
                 this.game.store.answerQuestion(q.question_id, btn.dataset.value);
                 document.getElementById('exam-next-btn').disabled = false;
+                this.persistSession();
             });
         });
 
         document.getElementById('exam-next-btn').addEventListener('click', () => {
             if (this.currentIndex < total - 1) {
                 this.currentIndex++;
+                this.persistSession();
                 this.renderExamQuestion();
             } else {
                 this.submitExam();
@@ -231,8 +238,10 @@ export class ExamPanel {
         if (this.timerId) clearInterval(this.timerId);
         this.timerId = setInterval(() => {
             this.timeLeft--;
+            this.timerTick++;
             const timerEl = document.getElementById('exam-timer');
             if (timerEl) timerEl.textContent = `⏱ ${this.formatTime(this.timeLeft)}`;
+            if (this.timerTick % 5 === 0) this.persistSession();
 
             if (this.timeLeft <= 0) {
                 clearInterval(this.timerId);
@@ -271,6 +280,7 @@ export class ExamPanel {
 
         this.game.ui.hideLoading();
         this.examActive = false;
+        this.clearSession();
 
         if (res.success) {
             this.showExamResult(res.data);
@@ -357,5 +367,54 @@ export class ExamPanel {
     getRealmName(realm) {
         const names = { 'L1':'练气初','L2':'练气初','L3':'练气初','L4':'练气中','L5':'练气中','L6':'练气中','L7':'练气后','L8':'练气后','L9':'练气后','Z1':'筑基','Z2':'筑基','Z3':'筑基','J1':'金丹','J2':'金丹','J3':'金丹','Y1':'元婴','Y2':'元婴','Y3':'元婴','H1':'化神','H2':'化神','H3':'化神','D1':'大乘','D2':'大乘','D3':'大乘' };
         return names[realm] || realm;
+    }
+
+    getSessionKey() {
+        const userId = this.game.store.getState().user?.id || 'guest';
+        return `levelup_session_exam_${userId}`;
+    }
+
+    persistSession() {
+        if (!this.examActive || !this.questions?.length) return;
+        const payload = {
+            questions: this.questions,
+            currentIndex: this.currentIndex,
+            answers: this.answers,
+            timeLeft: this.timeLeft,
+            ts: Date.now(),
+        };
+        localStorage.setItem(this.getSessionKey(), JSON.stringify(payload));
+    }
+
+    loadSession() {
+        try {
+            const raw = localStorage.getItem(this.getSessionKey());
+            if (!raw) return null;
+            const data = JSON.parse(raw);
+            if (!Array.isArray(data.questions) || !data.questions.length) return null;
+            return data;
+        } catch {
+            return null;
+        }
+    }
+
+    resumeSessionIfAvailable() {
+        const data = this.loadSession();
+        if (!data) return false;
+        this.questions = data.questions;
+        this.currentIndex = Math.max(0, Math.min(data.currentIndex || 0, this.questions.length - 1));
+        this.answers = data.answers || {};
+        this.timeLeft = Math.max(1, Number(data.timeLeft || 600));
+        this.examActive = true;
+        this.timerTick = 0;
+        this.game.scene.switchTo('shilianchang');
+        this.game.ui.hideAllPanels();
+        this.renderExamQuestion();
+        this.startTimer();
+        return true;
+    }
+
+    clearSession() {
+        localStorage.removeItem(this.getSessionKey());
     }
 }

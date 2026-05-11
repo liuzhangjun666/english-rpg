@@ -10,6 +10,7 @@ export class UIManager {
         this.overlay = document.getElementById('ui-overlay');
         this.container = document.getElementById('game-container');
         this.assets = { avatarDefault, hermesAvatar, loadingTai, realmBadge };
+        this.errorCountdownTimers = {};
     }
 
     showLoading(text = '加载中...') {
@@ -69,11 +70,14 @@ export class UIManager {
 
     /** 发送验证码（含倒计时） */
     async handleSendCode(btn, phone, action) {
+        const errorId = action === 'register' ? 'register-error' : 'login-error';
         btn.disabled = true;
         btn.textContent = '发送中...';
         try {
             const res = await this.game.api.post('/sms/send', { phone, action });
             if (res.success) {
+                this.clearErrorCountdown(errorId);
+                this.hideError(errorId);
                 // 开发模式在控制台输出验证码
                 if (res.debug_code) {
                     console.log(`[SMS-DEV] 验证码: ${res.debug_code}`);
@@ -94,13 +98,32 @@ export class UIManager {
             } else {
                 btn.disabled = false;
                 btn.textContent = '获取';
-                this.showError('login-error', res.message || '发送失败');
+                if (action === 'register' && res.code === 'PHONE_ALREADY_REGISTERED') {
+                    this.redirectToLoginFromRegister(phone, res.message);
+                    return;
+                }
+                if (res.code === 'SMS_RESEND_COOLDOWN' && Number(res.retry_after) > 0) {
+                    this.startErrorCountdown(errorId, Number(res.retry_after));
+                    return;
+                }
+                this.clearErrorCountdown(errorId);
+                this.showError(errorId, res.message || '发送失败');
             }
         } catch (e) {
             btn.disabled = false;
             btn.textContent = '获取';
-            this.showError('login-error', '网络错误');
+            this.clearErrorCountdown(errorId);
+            this.showError(errorId, '网络错误');
         }
+    }
+
+    redirectToLoginFromRegister(phone, message) {
+        const registerPanel = document.getElementById('register-panel');
+        if (registerPanel) registerPanel.remove();
+        this.showLoginPanel();
+        const loginPhoneInput = document.getElementById('login-phone');
+        if (loginPhoneInput) loginPhoneInput.value = phone;
+        this.showError('login-error', message || '该手机号已注册，请直接登录');
     }
 
     async handleLogin() {
@@ -232,20 +255,30 @@ export class UIManager {
         const entry = document.createElement('div');
         entry.className = 'hall-entry';
         entry.id = 'hall-entry';
-        entry.innerHTML = `
-            <div class="entry-btn" data-scene="practice">📖 练功房</div>
-            <div class="entry-btn" data-scene="shilianchang">⚡ 试炼场</div>
-            <div class="entry-btn" data-scene="cangjingge">📚 藏经阁</div>
-            <div class="entry-btn" data-scene="mijing">🌿 秘境</div>
-            <div class="entry-btn" data-scene="mall">🏪 坊市</div>
-            <div class="entry-btn" data-scene="leaderboard">🏅 宗门榜</div>
-            <div class="entry-btn" data-scene="review">🔄 复习</div>
-            <div class="entry-btn" data-scene="demons">🧘 心魔录</div>
-            <div class="entry-btn" data-scene="achievements">🏆 成就</div>
-            <div class="entry-btn" data-scene="profile">👤 我的</div>
-        `;
+
+        const entries = [
+            { key: 'practice', icon: '\u{1F4D6}', label: '\u7ec3\u529f\u623f' },
+            { key: 'shilianchang', icon: '\u26A1', label: '\u8bd5\u70bc\u573a' },
+            { key: 'cangjingge', icon: '\u{1F4DA}', label: '\u85cf\u7ecf\u9601' },
+            { key: 'listening', icon: '\u{1F3A7}', label: '\u542c\u529b' },
+            { key: 'speaking', icon: '\u{1F5E3}', label: '\u53e3\u8bed' },
+            { key: 'reading', icon: '\u{1F4D8}', label: '\u9605\u8bfb' },
+            { key: 'writing', icon: '\u270D', label: '\u5199\u4f5c' },
+            { key: 'mijing', icon: '\u{1F33F}', label: '\u79d8\u5883' },
+            { key: 'mall', icon: '\u{1F3EA}', label: '\u574a\u5e02' },
+            { key: 'leaderboard', icon: '\u{1F3C5}', label: '\u5b97\u95e8\u699c' },
+            { key: 'review', icon: '\u{1F504}', label: '\u590d\u4e60' },
+            { key: 'demons', icon: '\u{1F9D8}', label: '\u5fc3\u9b54\u5f55' },
+            { key: 'achievements', icon: '\u{1F3C6}', label: '\u6210\u5c31' },
+            { key: 'profile', icon: '\u{1F464}', label: '\u6211\u7684' },
+        ];
+
+        entry.innerHTML = entries
+            .map((item) => `<div class="entry-btn" data-scene="${item.key}"><span class="entry-icon">${item.icon}</span>${this.escapeHtml(item.label)}</div>`)
+            .join('');
+
         this.overlay.appendChild(entry);
-        entry.querySelectorAll('.entry-btn').forEach(btn => {
+        entry.querySelectorAll('.entry-btn').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const scene = btn.dataset.scene;
                 switch (scene) {
@@ -258,6 +291,10 @@ export class UIManager {
                     case 'practice': this.sceneTransition(() => this.game.goToScene('practice')); break;
                     case 'shilianchang': this.sceneTransition(() => this.game.goToScene('shilianchang')); break;
                     case 'cangjingge': this.sceneTransition(() => this.game.goToScene('cangjingge')); break;
+                    case 'listening': this.sceneTransition(() => this.game.startPracticeModule('listening')); break;
+                    case 'speaking': this.sceneTransition(() => this.game.startPracticeModule('speaking')); break;
+                    case 'reading': this.sceneTransition(() => this.game.startPracticeModule('reading')); break;
+                    case 'writing': this.sceneTransition(() => this.game.startPracticeModule('writing')); break;
                     case 'mijing': this.sceneTransition(() => this.game.goToScene('mijing')); break;
                 }
             });
@@ -361,13 +398,21 @@ export class UIManager {
         document.getElementById('profile-achievements-btn').addEventListener('click', () => { const p = document.getElementById('profile-panel'); if (p) p.remove(); if (hallEntry) hallEntry.classList.remove('hidden'); this.game.showAchievements(); });
         document.getElementById('profile-parent-btn').addEventListener('click', () => { const p = document.getElementById('profile-panel'); if (p) p.remove(); if (hallEntry) hallEntry.classList.remove('hidden'); this.game.showParentDashboard(); });
         document.getElementById('profile-back-btn').addEventListener('click', () => { const p = document.getElementById('profile-panel'); if (p) p.remove(); if (hallEntry) hallEntry.classList.remove('hidden'); });
-        document.getElementById('profile-logout-btn').addEventListener('click', () => { if (confirm('确定要退出宗门吗？')) this.game.logout(); });
+        document.getElementById('profile-logout-btn').addEventListener('click', async () => {
+            const ok = await this.showConfirmDialog({
+                title: '退出确认',
+                message: '确定要退出宗门吗？',
+                confirmText: '退出',
+                cancelText: '取消',
+            });
+            if (ok) this.game.logout();
+        });
     }
 
     // ========== 通用 ==========
     hideAllPanels() {
         ['level-select-panel', 'practice-panel', 'reward-popup', 'exam-panel', 'exam-info-panel', 'exam-result-panel', 'login-panel', 'register-panel', 'profile-panel',
-         'achievement-panel', 'leaderboard-panel', 'mall-panel', 'demons-panel'].forEach(id => {
+         'achievement-panel', 'leaderboard-panel', 'mall-panel', 'demons-panel', 'reading-panel', 'reading-task-panel', 'reading-result-popup', 'confirm-dialog-mask', 'confirm-dialog-panel'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.remove();
         });
@@ -382,7 +427,82 @@ export class UIManager {
         if (el) { el.textContent = msg; el.style.display = 'block'; } else { alert(msg); }
     }
 
-    hideError(id) { const el = document.getElementById(id); if (el) el.style.display = 'none'; }
+    clearErrorCountdown(id) {
+        if (!id) return;
+        const timer = this.errorCountdownTimers[id];
+        if (timer) {
+            clearInterval(timer);
+            delete this.errorCountdownTimers[id];
+        }
+    }
+
+    startErrorCountdown(id, seconds) {
+        this.clearErrorCountdown(id);
+
+        let remain = Math.max(1, Math.floor(seconds));
+        this.showError(id, `请 ${remain} 秒后再试`);
+
+        this.errorCountdownTimers[id] = setInterval(() => {
+            remain -= 1;
+            const el = document.getElementById(id);
+            if (!el) {
+                this.clearErrorCountdown(id);
+                return;
+            }
+
+            if (remain <= 0) {
+                this.hideError(id);
+                this.clearErrorCountdown(id);
+                return;
+            }
+
+            this.showError(id, `请 ${remain} 秒后再试`);
+        }, 1000);
+    }
+
+    hideError(id) {
+        this.clearErrorCountdown(id);
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    }
+
+    showConfirmDialog({ title = '确认操作', message = '确定继续吗？', confirmText = '确定', cancelText = '取消' } = {}) {
+        const oldMask = document.getElementById('confirm-dialog-mask');
+        const oldPanel = document.getElementById('confirm-dialog-panel');
+        if (oldMask) oldMask.remove();
+        if (oldPanel) oldPanel.remove();
+
+        return new Promise((resolve) => {
+            const mask = document.createElement('div');
+            mask.id = 'confirm-dialog-mask';
+            mask.className = 'confirm-dialog-mask';
+
+            const panel = document.createElement('div');
+            panel.id = 'confirm-dialog-panel';
+            panel.className = 'panel confirm-dialog-panel';
+            panel.innerHTML = `
+                <div class="panel-title">${this.escapeHtml(title)}</div>
+                <div class="confirm-dialog-text">${this.escapeHtml(message)}</div>
+                <div class="confirm-dialog-actions">
+                    <button class="btn btn-secondary" id="confirm-dialog-cancel">${this.escapeHtml(cancelText)}</button>
+                    <button class="btn btn-primary" id="confirm-dialog-ok">${this.escapeHtml(confirmText)}</button>
+                </div>
+            `;
+
+            const cleanup = (ok) => {
+                mask.remove();
+                panel.remove();
+                resolve(ok);
+            };
+
+            mask.addEventListener('click', () => cleanup(false));
+            this.overlay.appendChild(mask);
+            this.overlay.appendChild(panel);
+
+            panel.querySelector('#confirm-dialog-cancel')?.addEventListener('click', () => cleanup(false));
+            panel.querySelector('#confirm-dialog-ok')?.addEventListener('click', () => cleanup(true));
+        });
+    }
 
     escapeHtml(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
 }

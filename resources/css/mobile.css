@@ -93,9 +93,57 @@
     .reward-icon { font-size: 36px; }
 
     #exam-panel.panel,
-    #practice-panel.panel {
+    #practice-panel.panel,
+    #reading-panel.panel {
         width: 92vw;
         max-width: 380px;
+    }
+
+    .reading-immersive-panel {
+        top: 48px;
+        left: 0;
+        width: 100vw !important;
+        max-width: none !important;
+        height: calc(100vh - 48px) !important;
+        min-height: 0;
+        border-radius: 0 !important;
+        padding: 0 !important;
+    }
+
+    .reading-immersive-content {
+        padding: 16px 14px 16px;
+    }
+
+    .reading-stage {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .reading-scene-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .reading-actions {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .reading-action-right {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .reading-scene-title-banner {
+        min-height: 54px;
+    }
+
+    .reading-scene-title {
+        font-size: 14px;
+        padding: 14px 10px;
+    }
+
+    .reading-scene-hero-text-only {
+        font-size: 15px;
     }
 }
 

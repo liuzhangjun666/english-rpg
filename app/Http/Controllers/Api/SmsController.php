@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Services\SmsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -38,13 +39,31 @@ class SmsController extends Controller
             ], 422);
         }
 
-        $result = $this->smsService->send($request->phone, $request->action ?? 'login');
+        $action = $request->action ?? 'login';
 
-        if (!$result['success']) {
+        if ($action === 'register' && User::where('phone', $request->phone)->exists()) {
             return response()->json([
                 'success' => false,
+                'code' => 'PHONE_ALREADY_REGISTERED',
+                'next_action' => 'login',
+                'message' => '该手机号已注册，请直接登录',
+            ], 422);
+        }
+
+        $result = $this->smsService->send($request->phone, $action);
+
+        if (!$result['success']) {
+            $status = match ($result['code'] ?? null) {
+                'SMS_RESEND_COOLDOWN', 'SMS_DAILY_LIMIT' => 429,
+                default => 503,
+            };
+
+            return response()->json([
+                'success' => false,
+                'code' => $result['code'] ?? 'SMS_SEND_FAILED',
                 'message' => $result['message'],
-            ], 429);
+                'retry_after' => $result['retry_after'] ?? null,
+            ], $status);
         }
 
         $response = ['success' => true, 'message' => $result['message']];
