@@ -5,7 +5,7 @@
     "scripts": {
         "check:text": "python tools/check_text_integrity.py",
         "build": "npm run check:text && vite build",
-        "dev": "vite"
+        "dev": "start \"\" http://127.0.0.1:8000 && vite"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
