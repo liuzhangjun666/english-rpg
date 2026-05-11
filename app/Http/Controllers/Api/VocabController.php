@@ -66,9 +66,12 @@ class VocabController extends Controller
             'answers' => 'required|array',
             'answers.*.question_id' => 'required|string',
             'answers.*.answer' => 'required|string',
+            'reported_wrong_ids' => 'sometimes|array',
+            'reported_wrong_ids.*' => 'string',
         ]);
 
         $user = $request->user();
+        $reportedWrongIds = collect($data['reported_wrong_ids'] ?? [])->flip();
 
         // 逐题判分
         $results = [];
@@ -95,7 +98,9 @@ class VocabController extends Controller
 
             // 答错 → 自动收入心魔录
             if (!$correct) {
-                $this->demonService->recordWrong($user->id, $ans['question_id'], 'vocab', $data['level']);
+                if (!isset($reportedWrongIds[$ans['question_id']])) {
+                    $this->demonService->recordWrong($user->id, $ans['question_id'], 'vocab', $data['level']);
+                }
             } else {
                 $this->demonService->recordCorrect($user->id, $ans['question_id']);
             }

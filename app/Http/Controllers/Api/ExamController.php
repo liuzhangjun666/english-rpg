@@ -7,6 +7,7 @@ use App\Models\ExamResult;
 use App\Models\LearningRecord;
 use App\Services\CurrencyService;
 use App\Services\ExamService;
+use App\Services\HeartDemonService;
 use App\Services\RealmService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,12 +17,19 @@ class ExamController extends Controller
     private ExamService $examService;
     private CurrencyService $currencyService;
     private RealmService $realmService;
+    private HeartDemonService $demonService;
 
-    public function __construct(ExamService $examService, CurrencyService $currencyService, RealmService $realmService)
+    public function __construct(
+        ExamService $examService,
+        CurrencyService $currencyService,
+        RealmService $realmService,
+        HeartDemonService $demonService
+    )
     {
         $this->examService = $examService;
         $this->currencyService = $currencyService;
         $this->realmService = $realmService;
+        $this->demonService = $demonService;
     }
 
     /** GET /api/exam/current - 获取当前渡劫信息 */
@@ -112,6 +120,19 @@ class ExamController extends Controller
                 'time_spent' => 0,
                 'answer_data' => $ans,
             ]);
+
+            if ($question) {
+                if (!$correct) {
+                    $this->demonService->recordWrong(
+                        $user->id,
+                        $ans['question_id'],
+                        $question->type,
+                        $question->realm ?? $user->realm
+                    );
+                } else {
+                    $this->demonService->recordCorrect($user->id, $ans['question_id']);
+                }
+            }
         }
 
         // 评级

@@ -100,9 +100,12 @@ class SkillPracticeController extends Controller
             'answers' => 'required|array',
             'answers.*.question_id' => 'required|string',
             'answers.*.answer' => 'required|string',
+            'reported_wrong_ids' => 'sometimes|array',
+            'reported_wrong_ids.*' => 'string',
         ]);
 
         $user = $request->user();
+        $reportedWrongIds = collect($data['reported_wrong_ids'] ?? [])->flip();
         $results = [];
 
         foreach ($data['answers'] as $ans) {
@@ -127,7 +130,9 @@ class SkillPracticeController extends Controller
             ]);
 
             if (!$correct) {
-                $this->demonService->recordWrong($user->id, $ans['question_id'], $type, $data['level']);
+                if (!isset($reportedWrongIds[$ans['question_id']])) {
+                    $this->demonService->recordWrong($user->id, $ans['question_id'], $type, $data['level']);
+                }
             } else {
                 $this->demonService->recordCorrect($user->id, $ans['question_id']);
             }

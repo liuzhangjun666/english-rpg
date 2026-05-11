@@ -13,6 +13,7 @@ class Question extends Model
         'type',
         'realm',
         'stage',
+        'listening_text',
         'question',
         'options',
         'correct_answer',

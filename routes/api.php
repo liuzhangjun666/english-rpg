@@ -79,6 +79,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('demons')->group(function () {
         Route::get('/', [HeartDemonController::class, 'index']);
         Route::get('/pre-exam', [HeartDemonController::class, 'preExam']);
+        Route::post('/review-submit', [HeartDemonController::class, 'reviewSubmit']);
+        Route::post('/report-wrong', [HeartDemonController::class, 'reportWrong']);
         Route::post('/clear', [HeartDemonController::class, 'clearMastered']);
     });
 

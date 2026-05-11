@@ -6,11 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\LearningRecord;
 use App\Models\Question;
 use App\Models\VocabProgress;
+use App\Services\HeartDemonService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
+    public function __construct(private readonly HeartDemonService $demonService)
+    {
+    }
+
     /**
      * 获取错题列表（从 learning_records 提取）
      * GET /api/review/list
@@ -22,7 +27,7 @@ class ReviewController extends Controller
         // 获取最近答错的题目ID（去重，取最新记录）
         $wrongQids = LearningRecord::where('user_id', $userId)
             ->where('is_correct', false)
-            ->whereIn('activity_type', ['vocab', 'grammar'])
+            ->whereIn('activity_type', ['vocab', 'grammar', 'listening', 'speaking', 'reading', 'writing', 'exam'])
             ->selectRaw('question_id, MAX(created_at) as latest')
             ->groupBy('question_id')
             ->orderByDesc('latest')
@@ -86,6 +91,17 @@ class ReviewController extends Controller
                         'last_reviewed_at' => now(),
                     ]
                 );
+
+                if ($correct) {
+                    $this->demonService->recordCorrect($userId, $ans['question_id']);
+                } else {
+                    $this->demonService->recordWrong(
+                        $userId,
+                        $ans['question_id'],
+                        $question->type,
+                        $question->realm
+                    );
+                }
             }
         }
 

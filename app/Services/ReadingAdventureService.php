@@ -9,6 +9,10 @@ class ReadingAdventureService
 {
     private const PASS_THRESHOLD = 60;
 
+    public function __construct(private readonly HeartDemonService $demonService)
+    {
+    }
+
     public function getChaptersByLevel(User $user, int $level): array
     {
         $chapters = array_values(array_filter($this->allChapters(), fn ($c) => $c['level'] === $level));
@@ -90,6 +94,12 @@ class ReadingAdventureService
                     'correct_answer' => $task['answer'],
                 ],
             ]);
+
+            if ($correct) {
+                $this->demonService->recordCorrect($user->id, $taskId);
+            } else {
+                $this->demonService->recordWrong($user->id, $taskId, 'reading', $user->realm);
+            }
         }
 
         $total = count($chapter['tasks']);

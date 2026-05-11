@@ -32,6 +32,11 @@ export class PracticePanel {
         this._feedbackShown = false;
         this.autoSpokenQuestions = new Set();
         this.autoSpokenListeningQuestions = new Set();
+        this.speakingRecordings = {};
+        this.speakingMediaRecorder = null;
+        this.speakingMediaStream = null;
+        this.speakingMediaChunks = [];
+        this.speakingRecording = false;
     }
 
     /** 打开关卡选择列表 */
@@ -87,6 +92,8 @@ export class PracticePanel {
         this.combo = 0;
         this.maxCombo = 0;
         this._feedbackShown = false;
+        this.speakingRecordings = {};
+        this.stopSpeakingRecording(true);
 
         const [realm, stage] = levelId.split('-');
         const res = await this.game.api.get(`/${type}/questions?level=${realm}&stage=${stage}`);
@@ -159,9 +166,22 @@ export class PracticePanel {
         panel.className = 'panel';
         panel.id = 'practice-panel';
         panel.style.maxWidth = '520px';
+        const isListening = this.currentType === 'listening';
+        const isSpeaking = this.currentType === 'speaking';
         const pronounceWord = this.getPronounceWord(q);
+        const listeningMaterial = isListening ? this.getListeningMaterialText(q) : '';
+        const speakingMaterial = isSpeaking ? this.getSpeakingMaterialText(q) : '';
+        const speakingRec = (isSpeaking && q.question_id) ? this.speakingRecordings[q.question_id] : null;
         const showPronounce = this.currentType === 'vocab' && pronounceWord;
-        const showListeningPlayer = this.currentType === 'listening';
+        const showListeningPlayer = isListening;
+        const showSpeakingPanel = isSpeaking;
+        const showOptionArea = !showSpeakingPanel;
+        const promptText = this.getQuestionStemText(q);
+        const resolvedPrompt = (isListening && promptText === listeningMaterial)
+            ? '请根据听力材料回答问题。'
+            : (isSpeaking && (!promptText || promptText === speakingMaterial)
+                ? '请朗读上方英文并录音。'
+                : promptText);
         panel.innerHTML = `
             <div class="practice-header">
                 <span class="practice-title"><img src="${herbIcon}" class="herb-icon"> ${this.currentLevel} ${isDemon ? '🧘' : ''}</span>
@@ -179,14 +199,33 @@ export class PracticePanel {
             ` : ''}
             ${showListeningPlayer ? `
                 <div class="listening-audio-row">
-                    <div class="listening-audio-title">🎧 听力测试对话（A 女生 / B 男生）</div>
+                    <div class="listening-audio-title">🎧 听力材料（可播放）</div>
+                    <div style="margin-top:8px;padding:10px;border:1px dashed rgba(212,168,67,0.35);border-radius:8px;font-size:13px;color:var(--parchment-dark);line-height:1.6;">
+                        ${this.game.ui.escapeHtml(listeningMaterial || '暂无听力材料')}
+                    </div>
                     <button class="btn btn-secondary btn-sm" id="listening-play-btn">播放听力</button>
                 </div>
             ` : ''}
-            <div class="question-text">${this.game.ui.escapeHtml(q.question)}</div>
-            <div class="options-container" id="options-container">
-                ${this.renderOptions(q.options, null)}
-            </div>
+            ${showSpeakingPanel ? `
+                <div class="listening-audio-row" style="display:block;">
+                    <div class="listening-audio-title" style="margin-bottom:8px;">🗣️ 口语材料</div>
+                    <div class="question-text" style="margin-bottom:10px;">${this.game.ui.escapeHtml(speakingMaterial || '暂无口语材料')}</div>
+                    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                        <button class="word-pronounce-btn" id="speaking-play-btn" title="播放口语材料">🔊</button>
+                        <button class="btn btn-secondary btn-sm" id="speaking-record-btn">${this.speakingRecording ? '停止录音' : '开始录音'}</button>
+                        <span id="speaking-record-status" style="font-size:12px;color:var(--parchment-dark);">${speakingRec ? '已录音' : (this.speakingRecording ? '录音中...' : '未录音')}</span>
+                    </div>
+                    ${speakingRec ? `<div style="margin-top:8px;"><audio controls src="${speakingRec.url}" style="width:100%;"></audio></div>` : ''}
+                </div>
+                <div class="question-text">${this.game.ui.escapeHtml(resolvedPrompt)}</div>
+            ` : `
+                <div class="question-text">${this.game.ui.escapeHtml(resolvedPrompt)}</div>
+            `}
+            ${showOptionArea ? `
+                <div class="options-container" id="options-container">
+                    ${this.renderOptions(q.options, null)}
+                </div>
+            ` : ''}
             <div class="practice-actions">
                 <button class="btn btn-secondary btn-sm" id="practice-back-btn">退出</button>
                 <button class="btn btn-primary btn-sm" id="practice-next-btn" ${hasFeedback ? '' : 'disabled'}>
@@ -207,7 +246,7 @@ export class PracticePanel {
 
         if (showListeningPlayer) {
             const autoSpeakKey = this.getAutoSpeakKey(q);
-            const playDialogue = () => this.playListeningDialogue();
+            const playDialogue = () => this.playListeningDialogue(q);
             document.getElementById('listening-play-btn')?.addEventListener('click', playDialogue);
             if (!this.autoSpokenListeningQuestions.has(autoSpeakKey)) {
                 this.autoSpokenListeningQuestions.add(autoSpeakKey);
@@ -215,9 +254,21 @@ export class PracticePanel {
             }
         }
 
+        if (showSpeakingPanel) {
+            const playSpeaking = () => this.playSpeakingMaterial(q);
+            document.getElementById('speaking-play-btn')?.addEventListener('click', playSpeaking);
+            document.getElementById('speaking-record-btn')?.addEventListener('click', async () => {
+                if (this.speakingRecording) {
+                    this.stopSpeakingRecording();
+                    return;
+                }
+                await this.startSpeakingRecording(q);
+            });
+        }
+
         // 选项点击 → 即时反馈
         const optionBtns = panel.querySelectorAll('.option-btn');
-        if (hasFeedback) {
+        if (showOptionArea && hasFeedback) {
             optionBtns.forEach((b) => {
                 if (b.dataset.value === currentAnswer) {
                     b.classList.add('selected');
@@ -322,6 +373,7 @@ export class PracticePanel {
     async submitAll() {
         const panel = document.getElementById('practice-panel');
         if (panel) panel.remove();
+        this.stopSpeakingRecording(true);
 
         this.game.ui.showLoading('提交灵草...');
 
@@ -451,7 +503,7 @@ export class PracticePanel {
         synth.speak(utterance);
     }
 
-    playListeningDialogue() {
+    playListeningDialogue(question) {
         if (!('speechSynthesis' in window)) return;
         const synth = window.speechSynthesis;
         synth.cancel();
@@ -459,8 +511,9 @@ export class PracticePanel {
         const voices = synth.getVoices();
         const femaleVoice = this.pickVoice(voices, 'female');
         const maleVoice = this.pickVoice(voices, 'male');
+        const lines = this.getListeningDialogueLines(question);
 
-        LISTENING_TEST_DIALOGUE.forEach((line) => {
+        lines.forEach((line) => {
             const utterance = new SpeechSynthesisUtterance(line.text);
             utterance.lang = 'en-US';
             utterance.rate = 0.92;
@@ -488,10 +541,193 @@ export class PracticePanel {
         return list[0];
     }
 
+    getListeningMaterialText(question) {
+        if (!question) return '';
+        if (typeof question.listening_text === 'string' && question.listening_text.trim()) {
+            return question.listening_text.trim();
+        }
+        return String(question.question || '').trim();
+    }
+
+    getQuestionStemText(question) {
+        if (!question) return '';
+        if (typeof question.prompt === 'string' && question.prompt.trim()) {
+            return question.prompt.trim();
+        }
+        if (typeof question.stem === 'string' && question.stem.trim()) {
+            return question.stem.trim();
+        }
+        return String(question.question || '').trim();
+    }
+
+    getListeningDialogueLines(question) {
+        if (Array.isArray(question?.listening_dialogue) && question.listening_dialogue.length) {
+            return question.listening_dialogue
+                .map((item, idx) => {
+                    const text = String(item?.text || '').trim();
+                    if (!text) return null;
+                    const rawGender = String(item?.gender || '').toLowerCase();
+                    const gender = rawGender === 'male' ? 'male' : rawGender === 'female' ? 'female' : (idx % 2 === 0 ? 'female' : 'male');
+                    return { role: item?.role || (idx % 2 === 0 ? 'A' : 'B'), text, gender };
+                })
+                .filter(Boolean);
+        }
+
+        const material = this.getListeningMaterialText(question);
+        if (!material) return LISTENING_TEST_DIALOGUE;
+
+        const rawLines = material
+            .split(/\r?\n+/)
+            .map((x) => x.trim())
+            .filter(Boolean);
+        if (!rawLines.length) {
+            return LISTENING_TEST_DIALOGUE;
+        }
+
+        return rawLines.map((line, idx) => {
+            const m = line.match(/^([A-Za-z\u4e00-\u9fa5]+)\s*[:：]\s*(.+)$/);
+            const role = m ? m[1].trim() : (idx % 2 === 0 ? 'A' : 'B');
+            const text = m ? m[2].trim() : line;
+            const roleLower = role.toLowerCase();
+            const femaleHints = ['a', 'f', 'female', 'girl', 'woman', '女'];
+            const maleHints = ['b', 'm', 'male', 'boy', 'man', '男'];
+            let gender = idx % 2 === 0 ? 'female' : 'male';
+            if (femaleHints.some((hint) => roleLower.includes(hint))) gender = 'female';
+            if (maleHints.some((hint) => roleLower.includes(hint))) gender = 'male';
+            return { role, text, gender };
+        });
+    }
+
+    playSpeakingMaterial(question) {
+        const text = this.getSpeakingMaterialText(question);
+        if (!text) {
+            this.game.ui.showHermesBubble('口语材料为空');
+            return;
+        }
+        this.speakWord(text);
+    }
+
+    getSpeakingMaterialText(question) {
+        if (!question) return '';
+        if (typeof question.speaking_text === 'string' && question.speaking_text.trim()) {
+            return question.speaking_text.trim();
+        }
+        if (typeof question.listening_text === 'string' && question.listening_text.trim()) {
+            return question.listening_text.trim();
+        }
+        return String(question.question || '').trim();
+    }
+
+    async startSpeakingRecording(question) {
+        if (!question?.question_id) return;
+        if (!navigator.mediaDevices?.getUserMedia || typeof window.MediaRecorder === 'undefined') {
+            this.game.ui.showHermesBubble('当前浏览器不支持录音');
+            return;
+        }
+
+        try {
+            this.stopSpeakingRecording(true);
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const recorder = new MediaRecorder(stream);
+
+            this.speakingMediaStream = stream;
+            this.speakingMediaRecorder = recorder;
+            this.speakingMediaChunks = [];
+            this.speakingRecording = true;
+
+            recorder.ondataavailable = (event) => {
+                if (event.data && event.data.size > 0) {
+                    this.speakingMediaChunks.push(event.data);
+                }
+            };
+
+            recorder.onstop = () => {
+                const audioBlob = new Blob(this.speakingMediaChunks, { type: recorder.mimeType || 'audio/webm' });
+                if (audioBlob.size > 0) {
+                    const qid = question.question_id;
+                    const old = this.speakingRecordings[qid];
+                    if (old?.url && old.url.startsWith('blob:')) {
+                        URL.revokeObjectURL(old.url);
+                    }
+                    const url = URL.createObjectURL(audioBlob);
+                    this.speakingRecordings[qid] = {
+                        url,
+                        blob: audioBlob,
+                        mimeType: audioBlob.type,
+                        recordedAt: Date.now(),
+                    };
+                    this.answers[qid] = question.correct_answer || 'RECORDED';
+                    this._feedbackShown = true;
+                    this.persistSession();
+                }
+
+                this.speakingRecording = false;
+                this.speakingMediaRecorder = null;
+                this.speakingMediaChunks = [];
+                if (this.speakingMediaStream) {
+                    this.speakingMediaStream.getTracks().forEach((track) => track.stop());
+                    this.speakingMediaStream = null;
+                }
+
+                const statusEl = document.getElementById('speaking-record-status');
+                if (statusEl) statusEl.textContent = '已录音';
+                const btn = document.getElementById('speaking-record-btn');
+                if (btn) btn.textContent = '开始录音';
+                const nextBtn = document.getElementById('practice-next-btn');
+                if (nextBtn) nextBtn.disabled = false;
+                this.renderQuestion();
+            };
+
+            recorder.start();
+            const statusEl = document.getElementById('speaking-record-status');
+            if (statusEl) statusEl.textContent = '录音中...';
+            const btn = document.getElementById('speaking-record-btn');
+            if (btn) btn.textContent = '停止录音';
+        } catch (err) {
+            this.speakingRecording = false;
+            this.speakingMediaRecorder = null;
+            this.speakingMediaChunks = [];
+            if (this.speakingMediaStream) {
+                this.speakingMediaStream.getTracks().forEach((track) => track.stop());
+                this.speakingMediaStream = null;
+            }
+            this.game.ui.showHermesBubble(`录音失败：${err?.message || '无法访问麦克风'}`);
+        }
+    }
+
+    stopSpeakingRecording(discard = false) {
+        if (!this.speakingMediaRecorder) return;
+
+        const recorder = this.speakingMediaRecorder;
+        if (discard) {
+            recorder.ondataavailable = null;
+            recorder.onstop = null;
+        }
+
+        if (recorder.state !== 'inactive') {
+            try {
+                recorder.stop();
+            } catch {
+                // ignore invalid stop state
+            }
+        }
+
+        if (discard) {
+            this.speakingRecording = false;
+            this.speakingMediaRecorder = null;
+            this.speakingMediaChunks = [];
+            if (this.speakingMediaStream) {
+                this.speakingMediaStream.getTracks().forEach((track) => track.stop());
+                this.speakingMediaStream = null;
+            }
+        }
+    }
+
     stopSpeech() {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
         }
+        this.stopSpeakingRecording(true);
     }
 
     getAutoSpeakKey(question) {
@@ -598,3 +834,4 @@ export class PracticePanel {
         localStorage.removeItem(this.getSessionKey(type));
     }
 }
+

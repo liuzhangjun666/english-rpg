@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
         $this->seedLevelConfig();
         $this->call(QuestionSeeder::class);
         $this->call(QuestionExpansionSeeder::class);
+        $this->call(SkillModuleTestDataSeeder::class);
     }
 
     private function seedLevelConfig(): void

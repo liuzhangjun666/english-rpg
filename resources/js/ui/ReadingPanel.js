@@ -50,10 +50,10 @@ export class ReadingPanel {
         this.taskOptionCache = {};
     }
 
-    async showChapterList(level = 1) {
+    async showChapterList(level = 1, shouldResume = true) {
         this.currentLevel = level;
         this.game.ui.hideAllPanels();
-        if (this.resumeSessionIfAvailable()) return;
+        if (shouldResume && this.resumeSessionIfAvailable()) return;
         this.game.ui.showLoading('加载阅读副本...');
 
         const res = await this.game.api.get(`/reading/chapters?level=${level}`);
@@ -224,7 +224,7 @@ export class ReadingPanel {
             });
         });
 
-        document.getElementById('reading-task-back')?.addEventListener('click', () => this.showChapterList(chapter.level));
+        document.getElementById('reading-task-back')?.addEventListener('click', () => this.showChapterList(chapter.level, false));
         document.getElementById('reading-task-prev')?.addEventListener('click', () => {
             this.currentTaskIndex = Math.max(0, this.currentTaskIndex - 1);
             this.persistSession();
