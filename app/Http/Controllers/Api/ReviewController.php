@@ -42,7 +42,7 @@ class ReviewController extends Controller
         }
 
         $questions = Question::whereIn('question_id', $wrongQids)
-            ->get(['id', 'question_id', 'type', 'question', 'options', 'word', 'explanation']);
+            ->get(['id', 'question_id', 'type', 'question', 'options', 'correct_answer', 'word', 'explanation']);
 
         return response()->json([
             'success' => true,

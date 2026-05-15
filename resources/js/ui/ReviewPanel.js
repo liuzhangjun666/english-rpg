@@ -107,7 +107,7 @@ export class ReviewPanel {
     /** 答完一题立即显示对错反馈 */
     showFeedback(q) {
         const userAnswer = this.answers[q.question_id];
-        const correct = userAnswer === q.answer;
+        const correct = userAnswer === q.correct_answer;
 
         const panel = document.createElement('div');
         panel.className = 'panel';
@@ -122,7 +122,7 @@ export class ReviewPanel {
                 </div>
                 ${!correct ? `
                 <div style="margin-top:12px;padding:12px;background:rgba(192,57,43,0.08);border-radius:8px;text-align:left;">
-                    <div style="font-size:13px;color:var(--gold-light);margin-bottom:4px;">正确答案：${q.answer}</div>
+                    <div style="font-size:13px;color:var(--gold-light);margin-bottom:4px;">正确答案：${q.correct_answer}</div>
                     <div style="font-size:13px;color:var(--parchment-dark);">${q.explanation || ''}</div>
                 </div>` : ''}
             </div>

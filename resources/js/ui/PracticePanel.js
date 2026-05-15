@@ -1,6 +1,313 @@
 // LevelUp 英语修仙 - 答题面板（即时反馈+连击版）
 import herbIcon from '../../assets/images/herb_icon.png';
 
+// ─── 写作模块专属 Panel ──────────────────────────────────────────────────────────
+class WritingPanel {
+    constructor(game) {
+        this.game = game;
+        this.prompts = [];
+        this.currentIndex = 0;
+        this.currentLevel = null;
+        this.submittedResults = [];
+        this.totalExpGained = 0;
+        this.totalStonesGained = 0;
+    }
+
+    async start(levelId) {
+        this.currentLevel = levelId;
+        this.currentIndex = 0;
+        this.submittedResults = [];
+        this.totalExpGained = 0;
+        this.totalStonesGained = 0;
+
+        const [realm, stage] = levelId.split('-');
+        this.game.ui.showLoading('加载写作题目...');
+        const res = await this.game.api.get(`/writing/prompts?level=${realm}&stage=${stage}`);
+        this.game.ui.hideLoading();
+
+        if (!res?.success) {
+            this.game.ui.showHermesBubble(res?.message || '暂无写作题目');
+            return;
+        }
+
+        this.prompts = res.data.prompts;
+        const spiritCost = res.data.spirit_cost || 0;
+        const user = this.game.store.getState().user;
+
+        if (user && user.spirit_power < spiritCost) {
+            this.game.ui.showHermesBubble(`灵力不足（当前${user.spirit_power}，需要${spiritCost}），请明日再来修炼。`);
+            return;
+        }
+
+        const confirmPanel = document.createElement('div');
+        confirmPanel.className = 'panel';
+        confirmPanel.id = 'spirit-confirm';
+        confirmPanel.style.maxWidth = '380px';
+        confirmPanel.innerHTML = `
+            <div class="panel-title">准备写作修炼</div>
+            <div style="text-align:center;color:var(--parchment-dark);font-size:14px;line-height:2;margin:12px 0;">
+                <div>模块：✍️ 写作试炼 · ${levelId}</div>
+                <div>题数：${this.prompts.length}题（命题+续写各1道）</div>
+                <div>消耗灵力：<span style="color:var(--spirit-blue);font-weight:bold;">💧 ${spiritCost}</span></div>
+                <div style="margin-top:8px;font-size:12px;">当前灵力：💧 ${user?.spirit_power || 0}</div>
+            </div>
+            <div style="font-size:12px;color:var(--parchment-dark);text-align:center;margin-bottom:12px;opacity:0.7;">✨ 每题写作后将获得 AI 即时评分</div>
+            <button class="btn btn-primary" id="writing-confirm-yes">开始修炼</button>
+            <button class="btn btn-secondary" id="writing-confirm-no" style="margin-top:8px;">返回</button>
+        `;
+        this.game.ui.overlay.appendChild(confirmPanel);
+
+        document.getElementById('writing-confirm-yes').addEventListener('click', () => {
+            confirmPanel.remove();
+            document.getElementById('level-select-panel')?.remove();
+            this.renderWritingQuestion();
+        });
+        document.getElementById('writing-confirm-no').addEventListener('click', () => confirmPanel.remove());
+    }
+
+    renderWritingQuestion() {
+        document.getElementById('writing-panel')?.remove();
+        const prompt = this.prompts[this.currentIndex];
+        if (!prompt) return;
+
+        const total = this.prompts.length;
+        const isTopicType = prompt.writing_type === 'topic';
+        const typeLabel = isTopicType ? '📝 命题作文' : '✍️ 续写';
+        const minWords = prompt.word_limit_min || 50;
+        const maxWords = prompt.word_limit_max || 150;
+
+        const panel = document.createElement('div');
+        panel.className = 'panel';
+        panel.id = 'writing-panel';
+        panel.style.cssText = 'max-width:580px;';
+
+        panel.innerHTML = `
+            <div class="practice-header">
+                <span class="practice-title"><img src="${herbIcon}" class="herb-icon"> ${this.currentLevel}</span>
+                <span class="practice-progress">${this.currentIndex + 1}/${total}</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width:${(this.currentIndex / total) * 100}%"></div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <span style="background:rgba(212,168,67,0.2);color:var(--gold);font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid rgba(212,168,67,0.4);">${typeLabel}</span>
+                <span style="font-size:12px;color:var(--parchment-dark);">字数要求：${minWords}–${maxWords} 词</span>
+            </div>
+
+            <div style="padding:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(212,168,67,0.2);border-radius:10px;margin-bottom:12px;">
+                <div style="font-size:15px;color:var(--gold-light);font-weight:bold;margin-bottom:8px;">${this.game.ui.escapeHtml(prompt.title)}</div>
+                <div style="font-size:13px;color:var(--parchment-dark);line-height:1.7;">${this.game.ui.escapeHtml(prompt.topic)}</div>
+            </div>
+
+            ${prompt.passage ? `
+            <div style="padding:12px 14px;background:rgba(78,192,122,0.06);border:1px dashed rgba(78,192,122,0.4);border-radius:10px;margin-bottom:12px;">
+                <div style="font-size:12px;color:#9ee8bf;margin-bottom:6px;">📖 原文段落（请在此基础上续写）</div>
+                <div style="font-size:13px;color:var(--parchment);line-height:1.8;font-style:italic;">${this.game.ui.escapeHtml(prompt.passage)}</div>
+            </div>
+            ` : ''}
+
+            <div style="position:relative;">
+                <textarea id="writing-textarea"
+                    placeholder="在此输入你的英文写作..."
+                    style="width:100%;min-height:160px;padding:12px;background:rgba(0,0,0,0.3);border:1px solid rgba(212,168,67,0.3);border-radius:10px;color:var(--parchment);font-size:14px;line-height:1.7;resize:vertical;font-family:var(--font-body);box-sizing:border-box;outline:none;transition:border-color 0.2s;"
+                    maxlength="5000"
+                ></textarea>
+                <div id="writing-wordcount" style="position:absolute;bottom:10px;right:12px;font-size:11px;color:var(--parchment-dark);pointer-events:none;">0 词</div>
+            </div>
+            <div id="writing-wordcount-hint" style="font-size:12px;color:var(--parchment-dark);margin-top:4px;margin-bottom:12px;opacity:0.7;">还需至少 <span id="words-needed">${minWords}</span> 词才能提交</div>
+
+            <div class="practice-actions">
+                <button class="btn btn-secondary btn-sm" id="writing-exit-btn">退出</button>
+                <button class="btn btn-primary btn-sm" id="writing-submit-btn" disabled>提交写作 →</button>
+            </div>
+        `;
+
+        this.game.ui.overlay.appendChild(panel);
+
+        const textarea = document.getElementById('writing-textarea');
+        const wordCountEl = document.getElementById('writing-wordcount');
+        const wordsNeededEl = document.getElementById('words-needed');
+        const submitBtn = document.getElementById('writing-submit-btn');
+        const hintEl = document.getElementById('writing-wordcount-hint');
+
+        const updateWordCount = () => {
+            const text = textarea.value.trim();
+            const wc = text ? text.split(/\s+/).filter(w => w.length > 0).length : 0;
+            wordCountEl.textContent = `${wc} 词`;
+            if (wc >= minWords) {
+                submitBtn.disabled = false;
+                wordCountEl.style.color = wc > maxWords ? '#ff6b6b' : 'var(--gold)';
+                hintEl.style.opacity = '0';
+            } else {
+                submitBtn.disabled = true;
+                wordCountEl.style.color = 'var(--parchment-dark)';
+                if (wordsNeededEl) wordsNeededEl.textContent = minWords - wc;
+                hintEl.style.opacity = '0.7';
+            }
+        };
+
+        textarea.addEventListener('input', updateWordCount);
+        textarea.addEventListener('focus', () => { textarea.style.borderColor = 'rgba(212,168,67,0.7)'; });
+        textarea.addEventListener('blur', () => { textarea.style.borderColor = 'rgba(212,168,67,0.3)'; });
+
+        submitBtn.addEventListener('click', () => {
+            const content = textarea.value.trim();
+            if (!content) return;
+            this.submitWriting(prompt, content);
+        });
+
+        document.getElementById('writing-exit-btn').addEventListener('click', async () => {
+            const ok = await this.game.ui.showConfirmDialog({
+                title: '退出确认',
+                message: '确定退出写作？已提交的内容不会丢失。',
+                confirmText: '退出',
+                cancelText: '继续',
+            });
+            if (ok) { panel.remove(); this.game.enterHall(); }
+        });
+    }
+
+    async submitWriting(prompt, content) {
+        const panel = document.getElementById('writing-panel');
+        const submitBtn = document.getElementById('writing-submit-btn');
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'AI评分中...'; }
+
+        this.game.ui.showLoading('AI 正在评分，请稍候...');
+        const res = await this.game.api.post('/writing/submit-one', { prompt_id: prompt.prompt_id, content });
+        this.game.ui.hideLoading();
+        if (panel) panel.remove();
+
+        if (!res?.success) {
+            this.game.ui.showHermesBubble(res?.message || '提交失败，请重试');
+            return;
+        }
+
+        const data = res.data;
+        this.totalExpGained += data.exp_gained || 0;
+        this.totalStonesGained += data.stones_gained || 0;
+
+        const updates = {};
+        if (data.exp_gained) updates.exp = (this.game.store.getState().user?.exp || 0) + data.exp_gained;
+        if (data.stones_gained) updates.spirit_stone = (this.game.store.getState().user?.spirit_stone || 0) + data.stones_gained;
+        if (Object.keys(updates).length) this.game.store.updateUser(updates);
+
+        this.submittedResults.push({ prompt, result: data });
+        this.showScoreResult(prompt, data);
+    }
+
+    showScoreResult(prompt, data) {
+        document.getElementById('writing-score-panel')?.remove();
+        const isLast = this.currentIndex >= this.prompts.length - 1;
+        const score = data.score || 0;
+        const scoreColor = score >= 90 ? '#f0c040' : score >= 75 ? '#7bed9f' : score >= 60 ? '#70a1ff' : '#ff6b6b';
+        const scoreIcon = score >= 90 ? '🌟' : score >= 75 ? '✨' : score >= 60 ? '✓' : '📝';
+
+        const details = data.details || {};
+        const detailsHtml = Object.keys(details).length ? `
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0;">
+                ${this._detailItem('内容相关', details.relevance)}
+                ${this._detailItem('语言表达', details.language)}
+                ${this._detailItem('语法正确', details.grammar)}
+                ${this._detailItem('结构逻辑', details.coherence)}
+            </div>
+        ` : '';
+
+        const scorePanel = document.createElement('div');
+        scorePanel.className = 'panel';
+        scorePanel.id = 'writing-score-panel';
+        scorePanel.style.maxWidth = '500px';
+        scorePanel.innerHTML = `
+            <div class="panel-title">✍️ AI 写作评分</div>
+            <div style="text-align:center;margin:16px 0;">
+                <div style="font-size:56px;font-family:var(--font-title);color:${scoreColor};line-height:1;">${score}</div>
+                <div style="font-size:14px;color:${scoreColor};margin-top:4px;">${scoreIcon} ${score >= 90 ? '完美！' : score >= 75 ? '优秀' : score >= 60 ? '良好' : '继续加油'}</div>
+            </div>
+            ${detailsHtml}
+            <div style="padding:12px;background:rgba(78,192,122,0.06);border:1px dashed rgba(78,192,122,0.3);border-radius:10px;margin:10px 0;">
+                <div style="font-size:12px;color:#9ee8bf;margin-bottom:4px;">🧙 赫尔墨斯点评</div>
+                <div style="font-size:13px;color:var(--parchment-dark);line-height:1.6;">${this.game.ui.escapeHtml(data.feedback || '写作完成，继续加油！')}</div>
+            </div>
+            <div style="display:flex;justify-content:center;gap:20px;margin:10px 0;font-size:13px;color:var(--parchment-dark);">
+                <span>📝 字数：<b style="color:var(--gold)">${data.word_count || 0}</b></span>
+                <span>✨ 修为：<b style="color:var(--gold)">+${data.exp_gained || 0}</b></span>
+                <span>💎 灵石：<b style="color:var(--gold)">+${data.stones_gained || 0}</b></span>
+            </div>
+            <button class="btn btn-primary" id="writing-score-next">${isLast ? '查看总结' : '下一题 →'}</button>
+            <button class="btn btn-secondary" id="writing-score-exit" style="margin-top:8px;">返回宗门</button>
+        `;
+        this.game.ui.overlay.appendChild(scorePanel);
+
+        document.getElementById('writing-score-next').addEventListener('click', () => {
+            scorePanel.remove();
+            if (isLast) { this.showFinalSummary(); }
+            else { this.currentIndex++; this.renderWritingQuestion(); }
+        });
+        document.getElementById('writing-score-exit').addEventListener('click', () => {
+            scorePanel.remove();
+            this.game.enterHall();
+        });
+    }
+
+    _detailItem(label, score) {
+        if (score === undefined || score === null) return '';
+        const pct = Math.min(100, Math.max(0, (score / 30) * 100));
+        const color = pct >= 80 ? '#7bed9f' : pct >= 60 ? '#70a1ff' : '#ffa502';
+        return `
+            <div style="padding:8px 10px;background:rgba(255,255,255,0.04);border-radius:8px;">
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--parchment-dark);margin-bottom:4px;">
+                    <span>${label}</span><span style="color:${color}">${score}</span>
+                </div>
+                <div style="height:3px;background:rgba(255,255,255,0.1);border-radius:2px;">
+                    <div style="height:100%;width:${pct}%;background:${color};border-radius:2px;"></div>
+                </div>
+            </div>`;
+    }
+
+    showFinalSummary() {
+        document.getElementById('writing-final')?.remove();
+        const avgScore = this.submittedResults.length
+            ? Math.round(this.submittedResults.reduce((s, r) => s + (r.result.score || 0), 0) / this.submittedResults.length)
+            : 0;
+        const passed = avgScore >= 60;
+        const hermesMsg = avgScore >= 90
+            ? '妙哉！文采斐然，逻辑严密，实乃写作高手。此等功力，已入金丹之境！'
+            : avgScore >= 75 ? '写得甚好！词句通顺，意思明晰。再打磨细节，必能更进一步。'
+            : avgScore >= 60 ? '尚可入目。基础扎实，但需多加练习词汇与句式多样性。'
+            : '初学者之作，无需气馁！多读多写，假以时日，必见长进。';
+
+        const finalPanel = document.createElement('div');
+        finalPanel.className = `reward-popup ${passed ? 'reward-pass' : 'reward-fail'}`;
+        finalPanel.id = 'writing-final';
+        finalPanel.innerHTML = `
+            <div class="reward-icon">${passed ? (avgScore >= 90 ? '🌟' : '✓') : '📝'}</div>
+            <div class="reward-title">${passed ? (avgScore >= 90 ? '完美通关！' : '写作完成') : '继续练习'}</div>
+            <div class="reward-details">
+                <div class="reward-row"><span>平均分</span><span class="${avgScore >= 80 ? 'text-gold' : avgScore >= 60 ? 'text-green' : 'text-red'}">${avgScore} 分</span></div>
+                <div class="reward-row"><span>完成题数</span><span class="text-gold">${this.submittedResults.length} / ${this.prompts.length}</span></div>
+                <div class="reward-row"><span>获得修为</span><span class="text-gold">+${this.totalExpGained}</span></div>
+                <div class="reward-row"><span>获得灵石</span><span class="text-gold">+${this.totalStonesGained}</span></div>
+            </div>
+            <div class="hermes-judge">${hermesMsg}</div>
+            <div class="reward-actions">
+                <button class="btn btn-primary" id="writing-final-again">再练一关</button>
+                <button class="btn btn-secondary" id="writing-final-back">返回宗门</button>
+            </div>
+        `;
+        this.game.ui.overlay.appendChild(finalPanel);
+
+        document.getElementById('writing-final-again').addEventListener('click', () => {
+            finalPanel.remove();
+            this.game.startPracticeModule('writing');
+        });
+        document.getElementById('writing-final-back').addEventListener('click', () => {
+            finalPanel.remove();
+            this.game.enterHall();
+        });
+    }
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 const LISTENING_TEST_DIALOGUE = [
     { role: 'A', text: 'Can I learn to play weiqi?', gender: 'female' },
     { role: 'B', text: 'Sure, you can.', gender: 'male' },
@@ -14,7 +321,7 @@ const MODULE_META = {
     listening: { title: '🎧 听力试炼', shortName: '听力试炼', countText: () => '10题' },
     speaking: { title: '🗣️ 口语试炼', shortName: '口语试炼', countText: () => '10题' },
     reading: { title: '📚 阅读试炼', shortName: '阅读试炼', countText: () => '10题' },
-    writing: { title: '✍️ 写作试炼', shortName: '写作试炼', countText: () => '10题' },
+    writing: { title: '✍️ 写作试炼', shortName: '写作试炼', countText: () => '2题（命题+续写）' },
 };
 
 export class PracticePanel {
@@ -37,6 +344,8 @@ export class PracticePanel {
         this.speakingMediaStream = null;
         this.speakingMediaChunks = [];
         this.speakingRecording = false;
+        // 写作专属子面板
+        this._writingPanel = new WritingPanel(game);
     }
 
     /** 打开关卡选择列表 */
@@ -84,6 +393,13 @@ export class PracticePanel {
 
     /** 开始一关的答题 */
     async startLevel(type, levelId) {
+        // writing 类型走专属 WritingPanel 流程
+        if (type === 'writing') {
+            this.game.ui.hideAllPanels();
+            await this._writingPanel.start(levelId);
+            return;
+        }
+
         this.game.ui.showLoading('加载题库...');
         this.currentType = type;
         this.currentLevel = levelId;

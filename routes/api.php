@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AchievementController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\WritingController;
 use App\Http\Controllers\Api\CurrencyController;
 use App\Http\Controllers\Api\ExamController;
 use App\Http\Controllers\Api\GrammarController;
@@ -63,6 +64,12 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/questions', [SkillPracticeController::class, 'questions']);
             Route::post('/submit-batch', [SkillPracticeController::class, 'submitBatch']);
         });
+
+    // 写作模块（独立路由，覆盖上方通用路由的 writing 部分）
+    Route::prefix('writing')->group(function () {
+        Route::get('/prompts', [WritingController::class, 'prompts']);
+        Route::post('/submit-one', [WritingController::class, 'submitOne']);
+    });
 
     Route::prefix('exam')->group(function () {
         Route::get('/current', [ExamController::class, 'current']);
