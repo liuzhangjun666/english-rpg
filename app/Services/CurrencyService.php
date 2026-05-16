@@ -52,9 +52,11 @@ class CurrencyService
             $multiplier = self::STREAK_MULTIPLIERS[$index] ?? 1.0;
 
             // 恢复灵力（×倍率额外恢复）
-            $baseRecovery = $user->spirit_power_max;
             $bonusRecovery = (int)(10 * ($multiplier - 1));  // 额外恢复
-            $user->spirit_power = min($user->spirit_power_max + $bonusRecovery, $user->spirit_power_max);
+            $user->spirit_power = $user->spirit_power_max + max(0, $bonusRecovery);
+            if ((bool) $user->is_minor) {
+                $user->spirit_power = min($user->spirit_power, 50);
+            }
             $user->spirit_power_date = $today;
             $user->daily_minutes = 0;
             $user->daily_minutes_date = $today;
@@ -110,7 +112,13 @@ class CurrencyService
 
     public static function getStageExpThreshold(string $realm, int $stage): int
     {
-        $map = ['L1'=>[0,50,120],'L2'=>[200,300,420],'L3'=>[500,650,800]];
-        return $map[$realm][$stage - 1] ?? 0;
+        $prefix = strtoupper(substr(trim($realm), 0, 1));
+        $stage = max(1, $stage);
+        $prefixOrder = ['L' => 0, 'Z' => 1, 'J' => 2, 'Y' => 3, 'H' => 4, 'X' => 5, 'T' => 6, 'D' => 7, 'U' => 8];
+        $group = $prefixOrder[$prefix] ?? 0;
+        $globalTier = ($group * 9) + ($stage - 1);
+
+        // 累进曲线：越高境界单层所需修为越高
+        return (int) (($globalTier * 120) + (25 * $globalTier * max(0, $globalTier - 1) / 2));
     }
 }

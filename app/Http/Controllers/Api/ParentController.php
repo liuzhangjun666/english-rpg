@@ -79,6 +79,11 @@ class ParentController extends Controller
 
         if ($type === 'daily') {
             $data = $this->reportService->dailySummary($user);
+        } elseif ($type === 'weekly') {
+            $data = $this->reportService->weeklyReport($user);
+        } elseif ($type === 'analytics') {
+            $days = (int) $request->query('days', 30);
+            $data = $this->reportService->learningAnalytics($user, $days);
         } else {
             $data = $this->reportService->parentDashboard($user);
         }

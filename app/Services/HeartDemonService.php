@@ -7,10 +7,12 @@ use App\Models\Question;
 
 class HeartDemonService
 {
-    // Ratio of injected demon questions in each practice batch.
+    // Base ratio of injected demon questions in each practice batch.
     public const INJECTION_RATIO = 0.2;
     // Clear a demon after this many correct answers.
     public const MASTERED_REVIEW_COUNT = 3;
+    // Simplified spaced-repetition intervals (days).
+    private const REVIEW_INTERVALS = [1, 3, 7, 14, 30, 60];
 
     public function recordWrong(int $userId, string $questionId, string $type, ?string $realm = null): void
     {
@@ -29,6 +31,7 @@ class HeartDemonService
                 'wrong_count' => 1,
                 'mastery' => 0,
                 'last_wrong_at' => now(),
+                'next_review_at' => now()->addDay(),
                 'is_mastered' => false,
             ]);
             return;
@@ -38,8 +41,10 @@ class HeartDemonService
         $demon->realm = $realm ?? $question?->realm ?? $demon->realm;
         $demon->type = $type ?: $demon->type;
         $demon->wrong_count = (int) $demon->wrong_count + 1;
+        $demon->reviewed_count = 0;
         $demon->mastery = max(0, (int) $demon->mastery - 10);
         $demon->last_wrong_at = now();
+        $demon->next_review_at = now()->addDay();
         $demon->is_mastered = false;
         $demon->save();
     }
@@ -58,8 +63,13 @@ class HeartDemonService
         $demon->mastery = min(100, ((int) $demon->mastery) + 20);
         $demon->last_reviewed_at = now();
 
-        if ((int) $demon->reviewed_count >= self::MASTERED_REVIEW_COUNT) {
+        $reviewedCount = (int) $demon->reviewed_count;
+        if ($reviewedCount >= self::MASTERED_REVIEW_COUNT && (int) $demon->mastery >= 80) {
             $demon->is_mastered = true;
+            $demon->next_review_at = null;
+        } else {
+            $idx = min($reviewedCount, count(self::REVIEW_INTERVALS) - 1);
+            $demon->next_review_at = now()->addDays(self::REVIEW_INTERVALS[$idx]);
         }
 
         $demon->save();
@@ -81,6 +91,9 @@ class HeartDemonService
         }
 
         return $query
+            ->where(function ($q) {
+                $q->whereNull('next_review_at')->orWhere('next_review_at', '<=', now());
+            })
             ->orderBy('next_review_at')
             ->orderByDesc('wrong_count')
             ->limit($limit)
@@ -97,7 +110,10 @@ class HeartDemonService
             ->keyBy('question_id')
             ->toArray();
 
-        $demonCount = max(1, (int) round($normalCount * self::INJECTION_RATIO));
+        $demonCount = (int) round($normalCount * $this->dynamicInjectionRatio($userId, $type, $realm));
+        if ($demonCount > 0) {
+            $demonCount = max(1, $demonCount);
+        }
         $demons = $this->getPendingDemons($userId, $demonCount, $type, $realm);
 
         $injected = [];
@@ -148,5 +164,27 @@ class HeartDemonService
         }
 
         return $questions;
+    }
+
+    private function dynamicInjectionRatio(int $userId, ?string $type = null, ?string $realm = null): float
+    {
+        $query = HeartDemon::where('user_id', $userId)->where('is_mastered', false);
+        if ($type) {
+            $query->where('type', $type);
+        }
+        if ($realm) {
+            $query->where(function ($q) use ($realm) {
+                $q->where('realm', $realm)->orWhereNull('realm');
+            });
+        }
+
+        $demonCount = (int) $query->count();
+        return match (true) {
+            $demonCount === 0 => 0.0,
+            $demonCount <= 5 => 0.1,
+            $demonCount <= 15 => 0.2,
+            $demonCount <= 30 => 0.3,
+            default => 0.4,
+        };
     }
 }

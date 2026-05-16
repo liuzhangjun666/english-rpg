@@ -3,6 +3,7 @@ import avatarDefault from '../../assets/images/avatar_default.png';
 import hermesAvatar from '../../assets/images/hermes_avatar.png';
 import loadingTai from '../../assets/images/loading_tai.png';
 import realmBadge from '../../assets/images/realm_badge.png';
+import { getRealmDisplayName } from '../utils/cultivation.js';
 
 export class UIManager {
     constructor(game) {
@@ -208,7 +209,7 @@ export class UIManager {
     checkMinorWarning() {
         const user = this.game.store.getState().user;
         if (user && user.is_minor) {
-            this.showHermesBubble('⏰ 家长模式已开启，每日修炼时间受限。请在「我的→家长端」查看详情。', 6000);
+            this.showHermesBubble('⏰ 护道人模式已开启，每日修炼时长受限。请在「我的→护道人」查看详情。', 6000);
         }
     }
 
@@ -225,7 +226,19 @@ export class UIManager {
         bar.id = 'character-bar';
         bar.innerHTML = `
             <img src="${this.assets.avatarDefault}" class="avatar" alt="avatar">
-            <div class="info"><div class="name">${this.escapeHtml(user.nickname)}</div><div class="realm">${this.getRealmName(user.realm)} · ${user.realm_stage}重</div></div>
+            <div class="info">
+                <div class="name">${this.escapeHtml(user.nickname)}</div>
+                <div class="realm">${this.getRealmName(user.realm, user.realm_stage)}</div>
+                <div id="learning-progress-mini" style="margin-top:4px;padding:4px 6px;border:1px solid rgba(212,168,67,0.18);border-radius:8px;background:rgba(255,255,255,0.03);">
+                    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--parchment-dark);margin-bottom:3px;">
+                        <span>修为进度</span>
+                        <span id="learning-progress-text">加载中...</span>
+                    </div>
+                    <div style="height:3px;background:rgba(255,255,255,0.12);border-radius:4px;overflow:hidden;">
+                        <div id="learning-progress-fill" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold),#f4d98a);"></div>
+                    </div>
+                </div>
+            </div>
             <div class="stats">
                 <div class="stat">⚡ ${user.exp}</div>
                 <div class="stat">💧 ${user.spirit_power}/${user.spirit_power_max}</div>
@@ -233,51 +246,80 @@ export class UIManager {
             </div>
         `;
         document.body.appendChild(bar);
+        this.refreshLearningProgress(bar);
         this.storeUnsubscribe = this.game.store.subscribe((state) => {
             if (state.user) {
                 const n = bar.querySelector('.name'); const r = bar.querySelector('.realm'); const s = bar.querySelectorAll('.stat');
                 if (n) n.textContent = state.user.nickname;
-                if (r) r.textContent = `${this.getRealmName(state.user.realm)} · ${state.user.realm_stage}重`;
+                if (r) r.textContent = this.getRealmName(state.user.realm, state.user.realm_stage);
                 if (s[0]) s[0].innerHTML = `⚡ ${state.user.exp}`;
                 if (s[1]) s[1].innerHTML = `💧 ${state.user.spirit_power}/${state.user.spirit_power_max}`;
                 if (s[2]) s[2].innerHTML = `💎 ${state.user.spirit_stone}`;
+                this.refreshLearningProgress(bar);
             }
         });
     }
 
-    getRealmName(realm) {
-        const names = { 'L1':'练气初','L2':'练气初','L3':'练气初','L4':'练气中','L5':'练气中','L6':'练气中','L7':'练气后','L8':'练气后','L9':'练气后','Z1':'筑基','Z2':'筑基','Z3':'筑基','J1':'金丹','J2':'金丹','J3':'金丹','Y1':'元婴','Y2':'元婴','Y3':'元婴','H1':'化神','H2':'化神','H3':'化神','D1':'大乘','D2':'大乘','D3':'大乘' };
-        return names[realm] || realm;
+    async refreshLearningProgress(bar) {
+        const fill = bar.querySelector('#learning-progress-fill');
+        const text = bar.querySelector('#learning-progress-text');
+        if (!fill || !text) return;
+        if (this._learningProgressLoading) return;
+        const now = Date.now();
+        if (this._learningProgressLastAt && now - this._learningProgressLastAt < 5000) return;
+
+        this._learningProgressLoading = true;
+        const res = await this.game.api.get('/user/learning-progress');
+        this._learningProgressLastAt = Date.now();
+        this._learningProgressLoading = false;
+        if (!res?.success) {
+            text.textContent = '暂无数据';
+            fill.style.width = '0%';
+            return;
+        }
+
+        const data = res.data || {};
+        const percent = Math.max(0, Math.min(100, Number(data.progress_percent || 0)));
+        const remain = Number(data.remaining_exp || 0);
+        text.textContent = `还需 ${remain} 修为`;
+        fill.style.width = `${percent}%`;
+    }
+
+    getRealmName(realm, stage = null) {
+        return getRealmDisplayName(realm, stage);
     }
 
     // ========== 宗门大厅（P1+P2 完整入口） ==========
     showHallScene() {
+        const user = this.game.store.getState().user;
+        const tutorialStep = Number(user?.tutorial_step || 0);
         const entry = document.createElement('div');
         entry.className = 'hall-entry';
         entry.id = 'hall-entry';
 
         const entries = [
-            { key: 'practice', icon: '\u{1F4D6}', label: '\u7ec3\u529f\u623f' },
-            { key: 'shilianchang', icon: '\u26A1', label: '\u8bd5\u70bc\u573a' },
-            { key: 'cangjingge', icon: '\u{1F4DA}', label: '\u85cf\u7ecf\u9601' },
-            { key: 'listening', icon: '\u{1F3A7}', label: '\u542c\u529b' },
-            { key: 'speaking', icon: '\u{1F5E3}', label: '\u53e3\u8bed' },
-            { key: 'reading', icon: '\u{1F4D8}', label: '\u9605\u8bfb' },
-            { key: 'writing', icon: '\u270D', label: '\u5199\u4f5c' },
-            { key: 'mijing', icon: '\u{1F33F}', label: '\u79d8\u5883' },
-            { key: 'mall', icon: '\u{1F3EA}', label: '\u574a\u5e02' },
-            { key: 'leaderboard', icon: '\u{1F3C5}', label: '\u5b97\u95e8\u699c' },
-            { key: 'review', icon: '\u{1F504}', label: '\u590d\u4e60' },
-            { key: 'demons', icon: '\u{1F9D8}', label: '\u5fc3\u9b54\u5f55' },
-            { key: 'achievements', icon: '\u{1F3C6}', label: '\u6210\u5c31' },
-            { key: 'profile', icon: '\u{1F464}', label: '\u6211\u7684' },
+            { key: 'practice', icon: '\u{1F4D6}', label: '练功房' },
+            { key: 'shilianchang', icon: '\u26A1', label: '试炼场' },
+            { key: 'cangjingge', icon: '\u{1F4DA}', label: '藏经阁' },
+            { key: 'listening', icon: '\u{1F3A7}', label: '听力试炼' },
+            { key: 'speaking', icon: '\u{1F5E3}', label: '口语试炼' },
+            { key: 'reading', icon: '\u{1F4D8}', label: '阅读副本' },
+            { key: 'writing', icon: '\u270D', label: '写作试炼' },
+            { key: 'mijing', icon: '\u{1F33F}', label: '秘境' },
+            { key: 'mall', icon: '\u{1F3EA}', label: '坊市' },
+            { key: 'leaderboard', icon: '\u{1F3C5}', label: '宗门榜' },
+            { key: 'review', icon: '\u{1F504}', label: '温故复盘' },
+            { key: 'demons', icon: '\u{1F9D8}', label: '心魔录' },
+            { key: 'achievements', icon: '\u{1F3C6}', label: '成就碑' },
+            { key: 'profile', icon: '\u{1F464}', label: '我的洞府' },
         ];
 
         entry.innerHTML = entries
-            .map((item) => `<div class="entry-btn" data-scene="${item.key}"><span class="entry-icon">${item.icon}</span>${this.escapeHtml(item.label)}</div>`)
+            .map((item) => `<div class="entry-btn ${this.getTutorialEntryClass(item.key, tutorialStep)}" data-scene="${item.key}"><span class="entry-icon">${item.icon}</span>${this.escapeHtml(item.label)}</div>`)
             .join('');
 
         this.overlay.appendChild(entry);
+        this.showTutorialGuideIfNeeded(entry, tutorialStep);
         entry.querySelectorAll('.entry-btn').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const scene = btn.dataset.scene;
@@ -299,6 +341,54 @@ export class UIManager {
                 }
             });
         });
+    }
+
+    getTutorialEntryClass(sceneKey, tutorialStep) {
+        if (tutorialStep === 1 && sceneKey === 'practice') return 'tutorial-focus tutorial-pulse';
+        if (tutorialStep === 2 && sceneKey === 'cangjingge') return 'tutorial-focus tutorial-pulse';
+        return '';
+    }
+
+    showTutorialGuideIfNeeded(entry, tutorialStep) {
+        if (tutorialStep === 1) {
+            this.showHermesBubble('建议先入【练功房】采药识灵，每日修炼 10-15 分钟。', 6000);
+            return;
+        }
+        if (tutorialStep === 2) {
+            this.showHermesBubble('不错，继续前往【藏经阁】研习功法，词义与句法同修更稳。', 6000);
+            this.maybeShowSpiritExhaustedGuide();
+        }
+    }
+
+    async maybeShowSpiritExhaustedGuide() {
+        const user = this.game.store.getState().user;
+        if (!user || Number(user.tutorial_step || 0) !== 2 || Number(user.spirit_power || 0) > 0) return;
+
+        const statsRes = await this.game.api.get('/user/stats');
+        const stats = statsRes?.success ? statsRes.data : {};
+        const panel = document.createElement('div');
+        panel.className = 'panel';
+        panel.id = 'tutorial-finish-panel';
+        panel.style.maxWidth = '420px';
+        panel.innerHTML = `
+            <div class="panel-title">今日修炼任务完成</div>
+            <div style="color:var(--parchment-dark);line-height:1.9;font-size:13px;">
+                <div>修炼题数：<span style="color:var(--gold);">${Number(stats.questions_done || 0)}</span></div>
+                <div>悟性命中：<span style="color:var(--gold);">${Number(stats.accuracy || 0)}%</span></div>
+                <div>新识灵词：<span style="color:var(--gold);">${Number(stats.new_word_count || 0)}</span></div>
+                <div style="margin-top:8px;">明日再温习今日所学，道基更稳。</div>
+            </div>
+            <button class="btn btn-primary" id="tutorial-finish-ok" style="margin-top:12px;">我已知晓，继续修炼</button>
+        `;
+        this.overlay.appendChild(panel);
+        document.getElementById('tutorial-finish-ok')?.addEventListener('click', () => panel.remove());
+
+        this.game.store.updateUser({ tutorial_step: 3 });
+        try {
+            await this.game.api.patch('/user/tutorial-step', { tutorial_step: 3 });
+        } catch {
+            // keep local state
+        }
     }
 
     /** 场景切换过渡动画 */
@@ -354,7 +444,7 @@ export class UIManager {
             </div>
             <div class="input-group"><label>道号</label><input type="text" id="profile-nickname" maxlength="50" value="${this.escapeHtml(user.nickname)}"></div>
             <div class="input-group"><label>手机号</label><input type="text" value="${user.phone}" disabled style="opacity:0.6;"></div>
-            <div class="input-group"><label>当前境界</label><input type="text" value="${this.getRealmName(user.realm)} · ${user.realm_stage}重" disabled style="opacity:0.6;"></div>
+            <div class="input-group"><label>当前境界</label><input type="text" value="${this.getRealmName(user.realm, user.realm_stage)}" disabled style="opacity:0.6;"></div>
             <div class="input-group" style="display:flex;gap:8px;">
                 <span style="flex:1;text-align:center;padding:8px;background:rgba(255,255,255,0.05);border-radius:8px;">⚡ ${user.exp}</span>
                 <span style="flex:1;text-align:center;padding:8px;background:rgba(255,255,255,0.05);border-radius:8px;">💧 ${user.spirit_power}/${user.spirit_power_max}</span>
@@ -368,10 +458,10 @@ export class UIManager {
                 <button class="btn btn-primary btn-sm" id="profile-share-btn" style="margin-top:8px;font-size:12px;padding:8px;">📤 复制邀请码去分享</button>
             </div>
             <button class="btn btn-primary" id="profile-save-btn" style="margin-top:4px;">保存道号</button>
-            <button class="btn btn-secondary" id="profile-review-btn" style="margin-top:8px;">🔄 错题复习</button>
+            <button class="btn btn-secondary" id="profile-review-btn" style="margin-top:8px;">🔄 温故复盘</button>
             <button class="btn btn-secondary" id="profile-demons-btn" style="margin-top:8px;">🧘 心魔录</button>
             <button class="btn btn-secondary" id="profile-achievements-btn" style="margin-top:8px;">🏆 成就</button>
-            <button class="btn btn-secondary" id="profile-parent-btn" style="margin-top:8px;">📋 家长端</button>
+            <button class="btn btn-secondary" id="profile-parent-btn" style="margin-top:8px;">📋 护道人</button>
             <button class="btn btn-secondary" id="profile-back-btn" style="margin-top:8px;">返回宗门</button>
             <button class="btn btn-secondary" id="profile-logout-btn" style="margin-top:8px;border-color:var(--cinnabar);color:var(--cinnabar);">退出登录</button>
         `;
@@ -412,10 +502,12 @@ export class UIManager {
     // ========== 通用 ==========
     hideAllPanels() {
         ['level-select-panel', 'practice-panel', 'reward-popup', 'exam-panel', 'exam-info-panel', 'exam-result-panel', 'login-panel', 'register-panel', 'profile-panel',
-         'achievement-panel', 'leaderboard-panel', 'mall-panel', 'demons-panel', 'reading-panel', 'reading-task-panel', 'reading-result-popup', 'confirm-dialog-mask', 'confirm-dialog-panel'].forEach(id => {
+         'achievement-panel', 'leaderboard-panel', 'mall-panel', 'demons-panel', 'reading-panel', 'reading-task-panel', 'reading-result-popup', 'mijing-entry-panel',
+         'mijing-challenge-panel', 'mijing-result-panel', 'confirm-dialog-mask', 'confirm-dialog-panel'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.remove();
         });
+        document.getElementById('tutorial-finish-panel')?.remove();
         const hallEntry = document.getElementById('hall-entry');
         if (hallEntry) hallEntry.remove();
         const bubble = document.getElementById('hermes-bubble');

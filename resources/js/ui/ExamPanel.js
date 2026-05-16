@@ -1,4 +1,6 @@
 // LevelUp 英语修仙 - 渡劫检测面板
+import { getRealmDisplayName } from '../utils/cultivation.js';
+
 export class ExamPanel {
     constructor(game) {
         this.game = game;
@@ -365,8 +367,7 @@ export class ExamPanel {
     }
 
     getRealmName(realm) {
-        const names = { 'L1':'练气初','L2':'练气初','L3':'练气初','L4':'练气中','L5':'练气中','L6':'练气中','L7':'练气后','L8':'练气后','L9':'练气后','Z1':'筑基','Z2':'筑基','Z3':'筑基','J1':'金丹','J2':'金丹','J3':'金丹','Y1':'元婴','Y2':'元婴','Y3':'元婴','H1':'化神','H2':'化神','H3':'化神','D1':'大乘','D2':'大乘','D3':'大乘' };
-        return names[realm] || realm;
+        return getRealmDisplayName(realm);
     }
 
     getSessionKey() {

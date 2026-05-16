@@ -344,6 +344,8 @@ export class PracticePanel {
         this.speakingMediaStream = null;
         this.speakingMediaChunks = [];
         this.speakingRecording = false;
+        this.vocabAlchemyStates = {};
+        this.vocabFlightRoutes = {};
         // 写作专属子面板
         this._writingPanel = new WritingPanel(game);
     }
@@ -376,6 +378,11 @@ export class PracticePanel {
                 <div style="font-size:20px;font-family:var(--font-title);color:var(--gold);margin-bottom:4px;">${this.game.ui.getRealmName(realm)} · 第${String(stageNo).padStart(2, '0')}关</div>
                 <div style="font-size:12px;color:var(--parchment-dark);">进度：${index + 1}/${total} · 题量：${moduleMeta.countText(stageNo)}</div>
             </div>
+            ${type === 'vocab' ? `
+                <div style="padding:10px 12px;border:1px dashed rgba(212,168,67,0.35);border-radius:10px;background:rgba(212,168,67,0.06);margin-bottom:12px;font-size:12px;color:var(--parchment-dark);line-height:1.7;">
+                    本关将随机触发三种玩法：炼丹拼词 / 采药识图 / 御剑辨义
+                </div>
+            ` : ''}
             ${resumable ? `<button class="btn btn-primary" id="level-resume-btn">继续上次进度</button>` : ''}
             <button class="btn btn-primary" id="level-start-btn" style="${resumable ? 'margin-top:8px;' : ''}">${resumable ? '重新开始本关' : '开始本关'}</button>
             <button class="btn btn-secondary" id="level-select-back" style="margin-top:12px;">返回宗门</button>
@@ -409,6 +416,8 @@ export class PracticePanel {
         this.maxCombo = 0;
         this._feedbackShown = false;
         this.speakingRecordings = {};
+        this.vocabAlchemyStates = {};
+        this.vocabFlightRoutes = {};
         this.stopSpeakingRecording(true);
 
         const [realm, stage] = levelId.split('-');
@@ -484,20 +493,44 @@ export class PracticePanel {
         panel.style.maxWidth = '520px';
         const isListening = this.currentType === 'listening';
         const isSpeaking = this.currentType === 'speaking';
+        const isVocab = this.currentType === 'vocab';
         const pronounceWord = this.getPronounceWord(q);
         const listeningMaterial = isListening ? this.getListeningMaterialText(q) : '';
         const speakingMaterial = isSpeaking ? this.getSpeakingMaterialText(q) : '';
         const speakingRec = (isSpeaking && q.question_id) ? this.speakingRecordings[q.question_id] : null;
-        const showPronounce = this.currentType === 'vocab' && pronounceWord;
+        const vocabPlayMode = isVocab ? this.getVocabPlayMode(q) : null;
+        const isVocabAlchemy = vocabPlayMode === 'alchemy';
+        const showPronounce = isVocab && pronounceWord;
         const showListeningPlayer = isListening;
+        const showListeningMaterial = isListening && hasFeedback && !!(listeningMaterial && listeningMaterial.trim());
         const showSpeakingPanel = isSpeaking;
         const showOptionArea = !showSpeakingPanel;
         const promptText = this.getQuestionStemText(q);
-        const resolvedPrompt = (isListening && promptText === listeningMaterial)
+        const basePrompt = (isListening && promptText === listeningMaterial)
             ? '请根据听力材料回答问题。'
             : (isSpeaking && (!promptText || promptText === speakingMaterial)
                 ? '请朗读上方英文并录音。'
                 : promptText);
+        const targetWord = this.getVocabTargetWord(q) || pronounceWord || '';
+        const resolvedPrompt = isVocab
+            ? (vocabPlayMode === 'alchemy'
+                ? '丹方缺失，请补全灵草名'
+                : (vocabPlayMode === 'herb'
+                    ? `寻药指令：Find the herb: ${targetWord || 'herb'}`
+                    : `${targetWord || 'word'} 的中文意思是？`))
+            : basePrompt;
+
+        let vocabGameplayHtml = '';
+        if (isVocab && showOptionArea) {
+            if (vocabPlayMode === 'alchemy') {
+                vocabGameplayHtml = this.renderVocabAlchemy(q, hasFeedback);
+            } else if (vocabPlayMode === 'herb') {
+                vocabGameplayHtml = this.renderVocabHerbOptions(q);
+            } else {
+                vocabGameplayHtml = this.renderVocabFlightOptions(q);
+            }
+        }
+
         panel.innerHTML = `
             <div class="practice-header">
                 <span class="practice-title"><img src="${herbIcon}" class="herb-icon"> ${this.currentLevel} ${isDemon ? '🧘' : ''}</span>
@@ -507,6 +540,7 @@ export class PracticePanel {
                 <div class="progress-fill" style="width:${(this.currentIndex / total) * 100}%"></div>
             </div>
             ${this.combo >= 3 ? `<div class="combo-display">🔥 ${this.combo} 连击</div>` : ''}
+            ${isVocab ? `<div class="vocab-mode-badge">${this.renderVocabModeBadge(vocabPlayMode)}</div>` : ''}
             ${showPronounce ? `
                 <div class="word-pronounce-row">
                     <span class="word-pronounce-text">${this.game.ui.escapeHtml(pronounceWord)}</span>
@@ -515,10 +549,7 @@ export class PracticePanel {
             ` : ''}
             ${showListeningPlayer ? `
                 <div class="listening-audio-row">
-                    <div class="listening-audio-title">🎧 听力材料（可播放）</div>
-                    <div style="margin-top:8px;padding:10px;border:1px dashed rgba(212,168,67,0.35);border-radius:8px;font-size:13px;color:var(--parchment-dark);line-height:1.6;">
-                        ${this.game.ui.escapeHtml(listeningMaterial || '暂无听力材料')}
-                    </div>
+                    <div class="listening-audio-title">🎧 听力音频</div>
                     <button class="btn btn-secondary btn-sm" id="listening-play-btn">播放听力</button>
                 </div>
             ` : ''}
@@ -535,11 +566,22 @@ export class PracticePanel {
                 </div>
                 <div class="question-text">${this.game.ui.escapeHtml(resolvedPrompt)}</div>
             ` : `
-                <div class="question-text">${this.game.ui.escapeHtml(resolvedPrompt)}</div>
+                ${isVocab ? '' : `<div class="question-text">${this.game.ui.escapeHtml(resolvedPrompt)}</div>`}
             `}
             ${showOptionArea ? `
-                <div class="options-container" id="options-container">
-                    ${this.renderOptions(q.options, null)}
+                ${isVocab ? vocabGameplayHtml : `
+                    <div class="options-container" id="options-container">
+                        ${this.renderOptions(q.options, null)}
+                    </div>
+                `}
+            ` : ''}
+            <div id="answer-explain-box" style="display:none;margin:6px 0 12px;padding:10px 12px;border-radius:10px;border:1px solid rgba(212,168,67,0.25);background:rgba(255,255,255,0.04);font-size:12px;line-height:1.8;color:var(--parchment-dark);"></div>
+            ${showListeningPlayer ? `
+                <div id="listening-material-box" style="margin:2px 0 14px;padding:12px;border:1px solid rgba(212,168,67,0.28);border-radius:12px;background:linear-gradient(180deg, rgba(212,168,67,0.09), rgba(212,168,67,0.04));display:${showListeningMaterial ? 'block' : 'none'};">
+                    <div style="font-size:12px;color:var(--gold-light);letter-spacing:0.4px;margin-bottom:8px;font-weight:700;">Listening Transcript</div>
+                    <div style="padding:10px 12px;border-radius:8px;background:rgba(8,12,24,0.22);font-size:14px;color:var(--parchment);line-height:1.8;white-space:pre-wrap;">
+                        ${this.game.ui.escapeHtml(listeningMaterial || 'No transcript available')}
+                    </div>
                 </div>
             ` : ''}
             <div class="practice-actions">
@@ -584,7 +626,8 @@ export class PracticePanel {
 
         // 选项点击 → 即时反馈
         const optionBtns = panel.querySelectorAll('.option-btn');
-        if (showOptionArea && hasFeedback) {
+        const explainBox = document.getElementById('answer-explain-box');
+        if (showOptionArea && !isVocabAlchemy && hasFeedback) {
             optionBtns.forEach((b) => {
                 if (b.dataset.value === currentAnswer) {
                     b.classList.add('selected');
@@ -599,41 +642,57 @@ export class PracticePanel {
                 }
                 b.style.pointerEvents = 'none';
             });
+            if (explainBox && currentAnswer && currentAnswer !== q.correct_answer) {
+                explainBox.style.display = 'block';
+                explainBox.innerHTML = this.buildAnswerExplainHtml(q, currentAnswer);
+            }
         }
-        optionBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (this._feedbackShown) return; // 已作答，不能改
-                optionBtns.forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
+        if (isVocabAlchemy) {
+            this.bindVocabAlchemy(panel, q, hasFeedback);
+        } else {
+            optionBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (this._feedbackShown) return; // 已作答，不能改
+                    optionBtns.forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
 
-                const selected = btn.dataset.value;
-                const correct = selected === q.correct_answer;
-                this.answers[q.question_id] = selected;
-                this.game.store.answerQuestion(q.question_id, selected);
+                    const selected = btn.dataset.value;
+                    const correct = selected === q.correct_answer;
+                    this.answers[q.question_id] = selected;
+                    this.game.store.answerQuestion(q.question_id, selected);
 
-                // 即时反馈：正确绿闪，错误红闪
-                optionBtns.forEach(b => b.style.pointerEvents = 'none');
-                if (correct) {
-                    btn.classList.add('answer-correct');
-                    this.combo++;
-                    if (this.combo > this.maxCombo) this.maxCombo = this.combo;
-                    // 显示连击特效
-                    if (this.combo >= 3) {
-                        this.showComboFx(this.combo);
+                    // 即时反馈：正确绿闪，错误红闪
+                    optionBtns.forEach(b => b.style.pointerEvents = 'none');
+                    if (correct) {
+                        btn.classList.add('answer-correct');
+                        this.playAnswerFeedbackTone(true, this.combo + 1);
+                        this.combo++;
+                        if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+                        if (this.combo >= 3) {
+                            this.showComboFx(this.combo);
+                        }
+                    } else {
+                        btn.classList.add('answer-wrong');
+                        this.playAnswerFeedbackTone(false, 0);
+                        this.combo = 0; // 连击中断
+                        optionBtns.forEach(b => {
+                            if (b.dataset.value === q.correct_answer) b.classList.add('answer-correct');
+                        });
+                        if (explainBox) {
+                            explainBox.style.display = 'block';
+                            explainBox.innerHTML = this.buildAnswerExplainHtml(q, selected);
+                        }
                     }
-                } else {
-                    btn.classList.add('answer-wrong');
-                    this.combo = 0; // 连击中断
-                    // 显示正确答案
-                    optionBtns.forEach(b => {
-                        if (b.dataset.value === q.correct_answer) b.classList.add('answer-correct');
-                    });
-                }
-                this._feedbackShown = true;
-                document.getElementById('practice-next-btn').disabled = false;
-                this.persistSession();
+                    this._feedbackShown = true;
+                    document.getElementById('practice-next-btn').disabled = false;
+                    if (showListeningPlayer) {
+                        const materialBox = document.getElementById('listening-material-box');
+                        if (materialBox) materialBox.style.display = 'block';
+                    }
+                    this.persistSession();
+                });
             });
-        });
+        }
 
         // 下一题/提交
         document.getElementById('practice-next-btn').addEventListener('click', () => {
@@ -663,6 +722,312 @@ export class PracticePanel {
         });
     }
 
+    renderVocabModeBadge(mode) {
+        if (mode === 'alchemy') return '⚗️ 炼丹玩法：拼词成丹';
+        if (mode === 'herb') return '🌿 采药玩法：看词选图';
+        return '🗡️ 御剑玩法：三路辨义';
+    }
+
+    getQuestionKey(question) {
+        if (question?.question_id) return String(question.question_id);
+        return `${this.currentLevel || 'L1-01'}:${this.currentIndex}`;
+    }
+
+    getOptionPairs(options) {
+        if (!options || typeof options !== 'object') return [];
+        return Object.entries(options).map(([key, text]) => ({
+            key: String(key),
+            text: String(text ?? ''),
+        }));
+    }
+
+    shuffleArray(list) {
+        const arr = Array.isArray(list) ? [...list] : [];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    getVocabTargetWord(question) {
+        const byWord = String(question?.word || '').trim();
+        if (byWord) {
+            const cleaned = byWord.toLowerCase().replace(/[^a-z]/g, '');
+            if (cleaned) return cleaned;
+        }
+        const fromQuestion = String(question?.question || '').match(/[A-Za-z][A-Za-z'-]{2,}/);
+        return fromQuestion ? fromQuestion[0].toLowerCase().replace(/[^a-z]/g, '') : '';
+    }
+
+    getVocabPlayMode(question) {
+        const options = this.getOptionPairs(question?.options);
+        const targetWord = this.getVocabTargetWord(question);
+        const canAlchemy = targetWord.length >= 4;
+        const canHerb = options.length >= 2;
+        const canFlight = options.length >= 3;
+
+        const key = this.getQuestionKey(question);
+        const hash = [...key].reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+        const ordered = ['alchemy', 'herb', 'flight'];
+        const preferred = ordered[hash % ordered.length];
+        const candidates = [preferred, ...ordered.filter((m) => m !== preferred)];
+
+        for (const mode of candidates) {
+            if (mode === 'alchemy' && canAlchemy) return mode;
+            if (mode === 'herb' && canHerb) return mode;
+            if (mode === 'flight' && canFlight) return mode;
+        }
+        return 'herb';
+    }
+
+    getHerbEmoji(text) {
+        const raw = String(text || '');
+        const map = [
+            [/莲|荷|lotus/i, '🪷'],
+            [/竹|bamboo/i, '🎋'],
+            [/菇|mushroom/i, '🍄'],
+            [/芝|ganoderma|lingzhi/i, '🌰'],
+            [/花|rose|lily|orchid/i, '🌸'],
+            [/草|herb|mint|leaf/i, '🌿'],
+            [/果|apple|pear|berry|orange|grape/i, '🍎'],
+            [/树|tree/i, '🌳'],
+            [/云|cloud/i, '☁️'],
+            [/火|fire/i, '🔥'],
+            [/水|water/i, '💧'],
+        ];
+        for (const [regex, emoji] of map) {
+            if (regex.test(raw)) return emoji;
+        }
+        return '🌿';
+    }
+
+    renderVocabHerbOptions(question) {
+        const options = this.getOptionPairs(question?.options);
+        const user = this.game.store.getState().user || {};
+        const qi = Number(user.spirit_power || 0);
+        const stageRemain = Math.max(1, this.questions.length - this.currentIndex);
+        const targetWord = this.getVocabTargetWord(question) || 'lotus';
+        return `
+            <div class="vocab-scene-box vocab-scene-herb">
+                <div class="vocab-scene-hud">
+                    <span>🌿 灵气 ${qi}</span>
+                    <span>余题 ${stageRemain}</span>
+                </div>
+                <div class="vocab-scene-prompt">寻找灵草：${this.game.ui.escapeHtml(targetWord)}</div>
+                <div class="vocab-herb-grid options-container" id="options-container">
+                    ${options.map((item) => `
+                        <div class="option-btn vocab-herb-card" data-value="${this.game.ui.escapeHtml(item.key)}">
+                            <span class="option-label vocab-card-tag">${this.game.ui.escapeHtml(item.key)}</span>
+                            <span class="vocab-herb-emoji">${this.getHerbEmoji(item.text)}</span>
+                            <span class="option-text">${this.game.ui.escapeHtml(item.text)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    getVocabFlightLanes(question) {
+        const key = this.getQuestionKey(question);
+        if (this.vocabFlightRoutes[key]) return this.vocabFlightRoutes[key];
+
+        const options = this.getOptionPairs(question?.options);
+        const correct = options.find((item) => item.key === String(question?.correct_answer || ''));
+        if (!correct) return [];
+
+        const others = this.shuffleArray(options.filter((item) => item.key !== correct.key));
+        const picked = [correct, ...others.slice(0, 2)];
+        const shuffled = this.shuffleArray(picked).slice(0, 3);
+        const laneNames = ['左路', '中路', '右路'];
+        const lanes = shuffled.map((item, idx) => ({
+            ...item,
+            lane: laneNames[idx] || `路${idx + 1}`,
+        }));
+        this.vocabFlightRoutes[key] = lanes;
+        return lanes;
+    }
+
+    renderVocabFlightOptions(question) {
+        const lanes = this.getVocabFlightLanes(question);
+        const user = this.game.store.getState().user || {};
+        const qi = Number(user.spirit_power || 0);
+        const targetWord = this.getVocabTargetWord(question) || 'cloud';
+        const progress = Math.max(8, Math.round(((this.currentIndex + 1) / Math.max(1, this.questions.length)) * 100));
+        return `
+            <div class="vocab-scene-box vocab-scene-flight">
+                <div class="vocab-scene-hud">
+                    <span>🗡️ 剑势 ${qi}/100</span>
+                    <span>⏸</span>
+                </div>
+                <div class="vocab-scene-prompt">${this.game.ui.escapeHtml(targetWord)} 的中文意思是？</div>
+                <div class="vocab-flight-grid options-container" id="options-container">
+                    ${lanes.map((item) => `
+                        <div class="option-btn vocab-flight-lane" data-value="${this.game.ui.escapeHtml(item.key)}">
+                            <span class="flight-lane-tag">${this.game.ui.escapeHtml(item.lane)}</span>
+                            <span class="flight-lane-banner">${this.game.ui.escapeHtml(item.text)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="vocab-flight-footer">
+                    <span>飞行进度</span>
+                    <div class="vocab-flight-track"><i style="width:${progress}%"></i></div>
+                </div>
+            </div>
+        `;
+    }
+
+    getOrInitAlchemyState(question, targetWord) {
+        const key = this.getQuestionKey(question);
+        if (this.vocabAlchemyStates[key]) return this.vocabAlchemyStates[key];
+
+        const letters = this.shuffleArray(targetWord.split('')).map((char, idx) => ({
+            id: `${idx}-${char}`,
+            char,
+        }));
+        const state = {
+            target: targetWord,
+            letters,
+            selected: [],
+        };
+        this.vocabAlchemyStates[key] = state;
+        return state;
+    }
+
+    getAlchemyWordFromState(state) {
+        const map = new Map((state?.letters || []).map((item) => [item.id, item.char]));
+        return (state?.selected || []).map((id) => map.get(id) || '').join('');
+    }
+
+    renderVocabAlchemy(question, hasFeedback) {
+        const targetWord = this.getVocabTargetWord(question);
+        if (!targetWord) {
+            return this.renderVocabHerbOptions(question);
+        }
+        this.getOrInitAlchemyState(question, targetWord);
+        return `
+            <div class="vocab-scene-box vocab-scene-alchemy" id="vocab-alchemy-box">
+                <div class="vocab-scene-hud">
+                    <span>⚗️ 丹炉已启</span>
+                    <span>第 ${this.currentIndex + 1}/${this.questions.length} 炉</span>
+                </div>
+                <div class="vocab-alchemy-box">
+                    <div class="vocab-scene-prompt">丹方缺失，请补全灵草名</div>
+                    <div class="vocab-alchemy-word">${'□ '.repeat(targetWord.length).trim()}</div>
+                    <div class="vocab-alchemy-pool" id="alchemy-pool"></div>
+                    <div class="vocab-alchemy-slots" id="alchemy-slots"></div>
+                    <div class="vocab-alchemy-cauldron">丹炉</div>
+                    <div class="vocab-alchemy-actions">
+                        <button class="btn btn-secondary btn-sm" id="alchemy-clear-btn">清空丹炉</button>
+                        <button class="btn btn-primary btn-sm" id="alchemy-submit-btn">${hasFeedback ? '炼丹完成' : '开炉炼丹'}</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    updateAlchemyUi(panel, question, hasFeedback) {
+        const targetWord = this.getVocabTargetWord(question);
+        const state = this.getOrInitAlchemyState(question, targetWord);
+        const slotsEl = panel.querySelector('#alchemy-slots');
+        const poolEl = panel.querySelector('#alchemy-pool');
+        const clearBtn = panel.querySelector('#alchemy-clear-btn');
+        const submitBtn = panel.querySelector('#alchemy-submit-btn');
+        if (!slotsEl || !poolEl || !clearBtn || !submitBtn) return;
+
+        const letterMap = new Map(state.letters.map((item) => [item.id, item.char]));
+        const currentLetters = hasFeedback
+            ? targetWord.split('')
+            : state.selected.map((id) => letterMap.get(id) || '');
+
+        slotsEl.innerHTML = targetWord.split('').map((_, idx) => {
+            const char = currentLetters[idx] || '';
+            return `<button class="alchemy-slot ${char ? 'filled' : ''}" data-slot-index="${idx}" ${hasFeedback || !char ? 'disabled' : ''}>${this.game.ui.escapeHtml(char || '·')}</button>`;
+        }).join('');
+
+        const used = new Set(state.selected);
+        const remain = state.letters.filter((item) => !used.has(item.id));
+        poolEl.innerHTML = hasFeedback
+            ? '<div class="vocab-alchemy-result">丹药已成，灵气回旋。</div>'
+            : remain.map((item) => `<button class="alchemy-letter" data-letter-id="${this.game.ui.escapeHtml(item.id)}">${this.game.ui.escapeHtml(item.char)}</button>`).join('');
+
+        clearBtn.disabled = hasFeedback || state.selected.length === 0;
+        submitBtn.disabled = hasFeedback || state.selected.length !== targetWord.length;
+    }
+
+    bindVocabAlchemy(panel, question, hasFeedback) {
+        const targetWord = this.getVocabTargetWord(question);
+        if (!targetWord) return;
+
+        const state = this.getOrInitAlchemyState(question, targetWord);
+        const explainBox = panel.querySelector('#answer-explain-box');
+        const nextBtn = panel.querySelector('#practice-next-btn');
+        this.updateAlchemyUi(panel, question, hasFeedback);
+
+        if (hasFeedback) {
+            if (nextBtn) nextBtn.disabled = false;
+            return;
+        }
+
+        panel.querySelector('#alchemy-pool')?.addEventListener('click', (event) => {
+            const btn = event.target.closest('[data-letter-id]');
+            if (!btn || this._feedbackShown) return;
+            const id = btn.dataset.letterId;
+            if (!id || state.selected.includes(id)) return;
+            if (state.selected.length >= targetWord.length) return;
+            state.selected.push(id);
+            this.updateAlchemyUi(panel, question, false);
+        });
+
+        panel.querySelector('#alchemy-slots')?.addEventListener('click', (event) => {
+            const slot = event.target.closest('[data-slot-index]');
+            if (!slot || this._feedbackShown) return;
+            const idx = Number(slot.dataset.slotIndex);
+            if (!Number.isInteger(idx) || idx < 0 || idx >= state.selected.length) return;
+            state.selected.splice(idx, 1);
+            this.updateAlchemyUi(panel, question, false);
+        });
+
+        panel.querySelector('#alchemy-clear-btn')?.addEventListener('click', () => {
+            if (this._feedbackShown) return;
+            state.selected = [];
+            this.updateAlchemyUi(panel, question, false);
+        });
+
+        panel.querySelector('#alchemy-submit-btn')?.addEventListener('click', () => {
+            if (this._feedbackShown) return;
+            const word = this.getAlchemyWordFromState(state);
+            if (word.length !== targetWord.length) return;
+
+            if (word === targetWord) {
+                this.answers[question.question_id] = question.correct_answer;
+                this.game.store.answerQuestion(question.question_id, question.correct_answer);
+                this.playAnswerFeedbackTone(true, this.combo + 1);
+                this.combo++;
+                if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+                if (this.combo >= 3) this.showComboFx(this.combo);
+
+                this._feedbackShown = true;
+                if (nextBtn) nextBtn.disabled = false;
+                if (explainBox) {
+                    explainBox.style.display = 'block';
+                    explainBox.innerHTML = `<div style="color:#9ee8bf;">⚗️ 炼丹成功：${this.game.ui.escapeHtml(targetWord)}，获得一枚回灵丹。</div>`;
+                }
+                this.updateAlchemyUi(panel, question, true);
+                this.persistSession();
+                return;
+            }
+
+            this.playAnswerFeedbackTone(false, 0);
+            this.combo = 0;
+            if (explainBox) {
+                explainBox.style.display = 'block';
+                explainBox.innerHTML = `<div style="color:#ffb3b3;">丹炉震颤，丹方未成：${this.game.ui.escapeHtml(word.toUpperCase())}</div>
+                    <div style="margin-top:4px;">💡 请重新排序字母再试一次。</div>`;
+            }
+        });
+    }
+
     renderOptions(options, savedAnswer) {
         if (!options) return '';
         return Object.entries(options).map(([key, text]) => {
@@ -683,6 +1048,57 @@ export class PracticePanel {
         el.textContent = `🔥 ${count}连击！`;
         document.body.appendChild(el);
         setTimeout(() => { if (el.parentNode) el.remove(); }, 1200);
+    }
+
+    buildAnswerExplainHtml(question, selected) {
+        const options = question?.options || {};
+        const selectedText = options[selected] || '';
+        const correctKey = question?.correct_answer || '';
+        const correctText = options[correctKey] || '';
+        const explanation = String(question?.explanation || '').trim();
+        const explainText = explanation || '这个选项在当前语境中不成立，建议对比正确答案的核心词义。';
+        return `
+            <div style="color:#ffb3b3;">✗ 你选择了 ${this.game.ui.escapeHtml(selected || '')}. ${this.game.ui.escapeHtml(selectedText)}</div>
+            <div style="color:#9ee8bf;">✓ 正确答案：${this.game.ui.escapeHtml(correctKey)}. ${this.game.ui.escapeHtml(correctText)}</div>
+            <div style="margin-top:4px;">💡 解析：${this.game.ui.escapeHtml(explainText)}</div>
+        `;
+    }
+
+    playAnswerFeedbackTone(isCorrect, combo = 0) {
+        try {
+            if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                navigator.vibrate(isCorrect ? 40 : 80);
+            }
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            const ctx = new AudioCtx();
+            const now = ctx.currentTime;
+
+            const play = (freq, start, duration, gain = 0.02) => {
+                const osc = ctx.createOscillator();
+                const g = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, start);
+                g.gain.setValueAtTime(gain, start);
+                g.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+                osc.connect(g);
+                g.connect(ctx.destination);
+                osc.start(start);
+                osc.stop(start + duration);
+            };
+
+            if (isCorrect) {
+                play(880, now, 0.12, 0.03);
+                if (combo >= 3) {
+                    play(1100, now + 0.06, 0.12, 0.02);
+                }
+            } else {
+                play(220, now, 0.28, 0.028);
+            }
+            setTimeout(() => ctx.close?.(), 450);
+        } catch {
+            // ignore audio failures
+        }
     }
 
     /** 批量提交 */
@@ -1105,6 +1521,7 @@ export class PracticePanel {
             combo: this.combo,
             maxCombo: this.maxCombo,
             feedbackShown: !!this._feedbackShown,
+            vocabFlightRoutes: this.currentType === 'vocab' ? this.vocabFlightRoutes : {},
             ts: Date.now(),
         };
         localStorage.setItem(this.getSessionKey(this.currentType), JSON.stringify(payload));
@@ -1136,6 +1553,8 @@ export class PracticePanel {
         this.combo = data.combo || 0;
         this.maxCombo = data.maxCombo || 0;
         this._feedbackShown = !!data.feedbackShown;
+        this.vocabAlchemyStates = {};
+        this.vocabFlightRoutes = data.vocabFlightRoutes || {};
         const currentQuestion = this.questions[this.currentIndex];
         if (!currentQuestion?.question_id || !this.answers[currentQuestion.question_id]) {
             this._feedbackShown = false;
@@ -1150,4 +1569,3 @@ export class PracticePanel {
         localStorage.removeItem(this.getSessionKey(type));
     }
 }
-

@@ -7,3 +7,25 @@ import '../css/mobile.css';
 
 const game = new Game();
 game.init();
+
+if ('serviceWorker' in navigator) {
+    const host = window.location.hostname;
+    const isLocalHost = host === '127.0.0.1' || host === 'localhost' || host === '::1';
+
+    window.addEventListener('load', async () => {
+        if (isLocalHost) {
+            // Avoid stale cache during local debugging, which may cause blank pages.
+            try {
+                const regs = await navigator.serviceWorker.getRegistrations();
+                await Promise.all(regs.map((reg) => reg.unregister()));
+            } catch {
+                // ignore
+            }
+            return;
+        }
+
+        navigator.serviceWorker.register('/sw.js').catch(() => {
+            // ignore service worker registration failure
+        });
+    });
+}

@@ -90,6 +90,7 @@ class AuthController extends Controller
             'daily_minutes' => 0,
             'daily_minutes_date' => $today,
             'last_login_at' => now(),
+            'tutorial_step' => 0,
         ]);
 
         if ($request->filled('invite_code')) {

@@ -1,0 +1,19 @@
+{
+  "name": "LevelUp 英语学习",
+  "short_name": "LevelUp",
+  "description": "游戏化英语学习平台，支持离线缓存核心资源。",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0f1f",
+  "theme_color": "#d4a843",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}
+

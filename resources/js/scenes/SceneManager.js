@@ -77,17 +77,32 @@ export class SceneManager {
 
     clearScene() {
         if (!this.scene) return;
+        const disposeMaterial = (material) => {
+            if (!material) return;
+            if (material.map) material.map.dispose();
+            if (material.alphaMap) material.alphaMap.dispose();
+            if (material.normalMap) material.normalMap.dispose();
+            if (material.roughnessMap) material.roughnessMap.dispose();
+            if (material.metalnessMap) material.metalnessMap.dispose();
+            if (material.emissiveMap) material.emissiveMap.dispose();
+            material.dispose?.();
+        };
+        const disposeObject = (obj) => {
+            if (!obj) return;
+            if (obj.geometry) obj.geometry.dispose();
+            if (Array.isArray(obj.material)) obj.material.forEach((m) => disposeMaterial(m));
+            else disposeMaterial(obj.material);
+        };
 
-        while (this.scene.children.length > 0) {
-            const child = this.scene.children[0];
-            if (child.geometry) child.geometry.dispose();
-            if (child.material) {
-                if (Array.isArray(child.material)) child.material.forEach((m) => m.dispose());
-                else child.material.dispose();
-            }
+        for (let i = this.scene.children.length - 1; i >= 0; i--) {
+            const child = this.scene.children[i];
+            child.traverse((node) => disposeObject(node));
             this.scene.remove(child);
         }
 
+        if (this.scene.background?.isTexture) {
+            this.scene.background.dispose();
+        }
         this.scene.background = null;
         this.currentSceneObj = null;
     }

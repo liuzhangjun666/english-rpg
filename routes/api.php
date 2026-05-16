@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\HeartDemonController;
 use App\Http\Controllers\Api\LeaderboardController;
 use App\Http\Controllers\Api\MallController;
 use App\Http\Controllers\Api\ParentController;
+use App\Http\Controllers\Api\MijingChallengeController;
 use App\Http\Controllers\Api\ReadingAdventureController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\ShareController;
@@ -34,7 +35,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('user')->group(function () {
         Route::get('/profile', [UserController::class, 'profile']);
         Route::put('/profile', [UserController::class, 'updateProfile']);
+        Route::patch('/tutorial-step', [UserController::class, 'updateTutorialStep']);
         Route::get('/stats', [UserController::class, 'stats']);
+        Route::get('/learning-progress', [UserController::class, 'learningProgress']);
+        Route::get('/analytics', [UserController::class, 'analytics']);
     });
 
     Route::prefix('currency')->group(function () {
@@ -113,5 +117,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('mall')->group(function () {
         Route::get('/items', [MallController::class, 'items']);
         Route::post('/buy', [MallController::class, 'buy']);
+    });
+
+    Route::prefix('mijing/timed-challenge')->group(function () {
+        Route::post('/start', [MijingChallengeController::class, 'start']);
+        Route::post('/next-question', [MijingChallengeController::class, 'nextQuestion']);
+        Route::post('/submit-answer', [MijingChallengeController::class, 'submitAnswer']);
+        Route::post('/finish', [MijingChallengeController::class, 'finish']);
     });
 });

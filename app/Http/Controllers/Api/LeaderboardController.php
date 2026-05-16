@@ -3,67 +3,208 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\HeartDemon;
+use App\Models\LearningRecord;
 use App\Models\User;
+use App\Support\CultivationProfile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LeaderboardController extends Controller
 {
-    /** GET /api/leaderboard?type=realm|exp|streak */
+    /** GET /api/leaderboard?type=streak|volume|accuracy|demon_clear|realm */
     public function index(Request $request): JsonResponse
     {
-        $type = $request->query('type', 'realm');
-        $users = [];
+        $type = $request->query('type', 'streak');
+        $limit = max(10, min(100, (int) $request->query('limit', 50)));
+        $user = $request->user();
 
-        switch ($type) {
-            case 'realm':
-                // 境界榜：按境界等级+修为排序
-                $realmOrder = ['L1'=>1,'L2'=>2,'L3'=>3,'L4'=>4,'L5'=>5,'L6'=>6,'L7'=>7,'L8'=>8,'L9'=>9,'Z1'=>10,'Z2'=>11,'Z3'=>12,'J1'=>13,'J2'=>14,'J3'=>15,'Y1'=>16,'Y2'=>17,'Y3'=>18,'H1'=>19,'H2'=>20,'H3'=>21,'D1'=>22,'D2'=>23,'D3'=>24];
-                $users = User::orderByRaw("CASE realm ".collect($realmOrder)->map(fn($v,$k)=>"WHEN '$k' THEN $v")->implode(' ')." ELSE 99 END")
-                    ->orderByDesc('exp')->limit(50)->get(['id','nickname','realm','realm_stage','exp']);
-                break;
-            case 'exp':
-                $users = User::orderByDesc('exp')->limit(50)->get(['id','nickname','realm','realm_stage','exp']);
-                break;
-            case 'streak':
-                // 连续修炼榜（从学习记录中聚合）
-                $users = User::orderByDesc('daily_minutes')->limit(50)->get(['id','nickname','realm','realm_stage','exp','daily_minutes']);
-                break;
-            default:
-                $users = User::orderByDesc('exp')->limit(50)->get(['id','nickname','realm','realm_stage','exp']);
-        }
+        $rows = match ($type) {
+            'volume' => $this->weeklyVolume($limit),
+            'accuracy' => $this->weeklyAccuracy($limit),
+            'demon_clear' => $this->demonClear($limit),
+            'realm' => $this->realmProgress($limit),
+            default => $this->streakBoard($limit),
+        };
 
-        // 取当前用户排名
-        $ranked = [];
-        $rankMap = [];
-        foreach ($users as $i => $u) {
-            $rank = $i + 1;
-            $rankMap[$u->id] = $rank;
-            $ranked[] = [
+        $leaderboard = [];
+        $myRank = null;
+        $totalUsers = max(1, (int) User::count());
+        foreach ($rows as $idx => $row) {
+            $rank = $idx + 1;
+            $leaderboard[] = [
                 'rank' => $rank,
-                'nickname' => $u->nickname,
-                'realm' => $u->realm,
-                'realm_name' => $this->getRealmName($u->realm),
-                'stage' => $u->realm_stage,
-                'exp' => $u->exp,
+                'user_id' => (int) $row['user_id'],
+                'nickname' => (string) $row['nickname'],
+                'realm' => (string) ($row['realm'] ?? ''),
+                'realm_name' => $this->getRealmName((string) ($row['realm'] ?? '')),
+                'realm_stage' => (int) ($row['realm_stage'] ?? 1),
+                'metric' => (float) ($row['metric'] ?? 0),
+                'metric_text' => (string) ($row['metric_text'] ?? ''),
             ];
+            if ((int) $row['user_id'] === (int) $user->id) {
+                $myRank = $rank;
+            }
         }
-
-        $myRank = $rankMap[$request->user()->id] ?? null;
 
         return response()->json([
             'success' => true,
             'data' => [
                 'type' => $type,
-                'leaderboard' => $ranked,
+                'leaderboard' => $leaderboard,
                 'my_rank' => $myRank,
+                'my_percentile' => $myRank ? max(1, (int) round((1 - (($myRank - 1) / $totalUsers)) * 100)) : null,
             ],
         ]);
     }
 
+    private function weeklyVolume(int $limit): array
+    {
+        $from = now()->subDays(6)->startOfDay();
+        $rows = LearningRecord::where('created_at', '>=', $from)
+            ->selectRaw('user_id, COUNT(*) as metric')
+            ->groupBy('user_id')
+            ->orderByDesc('metric')
+            ->limit($limit)
+            ->get();
+
+        return $this->withUserMeta($rows->map(fn ($r) => [
+            'user_id' => (int) $r->user_id,
+            'metric' => (int) $r->metric,
+            'metric_text' => (int) $r->metric . ' 题',
+        ])->toArray());
+    }
+
+    private function weeklyAccuracy(int $limit): array
+    {
+        $from = now()->subDays(6)->startOfDay();
+        $rows = LearningRecord::where('created_at', '>=', $from)
+            ->selectRaw('user_id, COUNT(*) as total, SUM(CASE WHEN is_correct=1 THEN 1 ELSE 0 END) as correct')
+            ->groupBy('user_id')
+            ->havingRaw('COUNT(*) >= 20')
+            ->get()
+            ->map(function ($r) {
+                $total = max(1, (int) $r->total);
+                $acc = (int) round(((int) $r->correct / $total) * 100);
+                return [
+                    'user_id' => (int) $r->user_id,
+                    'metric' => $acc,
+                    'metric_text' => $acc . '%',
+                ];
+            })
+            ->sortByDesc('metric')
+            ->take($limit)
+            ->values()
+            ->toArray();
+
+        return $this->withUserMeta($rows);
+    }
+
+    private function demonClear(int $limit): array
+    {
+        $rows = HeartDemon::where('is_mastered', true)
+            ->selectRaw('user_id, COUNT(*) as metric')
+            ->groupBy('user_id')
+            ->orderByDesc('metric')
+            ->limit($limit)
+            ->get();
+
+        return $this->withUserMeta($rows->map(fn ($r) => [
+            'user_id' => (int) $r->user_id,
+            'metric' => (int) $r->metric,
+            'metric_text' => (int) $r->metric . ' 题',
+        ])->toArray());
+    }
+
+    private function streakBoard(int $limit): array
+    {
+        $from = now()->subDays(90)->startOfDay();
+        $rows = LearningRecord::where('created_at', '>=', $from)
+            ->selectRaw('user_id, DATE(created_at) as d')
+            ->groupBy('user_id', DB::raw('DATE(created_at)'))
+            ->orderByDesc('d')
+            ->get()
+            ->groupBy('user_id');
+
+        $items = [];
+        foreach ($rows as $userId => $dates) {
+            $dateList = $dates->pluck('d')->values()->all();
+            $streak = $this->calcStreak($dateList);
+            if ($streak <= 0) continue;
+            $items[] = [
+                'user_id' => (int) $userId,
+                'metric' => $streak,
+                'metric_text' => $streak . ' 天',
+            ];
+        }
+
+        usort($items, fn ($a, $b) => ((int) $b['metric']) <=> ((int) $a['metric']));
+        return $this->withUserMeta(array_slice($items, 0, $limit));
+    }
+
+    private function realmProgress(int $limit): array
+    {
+        $realmOrder = [];
+        $idx = 1;
+        foreach (['L', 'Z', 'J', 'Y', 'H', 'X', 'T', 'D', 'U'] as $prefix) {
+            for ($layer = 1; $layer <= 9; $layer++) {
+                $realmOrder[$prefix . $layer] = $idx++;
+            }
+        }
+        $orderSql = collect($realmOrder)->map(fn ($v, $k) => "WHEN '$k' THEN $v")->implode(' ');
+
+        return User::query()
+            ->orderByRaw("CASE realm {$orderSql} ELSE 99 END")
+            ->orderByDesc('realm_stage')
+            ->orderByDesc('exp')
+            ->limit($limit)
+            ->get(['id as user_id', 'nickname', 'realm', 'realm_stage', 'exp'])
+            ->map(fn ($u) => [
+                'user_id' => (int) $u->user_id,
+                'nickname' => $u->nickname,
+                'realm' => $u->realm,
+                'realm_stage' => (int) $u->realm_stage,
+                'metric' => (int) $u->exp,
+                'metric_text' => (int) $u->exp . ' 经验',
+            ])->toArray();
+    }
+
+    private function withUserMeta(array $items): array
+    {
+        if (!$items) return [];
+        $ids = array_values(array_unique(array_map(fn ($x) => (int) $x['user_id'], $items)));
+        $users = User::whereIn('id', $ids)->get(['id', 'nickname', 'realm', 'realm_stage'])->keyBy('id');
+
+        $merged = [];
+        foreach ($items as $item) {
+            $u = $users->get((int) $item['user_id']);
+            if (!$u) continue;
+            $merged[] = array_merge($item, [
+                'nickname' => (string) $u->nickname,
+                'realm' => (string) $u->realm,
+                'realm_stage' => (int) $u->realm_stage,
+            ]);
+        }
+        return $merged;
+    }
+
+    private function calcStreak(array $dates): int
+    {
+        if (empty($dates)) return 0;
+        $set = array_flip($dates);
+        $today = now()->format('Y-m-d');
+        $check = isset($set[$today]) ? $today : now()->subDay()->format('Y-m-d');
+        $streak = 0;
+        while (isset($set[$check])) {
+            $streak++;
+            $check = date('Y-m-d', strtotime($check . ' -1 day'));
+        }
+        return $streak;
+    }
+
     private function getRealmName(string $realm): string
     {
-        $map = ['L1'=>'练气初','L2'=>'练气中','L3'=>'练气后','L4'=>'筑基','L5'=>'筑基中','L6'=>'筑基后','J1'=>'金丹','Y1'=>'元婴','H1'=>'化神','D1'=>'大乘'];
-        return $map[$realm] ?? $realm;
+        return CultivationProfile::realmName($realm);
     }
 }

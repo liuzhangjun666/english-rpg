@@ -9,6 +9,7 @@ use App\Services\CurrencyService;
 use App\Services\ExamService;
 use App\Services\HeartDemonService;
 use App\Services\RealmService;
+use App\Support\CultivationProfile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -41,7 +42,7 @@ class ExamController extends Controller
             'success' => true,
             'data' => [
                 'realm' => $user->realm,
-                'realm_name' => RealmService::REALM_NAMES[$user->realm] ?? $user->realm,
+                'realm_name' => CultivationProfile::realmName((string) $user->realm),
                 'stage' => $user->realm_stage,
                 'spirit_power' => $user->spirit_power,
                 'spirit_cost' => ExamService::SPIRIT_COST,

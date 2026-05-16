@@ -12,6 +12,7 @@ import { ParentPanel } from '../ui/ParentPanel.js';
 import { AchievementPanel } from '../ui/AchievementPanel.js';
 import { LeaderboardPanel } from '../ui/LeaderboardPanel.js';
 import { MallPanel } from '../ui/MallPanel.js';
+import { MijingPanel } from '../ui/MijingPanel.js';
 import { ShareCard } from '../ui/ShareCard.js';
 import { ReadingPanel } from '../ui/ReadingPanel.js';
 import { HermesClient } from '../hermes/HermesClient.js';
@@ -32,6 +33,7 @@ export class Game {
         this.achievements = new AchievementPanel(this);
         this.leaderboard = new LeaderboardPanel(this);
         this.mall = new MallPanel(this);
+        this.mijing = new MijingPanel(this);
         this.reading = new ReadingPanel(this);
         this.shareCard = new ShareCard(this);
         this.hermes = new HermesClient(this);
@@ -96,13 +98,29 @@ export class Game {
         this.initiation.start();
     }
 
-    enterHall() {
+    async enterHall() {
         this.ensureSceneInitialized();
+        await this.syncDailyStatus();
         this.scene.switchTo('hall');
         this.ui.hideAllPanels();
         this.ui.showCharacterBar();
         this.ui.showHallScene();
         this.router.navigate('hall');
+    }
+
+    async syncDailyStatus() {
+        if (!this.isLoggedIn) return;
+        const res = await this.api.post('/currency/daily-check');
+        if (!res?.success || !res?.data) return;
+
+        const user = this.store.getState().user;
+        if (!user) return;
+
+        this.store.updateUser({
+            spirit_power: res.data.spirit_power ?? user.spirit_power,
+            spirit_power_max: res.data.spirit_power_max ?? user.spirit_power_max,
+            spirit_power_date: new Date().toISOString().slice(0, 10),
+        });
     }
 
     goToScene(sceneName) {
@@ -124,7 +142,7 @@ export class Game {
                 this.scene.switchTo('mijing');
                 this.ui.hideAllPanels();
                 this.ui.showCharacterBar();
-                this.ui.showHallScene();
+                this.mijing.showEntry();
                 break;
             default:
                 this.enterHall();

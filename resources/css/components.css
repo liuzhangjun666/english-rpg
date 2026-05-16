@@ -89,6 +89,20 @@
     box-shadow: 0 4px 12px rgba(212,168,67,0.2);
 }
 
+.hall-entry .entry-btn.tutorial-focus {
+    border-color: #f0d68a;
+    box-shadow: 0 0 0 2px rgba(240,214,138,0.35), 0 0 18px rgba(240,214,138,0.35);
+}
+
+.hall-entry .entry-btn.tutorial-pulse {
+    animation: tutorialPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes tutorialPulse {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
 /* ===== 答题面板 ===== */
 .practice-header {
     display: flex;
@@ -233,6 +247,7 @@
     align-items: center;
     gap: 12px;
     padding: 12px 16px;
+    min-height: 48px;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 10px;
@@ -249,6 +264,43 @@
     background: rgba(212,168,67,0.15);
     border-color: var(--gold);
     box-shadow: 0 0 12px rgba(212,168,67,0.2);
+}
+
+.practice-feedback-box {
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.practice-feedback-correct {
+    border: 1px solid rgba(78, 192, 122, 0.45);
+    background: rgba(78, 192, 122, 0.12);
+    color: #b6f2cd;
+}
+
+.practice-feedback-wrong {
+    border: 1px solid rgba(231, 76, 60, 0.45);
+    background: rgba(231, 76, 60, 0.12);
+    color: #ffd6d2;
+}
+
+.answer-exp-tip {
+    position: absolute;
+    right: 16px;
+    top: 10px;
+    color: #f0d68a;
+    font-size: 13px;
+    font-weight: 700;
+    animation: expPop 0.7s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes expPop {
+    0% { opacity: 0; transform: translateY(8px); }
+    25% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-16px); }
 }
 
 .option-label {
@@ -497,6 +549,282 @@
     z-index: 300;
     pointer-events: none;
     animation: comboFloat 1.2s ease-out forwards;
+}
+
+.vocab-mode-badge {
+    margin: 0 0 10px;
+    padding: 7px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(212, 168, 67, 0.35);
+    background: rgba(212, 168, 67, 0.08);
+    font-size: 12px;
+    color: var(--gold-light);
+    text-align: center;
+}
+
+.vocab-scene-box {
+    margin-bottom: 16px;
+    padding: 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(212, 168, 67, 0.28);
+    background: rgba(8, 14, 28, 0.55);
+    box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.35);
+}
+
+.vocab-scene-herb {
+    background:
+        linear-gradient(180deg, rgba(85, 126, 169, 0.32), rgba(47, 68, 92, 0.52)),
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.22), transparent 60%);
+}
+
+.vocab-scene-flight {
+    background:
+        linear-gradient(180deg, rgba(95, 139, 201, 0.32), rgba(44, 65, 98, 0.58)),
+        radial-gradient(circle at 50% 0%, rgba(176, 219, 255, 0.24), transparent 62%);
+}
+
+.vocab-scene-alchemy {
+    background:
+        linear-gradient(180deg, rgba(31, 45, 68, 0.48), rgba(18, 27, 43, 0.72)),
+        radial-gradient(circle at 50% 0%, rgba(110, 190, 255, 0.2), transparent 64%);
+}
+
+.vocab-scene-hud {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+    color: var(--gold-light);
+    font-size: 12px;
+}
+
+.vocab-scene-hud > span {
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(212, 168, 67, 0.28);
+    background: rgba(10, 20, 35, 0.48);
+}
+
+.vocab-scene-prompt {
+    margin: 0 auto 10px;
+    width: fit-content;
+    max-width: 95%;
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: rgba(245, 240, 232, 0.86);
+    border: 1px solid rgba(173, 152, 111, 0.55);
+    color: #322819;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.vocab-herb-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 0;
+}
+
+.vocab-herb-card {
+    min-height: 132px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 8px;
+    background: rgba(245, 240, 232, 0.9);
+    border-color: rgba(158, 135, 92, 0.5);
+}
+
+.vocab-herb-card .option-text {
+    color: #47351d;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.vocab-card-tag {
+    align-self: center;
+}
+
+.vocab-herb-emoji {
+    width: 100%;
+    text-align: center;
+    font-size: 36px;
+    line-height: 1;
+}
+
+.vocab-flight-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 0;
+}
+
+.vocab-flight-lane {
+    min-height: 220px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    border-color: rgba(173, 219, 255, 0.4);
+    background: linear-gradient(180deg, rgba(234, 245, 255, 0.3), rgba(214, 232, 255, 0.16));
+    position: relative;
+}
+
+.flight-lane-tag {
+    min-width: 46px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: rgba(74, 144, 217, 0.18);
+    border: 1px solid rgba(74, 144, 217, 0.45);
+    color: #9cc8ff;
+    font-size: 12px;
+    text-align: center;
+}
+
+.flight-lane-banner {
+    margin-top: 8px;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    letter-spacing: 2px;
+    font-size: 34px;
+    line-height: 1;
+    color: #22354e;
+    font-weight: 700;
+}
+
+.vocab-flight-footer {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--parchment-dark);
+    font-size: 12px;
+}
+
+.vocab-flight-track {
+    flex: 1;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(16, 30, 46, 0.45);
+    border: 1px solid rgba(115, 175, 231, 0.42);
+    overflow: hidden;
+}
+
+.vocab-flight-track i {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #72b8f6, #b1e5ff);
+}
+
+.vocab-alchemy-box {
+    margin-bottom: 0;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(212, 168, 67, 0.3);
+    background: rgba(16, 24, 38, 0.55);
+}
+
+.vocab-alchemy-tip {
+    margin-bottom: 8px;
+    color: var(--parchment-dark);
+    font-size: 12px;
+}
+
+.vocab-alchemy-word {
+    margin: 0 0 10px;
+    text-align: center;
+    color: var(--gold-light);
+    letter-spacing: 4px;
+    font-weight: 700;
+}
+
+.vocab-alchemy-slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(38px, 1fr));
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.alchemy-slot {
+    height: 42px;
+    border: 1px dashed rgba(212, 168, 67, 0.45);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--gold-light);
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: inset 0 -4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.alchemy-slot.filled {
+    border-style: solid;
+    background: rgba(212, 168, 67, 0.14);
+}
+
+.alchemy-slot:disabled {
+    cursor: default;
+    opacity: 0.8;
+}
+
+.vocab-alchemy-pool {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(38px, 1fr));
+    gap: 8px;
+    min-height: 40px;
+    margin-bottom: 10px;
+}
+
+.alchemy-letter {
+    min-width: 38px;
+    height: 38px;
+    border: 1px solid rgba(212, 168, 67, 0.38);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--parchment);
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: inset 0 -4px 8px rgba(0, 0, 0, 0.22);
+}
+
+.alchemy-letter:hover {
+    background: rgba(212, 168, 67, 0.18);
+}
+
+.vocab-alchemy-cauldron {
+    margin: 8px auto 12px;
+    width: 160px;
+    height: 58px;
+    border-radius: 999px;
+    border: 1px solid rgba(118, 222, 164, 0.5);
+    background: radial-gradient(circle at 50% 20%, rgba(88, 210, 142, 0.45), rgba(25, 47, 41, 0.8) 70%);
+    text-align: center;
+    color: #9ee8bf;
+    font-size: 14px;
+    line-height: 58px;
+    box-shadow: 0 0 18px rgba(88, 210, 142, 0.25);
+}
+
+.vocab-alchemy-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.vocab-alchemy-actions .btn {
+    flex: 1;
+}
+
+.vocab-alchemy-result {
+    font-size: 13px;
+    color: #9ee8bf;
+    padding: 10px;
+    border: 1px dashed rgba(78, 192, 122, 0.45);
+    border-radius: 10px;
+    background: rgba(78, 192, 122, 0.1);
+    width: 100%;
+    text-align: center;
 }
 
 /* ===== 登录面板 ===== */

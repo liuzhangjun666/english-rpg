@@ -35,6 +35,7 @@ class User extends Authenticatable
         'daily_minutes_date',
         'password',
         'last_login_at',
+        'tutorial_step',
     ];
 
     protected $hidden = [

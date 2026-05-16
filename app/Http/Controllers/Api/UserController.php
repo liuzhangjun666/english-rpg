@@ -3,12 +3,21 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\LearningRecord;
+use App\Models\Question;
+use App\Support\CultivationProfile;
+use App\Services\CurrencyService;
+use App\Services\ReportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    public function __construct(
+        private readonly ReportService $reportService,
+    ) {
+    }
     /**
      * 获取用户信息
      * GET /api/user/profile
@@ -31,7 +40,7 @@ class UserController extends Controller
             'nickname'    => 'nullable|string|max:50',
             'avatar_url'  => 'nullable|string|max:255',
             'realm'       => 'nullable|string|max:10',
-            'realm_stage' => 'nullable|integer|min:1|max:3',
+            'realm_stage' => 'nullable|integer|min:1|max:9',
         ], [
             'nickname.max' => '道号最长50个字符',
             'avatar_url.max' => '头像地址过长',
@@ -80,6 +89,29 @@ class UserController extends Controller
     public function stats(Request $request): JsonResponse
     {
         $user = $request->user();
+        $today = now()->format('Y-m-d');
+        $todayRecords = LearningRecord::where('user_id', $user->id)
+            ->whereDate('created_at', $today)
+            ->get();
+
+        $questionsDone = $todayRecords->count();
+        $correctCount = $todayRecords->where('is_correct', true)->count();
+        $accuracy = $questionsDone > 0 ? (int) round(($correctCount / $questionsDone) * 100) : 0;
+
+        $newWordCount = 0;
+        $correctQids = $todayRecords
+            ->where('is_correct', true)
+            ->pluck('question_id')
+            ->filter()
+            ->unique()
+            ->values();
+        if ($correctQids->isNotEmpty()) {
+            $newWordCount = Question::whereIn('question_id', $correctQids)
+                ->where('type', 'vocab')
+                ->whereNotNull('word')
+                ->distinct()
+                ->count('word');
+        }
 
         return response()->json([
             'success' => true,
@@ -88,7 +120,86 @@ class UserController extends Controller
                 'daily_minutes_date' => $user->daily_minutes_date,
                 'realm' => $user->realm,
                 'exp' => $user->exp,
+                'questions_done' => $questionsDone,
+                'correct_count' => $correctCount,
+                'accuracy' => $accuracy,
+                'new_word_count' => $newWordCount,
             ],
         ]);
     }
+
+    /**
+     * PATCH /api/user/tutorial-step
+     */
+    public function updateTutorialStep(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'tutorial_step' => 'required|integer|min:0|max:3',
+        ]);
+
+        $user = $request->user();
+        $nextStep = (int) $data['tutorial_step'];
+        if ($nextStep > (int) ($user->tutorial_step ?? 0)) {
+            $user->tutorial_step = $nextStep;
+            $user->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => ['tutorial_step' => (int) $user->tutorial_step],
+        ]);
+    }
+
+    /**
+     * GET /api/user/learning-progress
+     */
+    public function learningProgress(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $realm = (string) $user->realm;
+        $stage = max(1, (int) $user->realm_stage);
+        $exp = (int) $user->exp;
+
+        $currentThreshold = CurrencyService::getStageExpThreshold($realm, $stage);
+        $nextThreshold = CurrencyService::getStageExpThreshold($realm, $stage + 1);
+        if ($nextThreshold <= $currentThreshold) {
+            $nextThreshold = $currentThreshold + 1;
+        }
+
+        $progressRange = max(1, $nextThreshold - $currentThreshold);
+        $progressValue = max(0, min($exp - $currentThreshold, $progressRange));
+        $progressPercent = (int) round(($progressValue / $progressRange) * 100);
+        $remainingExp = max(0, $nextThreshold - $exp);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'realm' => $realm,
+                'stage' => $stage,
+                'exp' => $exp,
+                'current_threshold' => $currentThreshold,
+                'next_threshold' => $nextThreshold,
+                'progress_percent' => $progressPercent,
+                'remaining_exp' => $remainingExp,
+                'cefr_hint' => CultivationProfile::cefrHint($realm),
+                'realm_name' => CultivationProfile::realmName($realm),
+                'learning_stage' => CultivationProfile::learningStage($realm, $stage)['label'],
+                'ability_focus' => CultivationProfile::learningStage($realm, $stage)['focus'],
+            ],
+        ]);
+    }
+
+    /**
+     * GET /api/user/analytics?days=30
+     */
+    public function analytics(Request $request): JsonResponse
+    {
+        $days = (int) $request->query('days', 30);
+        $data = $this->reportService->learningAnalytics($request->user(), $days);
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ]);
+    }
+
 }

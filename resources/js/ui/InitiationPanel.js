@@ -213,6 +213,7 @@ export class InitiationPanel {
             panel.remove();
             const bubble = document.getElementById('hermes-bubble');
             if (bubble) bubble.remove();
+            this.progressTutorialStep(1);
             this.game.enterHall();
             setTimeout(() => {
                 const msgs = {
@@ -239,5 +240,19 @@ export class InitiationPanel {
         try {
             await this.game.api.put('/user/profile', { realm: level.realm, realm_stage: level.stage });
         } catch (e) { /* 静默 */ }
+    }
+
+    async progressTutorialStep(step) {
+        const user = this.game.store.getState().user;
+        if (!user) return;
+        const currentStep = Number(user.tutorial_step || 0);
+        if (step <= currentStep) return;
+
+        this.game.store.updateUser({ tutorial_step: step });
+        try {
+            await this.game.api.patch('/user/tutorial-step', { tutorial_step: step });
+        } catch {
+            // keep local state on patch failure
+        }
     }
 }
