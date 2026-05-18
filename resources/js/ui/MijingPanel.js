@@ -36,7 +36,7 @@ export class MijingPanel {
                 <select id="mijing-module-type">
                     <option value="vocab">采药识灵</option>
                     <option value="grammar">基础功法</option>
-                    <option value="listening">听力试炼</option>
+                    <option value="listening">听风谷</option>
                     <option value="reading">阅读副本</option>
                 </select>
             </div>

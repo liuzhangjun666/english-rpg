@@ -100,8 +100,96 @@
         padding: 7px 12px;
     }
 
+    .vocab-quest-panel {
+        padding: 8px;
+    }
+
+    .vocab-quest-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 4px 6px;
+        font-size: 11px;
+    }
+
+    .vocab-quest-row {
+        font-size: 11px;
+    }
+
+    .vocab-drop-chip {
+        font-size: 10px;
+        padding: 3px 7px;
+    }
+
+    .grammar-mode-badge,
+    .grammar-quest-row,
+    .grammar-order-tip,
+    .grammar-order-target {
+        font-size: 11px;
+    }
+
+    .grammar-pan {
+        padding: 8px;
+    }
+
+    .grammar-order-box {
+        padding: 8px;
+    }
+
+    .grammar-slot,
+    .grammar-word-chip {
+        font-size: 13px;
+        padding: 7px 9px;
+    }
+
+    .listening-mode-badge,
+    .listening-replay-count,
+    .listening-audio-hint {
+        font-size: 11px;
+    }
+
+    .listening-jade-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .listening-jade-btn {
+        width: 100%;
+        min-height: 46px;
+    }
+
     .vocab-herb-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .vocab-garden-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .vocab-farm-card {
+        min-height: 112px;
+        padding: 8px 6px;
+    }
+
+    .vocab-farm-card .option-text,
+    .vocab-farm-text {
+        font-size: 13px;
+    }
+
+    .vocab-farm-card .flight-lane-banner {
+        font-size: 14px;
+    }
+
+    .vocab-harvest-basket {
+        max-width: 120px;
+        gap: 2px;
+    }
+
+    .vocab-basket-item {
+        font-size: 11px;
+    }
+
+    .vocab-pet-avatar {
+        font-size: 22px;
     }
 
     .vocab-herb-card {
@@ -126,6 +214,19 @@
     }
 
     .btn { padding: 10px; font-size: 14px; }
+
+    .breakthrough-realm-flow {
+        font-size: 14px;
+    }
+
+    .breakthrough-condition {
+        font-size: 12px;
+        padding: 9px 10px;
+    }
+
+    .breakthrough-success-text {
+        font-size: 14px;
+    }
 
     .hermes-bubble {
         max-width: 280px;
@@ -194,6 +295,50 @@
 
     .reading-scene-hero-text-only {
         font-size: 15px;
+    }
+
+    .reading-chapter-subtitle {
+        font-size: 12px;
+        margin-bottom: 8px;
+    }
+
+    .reading-story-lines {
+        max-height: 32vh;
+    }
+
+    .reading-scroll-frame {
+        padding: 8px;
+    }
+
+    .reading-task-feedback-correct,
+    .reading-task-feedback-wrong {
+        font-size: 12px;
+        padding: 8px 10px;
+    }
+
+    .reading-task-question {
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .reading-option-choice {
+        min-height: 50px;
+        padding: 10px 10px;
+    }
+
+    .reading-option {
+        font-size: 13px;
+    }
+
+    .reading-choice-index {
+        width: 22px;
+        height: 22px;
+        font-size: 11px;
+    }
+
+    .reading-result-banner {
+        font-size: 12px;
+        padding: 7px 10px;
     }
 }
 

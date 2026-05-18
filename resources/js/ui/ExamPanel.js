@@ -11,22 +11,14 @@ export class ExamPanel {
         this.timeLeft = 600;
         this.examActive = false;
         this.timerTick = 0;
+        this.examInfoRequestId = 0;
+        this.examInfoBusy = false;
     }
 
     /** 渡劫前检查心魔，强制强化复习 */
     async checkPreExamReview() {
-        if (this.resumeSessionIfAvailable()) return;
-
-        this.game.ui.showLoading('探查心魔...');
-        const res = await this.game.api.get('/demons/pre-exam');
-        this.game.ui.hideLoading();
-
-        if (res.success && res.data.total > 0) {
-            this.preExamDemons = res.data.questions;
-            this.showDemonReview();
-        } else {
-            this.showExamInfo();
-        }
+        if (this.examInfoBusy) return;
+        await this.showExamInfo();
     }
 
     /** 心魔强化复习面板 */
@@ -102,35 +94,159 @@ export class ExamPanel {
     }
 
     /** 显示渡劫准备界面 */
-    showExamInfo() {
+    async showExamInfo() {
+        const requestId = ++this.examInfoRequestId;
+        this.examInfoBusy = true;
         this.game.ui.hideAllPanels();
         const existing = document.getElementById('exam-info-panel');
         if (existing) existing.remove();
 
         const user = this.game.store.getState().user;
-        if (!user) return;
+        if (!user) {
+            this.examInfoBusy = false;
+            return;
+        }
 
-        const canTake = user.spirit_power >= 30;
+        this.game.ui.showLoading('推演突破条件...');
+        const res = await this.game.api.get('/exam/current');
+        this.game.ui.hideLoading();
+        if (requestId !== this.examInfoRequestId) {
+            this.examInfoBusy = false;
+            return;
+        }
+        const status = res?.success ? (res.data?.breakthrough_status || {}) : {};
+        const currentRealm = status.current_realm || user.current_realm || this.getRealmName(user.realm);
+        const nextRealm = status.next_realm || '暂无';
+        const canBreakthrough = Boolean(status.can_breakthrough);
+        const isMaxRealm = Boolean(status.is_max_realm);
+        const missingText = this.renderMissingText(status);
         const panel = document.createElement('div');
         panel.className = 'panel';
         panel.id = 'exam-info-panel';
         panel.innerHTML = `
-            <div class="panel-title">⚡ ${this.getRealmName(user.realm)}渡劫</div>
-            <div style="text-align:center;padding:16px 0;color:var(--parchment-dark);font-size:14px;line-height:1.8;">
-                <p>修炼已到瓶颈，渡劫以突破境界。</p>
-                <p>🎯 30 道混合题（词汇+语法）</p>
-                <p>⏱ 限时 10 分钟</p>
-                <p>💧 消耗灵力 30</p>
-                <p style="margin-top:12px;">当前灵力：${user.spirit_power}/${user.spirit_power_max}</p>
-                ${canTake ? '' : '<p style="color:var(--cinnabar);margin-top:8px;">⚠ 灵力不足，请明日再来</p>'}
+            <div class="panel-title">突破台</div>
+            <div class="breakthrough-header">
+                <div class="breakthrough-realm-flow">${this.game.ui.escapeHtml(currentRealm)} → ${this.game.ui.escapeHtml(nextRealm)}</div>
+                <div class="breakthrough-hint">${this.game.ui.escapeHtml(status.message || '请达成六维与修为要求')}</div>
             </div>
-            <button class="btn btn-primary" id="exam-start-btn" ${canTake ? '' : 'disabled'}>开始渡劫</button>
+            ${this.renderBreakthroughRequirements(status)}
+            ${missingText ? `<div class="breakthrough-missing">${missingText}</div>` : ''}
+            ${isMaxRealm ? '<div class="breakthrough-max-tip">当前已达 MVP 最高境界</div>' : ''}
+            <button class="btn btn-primary" id="exam-start-btn" ${(canBreakthrough && !isMaxRealm) ? '' : 'disabled'}>开始突破</button>
             <button class="btn btn-secondary" id="exam-info-back-btn" style="margin-top:8px;">返回宗门</button>
         `;
         this.game.ui.overlay.appendChild(panel);
+        this.examInfoBusy = false;
 
-        document.getElementById('exam-start-btn').addEventListener('click', () => this.startExam());
+        document.getElementById('exam-start-btn').addEventListener('click', () => this.startBreakthrough());
         document.getElementById('exam-info-back-btn').addEventListener('click', () => {
+            this.examInfoRequestId++;
+            this.examInfoBusy = false;
+            panel.remove();
+            this.game.enterHall();
+        });
+    }
+
+    renderBreakthroughRequirements(status) {
+        const dimensions = status?.dimensions || {};
+        const keys = ['vocabulary', 'grammar', 'reading', 'listening', 'writing', 'speaking'];
+        const rows = keys.map((key) => {
+            const item = dimensions[key] || {};
+            const met = Boolean(item.met);
+            const label = item.label || key;
+            const current = Number(item.current || 0);
+            const required = Number(item.required || 0);
+            const gap = Number(item.gap || Math.max(0, required - current));
+            return `
+                <div class="breakthrough-condition ${met ? 'met' : 'unmet'}">
+                    <span>${this.game.ui.escapeHtml(label)} ${current}/${required}</span>
+                    <span>${met ? '✓' : `差 ${gap}`}</span>
+                </div>
+            `;
+        }).join('');
+
+        const energy = status?.cultivation_energy || {};
+        const energyMet = Boolean(energy.met);
+        const energyCurrent = Number(energy.current || 0);
+        const energyRequired = Number(energy.required || 0);
+        const energyGap = Number(energy.gap || Math.max(0, energyRequired - energyCurrent));
+        const energyRow = `
+            <div class="breakthrough-condition ${energyMet ? 'met' : 'unmet'}">
+                <span>修为 ${energyCurrent}/${energyRequired}</span>
+                <span>${energyMet ? '✓' : `差 ${energyGap}`}</span>
+            </div>
+        `;
+
+        return `
+            <div class="breakthrough-condition-list">
+                ${rows}
+                ${energyRow}
+            </div>
+        `;
+    }
+
+    renderMissingText(status) {
+        const missing = Array.isArray(status?.missing_requirements) ? status.missing_requirements : [];
+        if (!missing.length) return '';
+        return `未满足：${missing.map((item) => `${item.label} 差${item.gap}`).join('、')}`;
+    }
+
+    async startBreakthrough() {
+        this.examInfoRequestId++;
+        this.examInfoBusy = false;
+        this.game.ui.showLoading('引动灵气，冲击瓶颈...');
+        const res = await this.game.api.post('/exam/breakthrough');
+        this.game.ui.hideLoading();
+
+        if (!res?.success) {
+            this.game.ui.showHermesBubble(res?.message || '突破失败');
+            await this.showExamInfo();
+            return;
+        }
+
+        const user = this.game.store.getState().user;
+        const userData = res.data?.user || {};
+        if (user) {
+            this.game.store.updateUser({
+                realm: userData.realm ?? user.realm,
+                realm_stage: userData.realm_stage ?? user.realm_stage,
+                current_realm: userData.current_realm ?? user.current_realm,
+                cultivation_energy: Number(userData.cultivation_energy ?? user.cultivation_energy ?? 0),
+                vocabulary: Number(userData.vocabulary ?? user.vocabulary ?? 0),
+                grammar: Number(userData.grammar ?? user.grammar ?? 0),
+                reading: Number(userData.reading ?? user.reading ?? 0),
+                listening: Number(userData.listening ?? user.listening ?? 0),
+                writing: Number(userData.writing ?? user.writing ?? 0),
+                speaking: Number(userData.speaking ?? user.speaking ?? 0),
+            });
+        }
+
+        this.showBreakthroughResult(res.data);
+    }
+
+    showBreakthroughResult(data) {
+        const existing = document.getElementById('exam-result-panel');
+        if (existing) existing.remove();
+
+        const bt = data?.breakthrough || {};
+        const fromRealm = bt.from_current_realm || data?.status?.current_realm || '当前境界';
+        const toRealm = bt.to_current_realm || data?.user?.current_realm || '下一境界';
+
+        const panel = document.createElement('div');
+        panel.className = 'panel';
+        panel.id = 'exam-result-panel';
+        panel.innerHTML = `
+            <div class="panel-title">突破完成</div>
+            <div class="breakthrough-success">
+                <div class="breakthrough-success-icon">✨</div>
+                <div class="breakthrough-success-text">突破成功：${this.game.ui.escapeHtml(fromRealm)} → ${this.game.ui.escapeHtml(toRealm)}</div>
+            </div>
+            <button class="btn btn-primary" id="exam-done-btn">返回宗门</button>
+        `;
+        this.game.ui.overlay.appendChild(panel);
+        this.game.ui.showHermesBubble(`突破成功：${fromRealm} → ${toRealm}`, 3500);
+
+        document.getElementById('exam-done-btn').addEventListener('click', () => {
             panel.remove();
             this.game.enterHall();
         });

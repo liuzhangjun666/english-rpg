@@ -48,13 +48,15 @@ export class ReadingPanel {
         this.answers = {};
         this.currentTaskIndex = 0;
         this.taskOptionCache = {};
+        this.taskFeedback = {};
+        this.repairedTaskSet = new Set();
     }
 
     async showChapterList(level = 1, shouldResume = true) {
         this.currentLevel = level;
         this.game.ui.hideAllPanels();
         if (shouldResume && this.resumeSessionIfAvailable()) return;
-        this.game.ui.showLoading('加载阅读副本...');
+        this.game.ui.showLoading('加载藏经阁...');
 
         const res = await this.game.api.get(`/reading/chapters?level=${level}`);
         this.game.ui.hideLoading();
@@ -83,9 +85,9 @@ export class ReadingPanel {
         panel.style.maxWidth = '500px';
 
         panel.innerHTML = `
-            <div class="panel-title">📚 阅读副本</div>
+            <div class="panel-title">📖 藏经阁</div>
             <div class="reading-scene-row">
-                <span class="reading-scene-tag">单关推进</span>
+                <span class="reading-scene-tag">古籍试炼</span>
                 <span class="reading-scene-tag">当前：${this.escapeHtml(nextChapter.scene)}</span>
             </div>
             <div class="reading-list" id="reading-list">
@@ -120,7 +122,7 @@ export class ReadingPanel {
     }
 
     async startChapter(chapterId) {
-        this.game.ui.showLoading('进入阅读副本...');
+        this.game.ui.showLoading('进入藏经阁...');
         const res = await this.game.api.get(`/reading/chapters/${chapterId}`);
         this.game.ui.hideLoading();
 
@@ -133,6 +135,8 @@ export class ReadingPanel {
         this.answers = {};
         this.currentTaskIndex = 0;
         this.taskOptionCache = {};
+        this.taskFeedback = {};
+        this.repairedTaskSet = new Set();
         this.persistSession();
         this.renderChapter();
     }
@@ -157,23 +161,26 @@ export class ReadingPanel {
         });
 
         const activeTask = displayTasks[this.currentTaskIndex];
+        const activeFeedback = activeTask ? this.taskFeedback[activeTask.id] : null;
         panel.innerHTML = `
             <div class="reading-immersive-bg" style="${this.getSceneCoverStyle(chapter.scene)}"></div>
             <div class="reading-immersive-mask"></div>
             <div class="reading-immersive-content">
-                <div class="panel-title"><span class="reading-emblem">${this.getSceneEmblem(chapter.scene)}</span>${this.escapeHtml(chapter.title)}</div>
+                <div class="panel-title"><span class="reading-emblem">${this.getSceneEmblem(chapter.scene)}</span>藏经阁</div>
+                <div class="reading-chapter-subtitle">${this.escapeHtml(chapter.title)}</div>
                 <div class="reading-scene-hero-text-only"><span class="reading-emblem">${this.getSceneEmblem(chapter.scene)}</span>${this.escapeHtml(chapter.scene)}</div>
                 <div class="reading-ambience">${this.escapeHtml(this.getSceneAmbience(chapter.scene))}</div>
                 <div class="reading-meta">
                     <span>章节：${this.escapeHtml(chapter.id)}</span>
                     <span>场景：${this.escapeHtml(chapter.scene)}</span>
                     <span>难度：${this.renderDifficulty(chapter.difficulty)}</span>
+                    <span>残卷修复：${this.repairedTaskSet.size}/${displayTasks.length}</span>
                 </div>
                 <div class="reading-stage">
                     <div class="reading-stage-story">
-                        <div class="reading-story-title">场景实录</div>
-                        <div class="reading-scroll-frame">
-                            <div class="reading-scroll-head">剧情卷轴</div>
+                        <div class="reading-story-title">古籍残卷</div>
+                        <div class="reading-scroll-frame reading-scroll-remnant">
+                            <div class="reading-scroll-head">残卷原文</div>
                             <div class="reading-story-lines">
                                 ${this.renderStoryLines(chapter.text)}
                             </div>
@@ -182,7 +189,10 @@ export class ReadingPanel {
                     </div>
                     <div class="reading-stage-mission">
                         <div class="reading-mission-flavor" id="reading-pick-note">${this.escapeHtml(this.getTaskPrompt(activeTask, chapter.scene))}</div>
-                        ${this.renderTask(activeTask, this.currentTaskIndex + 1, displayTasks.length, chapter.scene)}
+                        <div class="reading-task-feedback ${activeFeedback ? (activeFeedback.isCorrect ? 'reading-task-feedback-correct' : 'reading-task-feedback-wrong') : ''}" id="reading-task-feedback">
+                            ${activeFeedback ? this.escapeHtml(activeFeedback.message) : ''}
+                        </div>
+                        ${this.renderTask(activeTask, this.currentTaskIndex + 1, displayTasks.length, chapter.scene, chapter.text)}
                     </div>
                 </div>
                 <div class="reading-actions">
@@ -198,6 +208,7 @@ export class ReadingPanel {
         this.game.ui.overlay.appendChild(panel);
         this.restoreSelectionUI(panel, activeTask);
 
+        const taskMap = new Map(displayTasks.map((task) => [String(task.id), task]));
         panel.querySelectorAll('.reading-option').forEach((el) => {
             el.addEventListener('click', () => {
                 const taskId = el.dataset.taskId;
@@ -214,11 +225,20 @@ export class ReadingPanel {
                     slot.classList.add('filled');
                 }
 
+                const task = taskMap.get(String(taskId));
+                const isCorrect = this.isTaskAnswerCorrect(task, value);
+                const feedbackMessage = this.getTaskFeedbackMessage(isCorrect);
+                this.taskFeedback[taskId] = {
+                    isCorrect: Boolean(isCorrect),
+                    message: feedbackMessage,
+                };
+                if (isCorrect) this.repairedTaskSet.add(taskId);
+                else this.repairedTaskSet.delete(taskId);
+                this.updateTaskFeedbackUI(panel, taskId);
+
                 const note = panel.querySelector('#reading-pick-note');
                 if (note) {
-                    note.textContent = taskId.includes('-T1')
-                        ? `你将「${value}」写入卷轴，灵光一闪。`
-                        : `你做出判断：「${value}」。继续观察场景变化。`;
+                    note.textContent = feedbackMessage;
                 }
                 this.persistSession();
             });
@@ -288,6 +308,7 @@ export class ReadingPanel {
         popup.innerHTML = `
             <div class="reward-icon">${data.passed ? '📜' : '🔁'}</div>
             <div class="reward-title">${data.passed ? '阅读通关' : '继续修炼'}</div>
+            <div class="reading-result-banner">本层藏经阁试炼完成</div>
             <div class="reward-details">
                 <div class="reward-row"><span>正确率</span><span class="${data.accuracy >= 60 ? 'text-gold' : 'text-red'}">${data.accuracy}%</span></div>
                 <div class="reward-row"><span>修为奖励</span><span class="text-gold">+${data.xp_gained || 0}</span></div>
@@ -311,17 +332,18 @@ export class ReadingPanel {
         });
     }
 
-    renderTask(task, index, total, scene) {
-        const title = task.type === 'cloze' ? '线索补全' : '情境抉择';
-        if (task.type === 'cloze') {
+    renderTask(task, index, total, scene, chapterText = '') {
+        const mode = this.getTaskMode(task);
+        const title = mode === 'cloze' ? '残卷填词' : (mode === 'sentence_restore' ? '残卷修复' : '语义判读');
+        if (mode === 'cloze') {
             return `
                 <div class="reading-task-card reading-task-card--cloze reading-task-card-active">
-                    <div class="reading-task-progress">事件 ${index}/${total}</div>
-                    <div class="reading-task-title">任务${index} · ${title}</div>
-                    <div class="reading-task-context">你在${this.escapeHtml(scene)}中发现一条线索卷轴，请补全关键词。</div>
+                    <div class="reading-task-progress">机关 ${index}/${total}</div>
+                    <div class="reading-task-title">机关问题${index} · ${title}</div>
+                    <div class="reading-task-context">你在${this.escapeHtml(scene)}中发现古籍缺词，请补全关键词。</div>
                     <div class="reading-task-question">${this.escapeHtml(task.question)}</div>
                     <div class="reading-slot-wrap">
-                        <span class="reading-slot-label">卷轴填槽</span>
+                        <span class="reading-slot-label">残卷填槽</span>
                         <div class="reading-slot" data-task-id="${task.id}">____</div>
                     </div>
                     ${task.pos ? `<div class="reading-task-hint">词性提示：${this.escapeHtml(task.pos)}</div>` : ''}
@@ -332,11 +354,32 @@ export class ReadingPanel {
             `;
         }
 
+        if (mode === 'sentence_restore') {
+            return `
+                <div class="reading-task-card reading-task-card--restore reading-task-card-active">
+                    <div class="reading-task-progress">机关 ${index}/${total}</div>
+                    <div class="reading-task-title">机关问题${index} · ${title}</div>
+                    <div class="reading-task-context">观察古籍缺口，从候选句中选择正确句子修复残卷。</div>
+                    <div class="reading-task-question">${this.escapeHtml(task.question || '请补全缺失句子')}</div>
+                    <div class="reading-restore-passage">${this.escapeHtml(this.getSentenceRestorePassage(task, chapterText))}</div>
+                    <div class="reading-task-hint">缺失位置：<span class="reading-restore-gap">${this.escapeHtml(task.blank_hint || '【___】')}</span></div>
+                    <div class="reading-options reading-options--choices">
+                        ${(task._displayOptions || []).map((op, idx) => `
+                            <button class="reading-option reading-option-choice" data-task-id="${task.id}" data-value="${this.escapeHtml(op)}">
+                                <span class="reading-choice-index">${String.fromCharCode(65 + idx)}</span>
+                                <span>${this.escapeHtml(op)}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
         return `
             <div class="reading-task-card reading-task-card--comprehension reading-task-card-active">
-                <div class="reading-task-progress">事件 ${index}/${total}</div>
-                <div class="reading-task-title">任务${index} · ${title}${task.reasoning ? '（推理）' : ''}</div>
-                <div class="reading-task-context">师父在${this.escapeHtml(scene)}发问，做出你的现场判断。</div>
+                <div class="reading-task-progress">机关 ${index}/${total}</div>
+                <div class="reading-task-title">机关问题${index} · ${title}${task.reasoning ? '（推理）' : ''}</div>
+                <div class="reading-task-context">在${this.escapeHtml(scene)}解读语义线索，选择最合理答案。</div>
                 <div class="reading-task-question">${this.escapeHtml(task.question)}</div>
                 <div class="reading-options reading-options--choices">
                     ${(task._displayOptions || []).map((op, idx) => `
@@ -429,9 +472,11 @@ export class ReadingPanel {
     }
 
     getTaskPrompt(task, scene) {
-        if (!task) return `你已进入${scene}，准备开始任务。`;
-        if (task.type === 'cloze') return `在${scene}中收集线索，把关键词写进卷轴。`;
-        return `在${scene}中做出判断，选择最合理的行动解释。`;
+        if (!task) return `你已进入${scene}，准备破解机关问题。`;
+        const mode = this.getTaskMode(task);
+        if (mode === 'cloze') return `在${scene}中收集线索，把关键词填回古籍残卷。`;
+        if (mode === 'sentence_restore') return `残卷出现缺口，从候选句中选择正确句子修复古籍。`;
+        return `请根据原文线索，在${scene}中解开当前机关问题。`;
     }
 
     pickNextChapter(chapters) {
@@ -453,6 +498,8 @@ export class ReadingPanel {
             currentTaskIndex: this.currentTaskIndex,
             answers: this.answers,
             taskOptionCache: this.taskOptionCache,
+            taskFeedback: this.taskFeedback,
+            repairedTaskIds: Array.from(this.repairedTaskSet),
             ts: Date.now(),
         };
         localStorage.setItem(this.getSessionKey(), JSON.stringify(payload));
@@ -479,6 +526,8 @@ export class ReadingPanel {
         this.currentTaskIndex = Math.max(0, Math.min(data.currentTaskIndex || 0, (this.currentChapter.tasks?.length || 1) - 1));
         this.answers = data.answers || {};
         this.taskOptionCache = data.taskOptionCache || {};
+        this.taskFeedback = data.taskFeedback || {};
+        this.repairedTaskSet = new Set(data.repairedTaskIds || []);
         this.renderChapter();
         return true;
     }
@@ -494,9 +543,15 @@ export class ReadingPanel {
             return this.taskOptionCache[cacheKey];
         }
 
-        const options = task.type === 'comprehension'
-            ? this.buildComprehensionOptions(task, scene)
-            : (task.options || []);
+        const mode = this.getTaskMode(task);
+        let options = [];
+        if (mode === 'comprehension') {
+            options = this.buildComprehensionOptions(task, scene);
+        } else if (mode === 'sentence_restore') {
+            options = task.candidates || task.sentences || task.options || [];
+        } else {
+            options = task.options || [];
+        }
 
         this.taskOptionCache[cacheKey] = options;
         return options;
@@ -505,6 +560,7 @@ export class ReadingPanel {
     restoreSelectionUI(panel, activeTask) {
         if (!panel || !activeTask?.id) return;
         const selectedValue = this.answers[activeTask.id];
+        this.updateTaskFeedbackUI(panel, activeTask.id);
         if (!selectedValue) return;
 
         const option = Array.from(panel.querySelectorAll(`.reading-option[data-task-id="${activeTask.id}"]`))
@@ -516,6 +572,52 @@ export class ReadingPanel {
             slot.textContent = selectedValue;
             slot.classList.add('filled');
         }
+    }
+
+    updateTaskFeedbackUI(panel, taskId) {
+        const feedbackNode = panel.querySelector('#reading-task-feedback');
+        const feedback = this.taskFeedback[taskId];
+        if (!feedbackNode) return;
+        if (!feedback) {
+            feedbackNode.textContent = '';
+            feedbackNode.classList.remove('reading-task-feedback-correct', 'reading-task-feedback-wrong');
+            return;
+        }
+        feedbackNode.textContent = feedback.message || '';
+        feedbackNode.classList.toggle('reading-task-feedback-correct', Boolean(feedback.isCorrect));
+        feedbackNode.classList.toggle('reading-task-feedback-wrong', !feedback.isCorrect);
+    }
+
+    getTaskMode(task) {
+        if (task?.mode) return String(task.mode);
+        if (task?.type) return String(task.type);
+        return 'comprehension';
+    }
+
+    getSentenceRestorePassage(task, chapterText = '') {
+        return task?.passage_with_blank
+            || task?.text_with_blank
+            || task?.article_with_blank
+            || task?.context_with_blank
+            || task?.question_with_blank
+            || task?.masked_text
+            || String(chapterText || '').replace(/\s+$/, '') + '【___】';
+    }
+
+    isTaskAnswerCorrect(task, selectedValue) {
+        if (!task) return false;
+        const answer = task.answer;
+        const normalizedValue = this.normalize(selectedValue);
+        if (Array.isArray(answer)) {
+            return answer.some((item) => this.normalize(item) === normalizedValue);
+        }
+        return this.normalize(answer) === normalizedValue;
+    }
+
+    getTaskFeedbackMessage(isCorrect) {
+        return isCorrect
+            ? '机关解开，古籍残卷修复 +1'
+            : '机关未解，请回到原文寻找线索';
     }
 
     buildComprehensionOptions(task, scene) {

@@ -37,15 +37,29 @@ export class Store {
         this.listeners.forEach(fn => fn(this.state));
     }
 
+    normalizeRealmUser(user) {
+        if (!user) return user;
+        const normalized = { ...user };
+        normalized.current_realm = normalized.current_realm || '练气一层';
+        normalized.cultivation_energy = Number(normalized.cultivation_energy || 0);
+        normalized.vocabulary = Number(normalized.vocabulary || 0);
+        normalized.grammar = Number(normalized.grammar || 0);
+        normalized.reading = Number(normalized.reading || 0);
+        normalized.listening = Number(normalized.listening || 0);
+        normalized.writing = Number(normalized.writing || 0);
+        normalized.speaking = Number(normalized.speaking || 0);
+        return normalized;
+    }
+
     // 用户数据
     setUser(user) {
-        this.state.user = user;
+        this.state.user = this.normalizeRealmUser(user);
         this.notify();
     }
 
     updateUser(updates) {
         if (this.state.user) {
-            Object.assign(this.state.user, updates);
+            Object.assign(this.state.user, this.normalizeRealmUser(updates));
             this.notify();
         }
     }

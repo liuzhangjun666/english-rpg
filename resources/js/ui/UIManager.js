@@ -228,7 +228,7 @@ export class UIManager {
             <img src="${this.assets.avatarDefault}" class="avatar" alt="avatar">
             <div class="info">
                 <div class="name">${this.escapeHtml(user.nickname)}</div>
-                <div class="realm">${this.getRealmName(user.realm, user.realm_stage)}</div>
+                <div class="realm">${this.getCurrentRealmLabel(user)}</div>
                 <div id="learning-progress-mini" style="margin-top:4px;padding:4px 6px;border:1px solid rgba(212,168,67,0.18);border-radius:8px;background:rgba(255,255,255,0.03);">
                     <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--parchment-dark);margin-bottom:3px;">
                         <span>修为进度</span>
@@ -251,7 +251,7 @@ export class UIManager {
             if (state.user) {
                 const n = bar.querySelector('.name'); const r = bar.querySelector('.realm'); const s = bar.querySelectorAll('.stat');
                 if (n) n.textContent = state.user.nickname;
-                if (r) r.textContent = this.getRealmName(state.user.realm, state.user.realm_stage);
+                if (r) r.textContent = this.getCurrentRealmLabel(state.user);
                 if (s[0]) s[0].innerHTML = `⚡ ${state.user.exp}`;
                 if (s[1]) s[1].innerHTML = `💧 ${state.user.spirit_power}/${state.user.spirit_power_max}`;
                 if (s[2]) s[2].innerHTML = `💎 ${state.user.spirit_stone}`;
@@ -269,24 +269,60 @@ export class UIManager {
         if (this._learningProgressLastAt && now - this._learningProgressLastAt < 5000) return;
 
         this._learningProgressLoading = true;
-        const res = await this.game.api.get('/user/learning-progress');
-        this._learningProgressLastAt = Date.now();
-        this._learningProgressLoading = false;
-        if (!res?.success) {
-            text.textContent = '暂无数据';
-            fill.style.width = '0%';
-            return;
-        }
+        try {
+            const res = await this.game.api.get('/user/learning-progress');
+            this._learningProgressLastAt = Date.now();
+            if (!res?.success) {
+                text.textContent = '暂无数据';
+                fill.style.width = '0%';
+                return;
+            }
 
-        const data = res.data || {};
-        const percent = Math.max(0, Math.min(100, Number(data.progress_percent || 0)));
-        const remain = Number(data.remaining_exp || 0);
-        text.textContent = `还需 ${remain} 修为`;
-        fill.style.width = `${percent}%`;
+            const data = res.data || {};
+            const percent = Math.max(0, Math.min(100, Number(data.realm_progress_percent ?? data.progress_percent ?? 0)));
+            const remain = Number(data.remaining_energy_to_next_realm ?? data.remaining_exp ?? 0);
+            text.textContent = `还需 ${remain} 修为`;
+            fill.style.width = `${percent}%`;
+
+            const user = this.game.store.getState().user;
+            if (user) {
+                this.game.store.updateUser({
+                    current_realm: data.current_realm || user.current_realm,
+                    cultivation_energy: Number(data.cultivation_energy ?? user.cultivation_energy ?? 0),
+                    vocabulary: Number(data?.six_dimensions?.vocabulary ?? user.vocabulary ?? 0),
+                    grammar: Number(data?.six_dimensions?.grammar ?? user.grammar ?? 0),
+                    reading: Number(data?.six_dimensions?.reading ?? user.reading ?? 0),
+                    listening: Number(data?.six_dimensions?.listening ?? user.listening ?? 0),
+                    writing: Number(data?.six_dimensions?.writing ?? user.writing ?? 0),
+                    speaking: Number(data?.six_dimensions?.speaking ?? user.speaking ?? 0),
+                });
+            }
+        } catch (error) {
+            text.textContent = '加载失败';
+            fill.style.width = '0%';
+        } finally {
+            this._learningProgressLoading = false;
+        }
     }
 
     getRealmName(realm, stage = null) {
         return getRealmDisplayName(realm, stage);
+    }
+
+    getCurrentRealmLabel(user) {
+        if (user?.current_realm) return user.current_realm;
+        return this.getRealmName(user?.realm, user?.realm_stage);
+    }
+
+    getDimensionLabelMap() {
+        return {
+            vocabulary: '词汇',
+            grammar: '语法',
+            reading: '阅读',
+            listening: '听力',
+            writing: '写作',
+            speaking: '口语',
+        };
     }
 
     // ========== 宗门大厅（P1+P2 完整入口） ==========
@@ -300,11 +336,11 @@ export class UIManager {
         const entries = [
             { key: 'practice', icon: '\u{1F4D6}', label: '练功房' },
             { key: 'shilianchang', icon: '\u26A1', label: '试炼场' },
-            { key: 'cangjingge', icon: '\u{1F4DA}', label: '藏经阁' },
-            { key: 'listening', icon: '\u{1F3A7}', label: '听力试炼' },
-            { key: 'speaking', icon: '\u{1F5E3}', label: '口语试炼' },
-            { key: 'reading', icon: '\u{1F4D8}', label: '阅读副本' },
-            { key: 'writing', icon: '\u270D', label: '写作试炼' },
+            { key: 'cangjingge', icon: '\u{1F4DA}', label: '阵法峰' },
+            { key: 'listening', icon: '\u{1F3A7}', label: '听风谷' },
+            { key: 'speaking', icon: '\u{1F5E3}', label: '诵咒峰' },
+            { key: 'reading', icon: '\u{1F4D8}', label: '藏经阁' },
+            { key: 'writing', icon: '\u270D', label: '符箓台' },
             { key: 'mijing', icon: '\u{1F33F}', label: '秘境' },
             { key: 'mall', icon: '\u{1F3EA}', label: '坊市' },
             { key: 'leaderboard', icon: '\u{1F3C5}', label: '宗门榜' },
@@ -355,7 +391,7 @@ export class UIManager {
             return;
         }
         if (tutorialStep === 2) {
-            this.showHermesBubble('不错，继续前往【藏经阁】研习功法，词义与句法同修更稳。', 6000);
+            this.showHermesBubble('不错，继续前往【阵法峰】研习功法，词义与句法同修更稳。', 6000);
             this.maybeShowSpiritExhaustedGuide();
         }
     }
@@ -444,11 +480,15 @@ export class UIManager {
             </div>
             <div class="input-group"><label>道号</label><input type="text" id="profile-nickname" maxlength="50" value="${this.escapeHtml(user.nickname)}"></div>
             <div class="input-group"><label>手机号</label><input type="text" value="${user.phone}" disabled style="opacity:0.6;"></div>
-            <div class="input-group"><label>当前境界</label><input type="text" value="${this.getRealmName(user.realm, user.realm_stage)}" disabled style="opacity:0.6;"></div>
+            <div class="input-group"><label>当前境界</label><input type="text" value="${this.getCurrentRealmLabel(user)}" disabled style="opacity:0.6;"></div>
             <div class="input-group" style="display:flex;gap:8px;">
                 <span style="flex:1;text-align:center;padding:8px;background:rgba(255,255,255,0.05);border-radius:8px;">⚡ ${user.exp}</span>
                 <span style="flex:1;text-align:center;padding:8px;background:rgba(255,255,255,0.05);border-radius:8px;">💧 ${user.spirit_power}/${user.spirit_power_max}</span>
                 <span style="flex:1;text-align:center;padding:8px;background:rgba(255,255,255,0.05);border-radius:8px;">💎 ${user.spirit_stone}</span>
+            </div>
+            <div id="realm-profile-progress" style="padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(212,168,67,0.15);margin:10px 0;">
+                <div style="font-size:12px;color:var(--gold-light);margin-bottom:6px;">境界与修为</div>
+                <div style="font-size:12px;color:var(--parchment-dark);">加载中...</div>
             </div>
             <div style="padding:12px;background:rgba(212,168,67,0.06);border-radius:10px;margin:12px 0;border:1px solid rgba(212,168,67,0.15);">
                 <div style="font-size:12px;color:var(--gold-light);margin-bottom:6px;">🎁 邀请好友得灵力</div>
@@ -466,6 +506,7 @@ export class UIManager {
             <button class="btn btn-secondary" id="profile-logout-btn" style="margin-top:8px;border-color:var(--cinnabar);color:var(--cinnabar);">退出登录</button>
         `;
         this.overlay.appendChild(panel);
+        this.refreshRealmProfileProgress(panel);
         document.getElementById('profile-save-btn').addEventListener('click', async () => {
             const n = document.getElementById('profile-nickname').value.trim();
             if (!n) { this.showError('请填写道号'); return; }
@@ -496,6 +537,70 @@ export class UIManager {
                 cancelText: '取消',
             });
             if (ok) this.game.logout();
+        });
+    }
+
+    async refreshRealmProfileProgress(panel) {
+        const container = panel.querySelector('#realm-profile-progress');
+        if (!container) return;
+        const user = this.game.store.getState().user;
+        if (!user) return;
+
+        const fallbackDimensions = {
+            vocabulary: Number(user.vocabulary || 0),
+            grammar: Number(user.grammar || 0),
+            reading: Number(user.reading || 0),
+            listening: Number(user.listening || 0),
+            writing: Number(user.writing || 0),
+            speaking: Number(user.speaking || 0),
+        };
+
+        let data = {};
+        try {
+            const res = await this.game.api.get('/user/learning-progress');
+            data = res?.success ? (res.data || {}) : {};
+        } catch (error) {
+            data = {};
+        }
+        const percent = Math.max(0, Math.min(100, Number(data.realm_progress_percent ?? 0)));
+        const currentRealm = data.current_realm || user.current_realm || '练气一层';
+        const energy = Number(data.cultivation_energy ?? user.cultivation_energy ?? 0);
+        const remain = Number(data.remaining_energy_to_next_realm ?? 0);
+        const conditions = data.breakthrough_conditions || {};
+        const abilityCondition = conditions.abilities || {};
+        const energyCondition = conditions.energy || {};
+        const dimensions = data.six_dimensions || fallbackDimensions;
+        const dimensionLabels = this.getDimensionLabelMap();
+        const abilityRequiredEach = typeof abilityCondition.required_each === 'number'
+            ? abilityCondition.required_each
+            : '按当前境界条件';
+
+        const dimensionRows = Object.keys(dimensionLabels)
+            .map((key) => `<span style="display:inline-block;min-width:80px;margin:2px 4px 2px 0;">${dimensionLabels[key]} ${Number(dimensions[key] || 0)}</span>`)
+            .join('');
+
+        container.innerHTML = `
+            <div style="font-size:12px;color:var(--gold-light);margin-bottom:6px;">境界与修为</div>
+            <div style="font-size:12px;color:var(--parchment-dark);line-height:1.8;">当前境界：${this.escapeHtml(currentRealm)}</div>
+            <div style="font-size:12px;color:var(--parchment-dark);line-height:1.8;">修为值：${energy}</div>
+            <div style="height:6px;background:rgba(255,255,255,0.12);border-radius:5px;overflow:hidden;margin:6px 0 8px;">
+                <div style="height:100%;width:${percent}%;background:linear-gradient(90deg,var(--gold),#f4d98a);"></div>
+            </div>
+            <div style="font-size:11px;color:var(--parchment-dark);line-height:1.8;">突破条件：修为 ${energyCondition.current ?? energy}/${energyCondition.required ?? energy}</div>
+            <div style="font-size:11px;color:var(--parchment-dark);line-height:1.8;">突破条件：六维单项 ≥ ${abilityRequiredEach}</div>
+            <div style="font-size:11px;color:var(--parchment-dark);line-height:1.8;">距离下一层：${remain}</div>
+            <div style="font-size:11px;color:var(--parchment-dark);line-height:1.8;margin-top:4px;">六维能力：${dimensionRows}</div>
+        `;
+
+        this.game.store.updateUser({
+            current_realm: currentRealm,
+            cultivation_energy: energy,
+            vocabulary: Number(dimensions.vocabulary || 0),
+            grammar: Number(dimensions.grammar || 0),
+            reading: Number(dimensions.reading || 0),
+            listening: Number(dimensions.listening || 0),
+            writing: Number(dimensions.writing || 0),
+            speaking: Number(dimensions.speaking || 0),
         });
     }
 

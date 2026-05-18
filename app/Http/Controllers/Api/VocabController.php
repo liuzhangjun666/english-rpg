@@ -7,6 +7,7 @@ use App\Models\LearningRecord;
 use App\Models\Question;
 use App\Services\CurrencyService;
 use App\Services\HeartDemonService;
+use App\Services\RealmService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -14,11 +15,17 @@ class VocabController extends Controller
 {
     private CurrencyService $currencyService;
     private HeartDemonService $demonService;
+    private RealmService $realmService;
 
-    public function __construct(CurrencyService $currencyService, HeartDemonService $demonService)
+    public function __construct(
+        CurrencyService $currencyService,
+        HeartDemonService $demonService,
+        RealmService $realmService
+    )
     {
         $this->currencyService = $currencyService;
         $this->demonService = $demonService;
+        $this->realmService = $realmService;
     }
 
     /**
@@ -108,6 +115,8 @@ class VocabController extends Controller
 
         // 经济结算
         $settlement = $this->currencyService->settleBatch($user, $results, count($data['answers']));
+        $correctCount = count(array_filter($results, fn (array $item) => !empty($item['correct'])));
+        $realmProgress = $this->realmService->applyCultivationGain($user, 'vocabulary', $correctCount);
 
         return response()->json([
             'success' => true,
@@ -118,6 +127,7 @@ class VocabController extends Controller
                 'accuracy' => $settlement['accuracy'],
                 'passed' => $settlement['passed'],
                 'stones_gained' => $settlement['stones_gained'],
+                'realm_progress' => $realmProgress,
             ],
         ]);
     }

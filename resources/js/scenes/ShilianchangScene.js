@@ -1,6 +1,6 @@
 // 试炼场 3D 场景（渡劫检测）- 圆形竞技场+云海+雷云+灵气球
 import * as THREE from 'three';
-import sceneBg from '../../assets/images/scene_shilian.png';
+import sceneBg from '../../assets/images/scene_breakthrough.png';
 
 export class ShilianchangScene {
     constructor() { this.group = new THREE.Group(); this.boltTime = 0; }

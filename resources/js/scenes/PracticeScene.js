@@ -1,11 +1,29 @@
 // LevelUp 英语修仙 - 练功房 3D 场景（发光灵草药园）
 import * as THREE from 'three';
+import vocabBg from '../../assets/images/scene_practice_vocab.png';
+import dangeBg from '../../assets/images/scene_practice_dange.png';
+import listeningBg from '../../assets/images/scene_listening.png';
+import speakingBg from '../../assets/images/scene_speaking.png';
+import writingBg from '../../assets/images/scene_writing.png';
 
 export class PracticeScene {
     constructor() { this.group = new THREE.Group(); this.herbs = []; this.fireflies = null; }
 
-    build(scene, camera, spark) {
-        scene.background = new THREE.Color(0x0d1b2a);
+    build(scene, camera, spark, options = {}) {
+        const mode = options?.mode || 'vocab';
+        const bgMap = {
+            vocab: vocabBg,
+            dange: dangeBg,
+            listening: listeningBg,
+            speaking: speakingBg,
+            writing: writingBg,
+        };
+
+        const loader = new THREE.TextureLoader();
+        loader.load(bgMap[mode] || vocabBg, (tex) => {
+            tex.colorSpace = THREE.SRGBColorSpace;
+            scene.background = tex;
+        });
 
         // 地坪
         const ground = new THREE.Mesh(

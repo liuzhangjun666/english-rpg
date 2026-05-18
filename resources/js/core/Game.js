@@ -40,6 +40,7 @@ export class Game {
         this.isLoggedIn = false;
         this.isNewUser = false;
         this.sceneInitialized = false;
+        this.routeRestoring = false;
         window.addEventListener('auth:logout', () => this.handleForceLogout());
     }
 
@@ -57,7 +58,10 @@ export class Game {
     async tryAutoLogin() {
         const res = await this.api.get('/user/profile');
         if (!res?.success) {
-            this.api.clearToken();
+            // 仅在明确鉴权失效时清理 token；网络抖动/超时不应导致刷新即掉线。
+            if (res?.code === 'TOKEN_EXPIRED') {
+                this.api.clearToken();
+            }
             return;
         }
 
@@ -73,7 +77,28 @@ export class Game {
             this.isNewUser = true;
             this.startInitiation();
         } else {
+            this.restoreRouteAfterLogin();
+        }
+    }
+
+    restoreRouteAfterLogin() {
+        const rawHash = window.location.hash.slice(1);
+        const [path] = (rawHash || '').split('?');
+        if (!path || path === 'login') {
             this.enterHall();
+            return;
+        }
+
+        this.routeRestoring = true;
+        this.router.handleRoute();
+        this.routeRestoring = false;
+    }
+
+    navigateIfNeeded(path) {
+        if (this.routeRestoring) return;
+        const currentPath = (window.location.hash.slice(1).split('?')[0] || '');
+        if (currentPath !== path) {
+            this.router.navigate(path);
         }
     }
 
@@ -105,7 +130,7 @@ export class Game {
         this.ui.hideAllPanels();
         this.ui.showCharacterBar();
         this.ui.showHallScene();
-        this.router.navigate('hall');
+        this.navigateIfNeeded('hall');
     }
 
     async syncDailyStatus() {
@@ -127,18 +152,22 @@ export class Game {
         this.ensureSceneInitialized();
         switch (sceneName) {
             case 'practice':
-                this.scene.switchTo('practice');
+                this.navigateIfNeeded('practice');
+                this.scene.switchTo('practice', { mode: 'vocab' });
                 this.showLevelSelect('vocab');
                 break;
             case 'shilianchang':
+                this.navigateIfNeeded('shilianchang');
                 this.scene.switchTo('shilianchang');
                 this.startExam();
                 break;
             case 'cangjingge':
-                this.scene.switchTo('cangjingge');
+                this.navigateIfNeeded('cangjingge');
+                this.scene.switchTo('grammar');
                 this.showLevelSelect('grammar');
                 break;
             case 'mijing':
+                this.navigateIfNeeded('mijing');
                 this.scene.switchTo('mijing');
                 this.ui.hideAllPanels();
                 this.ui.showCharacterBar();
@@ -150,12 +179,22 @@ export class Game {
     }
 
     startPracticeModule(type) {
+        this.navigateIfNeeded(type);
+
         if (type === 'reading') {
             this.startReadingAdventure();
             return;
         }
+
+        const modeMap = {
+            listening: 'listening',
+            speaking: 'speaking',
+            writing: 'writing',
+            vocab: 'vocab',
+        };
+
         this.ensureSceneInitialized();
-        this.scene.switchTo('practice');
+        this.scene.switchTo('practice', { mode: modeMap[type] || 'vocab' });
         this.showLevelSelect(type);
     }
 
@@ -173,6 +212,10 @@ export class Game {
     }
 
     startPractice(type, level) {
+        if (type === 'vocab') {
+            const mode = Number(level) >= 2 ? 'dange' : 'vocab';
+            this.scene.switchTo('practice', { mode });
+        }
         this.practice.startLevel(type, level);
     }
 

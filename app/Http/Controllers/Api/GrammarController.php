@@ -8,6 +8,7 @@ use App\Models\Question;
 use App\Services\AchievementService;
 use App\Services\CurrencyService;
 use App\Services\HeartDemonService;
+use App\Services\RealmService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -16,6 +17,7 @@ class GrammarController extends Controller
     private CurrencyService $currencyService;
     private HeartDemonService $demonService;
     private AchievementService $achievementService;
+    private RealmService $realmService;
 
     private const DEMO_QUESTIONS = [
         [
@@ -116,11 +118,17 @@ class GrammarController extends Controller
         ],
     ];
 
-    public function __construct(CurrencyService $currencyService, HeartDemonService $demonService, AchievementService $achievementService)
+    public function __construct(
+        CurrencyService $currencyService,
+        HeartDemonService $demonService,
+        AchievementService $achievementService,
+        RealmService $realmService
+    )
     {
         $this->currencyService = $currencyService;
         $this->demonService = $demonService;
         $this->achievementService = $achievementService;
+        $this->realmService = $realmService;
     }
 
     /**
@@ -211,10 +219,15 @@ class GrammarController extends Controller
 
         $settlement = $this->currencyService->settleBatch($user, $results, count($data['answers']));
         $newAchs = $this->achievementService->onLevelSubmit($user, $results, $settlement['accuracy']);
+        $correctCount = count(array_filter($results, fn (array $item) => !empty($item['correct'])));
+        $realmProgress = $this->realmService->applyCultivationGain($user, 'grammar', $correctCount);
 
         return response()->json([
             'success' => true,
-            'data' => array_merge($settlement, ['new_achievements' => $newAchs]),
+            'data' => array_merge($settlement, [
+                'new_achievements' => $newAchs,
+                'realm_progress' => $realmProgress,
+            ]),
         ]);
     }
 

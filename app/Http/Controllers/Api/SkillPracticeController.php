@@ -8,6 +8,7 @@ use App\Models\Question;
 use App\Services\AchievementService;
 use App\Services\CurrencyService;
 use App\Services\HeartDemonService;
+use App\Services\RealmService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -16,6 +17,7 @@ class SkillPracticeController extends Controller
     private CurrencyService $currencyService;
     private HeartDemonService $demonService;
     private AchievementService $achievementService;
+    private RealmService $realmService;
 
     private const MODULES = [
         'listening' => ['normal_count' => 10, 'fallback' => 'vocab'],
@@ -27,11 +29,13 @@ class SkillPracticeController extends Controller
     public function __construct(
         CurrencyService $currencyService,
         HeartDemonService $demonService,
-        AchievementService $achievementService
+        AchievementService $achievementService,
+        RealmService $realmService
     ) {
         $this->currencyService = $currencyService;
         $this->demonService = $demonService;
         $this->achievementService = $achievementService;
+        $this->realmService = $realmService;
     }
 
     public function questions(Request $request, string $type): JsonResponse
@@ -140,10 +144,24 @@ class SkillPracticeController extends Controller
 
         $settlement = $this->currencyService->settleBatch($user, $results, count($data['answers']));
         $newAchs = $this->achievementService->onLevelSubmit($user, $results, $settlement['accuracy']);
+        $correctCount = count(array_filter($results, fn (array $item) => !empty($item['correct'])));
+        $dimensionMap = [
+            'listening' => 'listening',
+            'speaking' => 'speaking',
+            'reading' => 'reading',
+            'writing' => 'writing',
+        ];
+        $dimensionKey = $dimensionMap[$type] ?? null;
+        $realmProgress = $dimensionKey
+            ? $this->realmService->applyCultivationGain($user, $dimensionKey, $correctCount)
+            : $this->realmService->getCultivationProgress($user);
 
         return response()->json([
             'success' => true,
-            'data' => array_merge($settlement, ['new_achievements' => $newAchs]),
+            'data' => array_merge($settlement, [
+                'new_achievements' => $newAchs,
+                'realm_progress' => $realmProgress,
+            ]),
         ]);
     }
 }

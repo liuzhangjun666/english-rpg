@@ -9,6 +9,10 @@ export class Router {
             'practice': () => this.game.goToScene('practice'),
             'shilianchang': () => this.game.goToScene('shilianchang'),
             'cangjingge': () => this.game.goToScene('cangjingge'),
+            'listening': () => this.game.startPracticeModule('listening'),
+            'speaking': () => this.game.startPracticeModule('speaking'),
+            'reading': () => this.game.startPracticeModule('reading'),
+            'writing': () => this.game.startPracticeModule('writing'),
             'mijing': () => this.game.goToScene('mijing'),
             'profile': () => this.game.ui.showProfilePanel(),
         };
@@ -23,6 +27,17 @@ export class Router {
     handleRoute() {
         const hash = window.location.hash.slice(1) || 'login';
         const [path] = hash.split('?');
+
+        if (path === 'login' && this.game.isLoggedIn) {
+            this.navigate('hall');
+            return;
+        }
+
+        if (path !== 'login' && !this.game.isLoggedIn) {
+            this.navigate('login');
+            return;
+        }
+
         for (const [route, handler] of Object.entries(this.routes)) {
             if (path.startsWith(route)) {
                 handler();

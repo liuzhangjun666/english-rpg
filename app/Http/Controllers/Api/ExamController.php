@@ -37,20 +37,84 @@ class ExamController extends Controller
     public function current(Request $request): JsonResponse
     {
         $user = $request->user();
+        $status = $this->realmService->getBreakthroughStatus($user);
+        if (($user->current_realm ?? null) !== $status['current_realm']) {
+            $user->current_realm = $status['current_realm'];
+            $user->save();
+            $user->refresh();
+        }
 
         return response()->json([
             'success' => true,
             'data' => [
                 'realm' => $user->realm,
+                'current_realm' => $status['current_realm'],
+                'next_realm' => $status['next_realm'],
                 'realm_name' => CultivationProfile::realmName((string) $user->realm),
                 'stage' => $user->realm_stage,
                 'spirit_power' => $user->spirit_power,
                 'spirit_cost' => ExamService::SPIRIT_COST,
                 'can_take' => $user->spirit_power >= ExamService::SPIRIT_COST,
+                'breakthrough_status' => $status,
                 'last_exam' => ExamResult::where('user_id', $user->id)
                     ->where('realm', $user->realm)
                     ->orderByDesc('created_at')
                     ->first(),
+            ],
+        ]);
+    }
+
+    /** POST /api/exam/breakthrough - 手动突破 */
+    public function breakthrough(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $status = $this->realmService->getBreakthroughStatus($user);
+
+        if ($status['is_max_realm']) {
+            return response()->json([
+                'success' => false,
+                'code' => 'REALM_MAX',
+                'message' => '当前已达 MVP 最高境界',
+                'data' => [
+                    'status' => $status,
+                ],
+            ], 422);
+        }
+
+        if (!$status['can_breakthrough']) {
+            return response()->json([
+                'success' => false,
+                'code' => 'BREAKTHROUGH_REQUIREMENTS_NOT_MET',
+                'message' => '突破条件未满足',
+                'data' => [
+                    'status' => $status,
+                    'missing_requirements' => $status['missing_requirements'],
+                ],
+            ], 422);
+        }
+
+        $result = $this->realmService->breakthrough($user);
+        $fresh = $user->fresh();
+        $latestStatus = $this->realmService->getBreakthroughStatus($fresh);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'breakthrough' => $result,
+                'status' => $latestStatus,
+                'user' => [
+                    'realm' => $fresh->realm,
+                    'realm_stage' => $fresh->realm_stage,
+                    'current_realm' => $fresh->current_realm,
+                    'cultivation_energy' => $fresh->cultivation_energy,
+                    'vocabulary' => $fresh->vocabulary,
+                    'grammar' => $fresh->grammar,
+                    'reading' => $fresh->reading,
+                    'listening' => $fresh->listening,
+                    'writing' => $fresh->writing,
+                    'speaking' => $fresh->speaking,
+                ],
+                'message' => $result['message'] ?? '突破成功',
             ],
         ]);
     }
@@ -145,19 +209,13 @@ class ExamController extends Controller
         $user->increment('spirit_stone', $reward['stones_gained']);
         $user->save();
 
-        // 如果渡劫通过，尝试突破
-        $breakthrough = null;
-        if ($gradeResult['passed']) {
-            $bt = $this->realmService->canBreakthrough($user);
-            if ($bt['can']) {
-                $breakthrough = $this->realmService->breakthrough($user);
-            }
-        }
+        // 渡劫完成后仅返回突破资格，不自动执行突破
+        $breakthroughStatus = $this->realmService->getBreakthroughStatus($user->fresh());
 
         // 记录渡劫结果
         ExamResult::create([
             'user_id' => $user->id,
-            'realm' => $gradeResult['passed'] ? ($breakthrough['new_realm'] ?? $user->realm) : $user->realm,
+            'realm' => $user->realm,
             'score' => $gradeResult['score'],
             'total_questions' => $gradeResult['total'],
             'correct_count' => $gradeResult['correct'],
@@ -172,7 +230,8 @@ class ExamController extends Controller
             'data' => [
                 'grade_result' => $gradeResult,
                 'reward' => $reward,
-                'breakthrough' => $breakthrough,
+                'breakthrough' => null,
+                'breakthrough_status' => $breakthroughStatus,
                 'current_realm' => $user->fresh()->realm,
                 'current_stage' => $user->fresh()->realm_stage,
             ],

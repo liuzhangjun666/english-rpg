@@ -22,6 +22,14 @@ class User extends Authenticatable
         'realm',
         'realm_stage',
         'exp',
+        'current_realm',
+        'cultivation_energy',
+        'vocabulary',
+        'grammar',
+        'reading',
+        'listening',
+        'writing',
+        'speaking',
         'spirit_power',
         'spirit_power_max',
         'spirit_stone',
@@ -51,6 +59,13 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_minor' => 'boolean',
             'parent_verified' => 'boolean',
+            'cultivation_energy' => 'integer',
+            'vocabulary' => 'integer',
+            'grammar' => 'integer',
+            'reading' => 'integer',
+            'listening' => 'integer',
+            'writing' => 'integer',
+            'speaking' => 'integer',
         ];
     }
 }

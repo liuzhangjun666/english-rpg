@@ -77,6 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('exam')->group(function () {
         Route::get('/current', [ExamController::class, 'current']);
+        Route::post('/breakthrough', [ExamController::class, 'breakthrough']);
         Route::post('/start', [ExamController::class, 'start']);
         Route::post('/submit', [ExamController::class, 'submit']);
         Route::get('/history', [ExamController::class, 'history']);

@@ -7,6 +7,7 @@ use App\Models\LearningRecord;
 use App\Models\Question;
 use App\Support\CultivationProfile;
 use App\Services\CurrencyService;
+use App\Services\RealmService;
 use App\Services\ReportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,6 +17,7 @@ class UserController extends Controller
 {
     public function __construct(
         private readonly ReportService $reportService,
+        private readonly RealmService $realmService,
     ) {
     }
     /**
@@ -24,9 +26,17 @@ class UserController extends Controller
      */
     public function profile(Request $request): JsonResponse
     {
+        $user = $request->user();
+        $snapshot = $this->realmService->getCultivationProgress($user);
+        if (($user->current_realm ?? null) !== $snapshot['current_realm']) {
+            $user->current_realm = $snapshot['current_realm'];
+            $user->save();
+            $user->refresh();
+        }
+
         return response()->json([
             'success' => true,
-            'data' => $request->user(),
+            'data' => $user,
         ]);
     }
 
@@ -170,6 +180,11 @@ class UserController extends Controller
         $progressValue = max(0, min($exp - $currentThreshold, $progressRange));
         $progressPercent = (int) round(($progressValue / $progressRange) * 100);
         $remainingExp = max(0, $nextThreshold - $exp);
+        $realmSnapshot = $this->realmService->getCultivationProgress($user);
+        if (($user->current_realm ?? null) !== $realmSnapshot['current_realm']) {
+            $user->current_realm = $realmSnapshot['current_realm'];
+            $user->save();
+        }
 
         return response()->json([
             'success' => true,
@@ -185,6 +200,19 @@ class UserController extends Controller
                 'realm_name' => CultivationProfile::realmName($realm),
                 'learning_stage' => CultivationProfile::learningStage($realm, $stage)['label'],
                 'ability_focus' => CultivationProfile::learningStage($realm, $stage)['focus'],
+                'current_realm' => $realmSnapshot['current_realm'],
+                'cultivation_energy' => $realmSnapshot['cultivation_energy'],
+                'next_realm' => $realmSnapshot['next_realm'],
+                'current_realm_index' => $realmSnapshot['current_realm_index'],
+                'next_realm_energy' => $realmSnapshot['next_realm_energy'],
+                'realm_progress_percent' => $realmSnapshot['realm_progress_percent'],
+                'remaining_energy_to_next_realm' => $realmSnapshot['remaining_energy_to_next_realm'],
+                'six_dimensions' => array_map(
+                    fn (array $item) => $item['value'],
+                    $realmSnapshot['abilities']
+                ),
+                'breakthrough_conditions' => $realmSnapshot['breakthrough_conditions'],
+                'can_breakthrough' => $realmSnapshot['can_breakthrough'],
             ],
         ]);
     }

@@ -8,12 +8,15 @@ export class SceneManager {
         this.animationId = null;
         this.currentSceneName = null;
         this.currentSceneObj = null;
+        this.currentSceneOptionsKey = '';
         this.isPaused = false;
         this.currentLoadId = 0;
+        this._backgroundFitCacheKey = '';
 
         this.sceneLoaders = {
             hall: () => import('./HallScene.js').then((m) => m.HallScene),
             practice: () => import('./PracticeScene.js').then((m) => m.PracticeScene),
+            grammar: () => import('./GrammarScene.js').then((m) => m.GrammarScene),
             shilianchang: () => import('./ShilianchangScene.js').then((m) => m.ShilianchangScene),
             mijing: () => import('./MijingScene.js').then((m) => m.MijingScene),
             cangjingge: () => import('./CangjinggeScene.js').then((m) => m.CangjinggeScene),
@@ -54,12 +57,14 @@ export class SceneManager {
         this.animate();
     }
 
-    async switchTo(name) {
+    async switchTo(name, options = {}) {
         if (!this.scene || !this.camera) return;
         if (!this.sceneLoaders[name]) return;
-        if (name === this.currentSceneName) return;
+        const optionsKey = JSON.stringify(options || {});
+        if (name === this.currentSceneName && optionsKey === this.currentSceneOptionsKey) return;
 
         this.currentSceneName = name;
+        this.currentSceneOptionsKey = optionsKey;
         this.clearScene();
 
         const loadId = ++this.currentLoadId;
@@ -68,7 +73,7 @@ export class SceneManager {
             if (loadId !== this.currentLoadId) return;
 
             const sceneObj = new SceneClass();
-            sceneObj.build(this.scene, this.camera, null);
+            sceneObj.build(this.scene, this.camera, null, options);
             this.currentSceneObj = sceneObj;
         } catch (error) {
             console.error(`[SceneManager] Failed to load scene: ${name}`, error);
@@ -105,6 +110,7 @@ export class SceneManager {
         }
         this.scene.background = null;
         this.currentSceneObj = null;
+        this._backgroundFitCacheKey = '';
     }
 
     animate() {
@@ -112,6 +118,7 @@ export class SceneManager {
 
         const time = Date.now() * 0.001;
         if (!this.isPaused) {
+            this.fitBackgroundToViewport();
             if (this.currentSceneObj?.animate) this.currentSceneObj.animate(time);
             this.renderer.render(this.scene, this.camera);
         }
@@ -124,6 +131,49 @@ export class SceneManager {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this._backgroundFitCacheKey = '';
+        this.fitBackgroundToViewport();
+    }
+
+    fitBackgroundToViewport() {
+        const bg = this.scene?.background;
+        if (!bg?.isTexture || !this.renderer) return;
+
+        const image = bg.image;
+        const imageW = image?.videoWidth || image?.naturalWidth || image?.width;
+        const imageH = image?.videoHeight || image?.naturalHeight || image?.height;
+        if (!imageW || !imageH) return;
+
+        const size = this.renderer.getSize(new THREE.Vector2());
+        const viewW = size.width;
+        const viewH = size.height;
+        if (!viewW || !viewH) return;
+
+        const cacheKey = `${bg.uuid}:${imageW}x${imageH}:${viewW}x${viewH}`;
+        if (cacheKey === this._backgroundFitCacheKey) return;
+        this._backgroundFitCacheKey = cacheKey;
+
+        const imageAspect = imageW / imageH;
+        const viewAspect = viewW / viewH;
+
+        bg.wrapS = THREE.ClampToEdgeWrapping;
+        bg.wrapT = THREE.ClampToEdgeWrapping;
+        bg.center.set(0.5, 0.5);
+        bg.repeat.set(1, 1);
+        bg.offset.set(0, 0);
+
+        // Keep scene backgrounds visually natural on mobile: cover + centered crop.
+        if (viewAspect > imageAspect) {
+            const repeatY = imageAspect / viewAspect;
+            bg.repeat.set(1, repeatY);
+            bg.offset.set(0, (1 - repeatY) * 0.5);
+        } else {
+            const repeatX = viewAspect / imageAspect;
+            bg.repeat.set(repeatX, 1);
+            bg.offset.set((1 - repeatX) * 0.5, 0);
+        }
+
+        bg.needsUpdate = true;
     }
 
     destroy() {
@@ -146,5 +196,6 @@ export class SceneManager {
         this.camera = null;
         this.renderer = null;
         this.currentSceneName = null;
+        this.currentSceneOptionsKey = '';
     }
 }
