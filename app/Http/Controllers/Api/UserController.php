@@ -18,6 +18,7 @@ class UserController extends Controller
     public function __construct(
         private readonly ReportService $reportService,
         private readonly RealmService $realmService,
+        private readonly CurrencyService $currencyService,
     ) {
     }
     /**
@@ -27,6 +28,8 @@ class UserController extends Controller
     public function profile(Request $request): JsonResponse
     {
         $user = $request->user();
+        $this->currencyService->recoverSpiritPower($user);
+        $user->refresh();
         $snapshot = $this->realmService->getCultivationProgress($user);
         if (($user->current_realm ?? null) !== $snapshot['current_realm']) {
             $user->current_realm = $snapshot['current_realm'];
@@ -166,6 +169,8 @@ class UserController extends Controller
     public function learningProgress(Request $request): JsonResponse
     {
         $user = $request->user();
+        $this->currencyService->recoverSpiritPower($user);
+        $user->refresh();
         $realm = (string) $user->realm;
         $stage = max(1, (int) $user->realm_stage);
         $exp = (int) $user->exp;

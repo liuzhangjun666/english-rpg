@@ -9,7 +9,10 @@ class ReadingAdventureService
 {
     private const PASS_THRESHOLD = 60;
 
-    public function __construct(private readonly HeartDemonService $demonService)
+    public function __construct(
+        private readonly HeartDemonService $demonService,
+        private readonly RealmService $realmService
+    )
     {
     }
 
@@ -118,6 +121,7 @@ class ReadingAdventureService
             $user->increment('exp', $xp);
             $user->increment('spirit_stone', $spiritStone);
         }
+        $realmProgress = $this->realmService->applyCultivationGain($user->fresh(), 'reading', $correctCount);
 
         LearningRecord::create([
             'user_id' => $user->id,
@@ -150,6 +154,7 @@ class ReadingAdventureService
                 'xp_gained' => $passed ? $xp : 0,
                 'spirit_stone_gained' => $passed ? $spiritStone : 0,
                 'item_reward' => $passed ? ($chapter['rewards']['item'] ?? null) : null,
+                'realm_progress' => $realmProgress,
             ],
         ];
     }

@@ -145,6 +145,7 @@ export class Game {
             spirit_power: res.data.spirit_power ?? user.spirit_power,
             spirit_power_max: res.data.spirit_power_max ?? user.spirit_power_max,
             spirit_power_date: new Date().toISOString().slice(0, 10),
+            spirit_power_last_recover_at: res.data.spirit_power_last_recover_at ?? user.spirit_power_last_recover_at,
         });
     }
 

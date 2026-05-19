@@ -35,6 +35,15 @@ class RealmService
 
     public const ENERGY_PER_CORRECT = 10;
 
+    public const ENERGY_PER_CORRECT_BY_DIMENSION = [
+        'vocabulary' => 1,
+        'grammar' => 2,
+        'listening' => 2,
+        'speaking' => 2,
+        'reading' => 3,
+        'writing' => 5,
+    ];
+
     public const ENERGY_STEP_PER_REALM = 100;
 
     private const DIMENSION_LABELS = [
@@ -240,8 +249,9 @@ class RealmService
         }
 
         $user->{$dimension} = max(0, (int) ($user->{$dimension} ?? 0)) + $normalizedCount;
+        $energyPerCorrect = (int) (self::ENERGY_PER_CORRECT_BY_DIMENSION[$dimension] ?? self::ENERGY_PER_CORRECT);
         $user->cultivation_energy = max(0, (int) ($user->cultivation_energy ?? 0))
-            + ($normalizedCount * self::ENERGY_PER_CORRECT);
+            + ($normalizedCount * $energyPerCorrect);
 
         $snapshot = $this->getCultivationProgress($user);
         $user->current_realm = $this->resolveCurrentRealm($user);

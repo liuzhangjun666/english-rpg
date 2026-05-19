@@ -94,6 +94,7 @@ class AuthController extends Controller
             'spirit_power_max' => $isMinor ? 50 : 100,
             'spirit_stone' => 0,
             'spirit_power_date' => $today,
+            'spirit_power_last_recover_at' => now(),
             'is_minor' => $isMinor,
             'daily_minutes' => 0,
             'daily_minutes_date' => $today,

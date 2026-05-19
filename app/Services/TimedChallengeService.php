@@ -22,6 +22,7 @@ class TimedChallengeService
     public function __construct(
         private readonly CurrencyService $currencyService,
         private readonly HeartDemonService $demonService,
+        private readonly RealmService $realmService,
     ) {
     }
 
@@ -240,6 +241,10 @@ class TimedChallengeService
         }
 
         $weakTags = $this->extractWeakTags($session->weak_tag_stats ?? []);
+        $dimensionKey = $this->resolveDimensionKey((string) $session->module_type);
+        $realmProgress = $dimensionKey
+            ? $this->realmService->applyCultivationGain($user->fresh(), $dimensionKey, (int) $session->correct_count)
+            : $this->realmService->getCultivationProgress($user->fresh());
 
         return [
             'success' => true,
@@ -252,8 +257,22 @@ class TimedChallengeService
                 'points_gained' => $pointsGained,
                 'weak_tags' => $weakTags,
                 'review_pack_id' => 'rp_' . Str::lower(Str::random(12)),
+                'realm_progress' => $realmProgress,
             ],
         ];
+    }
+
+    private function resolveDimensionKey(string $moduleType): ?string
+    {
+        return match ($moduleType) {
+            'vocab' => 'vocabulary',
+            'grammar' => 'grammar',
+            'listening' => 'listening',
+            'speaking' => 'speaking',
+            'reading' => 'reading',
+            'writing' => 'writing',
+            default => null,
+        };
     }
 
     private function getSession(User $user, string $challengeId): ?TimedChallengeSession
@@ -389,4 +408,3 @@ class TimedChallengeService
         };
     }
 }
-

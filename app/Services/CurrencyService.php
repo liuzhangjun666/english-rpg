@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 class CurrencyService
 {
     const SPIRIT_COST_PER_QUESTION = 1;
+    const SPIRIT_RECOVER_INTERVAL_SECONDS = 300;
+    const SPIRIT_RECOVER_PER_TICK = 1;
     const EXP_PER_CORRECT = 10;
     const EXP_BONUS_PERFECT = 5;
     const EXP_BONUS_STREAK = 2;
@@ -27,6 +29,7 @@ class CurrencyService
      */
     public function dailyCheck(User $user): array
     {
+        $this->recoverSpiritPower($user);
         $today = now()->format('Y-m-d');
         $changed = false;
         $streakDays = 0;
@@ -58,6 +61,7 @@ class CurrencyService
                 $user->spirit_power = min($user->spirit_power, 50);
             }
             $user->spirit_power_date = $today;
+            $user->spirit_power_last_recover_at = now();
             $user->daily_minutes = 0;
             $user->daily_minutes_date = $today;
             $changed = true;
@@ -70,18 +74,79 @@ class CurrencyService
             'streak_days' => $streakDays,
             'spirit_power' => $user->spirit_power,
             'spirit_power_max' => $user->spirit_power_max,
+            'spirit_power_last_recover_at' => optional($user->spirit_power_last_recover_at)->toIso8601String(),
+        ];
+    }
+
+    public function recoverSpiritPower(User $user): array
+    {
+        $maxSpirit = max(0, (int) ($user->spirit_power_max ?? 0));
+        $currentSpirit = max(0, (int) ($user->spirit_power ?? 0));
+        $now = now();
+        $lastRecoverAt = $user->spirit_power_last_recover_at
+            ? $user->spirit_power_last_recover_at->copy()
+            : $now->copy();
+
+        if ($currentSpirit >= $maxSpirit) {
+            if (!$user->spirit_power_last_recover_at) {
+                $user->spirit_power_last_recover_at = $now;
+                $user->save();
+            }
+            return [
+                'recovered' => 0,
+                'spirit_power' => $currentSpirit,
+                'spirit_power_max' => $maxSpirit,
+            ];
+        }
+
+        $elapsedSeconds = max(0, (int) $lastRecoverAt->diffInSeconds($now));
+        $ticks = (int) floor($elapsedSeconds / self::SPIRIT_RECOVER_INTERVAL_SECONDS);
+        if ($ticks <= 0) {
+            if (!$user->spirit_power_last_recover_at) {
+                $user->spirit_power_last_recover_at = $now;
+                $user->save();
+            }
+            return [
+                'recovered' => 0,
+                'spirit_power' => $currentSpirit,
+                'spirit_power_max' => $maxSpirit,
+            ];
+        }
+
+        $recoverAmount = min($ticks * self::SPIRIT_RECOVER_PER_TICK, max(0, $maxSpirit - $currentSpirit));
+        if ($recoverAmount <= 0) {
+            return [
+                'recovered' => 0,
+                'spirit_power' => $currentSpirit,
+                'spirit_power_max' => $maxSpirit,
+            ];
+        }
+
+        $secondsUsed = (int) floor($recoverAmount / self::SPIRIT_RECOVER_PER_TICK) * self::SPIRIT_RECOVER_INTERVAL_SECONDS;
+        $user->spirit_power = min($maxSpirit, $currentSpirit + $recoverAmount);
+        $user->spirit_power_last_recover_at = $lastRecoverAt->addSeconds($secondsUsed);
+        $user->save();
+
+        return [
+            'recovered' => $recoverAmount,
+            'spirit_power' => (int) $user->spirit_power,
+            'spirit_power_max' => $maxSpirit,
         ];
     }
 
     public function hasEnoughSpirit(User $user, int $required): bool
     {
+        $this->recoverSpiritPower($user);
         return $user->spirit_power >= $required;
     }
 
     public function consumeSpirit(User $user, int $amount): bool
     {
-        if (!$this->hasEnoughSpirit($user, $amount)) return false;
-        $user->decrement('spirit_power', $amount);
+        $this->recoverSpiritPower($user);
+        if ($user->spirit_power < $amount) return false;
+        $user->spirit_power = max(0, (int) $user->spirit_power - $amount);
+        $user->spirit_power_last_recover_at = now();
+        $user->save();
         return true;
     }
 

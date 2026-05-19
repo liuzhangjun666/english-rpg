@@ -34,6 +34,7 @@ class User extends Authenticatable
         'spirit_power_max',
         'spirit_stone',
         'spirit_power_date',
+        'spirit_power_last_recover_at',
         'vip_type',
         'vip_expired_at',
         'is_minor',
@@ -56,6 +57,7 @@ class User extends Authenticatable
         return [
             'vip_expired_at' => 'datetime',
             'last_login_at' => 'datetime',
+            'spirit_power_last_recover_at' => 'datetime',
             'password' => 'hashed',
             'is_minor' => 'boolean',
             'parent_verified' => 'boolean',

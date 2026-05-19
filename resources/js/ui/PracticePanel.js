@@ -1232,13 +1232,7 @@ export class PracticePanel {
     }
 
     getVocabQiReward(question) {
-        const reward = question?.reward || {};
-        const fromReward =
-            Number(reward.energy || reward.exp || reward.qi || reward.spirit || 0);
-        const fromQuestion =
-            Number(question?.exp_gained || question?.exp || question?.reward_exp || 0);
-        const resolved = fromReward || fromQuestion || 10;
-        return Number.isFinite(resolved) && resolved > 0 ? Math.floor(resolved) : 10;
+        return 1;
     }
 
     getHerbEmoji(text) {
@@ -1522,11 +1516,7 @@ export class PracticePanel {
     }
 
     getGrammarRuneReward(question) {
-        const reward = question?.reward || {};
-        const fromReward = Number(reward.energy || reward.exp || reward.rune || reward.grammar || 0);
-        const fromQuestion = Number(question?.exp_gained || question?.exp || question?.reward_exp || 0);
-        const resolved = fromReward || fromQuestion || 8;
-        return Number.isFinite(resolved) && resolved > 0 ? Math.floor(resolved) : 8;
+        return 2;
     }
 
     getGrammarTargetSentence(question) {
@@ -2159,11 +2149,7 @@ export class PracticePanel {
     }
 
     getListeningLingyinReward(question) {
-        const reward = question?.reward || {};
-        const fromReward = Number(reward.energy || reward.exp || reward.listening || reward.lingyin || 0);
-        const fromQuestion = Number(question?.exp_gained || question?.exp || question?.reward_exp || 0);
-        const resolved = fromReward || fromQuestion || 8;
-        return Number.isFinite(resolved) && resolved > 0 ? Math.floor(resolved) : 8;
+        return 2;
     }
 
     playSpeakingMaterial(question) {

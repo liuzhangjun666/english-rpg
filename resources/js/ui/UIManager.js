@@ -12,6 +12,11 @@ export class UIManager {
         this.container = document.getElementById('game-container');
         this.assets = { avatarDefault, hermesAvatar, loadingTai, realmBadge };
         this.errorCountdownTimers = {};
+        this.learningProgressCacheKey = 'levelup_learning_progress_cache_v1';
+        this._learningProgressCache = this.readLearningProgressCache();
+        this.learningProgressRefreshIntervalMs = 30000;
+        this.spiritRecoverIntervalSec = 300;
+        this._spiritRecoverTicker = null;
     }
 
     showLoading(text = '加载中...') {
@@ -214,6 +219,7 @@ export class UIManager {
     }
 
     showCharacterBar() {
+        this.stopSpiritRecoverTicker();
         const existing = document.getElementById('character-bar');
         if (existing) existing.remove();
         const user = this.game.store.getState().user;
@@ -232,20 +238,24 @@ export class UIManager {
                 <div id="learning-progress-mini" style="margin-top:4px;padding:4px 6px;border:1px solid rgba(212,168,67,0.18);border-radius:8px;background:rgba(255,255,255,0.03);">
                     <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--parchment-dark);margin-bottom:3px;">
                         <span>修为进度</span>
-                        <span id="learning-progress-text">加载中...</span>
+                        <span id="learning-progress-text">--</span>
                     </div>
                     <div style="height:3px;background:rgba(255,255,255,0.12);border-radius:4px;overflow:hidden;">
                         <div id="learning-progress-fill" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold),#f4d98a);"></div>
                     </div>
+                    <div id="learning-progress-breakthrough" style="display:none;margin-top:4px;font-size:9px;line-height:1.35;color:var(--parchment-dark);"></div>
                 </div>
             </div>
             <div class="stats">
                 <div class="stat">⚡ ${user.exp}</div>
-                <div class="stat">💧 ${user.spirit_power}/${user.spirit_power_max}</div>
+                <div class="stat">💧 <span id="spirit-power-value">${user.spirit_power}/${user.spirit_power_max}</span> <span id="spirit-recover-countdown" style="font-size:10px;color:var(--gold-light);margin-left:4px;">--</span></div>
                 <div class="stat">💎 ${user.spirit_stone}</div>
             </div>
         `;
         document.body.appendChild(bar);
+        this.applyLearningProgressToBar(bar, this._learningProgressCache);
+        this.renderSpiritRecoverInBar(bar, user);
+        this.startSpiritRecoverTicker(bar);
         this.refreshLearningProgress(bar);
         this.storeUnsubscribe = this.game.store.subscribe((state) => {
             if (state.user) {
@@ -253,7 +263,7 @@ export class UIManager {
                 if (n) n.textContent = state.user.nickname;
                 if (r) r.textContent = this.getCurrentRealmLabel(state.user);
                 if (s[0]) s[0].innerHTML = `⚡ ${state.user.exp}`;
-                if (s[1]) s[1].innerHTML = `💧 ${state.user.spirit_power}/${state.user.spirit_power_max}`;
+                this.renderSpiritRecoverInBar(bar, state.user);
                 if (s[2]) s[2].innerHTML = `💎 ${state.user.spirit_stone}`;
                 this.refreshLearningProgress(bar);
             }
@@ -266,7 +276,7 @@ export class UIManager {
         if (!fill || !text) return;
         if (this._learningProgressLoading) return;
         const now = Date.now();
-        if (this._learningProgressLastAt && now - this._learningProgressLastAt < 5000) return;
+        if (this._learningProgressLastAt && now - this._learningProgressLastAt < this.learningProgressRefreshIntervalMs) return;
 
         this._learningProgressLoading = true;
         try {
@@ -281,8 +291,12 @@ export class UIManager {
             const data = res.data || {};
             const percent = Math.max(0, Math.min(100, Number(data.realm_progress_percent ?? data.progress_percent ?? 0)));
             const remain = Number(data.remaining_energy_to_next_realm ?? data.remaining_exp ?? 0);
-            text.textContent = `还需 ${remain} 修为`;
-            fill.style.width = `${percent}%`;
+            this.applyLearningProgressToBar(bar, {
+                percent,
+                remain,
+                breakthroughTip: this.buildLearningBreakthroughTip(data),
+            });
+            this.saveLearningProgressCache({ percent, remain });
 
             const user = this.game.store.getState().user;
             if (user) {
@@ -298,11 +312,162 @@ export class UIManager {
                 });
             }
         } catch (error) {
-            text.textContent = '加载失败';
-            fill.style.width = '0%';
+            if (!this._learningProgressCache) {
+                text.textContent = '加载失败';
+                fill.style.width = '0%';
+            }
         } finally {
             this._learningProgressLoading = false;
         }
+    }
+
+    readLearningProgressCache() {
+        try {
+            const raw = localStorage.getItem(this.learningProgressCacheKey);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            if (!parsed || typeof parsed !== 'object') return null;
+            const percent = Number(parsed.percent);
+            const remain = Number(parsed.remain);
+            if (!Number.isFinite(percent) || !Number.isFinite(remain)) return null;
+            return {
+                percent: Math.max(0, Math.min(100, percent)),
+                remain: Math.max(0, remain),
+            };
+        } catch (error) {
+            return null;
+        }
+    }
+
+    saveLearningProgressCache(progress) {
+        if (!progress) return;
+        const normalized = {
+            percent: Math.max(0, Math.min(100, Number(progress.percent || 0))),
+            remain: Math.max(0, Number(progress.remain || 0)),
+        };
+        this._learningProgressCache = normalized;
+        try {
+            localStorage.setItem(this.learningProgressCacheKey, JSON.stringify(normalized));
+        } catch (error) {
+            // ignore storage failures
+        }
+    }
+
+    applyLearningProgressToBar(bar, progress) {
+        if (!bar || !progress) return;
+        const fill = bar.querySelector('#learning-progress-fill');
+        const text = bar.querySelector('#learning-progress-text');
+        const tip = bar.querySelector('#learning-progress-breakthrough');
+        if (!fill || !text) return;
+
+        const percent = Math.max(0, Math.min(100, Number(progress.percent || 0)));
+        const remain = Math.max(0, Number(progress.remain || 0));
+        fill.style.width = `${percent}%`;
+        text.textContent = `还需 ${remain} 修为`;
+        this.applyLearningBreakthroughTip(tip, progress.breakthroughTip || null);
+    }
+
+    buildLearningBreakthroughTip(data) {
+        if (!data || typeof data !== 'object') return null;
+        if (data.can_breakthrough === true) {
+            return { type: 'ready', text: '突破条件已满足，可突破' };
+        }
+
+        const requiredEach = data?.breakthrough_conditions?.abilities?.required_each;
+        const dimensions = data?.six_dimensions;
+        if (!requiredEach || typeof requiredEach !== 'object' || !dimensions || typeof dimensions !== 'object') {
+            return null;
+        }
+
+        const labels = this.getDimensionLabelMap();
+        const missing = [];
+        Object.keys(labels).forEach((key) => {
+            const required = Number(requiredEach[key]);
+            if (!Number.isFinite(required)) return;
+            const current = Number(dimensions[key] ?? 0);
+            const gap = Math.max(0, required - current);
+            if (gap > 0) missing.push(`${labels[key]}差${gap}`);
+        });
+
+        if (!missing.length) return null;
+
+        return {
+            type: 'missing',
+            text: `未满足：${missing.join('、')}`,
+        };
+    }
+
+    applyLearningBreakthroughTip(tipEl, tip) {
+        if (!tipEl) return;
+        if (!tip || !tip.text) {
+            tipEl.style.display = 'none';
+            tipEl.textContent = '';
+            return;
+        }
+
+        tipEl.style.display = 'block';
+        tipEl.textContent = tip.text;
+        tipEl.style.color = tip.type === 'ready' ? '#9ee8bf' : 'var(--parchment-dark)';
+    }
+
+    startSpiritRecoverTicker(bar) {
+        this.stopSpiritRecoverTicker();
+        this._spiritRecoverTicker = setInterval(() => {
+            if (!bar || !document.body.contains(bar)) {
+                this.stopSpiritRecoverTicker();
+                return;
+            }
+            const user = this.game.store.getState().user;
+            if (!user) return;
+            this.renderSpiritRecoverInBar(bar, user);
+        }, 1000);
+    }
+
+    stopSpiritRecoverTicker() {
+        if (this._spiritRecoverTicker) {
+            clearInterval(this._spiritRecoverTicker);
+            this._spiritRecoverTicker = null;
+        }
+    }
+
+    getSpiritRecoverView(user, nowMs = Date.now()) {
+        const maxSpirit = Math.max(0, Number(user?.spirit_power_max || 0));
+        const spiritBase = Math.max(0, Number(user?.spirit_power || 0));
+        if (maxSpirit <= 0) {
+            return { spirit: spiritBase, max: maxSpirit, countdownText: '--' };
+        }
+
+        if (spiritBase >= maxSpirit) {
+            return { spirit: maxSpirit, max: maxSpirit, countdownText: '已满' };
+        }
+
+        const rawLast = user?.spirit_power_last_recover_at;
+        const parsed = rawLast ? new Date(rawLast).getTime() : nowMs;
+        const lastMs = Number.isFinite(parsed) ? parsed : nowMs;
+        const elapsedSec = Math.max(0, Math.floor((nowMs - lastMs) / 1000));
+        const ticks = Math.floor(elapsedSec / this.spiritRecoverIntervalSec);
+        const spirit = Math.min(maxSpirit, spiritBase + Math.max(0, ticks));
+
+        if (spirit >= maxSpirit) {
+            return { spirit, max: maxSpirit, countdownText: '已满' };
+        }
+
+        const remainSec = this.spiritRecoverIntervalSec - (elapsedSec % this.spiritRecoverIntervalSec);
+        const mm = String(Math.floor(remainSec / 60)).padStart(2, '0');
+        const ss = String(remainSec % 60).padStart(2, '0');
+        return { spirit, max: maxSpirit, countdownText: `${mm}:${ss}` };
+    }
+
+    renderSpiritRecoverInBar(bar, user) {
+        if (!bar || !user) return;
+        const valueEl = bar.querySelector('#spirit-power-value');
+        const cdEl = bar.querySelector('#spirit-recover-countdown');
+        if (!valueEl || !cdEl) return;
+
+        const view = this.getSpiritRecoverView(user);
+        valueEl.textContent = `${view.spirit}/${view.max}`;
+        cdEl.textContent = view.countdownText;
+        cdEl.style.color = view.countdownText === '已满' ? '#9ee8bf' : 'var(--gold-light)';
     }
 
     getRealmName(realm, stage = null) {

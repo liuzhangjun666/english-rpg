@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Log;
 
 class WritingService
 {
+    public function __construct(
+        private readonly RealmService $realmService
+    ) {
+    }
+
     // 写作模块灵力消耗（每道题）
     const SPIRIT_COST_PER_PROMPT = 3;
     // 基础修为奖励
@@ -75,6 +80,7 @@ class WritingService
         $user->increment('exp', $expGained);
         $user->increment('spirit_stone', $stonesGained);
         $user->save();
+        $realmProgress = $this->realmService->applyCultivationGain($user->fresh(), 'writing', $score >= 60 ? 1 : 0);
 
         // 记录学习记录
         LearningRecord::create([
@@ -98,6 +104,7 @@ class WritingService
             'stones_gained' => $stonesGained,
             'word_count' => $wordCount,
             'passed' => $score >= 60,
+            'realm_progress' => $realmProgress,
         ];
     }
 
