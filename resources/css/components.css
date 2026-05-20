@@ -2021,6 +2021,73 @@
     font-size: 13px;
 }
 
+.reading-demon-trial-panel {
+    max-width: 620px;
+}
+
+.reading-demon-trial-tip {
+    font-size: 13px;
+    color: var(--parchment-dark);
+    line-height: 1.7;
+    margin-bottom: 12px;
+}
+
+.reading-demon-question-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.reading-demon-card {
+    border: 1px solid rgba(212,168,67,0.25);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.reading-demon-card-index {
+    font-size: 13px;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+}
+
+.reading-demon-card-question {
+    font-size: 14px;
+    color: var(--parchment);
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.reading-demon-option-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.reading-demon-option {
+    text-align: left;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.04);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: var(--parchment);
+    cursor: pointer;
+    transition: background .2s ease, border-color .2s ease;
+}
+
+.reading-demon-option.selected {
+    background: rgba(212,168,67,0.18);
+    border-color: rgba(212,168,67,0.7);
+}
+
+.reading-demon-option-label {
+    color: var(--gold-light);
+    margin-right: 6px;
+}
+
+.reading-demon-actions {
+    margin-top: 12px;
+}
+
 /* ===== 命运岔路口 特效 ===== */
 .fate-overlay-mask {
     position: fixed;
@@ -2201,4 +2268,192 @@
     60% { transform: translateY(-2px) translate(-1px, -1px) rotate(0deg); }
     80% { transform: translateY(-2px) translate(1px, 1px) rotate(-0.3deg); }
     100% { transform: translateY(-2px) translate(0, 0) rotate(0deg); }
+}
+
+/* ===== 洞府个人面板 (Cultivation Profile) ===== */
+.cultivation-profile-panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    max-width: 95%;
+    height: 560px;
+    max-height: 90vh;
+    background: linear-gradient(135deg, rgba(8, 14, 24, 0.95), rgba(15, 26, 42, 0.9));
+    border: 1px solid #d4a843;
+    border-radius: 12px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(212, 168, 67, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+    animation: profileFadeIn 0.4s ease forwards;
+}
+
+.cultivation-profile-panel.fade-out {
+    animation: profileFadeOut 0.3s ease forwards;
+}
+
+@keyframes profileFadeIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes profileFadeOut {
+    from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    to { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(212, 168, 67, 0.3);
+    background: rgba(212, 168, 67, 0.05);
+}
+
+.profile-header-title {
+    color: var(--gold);
+    font-size: 20px;
+    font-family: var(--font-title);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.profile-close-btn {
+    position: relative;
+    background: transparent;
+    border: 1px solid rgba(212, 168, 67, 0.6);
+    color: var(--gold-light);
+    padding: 6px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    /* 古典折角效果 */
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+.profile-close-btn:hover {
+    background: rgba(212, 168, 67, 0.2);
+    color: var(--gold);
+    border-color: var(--gold);
+}
+
+.profile-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.profile-left-pane {
+    flex: 1;
+    padding: 24px;
+    border-right: 1px solid rgba(212, 168, 67, 0.2);
+    overflow-y: auto;
+}
+
+.profile-right-pane {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.profile-section-title {
+    color: var(--gold-light);
+    font-size: 15px;
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed rgba(212, 168, 67, 0.3);
+}
+
+.profile-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.profile-stat-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.profile-stat-label {
+    color: var(--parchment-dark);
+    font-size: 12px;
+}
+.profile-stat-val {
+    color: var(--gold);
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.profile-eng-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.profile-eng-item {
+    background: rgba(74, 144, 217, 0.08);
+    border: 1px solid rgba(74, 144, 217, 0.25);
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+}
+.profile-eng-val {
+    color: #8cc5ff;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+.fate-nodes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.fate-node-item {
+    background: rgba(212, 168, 67, 0.08);
+    border: 1px solid rgba(212, 168, 67, 0.3);
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: transform 0.2s;
+}
+.fate-node-item:hover {
+    transform: translateX(4px);
+    background: rgba(212, 168, 67, 0.12);
+}
+.fate-node-title {
+    color: var(--gold);
+    font-size: 15px;
+    font-weight: bold;
+}
+.fate-node-desc {
+    color: var(--parchment);
+    font-size: 13px;
+    line-height: 1.6;
+}
+.fate-node-empty {
+    color: var(--parchment-dark);
+    font-size: 14px;
+    text-align: center;
+    padding: 30px;
+    font-style: italic;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border: 1px dashed rgba(212, 168, 67, 0.3);
 }
