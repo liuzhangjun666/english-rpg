@@ -12,6 +12,7 @@ export class SceneManager {
         this.isPaused = false;
         this.currentLoadId = 0;
         this._backgroundFitCacheKey = '';
+        this._viewportSize = new THREE.Vector2();
 
         this.sceneLoaders = {
             hall: () => import('./HallScene.js').then((m) => m.HallScene),
@@ -82,6 +83,7 @@ export class SceneManager {
             const sceneObj = new SceneClass();
             sceneObj.build(this.scene, this.camera, null, options);
             this.currentSceneObj = sceneObj;
+            this.fitBackgroundToViewport();
             this.eventBus?.emit('scene:switch:end', { from: prevSceneName, to: name });
         } catch (error) {
             console.error(`[SceneManager] Failed to load scene: ${name}`, error);
@@ -131,7 +133,6 @@ export class SceneManager {
 
         const time = Date.now() * 0.001;
         if (!this.isPaused) {
-            this.fitBackgroundToViewport();
             if (this.currentSceneObj?.animate) this.currentSceneObj.animate(time);
             this.renderer.render(this.scene, this.camera);
         }
@@ -157,7 +158,7 @@ export class SceneManager {
         const imageH = image?.videoHeight || image?.naturalHeight || image?.height;
         if (!imageW || !imageH) return;
 
-        const size = this.renderer.getSize(new THREE.Vector2());
+        const size = this.renderer.getSize(this._viewportSize);
         const viewW = size.width;
         const viewH = size.height;
         if (!viewW || !viewH) return;

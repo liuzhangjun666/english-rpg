@@ -166,6 +166,78 @@ class HeartDemonService
         return $questions;
     }
 
+    public function getRecentWrongQuestions(int $userId, int $min = 3, int $max = 5): array
+    {
+        $take = max($min, $max);
+        $demons = HeartDemon::where('user_id', $userId)
+            ->where('is_mastered', false)
+            ->orderByDesc('last_wrong_at')
+            ->orderByDesc('wrong_count')
+            ->limit($take)
+            ->get();
+
+        $questions = [];
+        foreach ($demons as $demon) {
+            $q = Question::where('question_id', $demon->question_id)->first();
+            if (!$q) {
+                continue;
+            }
+            $arr = $q->toArray();
+            $arr['_is_demon'] = true;
+            $arr['_demon_wrong_count'] = (int) $demon->wrong_count;
+            $arr['_last_wrong_at'] = optional($demon->last_wrong_at)?->toIso8601String();
+            $questions[] = $arr;
+            if (count($questions) >= $max) {
+                break;
+            }
+        }
+
+        if (count($questions) < $min) {
+            return $questions;
+        }
+
+        return array_slice($questions, 0, $max);
+    }
+
+    public function evaluateDemonTrial(int $userId, array $answers): array
+    {
+        $resultItems = [];
+        $correctCount = 0;
+
+        foreach ($answers as $item) {
+            $questionId = trim((string) ($item['question_id'] ?? ''));
+            if ($questionId === '') {
+                continue;
+            }
+            $answer = trim((string) ($item['answer'] ?? ''));
+            $question = Question::where('question_id', $questionId)->first();
+            if (!$question) {
+                continue;
+            }
+
+            $correct = $this->isAnswerCorrect($question->correct_answer, $answer);
+            if ($correct) {
+                $correctCount++;
+                $this->recordCorrect($userId, $questionId);
+            } else {
+                $this->recordWrong($userId, $questionId, (string) $question->type, (string) $question->realm);
+            }
+
+            $resultItems[] = [
+                'question_id' => $questionId,
+                'correct' => $correct,
+            ];
+        }
+
+        $total = count($resultItems);
+        return [
+            'total' => $total,
+            'correct_count' => $correctCount,
+            'passed' => $total > 0 && $correctCount === $total,
+            'results' => $resultItems,
+        ];
+    }
+
     private function dynamicInjectionRatio(int $userId, ?string $type = null, ?string $realm = null): float
     {
         $query = HeartDemon::where('user_id', $userId)->where('is_mastered', false);
@@ -186,5 +258,10 @@ class HeartDemonService
             $demonCount <= 30 => 0.3,
             default => 0.4,
         };
+    }
+
+    private function isAnswerCorrect(string $correctAnswer, string $userAnswer): bool
+    {
+        return mb_strtolower(trim($correctAnswer)) === mb_strtolower(trim($userAnswer));
     }
 }

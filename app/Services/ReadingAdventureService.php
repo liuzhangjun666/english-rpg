@@ -5,10 +5,22 @@ namespace App\Services;
 use App\Models\LearningRecord;
 use App\Models\User;
 use App\Support\StoryProgressSupport;
+use Illuminate\Support\Facades\Log;
 
 class ReadingAdventureService
 {
     private const PASS_THRESHOLD = 60;
+    private const CHAPTER_PREFIX_TO_MAINLINE = [
+        'R1' => 'chapter_1',
+        'R2' => 'chapter_2',
+        'R3' => 'chapter_3',
+        'R4' => 'chapter_4',
+    ];
+    private const HIDDEN_NODE_MAPPING = [
+        'chapter_1' => 'hidden_ending_void',
+        'chapter_2' => 'hidden_ending_starlight',
+        // 预留：chapter_3 / chapter_4 后续补充
+    ];
 
     public function __construct(private readonly HeartDemonService $demonService)
     {
@@ -55,7 +67,14 @@ class ReadingAdventureService
         return $chapter;
     }
 
-    public function submit(User $user, string $chapterId, array $answers, ?string $selectedBranchId = null): array
+    public function submit(
+        User $user,
+        string $chapterId,
+        array $answers,
+        ?string $selectedBranchId = null,
+        ?array $demonTrialAnswers = null,
+        bool $skipDemonTrial = false
+    ): array
     {
         $chapter = $this->getChapterOrNull($chapterId, $user);
         if (!$chapter) {
@@ -91,28 +110,6 @@ class ReadingAdventureService
                 'user_answer' => $userAnswer,
                 'correct_answer' => $task['answer'],
             ];
-
-            LearningRecord::create([
-                'user_id' => $user->id,
-                'activity_type' => 'reading',
-                'activity_id' => $chapterId,
-                'question_id' => $taskId,
-                'is_correct' => $correct,
-                'exp_gained' => 0,
-                'spirit_cost' => 0,
-                'time_spent' => 0,
-                'answer_data' => [
-                    'task_type' => $task['type'],
-                    'user_answer' => $userAnswer,
-                    'correct_answer' => $task['answer'],
-                ],
-            ]);
-
-            if ($correct) {
-                $this->demonService->recordCorrect($user->id, $taskId);
-            } else {
-                $this->demonService->recordWrong($user->id, $taskId, 'reading', $user->realm);
-            }
         }
 
         $total = count($chapter['tasks']);
@@ -132,6 +129,72 @@ class ReadingAdventureService
             $selectedBranchId = null;
         }
 
+        $isHereticChoice = $selectedBranchId && str_contains($selectedBranchId, 'path_heretic');
+        $demonTrial = null;
+        $hiddenNodeId = null;
+
+        if ($passed && $isHereticChoice) {
+            $demonQuestions = $this->demonService->getRecentWrongQuestions($user->id, 3, 5);
+            if (count($demonQuestions) > 0) {
+                if ($skipDemonTrial) {
+                    $selectedBranchId = $this->fallbackRegularBranch($chapter, $selectedBranchId);
+                    $demonTrial = [
+                        'total' => count($demonQuestions),
+                        'correct_count' => 0,
+                        'passed' => false,
+                        'results' => [],
+                        'message' => '用户取消问心试炼，已退回常规节点。',
+                    ];
+                } elseif (!$demonTrialAnswers || count($demonTrialAnswers) === 0) {
+                    return [
+                        'success' => true,
+                        'data' => [
+                            'need_demon_trial' => true,
+                            'chapter_id' => $chapterId,
+                            'selected_branch_id' => $selectedBranchId,
+                            'demon_trial_questions' => $demonQuestions,
+                            'demon_trial_min' => 3,
+                            'demon_trial_max' => 5,
+                            'message' => '问心之路已触发：请先破除心魔再判定分支。',
+                        ],
+                    ];
+                } else {
+                    $allowedQuestionIds = array_values(array_map(
+                        fn ($q) => (string) ($q['question_id'] ?? ''),
+                        $demonQuestions
+                    ));
+
+                    $filteredAnswers = [];
+                    foreach ($demonTrialAnswers as $answerItem) {
+                        $qid = trim((string) ($answerItem['question_id'] ?? ''));
+                        if ($qid === '' || !in_array($qid, $allowedQuestionIds, true)) {
+                            continue;
+                        }
+                        $filteredAnswers[] = [
+                            'question_id' => $qid,
+                            'answer' => (string) ($answerItem['answer'] ?? ''),
+                        ];
+                    }
+
+                    $demonTrial = $this->demonService->evaluateDemonTrial($user->id, $filteredAnswers);
+                    if (!($demonTrial['passed'] ?? false)) {
+                        $selectedBranchId = $this->fallbackRegularBranch($chapter, $selectedBranchId);
+                    } else {
+                        $hiddenNodeId = $this->resolveHiddenNodeByChapter($chapterId);
+                    }
+                }
+            } else {
+                $demonTrial = [
+                    'total' => 0,
+                    'correct_count' => 0,
+                    'passed' => true,
+                    'results' => [],
+                    'message' => '当前无可用心魔题，按破除处理。',
+                ];
+                $hiddenNodeId = $this->resolveHiddenNodeByChapter($chapterId);
+            }
+        }
+
         $difficulty = max(1, (int)$chapter['difficulty']);
         $multiplier = 1 + (($difficulty - 1) * 0.25);
 
@@ -146,6 +209,9 @@ class ReadingAdventureService
         }
 
         $branchUnlockState = $this->resolveBranchUnlockState($chapterId, $selectedBranchId, $chapter);
+        if ($hiddenNodeId) {
+            $branchUnlockState['hidden_node_id'] = $hiddenNodeId;
+        }
         $storySnapshot = StoryProgressSupport::applyReadingBranchResult(
             $user,
             $chapter,
@@ -155,6 +221,30 @@ class ReadingAdventureService
             $chapter['chapter_rewards'] ?? [],
             $branchUnlockState,
         );
+
+        foreach ($results as $row) {
+            LearningRecord::create([
+                'user_id' => $user->id,
+                'activity_type' => 'reading',
+                'activity_id' => $chapterId,
+                'question_id' => $row['task_id'],
+                'is_correct' => (bool) $row['correct'],
+                'exp_gained' => 0,
+                'spirit_cost' => 0,
+                'time_spent' => 0,
+                'answer_data' => [
+                    'task_type' => $row['type'],
+                    'user_answer' => $row['user_answer'],
+                    'correct_answer' => $row['correct_answer'],
+                ],
+            ]);
+
+            if ($row['correct']) {
+                $this->demonService->recordCorrect($user->id, $row['task_id']);
+            } else {
+                $this->demonService->recordWrong($user->id, $row['task_id'], 'reading', $user->realm);
+            }
+        }
 
         LearningRecord::create([
             'user_id' => $user->id,
@@ -189,6 +279,7 @@ class ReadingAdventureService
                 'item_reward' => $passed ? ($chapter['rewards']['item'] ?? null) : null,
                 'selected_branch_id' => $selectedBranchId,
                 'branch_unlock_state' => $branchUnlockState,
+                'demon_trial' => $demonTrial,
                 'next_chapter_id' => $branchUnlockState['next_chapter_id'] ?? null,
                 'story_progress' => $storySnapshot['story_progress'] ?? StoryProgressSupport::normalizeStoryProgress($user->story_progress),
                 'progress_currency' => $storySnapshot['progress_currency'] ?? StoryProgressSupport::normalizeProgressCurrency($user->progress_currency),
@@ -262,6 +353,39 @@ class ReadingAdventureService
             'recommended_module' => $nextChapterId ? 'reading' : 'practice',
             'ending_id' => $isEndingChapter ? $selectedBranchId : null,
         ];
+    }
+
+    private function fallbackRegularBranch(array $chapter, ?string $selectedBranchId): ?string
+    {
+        $options = $chapter['branch_options'] ?? [];
+        foreach ($options as $option) {
+            $id = (string) ($option['id'] ?? '');
+            if ($id === '' || $id === $selectedBranchId) {
+                continue;
+            }
+            if (!str_contains($id, 'path_heretic')) {
+                return $id;
+            }
+        }
+        return $selectedBranchId;
+    }
+
+    private function resolveHiddenNodeByChapter(string $chapterId): ?string
+    {
+        preg_match('/^(R\d+)-/i', trim($chapterId), $match);
+        $prefix = strtoupper($match[1] ?? '');
+        $mainlineKey = self::CHAPTER_PREFIX_TO_MAINLINE[$prefix] ?? null;
+        $hiddenNodeId = $mainlineKey ? (self::HIDDEN_NODE_MAPPING[$mainlineKey] ?? null) : null;
+
+        if ($hiddenNodeId === null) {
+            Log::warning('Missing hidden node mapping for chapter', [
+                'chapter_id' => $chapterId,
+                'chapter_prefix' => $prefix !== '' ? $prefix : null,
+                'mainline_key' => $mainlineKey,
+            ]);
+        }
+
+        return $hiddenNodeId;
     }
 
     private function decorateStoryMeta(array $chapters): array
