@@ -18,6 +18,7 @@ class User extends Authenticatable
     protected $fillable = [
         'phone',
         'nickname',
+        'school_grade',
         'avatar_url',
         'realm',
         'realm_stage',

@@ -17,7 +17,7 @@ class WritingService
     }
 
     // 写作模块灵力消耗（每道题）
-    const SPIRIT_COST_PER_PROMPT = 3;
+    const SPIRIT_COST_PER_PROMPT = 5;
     // 基础修为奖励
     const EXP_BASE = 20;
     // 高分加成

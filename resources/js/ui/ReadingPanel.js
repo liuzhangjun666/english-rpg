@@ -50,6 +50,43 @@ export class ReadingPanel {
         this.taskOptionCache = {};
         this.taskFeedback = {};
         this.repairedTaskSet = new Set();
+        this.isOpeningChapter = false;
+    }
+
+    getEstimatedSpiritView() {
+        const user = this.game.store.getState().user || {};
+        const fallbackSpirit = Math.max(0, Number(user.spirit_power || 0));
+        const fallbackMax = Math.max(fallbackSpirit, Number(user.spirit_power_max || fallbackSpirit));
+        if (typeof this.game?.ui?.getSpiritRecoverView === 'function') {
+            const view = this.game.ui.getSpiritRecoverView(user);
+            if (view && Number.isFinite(Number(view.spirit))) {
+                return view;
+            }
+        }
+        return {
+            spirit: fallbackSpirit,
+            max: fallbackMax,
+            countdownText: '--',
+        };
+    }
+
+    ensureSpiritBeforeChapter(requiredCost = 5) {
+        const view = this.getEstimatedSpiritView();
+        const currentSpirit = Math.max(0, Number(view.spirit || 0));
+        if (currentSpirit >= requiredCost) return true;
+
+        const countdown = String(view.countdownText || '--');
+        const recoverTip = (countdown !== '已满' && countdown !== '--')
+            ? `约 ${countdown} 后恢复 1 点灵力。`
+            : '请稍后等待灵力恢复。';
+        this.game.ui.showHermesBubble(`灵力不足，当前 ${currentSpirit}/${view.max || currentSpirit}，进入藏经阁需 ${requiredCost} 点。${recoverTip}`);
+        return false;
+    }
+
+    clearChapterLoadingState() {
+        document.querySelectorAll('.reading-chapter-card-loading').forEach((node) => {
+            node.classList.remove('reading-chapter-card-loading');
+        });
     }
 
     async showChapterList(level = 1, shouldResume = true) {
@@ -57,9 +94,17 @@ export class ReadingPanel {
         this.game.ui.hideAllPanels();
         if (shouldResume && this.resumeSessionIfAvailable()) return;
         this.game.ui.showLoading('加载藏经阁...');
-
-        const res = await this.game.api.get(`/reading/chapters?level=${level}`);
-        this.game.ui.hideLoading();
+        let res;
+        try {
+            res = await this.game.api.get(`/reading/chapters?level=${level}`);
+        } catch (err) {
+            console.error('Load reading chapters failed', err);
+            this.game.ui.showHermesBubble('藏经阁暂时无法进入，请稍后再试');
+            this.game.enterHall();
+            return;
+        } finally {
+            this.game.ui.hideLoading();
+        }
 
         if (!res.success) {
             this.game.ui.showHermesBubble(res.message || '读取阅读副本失败');
@@ -109,8 +154,11 @@ export class ReadingPanel {
 
         panel.querySelectorAll('.reading-chapter-card').forEach((el) => {
             el.addEventListener('click', () => {
+                if (this.isOpeningChapter) return;
+                if (!this.ensureSpiritBeforeChapter(5)) return;
                 const chapterId = el.dataset.chapterId;
                 if (!chapterId) return;
+                el.classList.add('reading-chapter-card-loading');
                 this.startChapter(chapterId);
             });
         });
@@ -122,23 +170,104 @@ export class ReadingPanel {
     }
 
     async startChapter(chapterId) {
+        if (this.isOpeningChapter) return;
+        this.isOpeningChapter = true;
         this.game.ui.showLoading('进入藏经阁...');
-        const res = await this.game.api.get(`/reading/chapters/${chapterId}`);
-        this.game.ui.hideLoading();
+        let res;
+        try {
+            res = await this.game.api.get(`/reading/chapters/${chapterId}`);
+        } catch (err) {
+            console.error('Start reading chapter failed', err);
+            this.game.ui.showHermesBubble('进入章节失败，请稍后重试');
+            return;
+        } finally {
+            this.isOpeningChapter = false;
+            this.game.ui.hideLoading();
+            this.clearChapterLoadingState();
+        }
 
         if (!res.success) {
+            if (Number.isFinite(Number(res?.data?.current_spirit_power))) {
+                this.game.store.updateUser({ spirit_power: Number(res.data.current_spirit_power) });
+            }
+            if (res.code === 'INSUFFICIENT_SPIRIT_POWER') {
+                this.ensureSpiritBeforeChapter(5);
+                return;
+            }
             this.game.ui.showHermesBubble(res.message || '读取章节失败');
             return;
         }
 
-        this.currentChapter = res.data;
-        this.answers = {};
-        this.currentTaskIndex = 0;
-        this.taskOptionCache = {};
-        this.taskFeedback = {};
-        this.repairedTaskSet = new Set();
-        this.persistSession();
-        this.renderChapter();
+        const chapter = res.data;
+        if (Number.isFinite(Number(res?.data?.current_spirit_power))) {
+            this.game.store.updateUser({
+                spirit_power: Number(res.data.current_spirit_power),
+                spirit_power_last_recover_at: res?.data?.spirit_power_last_recover_at,
+            });
+        }
+        const cost = Number(chapter?.spirit_cost || 5);
+        const currentSpirit = Number(this.game.store.getState().user?.spirit_power || 0);
+        const confirmPanel = document.createElement('div');
+        confirmPanel.className = 'panel';
+        confirmPanel.id = 'reading-entry-confirm';
+        confirmPanel.style.maxWidth = '380px';
+        confirmPanel.innerHTML = `
+            <div class="panel-title">准备入阁</div>
+            <div style="text-align:center;color:var(--parchment-dark);font-size:14px;line-height:2;margin:12px 0;">
+                <div>章节：${this.escapeHtml(chapter.id || '')}</div>
+                <div>场景：${this.escapeHtml(chapter.scene || '')}</div>
+                <div>任务数：${(chapter.tasks || []).length}题</div>
+                <div>消耗灵力：<span style="color:var(--spirit-blue);font-weight:bold;">💧 ${cost}</span></div>
+                <div style="margin-top:8px;font-size:12px;">当前灵力：💧 ${currentSpirit}</div>
+            </div>
+            <button class="btn btn-primary" id="reading-entry-yes">开始阅读</button>
+            <button class="btn btn-secondary" id="reading-entry-no" style="margin-top:8px;">返回</button>
+        `;
+        this.game.ui.overlay.appendChild(confirmPanel);
+
+        document.getElementById('reading-entry-yes')?.addEventListener('click', async () => {
+            const yesBtn = document.getElementById('reading-entry-yes');
+            const noBtn = document.getElementById('reading-entry-no');
+            if (yesBtn) {
+                yesBtn.disabled = true;
+                yesBtn.textContent = '注入灵力中...';
+            }
+            if (noBtn) noBtn.disabled = true;
+
+            const consumeRes = await this.game.api.post('/user/consume-spirit', {
+                amount: cost,
+                reason: `reading:${chapter.id || chapterId}`,
+            });
+            if (Number.isFinite(Number(consumeRes?.data?.current_spirit_power))) {
+                this.game.store.updateUser({
+                    spirit_power: Number(consumeRes.data.current_spirit_power),
+                    spirit_power_last_recover_at: consumeRes?.data?.spirit_power_last_recover_at,
+                });
+            }
+            if (!consumeRes?.success) {
+                if (yesBtn) {
+                    yesBtn.disabled = false;
+                    yesBtn.textContent = '开始阅读';
+                }
+                if (noBtn) noBtn.disabled = false;
+                this.ensureSpiritBeforeChapter(cost);
+                return;
+            }
+
+            confirmPanel.remove();
+            this.currentChapter = chapter;
+            this.answers = {};
+            this.currentTaskIndex = 0;
+            this.taskOptionCache = {};
+            this.taskFeedback = {};
+            this.repairedTaskSet = new Set();
+            this.persistSession();
+            this.renderChapter();
+        });
+
+        document.getElementById('reading-entry-no')?.addEventListener('click', () => {
+            confirmPanel.remove();
+        });
     }
 
     renderChapter() {
@@ -275,11 +404,19 @@ export class ReadingPanel {
         }));
 
         this.game.ui.showLoading('提交阅读结果...');
-        const res = await this.game.api.post('/reading/submit-adventure', {
-            chapter_id: chapter.id,
-            answers,
-        });
-        this.game.ui.hideLoading();
+        let res;
+        try {
+            res = await this.game.api.post('/reading/submit-adventure', {
+                chapter_id: chapter.id,
+                answers,
+            });
+        } catch (err) {
+            console.error('Submit reading chapter failed', err);
+            this.game.ui.showHermesBubble('提交失败，请稍后重试');
+            return;
+        } finally {
+            this.game.ui.hideLoading();
+        }
 
         if (!res.success) {
             this.game.ui.showHermesBubble(res.message || '提交失败');

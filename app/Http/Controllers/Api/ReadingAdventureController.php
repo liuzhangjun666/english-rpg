@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Services\CurrencyService;
 use App\Services\ReadingAdventureService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ReadingAdventureController extends Controller
 {
-    public function __construct(private readonly ReadingAdventureService $service)
+    public function __construct(
+        private readonly ReadingAdventureService $service,
+        private readonly CurrencyService $currencyService
+    )
     {
     }
 
@@ -41,8 +45,13 @@ class ReadingAdventureController extends Controller
         ]);
     }
 
-    public function chapter(string $chapterId): JsonResponse
+    public function chapter(Request $request, string $chapterId): JsonResponse
     {
+        $user = $request->user();
+        $this->currencyService->recoverSpiritPower($user);
+        $user->refresh();
+        $spiritCost = CurrencyService::SPIRIT_COST_PER_LEVEL;
+
         $chapter = $this->service->getChapterOrNull($chapterId);
         if (!$chapter) {
             return response()->json([
@@ -51,6 +60,8 @@ class ReadingAdventureController extends Controller
                 'message' => '章节不存在',
             ], 404);
         }
+        $chapter['spirit_cost'] = $spiritCost;
+        $chapter['current_spirit_power'] = (int) ($user->fresh()->spirit_power ?? 0);
 
         return response()->json([
             'success' => true,

@@ -8,6 +8,16 @@ export class ReviewPanel {
         this.results = null;
     }
 
+    exitReview(panel = null) {
+        if (panel) panel.remove();
+        this.clearSession();
+        this.questions = [];
+        this.answers = {};
+        this.currentIndex = 0;
+        this.results = null;
+        this.game.enterHall();
+    }
+
     /** 打开错题复习 */
     async startReview() {
         if (this.resumeSessionIfAvailable()) return;
@@ -85,6 +95,7 @@ export class ReviewPanel {
             <button class="btn btn-primary btn-sm" id="review-next-btn" ${savedAnswer ? '' : 'disabled'}>
                 ${this.currentIndex < total - 1 ? '下一题 →' : '完成复习'}
             </button>
+            <button class="btn btn-secondary btn-sm" id="review-exit-btn" style="margin-top:8px;">返回宗门</button>
         `;
         this.game.ui.overlay.appendChild(panel);
 
@@ -101,6 +112,9 @@ export class ReviewPanel {
         document.getElementById('review-next-btn').addEventListener('click', () => {
             panel.remove();
             this.showFeedback(q);
+        });
+        document.getElementById('review-exit-btn').addEventListener('click', () => {
+            this.exitReview(panel);
         });
     }
 
@@ -129,6 +143,7 @@ export class ReviewPanel {
             <button class="btn btn-primary btn-sm" id="feedback-next-btn">
                 ${this.currentIndex < this.questions.length - 1 ? '继续下一题' : '查看复习成果'}
             </button>
+            <button class="btn btn-secondary btn-sm" id="feedback-exit-btn" style="margin-top:8px;">返回宗门</button>
         `;
         this.game.ui.overlay.appendChild(panel);
 
@@ -137,6 +152,9 @@ export class ReviewPanel {
             this.currentIndex++;
             this.persistSession();
             this.showQuestion();
+        });
+        document.getElementById('feedback-exit-btn').addEventListener('click', () => {
+            this.exitReview(panel);
         });
     }
 

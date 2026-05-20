@@ -3,32 +3,27 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Support\CultivationProfile;
 
 /**
  * 境界突破引擎
  */
 class RealmService
 {
-    // 境界顺序映射（九大境界，每境九层）
-    const REALM_ORDER = [
-        'L1','L2','L3','L4','L5','L6','L7','L8','L9',
-        'Z1','Z2','Z3',
-        'J1','J2','J3',
-        'Y1','Y2','Y3',
-        'H1','H2','H3',
-        'D1','D2','D3',
-    ];
+    private const CULTIVATION_REALM_GROUPS = ['练气', '筑基', '金丹', '元婴', '化神', '炼虚', '合体', '大乘', '渡劫'];
 
-    public const CULTIVATION_REALMS = [
-        '练气一层',
-        '练气二层',
-        '练气三层',
-        '练气四层',
-        '练气五层',
-        '练气六层',
-        '练气七层',
-        '练气八层',
-        '练气九层',
+    private const REALM_CODE_PREFIXES = ['L', 'Z', 'J', 'Y', 'H', 'X', 'T', 'D', 'U'];
+
+    private const CHINESE_LAYER_MAP = [
+        1 => '一层',
+        2 => '二层',
+        3 => '三层',
+        4 => '四层',
+        5 => '五层',
+        6 => '六层',
+        7 => '七层',
+        8 => '八层',
+        9 => '九层',
     ];
 
     public const DIMENSION_KEYS = ['vocabulary', 'grammar', 'reading', 'listening', 'writing', 'speaking'];
@@ -58,25 +53,47 @@ class RealmService
     /** 获取境界序号 */
     public function getRealmIndex(string $realm): int
     {
-        $index = array_search($realm, self::REALM_ORDER);
-        return $index !== false ? $index : -1;
+        return CultivationProfile::realmOrderIndex($realm);
     }
 
     public function getCultivationRealmIndex(string $realmName): int
     {
-        $index = array_search($realmName, self::CULTIVATION_REALMS, true);
-        return $index !== false ? $index : -1;
+        $matched = [];
+        if (!preg_match('/^(练气|筑基|金丹|元婴|化神|炼虚|合体|大乘|渡劫)([一二三四五六七八九]|[1-9])层$/u', trim($realmName), $matched)) {
+            return -1;
+        }
+
+        $group = (string) ($matched[1] ?? '');
+        $groupIndex = array_search($group, self::CULTIVATION_REALM_GROUPS, true);
+        if ($groupIndex === false) {
+            return -1;
+        }
+
+        $layer = $this->parseLayerToken((string) ($matched[2] ?? ''));
+        if ($layer < 1) {
+            return -1;
+        }
+
+        return ($groupIndex * 9) + $layer - 1;
     }
 
     public function resolveCurrentRealm(User $user): string
     {
         $currentRealm = (string) ($user->current_realm ?? '');
+        $derivedRealm = $this->buildCurrentRealmName(
+            (string) ($user->realm ?? 'L1'),
+            max(1, min(9, (int) ($user->realm_stage ?? 1)))
+        );
+        $derivedIndex = $this->getCultivationRealmIndex($derivedRealm);
+
         if ($this->getCultivationRealmIndex($currentRealm) >= 0) {
+            if ($derivedIndex >= 0 && $currentRealm !== $derivedRealm) {
+                return $derivedRealm;
+            }
             return $currentRealm;
         }
 
-        $legacyStage = max(1, min(9, (int) ($user->realm_stage ?? 1)));
-        return self::CULTIVATION_REALMS[$legacyStage - 1] ?? self::CULTIVATION_REALMS[0];
+        return $derivedRealm;
     }
 
     private function getRealmRequirements(string $realmName): array
@@ -101,10 +118,10 @@ class RealmService
         $realmIndex = $this->getCultivationRealmIndex($currentRealm);
         if ($realmIndex < 0) {
             $realmIndex = 0;
-            $currentRealm = self::CULTIVATION_REALMS[0];
+            $currentRealm = $this->getRealmNameByIndex(0) ?? '练气一层';
         }
 
-        $nextRealm = self::CULTIVATION_REALMS[$realmIndex + 1] ?? null;
+        $nextRealm = $this->getRealmNameByIndex($realmIndex + 1);
         $isMaxRealm = $nextRealm === null;
         $requirements = $this->getRealmRequirements($currentRealm);
         $energyCurrent = max(0, (int) ($user->cultivation_energy ?? 0));
@@ -216,10 +233,11 @@ class RealmService
         $toRealm = (string) $status['next_realm'];
         $legacyOldRealm = (string) ($user->realm ?? 'L1');
         $legacyOldStage = max(1, (int) ($user->realm_stage ?? 1));
-        $nextStage = max(1, $this->getCultivationRealmIndex($toRealm) + 1);
+        $nextRealmCode = $this->getRealmCodeByIndex(max(0, $this->getCultivationRealmIndex($toRealm)));
+        $nextStage = $this->getRealmStageByIndex(max(0, $this->getCultivationRealmIndex($toRealm)));
 
         $user->current_realm = $toRealm;
-        $user->realm = 'L1';
+        $user->realm = $nextRealmCode;
         $user->realm_stage = $nextStage;
         $user->save();
 
@@ -228,7 +246,7 @@ class RealmService
             'message' => "突破成功：{$fromRealm} → {$toRealm}",
             'breakthrough' => true,
             'old_realm' => $legacyOldRealm,
-            'new_realm' => 'L1',
+            'new_realm' => $nextRealmCode,
             'old_stage' => $legacyOldStage,
             'new_stage' => $nextStage,
             'from_current_realm' => $fromRealm,
@@ -301,5 +319,76 @@ class RealmService
             'missing_requirements' => $status['missing_requirements'],
             'breakthrough_message' => $status['message'],
         ];
+    }
+
+    private function parseLayerToken(string $layerToken): int
+    {
+        $layerToken = trim($layerToken);
+        if ($layerToken === '') {
+            return 0;
+        }
+
+        if (ctype_digit($layerToken)) {
+            return max(1, min(9, (int) $layerToken));
+        }
+
+        $map = [
+            '一' => 1,
+            '二' => 2,
+            '三' => 3,
+            '四' => 4,
+            '五' => 5,
+            '六' => 6,
+            '七' => 7,
+            '八' => 8,
+            '九' => 9,
+        ];
+
+        return $map[$layerToken] ?? 0;
+    }
+
+    private function getRealmNameByIndex(int $index): ?string
+    {
+        if ($index < 0) {
+            return null;
+        }
+
+        $groupIndex = intdiv($index, 9);
+        $layer = ($index % 9) + 1;
+        $group = self::CULTIVATION_REALM_GROUPS[$groupIndex] ?? null;
+        if ($group === null) {
+            return null;
+        }
+
+        $layerName = self::CHINESE_LAYER_MAP[$layer] ?? ($layer . '层');
+        return $group . $layerName;
+    }
+
+    private function getRealmCodeByIndex(int $index): string
+    {
+        $groupIndex = max(0, intdiv($index, 9));
+        $prefix = self::REALM_CODE_PREFIXES[$groupIndex] ?? self::REALM_CODE_PREFIXES[0];
+        return $prefix . '1';
+    }
+
+    private function getRealmStageByIndex(int $index): int
+    {
+        return max(1, min(9, ($index % 9) + 1));
+    }
+
+    private function buildCurrentRealmName(string $realmCode, int $realmStage): string
+    {
+        $prefix = CultivationProfile::realmPrefix($realmCode);
+        $groupIndex = array_search($prefix, self::REALM_CODE_PREFIXES, true);
+        $group = self::CULTIVATION_REALM_GROUPS[$groupIndex !== false ? $groupIndex : 0] ?? self::CULTIVATION_REALM_GROUPS[0];
+        $layer = max(1, min(9, $realmStage));
+        $layerName = self::CHINESE_LAYER_MAP[$layer] ?? ($layer . '层');
+
+        return $group . $layerName;
+    }
+
+    public function composeCurrentRealm(string $realmCode, int $realmStage): string
+    {
+        return $this->buildCurrentRealmName($realmCode, $realmStage);
     }
 }

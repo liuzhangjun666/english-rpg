@@ -164,6 +164,7 @@ export class UIManager {
             <div class="input-group"><label>手机号</label><input type="tel" id="reg-phone" maxlength="11" placeholder="请输入手机号"></div>
             <div class="input-group"><label>验证码</label><div class="code-row"><input type="text" id="reg-code" maxlength="6" placeholder="输入6位验证码"><button class="code-btn" id="reg-get-code">获取</button></div></div>
             <div class="input-group"><label>道号（选填）</label><input type="text" id="reg-nickname" maxlength="50" placeholder="不填则自动生成"></div>
+            <div class="input-group"><label>当前年级 / 学习阶段</label><select id="reg-school-grade"><option value="">-- 请选择 --</option>${this.generateSchoolGradeOptions()}</select></div>
             <div class="input-group"><label>出生年份（选填）</label><select id="reg-birth-year"><option value="">-- 选择年份 --</option>${this.generateYearOptions()}</select></div>
             <div class="input-group"><label>邀请码（选填）</label><input type="text" id="reg-invite" maxlength="20" placeholder="朋友的邀请码"></div>
             <button class="btn btn-primary" id="register-btn">注 册</button>
@@ -187,17 +188,46 @@ export class UIManager {
         return o;
     }
 
+    generateSchoolGradeOptions(selectedValue = '') {
+        const options = [
+            ['grade_1', '1年级'],
+            ['grade_2', '2年级'],
+            ['grade_3', '3年级'],
+            ['grade_4', '4年级'],
+            ['grade_5', '5年级'],
+            ['grade_6', '6年级'],
+            ['grade_7', '7年级'],
+            ['grade_8', '8年级'],
+            ['grade_9', '9年级'],
+            ['grade_10', '10年级'],
+            ['grade_11', '11年级'],
+            ['grade_12', '12年级'],
+            ['college', '本科阶段'],
+            ['exam', '考研 / 英专'],
+            ['graduate', '硕士 / 博士'],
+            ['advanced', '留学 / 考试 / 发表'],
+        ];
+        return options.map(([value, label]) => `<option value="${value}" ${selectedValue === value ? 'selected' : ''}>${label}</option>`).join('');
+    }
+
     async handleRegister() {
         const phone = document.getElementById('reg-phone').value.trim();
         const code = document.getElementById('reg-code').value.trim();
         const nickname = document.getElementById('reg-nickname').value.trim();
+        const schoolGrade = document.getElementById('reg-school-grade').value;
         const birthYear = document.getElementById('reg-birth-year').value;
         const inviteCode = document.getElementById('reg-invite').value.trim();
         if (!phone || phone.length !== 11) { this.showError('register-error', '请输入正确的手机号'); return; }
         if (!code || code.length !== 6) { this.showError('register-error', '请输入6位验证码'); return; }
         this.hideError('register-error');
         this.showLoading('正在注册...');
-        const payload = { phone, code, nickname: nickname || undefined, birth_year: birthYear ? parseInt(birthYear) : undefined };
+        const payload = {
+            phone,
+            code,
+            nickname: nickname || undefined,
+            school_grade: schoolGrade || undefined,
+            birth_year: birthYear ? parseInt(birthYear) : undefined,
+        };
         if (inviteCode) payload.invite_code = inviteCode;
         const res = await this.game.api.post('/auth/register', payload);
         this.hideLoading();

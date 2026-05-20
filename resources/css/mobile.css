@@ -1,4 +1,29 @@
 /* LevelUp 英语修仙 - 移动端适配 */
+@media (max-width: 768px) {
+    .reading-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .reading-action-right {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .reading-action-right .btn {
+        flex: 1 1 calc(50% - 4px);
+        min-width: 0;
+    }
+
+    #reading-task-submit {
+        flex-basis: 100%;
+        width: 100%;
+    }
+}
+
 @media (max-width: 480px) {
     :root {
         --spacing-xs: 3px;
@@ -262,7 +287,7 @@
     }
 
     .reading-immersive-content {
-        padding: 16px 14px 16px;
+        padding: 14px 12px calc(14px + env(safe-area-inset-bottom));
     }
 
     .reading-stage {
@@ -277,11 +302,22 @@
     .reading-actions {
         display: flex;
         flex-direction: column;
+        position: sticky;
+        bottom: 0;
+        z-index: 3;
+        padding-top: 8px;
+        background: linear-gradient(180deg, rgba(8,14,30,0), rgba(8,14,30,0.9) 38%, rgba(8,14,30,0.98));
     }
 
     .reading-action-right {
         width: 100%;
         flex-direction: column;
+    }
+
+    .reading-actions .btn,
+    .reading-action-right .btn {
+        width: 100%;
+        min-height: 44px;
     }
 
     .reading-scene-title-banner {
@@ -303,7 +339,7 @@
     }
 
     .reading-story-lines {
-        max-height: 32vh;
+        max-height: 28vh;
     }
 
     .reading-scroll-frame {
@@ -324,6 +360,12 @@
     .reading-option-choice {
         min-height: 50px;
         padding: 10px 10px;
+        align-items: flex-start;
+        line-height: 1.5;
+    }
+
+    .reading-option-choice span:last-child {
+        word-break: break-word;
     }
 
     .reading-option {

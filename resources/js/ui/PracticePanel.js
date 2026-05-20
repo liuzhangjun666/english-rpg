@@ -13,6 +13,33 @@ class WritingPanel {
         this.totalStonesGained = 0;
     }
 
+    getEstimatedSpiritView() {
+        const user = this.game.store.getState().user || {};
+        const fallbackSpirit = Math.max(0, Number(user.spirit_power || 0));
+        const fallbackMax = Math.max(fallbackSpirit, Number(user.spirit_power_max || fallbackSpirit));
+        if (typeof this.game?.ui?.getSpiritRecoverView === 'function') {
+            const view = this.game.ui.getSpiritRecoverView(user);
+            if (view && Number.isFinite(Number(view.spirit))) return view;
+        }
+        return {
+            spirit: fallbackSpirit,
+            max: fallbackMax,
+            countdownText: '--',
+        };
+    }
+
+    ensureSpiritBeforeEntry(requiredCost = 5, moduleName = '符箓台') {
+        const view = this.getEstimatedSpiritView();
+        const currentSpirit = Math.max(0, Number(view.spirit || 0));
+        if (currentSpirit >= requiredCost) return true;
+        const countdown = String(view.countdownText || '--');
+        const recoverTip = (countdown !== '已满' && countdown !== '--')
+            ? `约 ${countdown} 后恢复 1 点灵力。`
+            : '请稍后等待灵力恢复。';
+        this.game.ui.showHermesBubble(`灵力不足，当前 ${currentSpirit}/${view.max || currentSpirit}，开启${moduleName}需 ${requiredCost} 点。${recoverTip}`);
+        return false;
+    }
+
     getWritingPlayMode(prompt) {
         const raw = String(prompt?.mode || prompt?.writing_mode || '').trim().toLowerCase();
         if (raw === 'template' || raw === 'template_sentence' || raw === 'sentence_template') return 'template';
@@ -107,6 +134,7 @@ class WritingPanel {
         this.submittedResults = [];
         this.totalExpGained = 0;
         this.totalStonesGained = 0;
+        if (!this.ensureSpiritBeforeEntry(5, '符箓台')) return;
 
         const [realm, stage] = levelId.split('-');
         this.game.ui.showLoading('加载写作题目...');
@@ -119,13 +147,14 @@ class WritingPanel {
         }
 
         this.prompts = res.data.prompts;
-        const spiritCost = res.data.spirit_cost || 0;
-        const user = this.game.store.getState().user;
-
-        if (user && user.spirit_power < spiritCost) {
-            this.game.ui.showHermesBubble(`灵力不足（当前${user.spirit_power}，需要${spiritCost}），请明日再来修炼。`);
-            return;
+        const spiritCost = Number(res.data.spirit_cost || 5);
+        const currentSpiritAfterCost = Number.isFinite(Number(res.data.current_spirit_power))
+            ? Number(res.data.current_spirit_power)
+            : null;
+        if (currentSpiritAfterCost !== null) {
+            this.game.store.updateUser({ spirit_power: currentSpiritAfterCost });
         }
+        const user = this.game.store.getState().user;
 
         const confirmPanel = document.createElement('div');
         confirmPanel.className = 'panel';
@@ -145,12 +174,42 @@ class WritingPanel {
         `;
         this.game.ui.overlay.appendChild(confirmPanel);
 
-        document.getElementById('writing-confirm-yes').addEventListener('click', () => {
+        document.getElementById('writing-confirm-yes').addEventListener('click', async () => {
+            const yesBtn = document.getElementById('writing-confirm-yes');
+            const noBtn = document.getElementById('writing-confirm-no');
+            if (yesBtn) {
+                yesBtn.disabled = true;
+                yesBtn.textContent = '注入灵力中...';
+            }
+            if (noBtn) noBtn.disabled = true;
+
+            const consumeRes = await this.game.api.post('/user/consume-spirit', {
+                amount: spiritCost,
+                reason: `writing:${levelId}`,
+            });
+            if (Number.isFinite(Number(consumeRes?.data?.current_spirit_power))) {
+                this.game.store.updateUser({
+                    spirit_power: Number(consumeRes.data.current_spirit_power),
+                    spirit_power_last_recover_at: consumeRes?.data?.spirit_power_last_recover_at,
+                });
+            }
+            if (!consumeRes?.success) {
+                if (yesBtn) {
+                    yesBtn.disabled = false;
+                    yesBtn.textContent = '开始修炼';
+                }
+                if (noBtn) noBtn.disabled = false;
+                this.ensureSpiritBeforeEntry(spiritCost, '符箓台');
+                return;
+            }
+
             confirmPanel.remove();
-            document.getElementById('level-select-panel')?.remove();
             this.renderWritingQuestion();
         });
-        document.getElementById('writing-confirm-no').addEventListener('click', () => confirmPanel.remove());
+        document.getElementById('writing-confirm-no').addEventListener('click', () => {
+            confirmPanel.remove();
+            this.game.startPracticeModule('writing');
+        });
     }
 
     renderWritingQuestion() {
@@ -469,8 +528,39 @@ export class PracticePanel {
         this.vocabAdventureState = null;
         this.vocabAutoNextTimer = null;
         this.grammarOrderStates = {};
+        this.isStartingLevel = false;
         // 写作专属子面板
         this._writingPanel = new WritingPanel(game);
+    }
+
+    getEstimatedSpiritView() {
+        const user = this.game.store.getState().user || {};
+        const fallbackSpirit = Math.max(0, Number(user.spirit_power || 0));
+        const fallbackMax = Math.max(fallbackSpirit, Number(user.spirit_power_max || fallbackSpirit));
+        if (typeof this.game?.ui?.getSpiritRecoverView === 'function') {
+            const view = this.game.ui.getSpiritRecoverView(user);
+            if (view && Number.isFinite(Number(view.spirit))) {
+                return view;
+            }
+        }
+        return {
+            spirit: fallbackSpirit,
+            max: fallbackMax,
+            countdownText: '--',
+        };
+    }
+
+    ensureSpiritBeforeEntry(requiredCost = 5, moduleName = '试炼') {
+        const view = this.getEstimatedSpiritView();
+        const currentSpirit = Math.max(0, Number(view.spirit || 0));
+        if (currentSpirit >= requiredCost) return true;
+
+        const countdown = String(view.countdownText || '--');
+        const recoverTip = (countdown !== '已满' && countdown !== '--')
+            ? `约 ${countdown} 后恢复 1 点灵力。`
+            : '请稍后等待灵力恢复。';
+        this.game.ui.showHermesBubble(`灵力不足，当前 ${currentSpirit}/${view.max || currentSpirit}，开启${moduleName}需 ${requiredCost} 点。${recoverTip}`);
+        return false;
     }
 
     /** 打开关卡选择列表 */
@@ -514,7 +604,10 @@ export class PracticePanel {
         this.game.ui.overlay.appendChild(panel);
 
         document.getElementById('level-resume-btn')?.addEventListener('click', () => this.resumeSession(type));
-        document.getElementById('level-start-btn')?.addEventListener('click', () => this.startLevel(type, levelId));
+        document.getElementById('level-start-btn')?.addEventListener('click', () => {
+            if (!this.ensureSpiritBeforeEntry(5, moduleMeta.shortName)) return;
+            this.startLevel(type, levelId);
+        });
 
         document.getElementById('level-select-back').addEventListener('click', () => {
             panel.remove();
@@ -524,83 +617,151 @@ export class PracticePanel {
 
     /** 开始一关的答题 */
     async startLevel(type, levelId) {
+        if (this.isStartingLevel) return;
+        this.isStartingLevel = true;
+        const moduleName = this.getModuleMeta(type).shortName;
+        if (!this.ensureSpiritBeforeEntry(5, moduleName)) {
+            this.isStartingLevel = false;
+            return;
+        }
+
         // writing 类型走专属 WritingPanel 流程
         if (type === 'writing') {
-            this.game.ui.hideAllPanels();
-            await this._writingPanel.start(levelId);
+            try {
+                this.game.ui.hideAllPanels();
+                await this._writingPanel.start(levelId);
+            } finally {
+                this.isStartingLevel = false;
+            }
             return;
         }
 
-        this.game.ui.showLoading('加载题库...');
-        this.currentType = type;
-        this.clearVocabAutoNextTimer();
-        this.currentLevel = levelId;
-        this.currentIndex = 0;
-        this.answers = {};
-        this.combo = 0;
-        this.maxCombo = 0;
-        this._feedbackShown = false;
-        this.speakingRecordings = {};
-        this.listeningReplayStates = {};
-        this.vocabAlchemyStates = {};
-        this.vocabFlightRoutes = {};
-        this.vocabAdventureState = null;
-        this.grammarOrderStates = {};
-        this.stopSpeakingRecording(true);
+        const selectPanel = document.getElementById('level-select-panel');
+        if (selectPanel) selectPanel.remove();
 
-        const [realm, stage] = levelId.split('-');
-        const res = await this.game.api.get(`/${type}/questions?level=${realm}&stage=${stage}`);
+        try {
+            this.game.ui.showLoading('加载题库...');
+            this.currentType = type;
+            this.clearVocabAutoNextTimer();
+            this.currentLevel = levelId;
+            this.currentIndex = 0;
+            this.answers = {};
+            this.combo = 0;
+            this.maxCombo = 0;
+            this._feedbackShown = false;
+            this.speakingRecordings = {};
+            this.listeningReplayStates = {};
+            this.vocabAlchemyStates = {};
+            this.vocabFlightRoutes = {};
+            this.vocabAdventureState = null;
+            this.grammarOrderStates = {};
+            this.stopSpeakingRecording(true);
 
-        this.game.ui.hideLoading();
+            const [realm, stage] = levelId.split('-');
+            const res = await this.game.api.get(`/${type}/questions?level=${realm}&stage=${stage}`);
 
-        if (!res.success) {
-            this.game.ui.showHermesBubble(res.message || '该关卡暂无题目');
-            return;
-        }
+            this.game.ui.hideLoading();
 
-        this.questions = res.data.questions;
-        const cost = res.data.spirit_cost || this.questions.length;
-        if (type === 'vocab') {
-            this.initVocabAdventureState();
-        }
+            if (!res.success) {
+                if (Number.isFinite(Number(res?.data?.current_spirit_power))) {
+                    this.game.store.updateUser({ spirit_power: Number(res.data.current_spirit_power) });
+                }
+                if (res.code === 'INSUFFICIENT_SPIRIT_POWER') {
+                    this.ensureSpiritBeforeEntry(5, moduleName);
+                    this.showLevelSelect(type);
+                    return;
+                }
+                this.game.ui.showHermesBubble(res.message || '该关卡暂无题目');
+                this.showLevelSelect(type);
+                return;
+            }
 
-        // 检查灵力
-        const user = this.game.store.getState().user;
-        if (user && user.spirit_power < cost) {
-            this.game.ui.showHermesBubble(`灵力不足（当前${user.spirit_power}，需要${cost}），请明日再来修炼。`);
-            return;
-        }
+            this.questions = res.data.questions;
+            const cost = Number(res.data.spirit_cost || 5);
+            const currentSpiritAfterCost = Number.isFinite(Number(res.data.current_spirit_power))
+                ? Number(res.data.current_spirit_power)
+                : null;
+            if (currentSpiritAfterCost !== null) {
+                this.game.store.updateUser({ spirit_power: currentSpiritAfterCost });
+            }
+            if (type === 'vocab') {
+                this.initVocabAdventureState();
+            }
 
-        // 灵力消耗确认弹窗
-        const moduleMeta = this.getModuleMeta(type);
-        const confirmPanel = document.createElement('div');
-        confirmPanel.className = 'panel';
-        confirmPanel.id = 'spirit-confirm';
-        confirmPanel.style.maxWidth = '380px';
-        confirmPanel.innerHTML = `
+            // 检查灵力
+            const user = this.game.store.getState().user;
+            if (user && user.spirit_power < cost) {
+                this.game.ui.showHermesBubble(`灵力不足（当前${user.spirit_power}，需要${cost}），请明日再来修炼。`);
+                this.showLevelSelect(type);
+                return;
+            }
+
+            // 灵力消耗确认弹窗
+            const moduleMeta = this.getModuleMeta(type);
+            const confirmPanel = document.createElement('div');
+            confirmPanel.className = 'panel';
+            confirmPanel.id = 'spirit-confirm';
+            confirmPanel.style.maxWidth = '380px';
+            confirmPanel.innerHTML = `
             <div class="panel-title">准备修炼</div>
             <div style="text-align:center;color:var(--parchment-dark);font-size:14px;line-height:2;margin:12px 0;">
                 <div>模块：${moduleMeta.shortName} · ${levelId}</div>
                 <div>题数：${this.questions.length}题</div>
                 <div>消耗灵力：<span style="color:var(--spirit-blue);font-weight:bold;">💧 ${cost}</span>
-                    ${res.data.demon_injected ? `<span style="color:var(--gold);font-size:12px;">（含${res.data.demon_injected}心魔题，不扣灵力）</span>` : ''}
                 </div>
                 <div style="margin-top:8px;font-size:12px;">当前灵力：💧 ${user?.spirit_power || 0}</div>
             </div>
             <button class="btn btn-primary" id="spirit-confirm-yes">开始修炼</button>
             <button class="btn btn-secondary" id="spirit-confirm-no" style="margin-top:8px;">返回</button>
         `;
-        this.game.ui.overlay.appendChild(confirmPanel);
+            this.game.ui.overlay.appendChild(confirmPanel);
 
-        document.getElementById('spirit-confirm-yes').addEventListener('click', () => {
-            confirmPanel.remove();
-            const selectPanel = document.getElementById('level-select-panel');
-            if (selectPanel) selectPanel.remove();
-            this.renderQuestion();
-            this.game.store.startLevel(type, realm, stage, this.questions);
-            this.persistSession();
-        });
-        document.getElementById('spirit-confirm-no').addEventListener('click', () => { confirmPanel.remove(); });
+            document.getElementById('spirit-confirm-yes').addEventListener('click', async () => {
+                const yesBtn = document.getElementById('spirit-confirm-yes');
+                const noBtn = document.getElementById('spirit-confirm-no');
+                if (yesBtn) {
+                    yesBtn.disabled = true;
+                    yesBtn.textContent = '注入灵力中...';
+                }
+                if (noBtn) noBtn.disabled = true;
+
+                const consumeRes = await this.game.api.post('/user/consume-spirit', {
+                    amount: cost,
+                    reason: `${type}:${levelId}`,
+                });
+                if (Number.isFinite(Number(consumeRes?.data?.current_spirit_power))) {
+                    this.game.store.updateUser({
+                        spirit_power: Number(consumeRes.data.current_spirit_power),
+                        spirit_power_last_recover_at: consumeRes?.data?.spirit_power_last_recover_at,
+                    });
+                }
+                if (!consumeRes?.success) {
+                    if (yesBtn) {
+                        yesBtn.disabled = false;
+                        yesBtn.textContent = '开始修炼';
+                    }
+                    if (noBtn) noBtn.disabled = false;
+                    this.ensureSpiritBeforeEntry(cost, moduleMeta.shortName);
+                    return;
+                }
+
+                confirmPanel.remove();
+                this.renderQuestion();
+                this.game.store.startLevel(type, realm, stage, this.questions);
+                this.persistSession();
+            });
+            document.getElementById('spirit-confirm-no').addEventListener('click', () => {
+                confirmPanel.remove();
+                this.showLevelSelect(type);
+            });
+        } catch (err) {
+            this.game.ui.hideLoading();
+            console.error('startLevel failed', err);
+            this.game.ui.showHermesBubble('进入关卡失败，请稍后重试');
+            this.showLevelSelect(type);
+        } finally {
+            this.isStartingLevel = false;
+        }
     }
 
     /** 渲染当前题目（即时反馈版） */

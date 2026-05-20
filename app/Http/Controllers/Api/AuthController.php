@@ -26,6 +26,7 @@ class AuthController extends Controller
         'code.required' => '请输入验证码',
         'code.size' => '验证码为6位数字',
         'nickname.max' => '道号最长50个字符',
+        'school_grade.max' => '年级信息过长',
         'birth_year.integer' => '出生年份格式错误',
         'birth_year.min' => '出生年份不早于1950年',
         'birth_year.max' => '出生年份不能晚于当前年份',
@@ -46,6 +47,7 @@ class AuthController extends Controller
             'phone' => 'required|string|size:11|unique:levelup_users,phone',
             'code'  => 'required|string|size:6',
             'nickname' => 'nullable|string|max:50',
+            'school_grade' => 'nullable|string|max:32',
             'birth_year' => 'nullable|integer|min:1950|max:' . date('Y'),
             'invite_code' => 'nullable|string|max:20',
         ], self::CHINESE_MESSAGES);
@@ -79,6 +81,7 @@ class AuthController extends Controller
         $user = User::create([
             'phone' => $request->phone,
             'nickname' => $request->nickname ?: ('道友' . substr($request->phone, -4)),
+            'school_grade' => $request->school_grade ?: null,
             'realm' => 'L1',
             'realm_stage' => 1,
             'exp' => 0,

@@ -27,6 +27,25 @@ class CultivationProfile
         'advanced' => ['label' => '高阶挑战', 'focus' => '雅思、托福、GRE、学术发表'],
     ];
 
+    private const SCHOOL_GRADE_LABELS = [
+        'grade_1' => '1年级',
+        'grade_2' => '2年级',
+        'grade_3' => '3年级',
+        'grade_4' => '4年级',
+        'grade_5' => '5年级',
+        'grade_6' => '6年级',
+        'grade_7' => '7年级',
+        'grade_8' => '8年级',
+        'grade_9' => '9年级',
+        'grade_10' => '10年级',
+        'grade_11' => '11年级',
+        'grade_12' => '12年级',
+        'college' => '本科阶段',
+        'exam' => '考研 / 英专',
+        'graduate' => '硕士 / 博士',
+        'advanced' => '留学 / 考试 / 发表',
+    ];
+
     public static function realmName(string $realm): string
     {
         $prefix = self::realmPrefix($realm);
@@ -44,8 +63,13 @@ class CultivationProfile
         return ($group * 10) + $layer;
     }
 
-    public static function learningStage(string $realm, int $stage = 1): array
+    public static function learningStage(string $realm, int $stage = 1, ?string $schoolGrade = null): array
     {
+        $gradeRule = self::learningStageBySchoolGrade($schoolGrade);
+        if ($gradeRule) {
+            return $gradeRule;
+        }
+
         $prefix = self::realmPrefix($realm);
         $layer = self::realmLayer($realm);
 
@@ -76,6 +100,27 @@ class CultivationProfile
 
         // 兼容旧档：以 realm_stage 辅助兜底
         return $stage >= 6 ? self::LEARNING_STAGE_RULES['graduate'] : self::LEARNING_STAGE_RULES['upper_primary'];
+    }
+
+    public static function learningStageBySchoolGrade(?string $schoolGrade): ?array
+    {
+        return match (trim((string) $schoolGrade)) {
+            'grade_1', 'grade_2', 'grade_3' => self::LEARNING_STAGE_RULES['lower_primary'],
+            'grade_4', 'grade_5', 'grade_6' => self::LEARNING_STAGE_RULES['upper_primary'],
+            'grade_7', 'grade_8', 'grade_9' => self::LEARNING_STAGE_RULES['junior'],
+            'grade_10', 'grade_11', 'grade_12' => self::LEARNING_STAGE_RULES['senior'],
+            'college' => self::LEARNING_STAGE_RULES['college_non_english'],
+            'exam' => self::LEARNING_STAGE_RULES['college_english'],
+            'graduate' => self::LEARNING_STAGE_RULES['graduate'],
+            'advanced' => self::LEARNING_STAGE_RULES['advanced'],
+            default => null,
+        };
+    }
+
+    public static function schoolGradeLabel(?string $schoolGrade): string
+    {
+        $value = trim((string) $schoolGrade);
+        return self::SCHOOL_GRADE_LABELS[$value] ?? '';
     }
 
     public static function cefrHint(string $realm): string
@@ -111,4 +156,3 @@ class CultivationProfile
         return $nums[$layer] ?? ($layer . '层');
     }
 }
-

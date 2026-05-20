@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
  */
 class CurrencyService
 {
+    const SPIRIT_COST_PER_LEVEL = 5;
     const SPIRIT_COST_PER_QUESTION = 1;
     const SPIRIT_RECOVER_INTERVAL_SECONDS = 300;
     const SPIRIT_RECOVER_PER_TICK = 1;
@@ -150,13 +151,13 @@ class CurrencyService
         return true;
     }
 
-    public function settleBatch(User $user, array $results, int $totalQuestions): array
+    public function settleBatch(User $user, array $results, int $totalQuestions, ?int $spiritCostOverride = null): array
     {
         $correctCount = count(array_filter($results, fn($r) => $r['correct']));
         $accuracy = $totalQuestions > 0 ? (int) round(($correctCount / $totalQuestions) * 100) : 0;
 
-        $spiritCost = $totalQuestions * self::SPIRIT_COST_PER_QUESTION;
-        if (!$this->consumeSpirit($user, $spiritCost)) {
+        $spiritCost = max(0, (int) ($spiritCostOverride ?? self::SPIRIT_COST_PER_LEVEL));
+        if ($spiritCost > 0 && !$this->consumeSpirit($user, $spiritCost)) {
             return ['exp_gained'=>0,'spirit_cost'=>0,'accuracy'=>$accuracy,'passed'=>false,'stones_gained'=>0,'error'=>'INSUFFICIENT_SPIRIT_POWER','message'=>"灵力不足（当前{$user->spirit_power}，需要{$spiritCost}）"];
         }
 

@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/stats', [UserController::class, 'stats']);
         Route::get('/learning-progress', [UserController::class, 'learningProgress']);
         Route::get('/analytics', [UserController::class, 'analytics']);
+        Route::post('/consume-spirit', [UserController::class, 'consumeSpirit']);
     });
 
     Route::prefix('currency')->group(function () {

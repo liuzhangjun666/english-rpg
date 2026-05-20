@@ -139,6 +139,8 @@ class GrammarController extends Controller
         $level = $request->query('level', 'L1');
         $stage = $request->query('stage', '01');
         $user = $request->user();
+        $this->currencyService->recoverSpiritPower($user);
+        $user->refresh();
 
         $normalCount = 10;
         $allQuestions = $this->demonService->getInjectedQuestions($user->id, 'grammar', $level, $stage, $normalCount);
@@ -146,6 +148,7 @@ class GrammarController extends Controller
         if (empty($allQuestions)) {
             $allQuestions = $this->demoQuestionsForStage($level, $stage, $normalCount);
         }
+        $spiritCost = CurrencyService::SPIRIT_COST_PER_LEVEL;
 
         $demonCount = count(array_filter($allQuestions, fn ($q) => !empty($q['_is_demon'])));
 
@@ -156,7 +159,8 @@ class GrammarController extends Controller
                 'stage' => $stage,
                 'questions' => $allQuestions,
                 'total' => count($allQuestions),
-                'spirit_cost' => count($allQuestions) - $demonCount,
+                'spirit_cost' => $spiritCost,
+                'current_spirit_power' => (int) ($user->fresh()->spirit_power ?? 0),
                 'demon_injected' => $demonCount,
                 'is_demo' => $this->isDemoQuestionList($allQuestions),
             ],
@@ -217,7 +221,7 @@ class GrammarController extends Controller
             }
         }
 
-        $settlement = $this->currencyService->settleBatch($user, $results, count($data['answers']));
+        $settlement = $this->currencyService->settleBatch($user, $results, count($data['answers']), 0);
         $newAchs = $this->achievementService->onLevelSubmit($user, $results, $settlement['accuracy']);
         $correctCount = count(array_filter($results, fn (array $item) => !empty($item['correct'])));
         $realmProgress = $this->realmService->applyCultivationGain($user, 'grammar', $correctCount);

@@ -1,3 +1,5 @@
+import { getRealmDisplayName } from '../utils/cultivation.js';
+
 // LevelUp 英语修仙 - 天机测试（25题自适应定级）
 // 教研员工作包标准：词汇8+语法8+阅读5+综合4 = 25题，L1~L10均衡分布
 
@@ -36,19 +38,99 @@ const TIANJI_QUESTIONS = [
     { id:'T-C04', diff:7, type:'comprehensive', question:'"Some people believe that... Others argue that..." 这种段落结构属于？', options:{A:'举例论证',B:'对比论证',C:'因果论证',D:'数据论证'}, answer:'B' },
 ];
 
-// 难度→境界映射
-// 难度→境界映射（用自然意象代替等级标签，无歧视性）
-const DIFF_TO_REALM = [
-    { maxDiff:2, realm:'L1', stage:1, title:'练气初·一重',   label:'灵芽境', desc:'初入道途，从最基础开始修行，根基将更加稳固。' },
-    { maxDiff:3, realm:'L1', stage:2, title:'练气初·二重',   label:'青苗境', desc:'有基础感知，从练气初二重开始稳步提升。' },
-    { maxDiff:4, realm:'L1', stage:3, title:'练气初·三重',   label:'翠竹境', desc:'根基初见成效，从练气初三重开始修炼。' },
-    { maxDiff:5, realm:'L2', stage:1, title:'练气中·一重',   label:'灵泉境', desc:'已有不错基础，可直接从中段开始修炼。' },
-    { maxDiff:6, realm:'L3', stage:1, title:'练气后·一重',   label:'碧潭境', desc:'水平扎实，从练气后段开始，向筑基迈进。' },
-    { maxDiff:7, realm:'L4', stage:1, title:'筑基·前期',     label:'流云境', desc:'已有筑基潜质，直接进入筑基期修炼！' },
-    { maxDiff:8, realm:'L5', stage:1, title:'筑基·中期',     label:'皓月境', desc:'筑基中段实力，可直接挑战更高难度的内容。' },
-    { maxDiff:9, realm:'J1', stage:1, title:'金丹·前期',     label:'星辰境', desc:'已具备金丹期实力，可越级挑战高阶内容！' },
-    { maxDiff:10, realm:'Y1', stage:1, title:'元婴·前期',    label:'天光境', desc:'天赋异禀，直接进入元婴期修炼！未来不可限量。' },
+const SCHOOL_GRADE_OPTIONS = [
+    ['grade_1', '1年级'],
+    ['grade_2', '2年级'],
+    ['grade_3', '3年级'],
+    ['grade_4', '4年级'],
+    ['grade_5', '5年级'],
+    ['grade_6', '6年级'],
+    ['grade_7', '7年级'],
+    ['grade_8', '8年级'],
+    ['grade_9', '9年级'],
+    ['grade_10', '10年级'],
+    ['grade_11', '11年级'],
+    ['grade_12', '12年级'],
+    ['college', '本科阶段'],
+    ['exam', '考研 / 英专'],
+    ['graduate', '硕士 / 博士'],
+    ['advanced', '留学 / 考试 / 发表'],
 ];
+
+const GRADE_GROUP_RULES = {
+    lower_primary: {
+        label: '小学低年级',
+        grades: ['grade_1', 'grade_2', 'grade_3'],
+        tiers: {
+            weak: { realm: 'L1', realmStage: 1, progressIndex: 0, desc: '基础薄弱，从当前年级对应的最低境界起步，先稳住字母与基础词。' },
+            medium: { realm: 'L1', realmStage: 2, progressIndex: 1, desc: '基础中等，从当前年级区间的中段起步，循序渐进巩固。' },
+            strong: { realm: 'L1', realmStage: 3, progressIndex: 2, desc: '基础良好，从当前年级对应的最高起点开始修炼。' },
+        },
+    },
+    upper_primary: {
+        label: '小学高年级',
+        grades: ['grade_4', 'grade_5', 'grade_6'],
+        tiers: {
+            weak: { realm: 'L1', realmStage: 4, progressIndex: 3, desc: '基础薄弱，从小学高年级对应的最低境界开始，先补词汇与简单句。' },
+            medium: { realm: 'L1', realmStage: 6, progressIndex: 5, desc: '基础中等，从小学高年级的中段起步，兼顾阅读与拼词。' },
+            strong: { realm: 'L1', realmStage: 9, progressIndex: 8, desc: '基础良好，从小学高年级对应的最高境界起步。' },
+        },
+    },
+    junior: {
+        label: '初中',
+        grades: ['grade_7', 'grade_8', 'grade_9'],
+        tiers: {
+            weak: { realm: 'Z1', realmStage: 1, progressIndex: 9, desc: '基础薄弱，从初中对应的筑基起点最低层开始，先补语法与基础阅读。' },
+            medium: { realm: 'Z1', realmStage: 3, progressIndex: 13, desc: '基础中等，从初中区间第3层起步，逐步把句型、时态和阅读做扎实。' },
+            strong: { realm: 'Z1', realmStage: 5, progressIndex: 17, desc: '基础良好，从初中对应境界的第5层开始，直接进入更完整的语法与阅读修炼。' },
+        },
+    },
+    senior: {
+        label: '高中',
+        grades: ['grade_10', 'grade_11', 'grade_12'],
+        tiers: {
+            weak: { realm: 'J1', realmStage: 1, progressIndex: 18, desc: '基础薄弱，从高中对应的金丹起点最低层开始，先把长难句与基础写作框架补稳。' },
+            medium: { realm: 'J1', realmStage: 3, progressIndex: 22, desc: '基础中等，从高中区间第3层起步，重点强化长阅读、语法结构与表达。' },
+            strong: { realm: 'J1', realmStage: 5, progressIndex: 26, desc: '基础良好，从高中对应境界的第5层开始，直接进入更高强度训练。' },
+        },
+    },
+    college_non_english: {
+        label: '大学',
+        grades: ['college'],
+        tiers: {
+            weak: { realm: 'Y1', realmStage: 1, progressIndex: 21, desc: '基础薄弱，从大学对应的元婴起点最低层开始，先补四六级词汇、听力与基础写作。' },
+            medium: { realm: 'Y1', realmStage: 3, progressIndex: 24, desc: '基础中等，从大学区间第3层起步，逐步拉升听说读写综合能力。' },
+            strong: { realm: 'Y1', realmStage: 5, progressIndex: 26, desc: '基础良好，从大学对应境界的第5层开始，可直接进入更高强度综合训练。' },
+        },
+    },
+    college_english: {
+        label: '考研 / 英专',
+        grades: ['exam'],
+        tiers: {
+            weak: { realm: 'H1', realmStage: 1, progressIndex: 22, desc: '基础薄弱，从考研 / 英专对应的化神起点最低层开始，先把学术阅读和长难句根基补稳。' },
+            medium: { realm: 'H1', realmStage: 3, progressIndex: 24, desc: '基础中等，从考研 / 英专区间第3层起步，重点强化翻译、学术阅读与写作。' },
+            strong: { realm: 'H1', realmStage: 5, progressIndex: 26, desc: '基础良好，从考研 / 英专对应境界的第5层开始，直接承接高强度训练。' },
+        },
+    },
+    graduate: {
+        label: '研究生',
+        grades: ['graduate'],
+        tiers: {
+            weak: { realm: 'X1', realmStage: 1, progressIndex: 23, desc: '基础薄弱，从研究生对应境界最低层开始，优先补齐学术阅读与写作根基。' },
+            medium: { realm: 'X1', realmStage: 3, progressIndex: 25, desc: '基础中等，从研究生区间第3层起步，逐步强化学术表达与汇报能力。' },
+            strong: { realm: 'X1', realmStage: 5, progressIndex: 26, desc: '基础良好，从研究生对应境界第5层开始，直接进入更高强度训练。' },
+        },
+    },
+    advanced: {
+        label: '高阶挑战',
+        grades: ['advanced'],
+        tiers: {
+            weak: { realm: 'U1', realmStage: 1, progressIndex: 24, desc: '基础薄弱，从高阶挑战对应境界最低层开始，先稳住高难表达与学术听读。' },
+            medium: { realm: 'U1', realmStage: 3, progressIndex: 25, desc: '基础中等，从高阶区间第3层起步，持续提升高难任务处理能力。' },
+            strong: { realm: 'U1', realmStage: 5, progressIndex: 26, desc: '基础良好，从高阶对应境界第5层开始，直接进入最强挑战内容。' },
+        },
+    },
+};
 
 export class InitiationPanel {
     constructor(game) {
@@ -59,6 +141,7 @@ export class InitiationPanel {
         this.currentLevel = 5; // 从L5(中等难度)开局
         this.convergedLevel = 5;
         this.levelHits = {}; // 统计各级答题情况
+        this.schoolGrade = '';
     }
 
     start() {
@@ -68,6 +151,7 @@ export class InitiationPanel {
         this.currentLevel = 5;
         this.convergedLevel = 5;
         this.levelHits = {};
+        this.schoolGrade = String(this.game.store.getState().user?.school_grade || '');
 
         // 初始排序：从中级难度开始，自适应调整
         this.questions = [...TIANJI_QUESTIONS].sort((a, b) => Math.abs(a.diff - 5) - Math.abs(b.diff - 5));
@@ -105,11 +189,69 @@ export class InitiationPanel {
                 <p>答对升难，答错降易，五步定位你的真实水平。</p>
                 <p style="margin-top:8px;color:var(--gold-light);">成绩越好，起步境界越高！</p>
             </div>
+            <div class="input-group" style="margin-bottom:12px;">
+                <label>当前年级 / 学习阶段</label>
+                <select id="initiation-school-grade">
+                    <option value="">-- 请选择 --</option>
+                    ${this.renderSchoolGradeOptions(this.schoolGrade)}
+                </select>
+            </div>
             <button class="btn btn-primary" id="tianji-start-btn">开始天机测试</button>
         `;
         this.game.ui.overlay.appendChild(panel);
         this.game.ui.showHermesBubble('善，今日有缘人至此。让老夫用天机测试测你根骨。', 8000);
-        document.getElementById('tianji-start-btn').addEventListener('click', () => { panel.remove(); this.showQuestion(); });
+        document.getElementById('tianji-start-btn').addEventListener('click', async () => {
+            const schoolGrade = String(document.getElementById('initiation-school-grade')?.value || '').trim();
+            if (!schoolGrade) {
+                this.game.ui.showHermesBubble('请先选择当前年级或学习阶段，再开始定级。');
+                return;
+            }
+            this.schoolGrade = schoolGrade;
+            await this.syncSchoolGrade(schoolGrade);
+            panel.remove();
+            this.showQuestion();
+        });
+    }
+
+    renderSchoolGradeOptions(selectedValue = '') {
+        return SCHOOL_GRADE_OPTIONS.map(([value, label]) => (
+            `<option value="${value}" ${selectedValue === value ? 'selected' : ''}>${label}</option>`
+        )).join('');
+    }
+
+    getSchoolGradeGroup(schoolGrade) {
+        const grade = String(schoolGrade || '').trim();
+        return Object.values(GRADE_GROUP_RULES).find((rule) => rule.grades.includes(grade)) || GRADE_GROUP_RULES.upper_primary;
+    }
+
+    getFoundationTier(avgLevel, accuracy) {
+        if (avgLevel <= 3 || accuracy < 45) return 'weak';
+        if (avgLevel >= 7 || accuracy >= 75) return 'strong';
+        return 'medium';
+    }
+
+    formatCurrentRealmTitle(realm, realmStage) {
+        return getRealmDisplayName(realm, realmStage).replace('期 · ', '');
+    }
+
+    getPlacementByGradeAndTest(schoolGrade, avgLevel, accuracy) {
+        const group = this.getSchoolGradeGroup(schoolGrade);
+        const tier = this.getFoundationTier(avgLevel, accuracy);
+        const tierConfig = group.tiers[tier] || group.tiers.medium;
+        const realm = tierConfig.realm || 'L1';
+        const currentRealm = this.formatCurrentRealmTitle(realm, tierConfig.realmStage);
+        return {
+            schoolStageLabel: group.label,
+            foundationTier: tier,
+            foundationLabel: tier === 'weak' ? '基础薄弱' : (tier === 'strong' ? '基础良好' : '基础中等'),
+            realm,
+            realmStage: tierConfig.realmStage,
+            currentRealm,
+            title: currentRealm,
+            label: currentRealm,
+            desc: tierConfig.desc,
+            progressIndex: tierConfig.progressIndex,
+        };
     }
 
     showQuestion() {
@@ -182,9 +324,9 @@ export class InitiationPanel {
         const avgLevel = recentLevels.length > 0
             ? Math.round(recentLevels.reduce((a, b) => a + b, 0) / recentLevels.length)
             : 3;
+        const accuracy = Math.round((this.correctCount / Math.max(1, TIANJI_QUESTIONS.length)) * 100);
 
-        // 映射到境界
-        const matchedLevel = DIFF_TO_REALM.find(l => avgLevel <= l.maxDiff) || DIFF_TO_REALM[0];
+        const placement = this.getPlacementByGradeAndTest(this.schoolGrade, avgLevel, accuracy);
 
         const panel = document.createElement('div');
         panel.className = 'panel';
@@ -193,21 +335,26 @@ export class InitiationPanel {
             <div class="panel-title">🎉 入宗成功</div>
             <div style="text-align:center;">
                 <div style="font-size:38px;color:var(--gold);font-weight:bold;">${this.correctCount}/${TIANJI_QUESTIONS.length}</div>
-                <div style="font-size:13px;color:var(--parchment-dark);margin-top:4px;">收敛难度 Lv.${avgLevel} · ${matchedLevel.label}</div>
+                <div style="font-size:13px;color:var(--parchment-dark);margin-top:4px;">${placement.schoolStageLabel} · ${placement.foundationLabel} · 收敛难度 Lv.${avgLevel}</div>
                 <div style="margin-top:16px;padding:16px;background:rgba(212,168,67,0.1);border-radius:12px;border:1px solid rgba(212,168,67,0.2);">
-                    <div style="font-size:20px;color:var(--gold);font-family:var(--font-title);">${matchedLevel.title}</div>
-                    <div style="font-size:13px;color:var(--gold-light);margin-top:8px;">${matchedLevel.desc}</div>
+                    <div style="font-size:20px;color:var(--gold);font-family:var(--font-title);">${placement.title}</div>
+                    <div style="font-size:13px;color:var(--gold-light);margin-top:8px;">${placement.desc}</div>
+                    <div style="font-size:12px;color:var(--parchment-dark);margin-top:8px;">起点依据：${placement.schoolStageLabel} + ${placement.foundationLabel}</div>
                 </div>
             </div>
             <div class="hermes-judge" style="margin-top:16px;">
-                ${avgLevel >= 8 ? '善！已有高阶修为，可直接挑战高阶修炼。' : avgLevel >= 6 ? '不错！已有筑基基础，可从中段起步。' : avgLevel >= 4 ? '根基扎实，从基础开始循序渐进即可。' : '初入道途，从最基础开始，厚积薄发。'}
+                ${placement.foundationTier === 'strong'
+                    ? '善！根基良好，已按你当前年级对应的最高起点入门。'
+                    : (placement.foundationTier === 'medium'
+                        ? '不错！基础中等，已落在当前年级区间的中间起点。'
+                        : '先稳住根基。已按当前年级对应的最低起点开始修炼。')}
             </div>
             <button class="btn btn-primary" id="tianji-done-btn">踏入宗门 · 开始修炼</button>
         `;
         this.game.ui.overlay.appendChild(panel);
 
         // 更新用户境界到后端
-        this.updateUserRealm(matchedLevel);
+        this.updateUserPlacement(placement);
 
         document.getElementById('tianji-done-btn').addEventListener('click', () => {
             panel.remove();
@@ -216,30 +363,55 @@ export class InitiationPanel {
             this.progressTutorialStep(1);
             this.game.enterHall();
             setTimeout(() => {
-                const msgs = {
-                    '灵芽境':'初入道途，从基础开始，一步一个脚印。灵脉已开，去练功房看看吧。',
-                    '青苗境':'迈出了第一步。从练功房开始稳步修炼，路还很长。',
-                    '翠竹境':'根基初见成效。从练功房高阶关卡开始吧。',
-                    '灵泉境':'已有不错基础，可直接挑战更高难度的关卡。',
-                    '碧潭境':'水平扎实！可挑战练气后期关卡，向筑基迈进。',
-                    '流云境':'已有筑基潜质，直接进入筑基期修炼。',
-                    '皓月境':'筑基中段实力。可挑战筑基中期高阶内容。',
-                    '星辰境':'金丹期实力，可挑战高阶修炼内容。',
-                    '天光境':'元婴期实力，可直接进入高阶修炼。未来不可限量。',
-                };
-                this.game.ui.showHermesBubble(msgs[matchedLevel.label] || '欢迎入宗！开始修炼吧。', 6000);
+                const bubbleMessage = placement.foundationTier === 'strong'
+                    ? `根基不错，你将从 ${placement.currentRealm} 开始修炼。`
+                    : (placement.foundationTier === 'medium'
+                        ? `基础稳当，你将从 ${placement.currentRealm} 起步，循序精进。`
+                        : `先稳住根基，你将从 ${placement.currentRealm} 开始补齐基础。`);
+                this.game.ui.showHermesBubble(bubbleMessage, 6000);
             }, 1000);
         });
     }
 
-    async updateUserRealm(level) {
+    async syncSchoolGrade(schoolGrade) {
+        const user = this.game.store.getState().user;
+        if (!user) return;
+        this.game.store.updateUser({ school_grade: schoolGrade });
+        try {
+            await this.game.api.put('/user/profile', { school_grade: schoolGrade });
+        } catch {
+            // keep local state on patch failure
+        }
+    }
+
+    applyStartingProgress(progressIndex) {
+        const startIndex = Math.max(0, Number(progressIndex || 0));
+        ['vocab', 'grammar', 'listening', 'speaking', 'writing'].forEach((type) => {
+            localStorage.setItem(`levelup_progress_${type}`, String(startIndex));
+        });
+    }
+
+    async updateUserPlacement(placement) {
         const user = this.game.store.getState().user;
         if (user) {
-            this.game.store.updateUser({ realm: level.realm, realm_stage: level.stage });
+            this.game.store.updateUser({
+                realm: placement.realm,
+                realm_stage: placement.realmStage,
+                current_realm: placement.currentRealm,
+                school_grade: this.schoolGrade,
+            });
         }
+        this.applyStartingProgress(placement.progressIndex);
         try {
-            await this.game.api.put('/user/profile', { realm: level.realm, realm_stage: level.stage });
-        } catch (e) { /* 静默 */ }
+            await this.game.api.put('/user/profile', {
+                realm: placement.realm,
+                realm_stage: placement.realmStage,
+                current_realm: placement.currentRealm,
+                school_grade: this.schoolGrade,
+            });
+        } catch {
+            // keep local state on patch failure
+        }
     }
 
     async progressTutorialStep(step) {

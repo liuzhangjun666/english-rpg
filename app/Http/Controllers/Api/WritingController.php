@@ -23,6 +23,8 @@ class WritingController extends Controller
         $realm = $request->query('level', 'L1');
         $stage = $request->query('stage', '01');
         $user = $request->user();
+        $this->currencyService->recoverSpiritPower($user);
+        $user->refresh();
 
         $prompts = $this->writingService->getPrompts($realm, $stage);
 
@@ -34,7 +36,7 @@ class WritingController extends Controller
             ], 404);
         }
 
-        $spiritCost = count($prompts) * WritingService::SPIRIT_COST_PER_PROMPT;
+        $spiritCost = CurrencyService::SPIRIT_COST_PER_LEVEL;
 
         return response()->json([
             'success' => true,
@@ -44,6 +46,7 @@ class WritingController extends Controller
                 'prompts' => $prompts,
                 'total' => count($prompts),
                 'spirit_cost' => $spiritCost,
+                'current_spirit_power' => (int) ($user->fresh()->spirit_power ?? 0),
             ],
         ]);
     }
@@ -59,18 +62,6 @@ class WritingController extends Controller
         ]);
 
         $user = $request->user();
-
-        // 检查灵力
-        if (!$this->currencyService->hasEnoughSpirit($user, WritingService::SPIRIT_COST_PER_PROMPT)) {
-            return response()->json([
-                'success' => false,
-                'code' => 'INSUFFICIENT_SPIRIT',
-                'message' => "灵力不足（需要 " . WritingService::SPIRIT_COST_PER_PROMPT . " 点灵力）",
-            ], 422);
-        }
-
-        // 扣除灵力
-        $this->currencyService->consumeSpirit($user, WritingService::SPIRIT_COST_PER_PROMPT);
 
         $result = $this->writingService->submitWriting($user, $data['prompt_id'], $data['content']);
 

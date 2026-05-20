@@ -37,6 +37,8 @@ class VocabController extends Controller
         $level = $request->query('level', 'L1');
         $stage = $request->query('stage', '01');
         $user = $request->user();
+        $this->currencyService->recoverSpiritPower($user);
+        $user->refresh();
 
         // 心魔注入：正常题 + 混入心魔题（20%）
         $normalCount = 15;
@@ -45,6 +47,7 @@ class VocabController extends Controller
         if (empty($allQuestions)) {
             return response()->json(['success'=>false,'code'=>'NO_QUESTIONS','message'=>'该关卡暂无题目'], 404);
         }
+        $spiritCost = CurrencyService::SPIRIT_COST_PER_LEVEL;
 
         $demonCount = count(array_filter($allQuestions, fn($q) => !empty($q['_is_demon'])));
 
@@ -55,7 +58,8 @@ class VocabController extends Controller
                 'stage' => $stage,
                 'questions' => $allQuestions,
                 'total' => count($allQuestions),
-                'spirit_cost' => count($allQuestions) - $demonCount, // 心魔题不扣灵力
+                'spirit_cost' => $spiritCost,
+                'current_spirit_power' => (int) ($user->fresh()->spirit_power ?? 0),
                 'demon_injected' => $demonCount,
             ],
         ]);
@@ -114,7 +118,7 @@ class VocabController extends Controller
         }
 
         // 经济结算
-        $settlement = $this->currencyService->settleBatch($user, $results, count($data['answers']));
+        $settlement = $this->currencyService->settleBatch($user, $results, count($data['answers']), 0);
         $correctCount = count(array_filter($results, fn (array $item) => !empty($item['correct'])));
         $realmProgress = $this->realmService->applyCultivationGain($user, 'vocabulary', $correctCount);
 

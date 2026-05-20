@@ -52,6 +52,8 @@ class SkillPracticeController extends Controller
         $level = $request->query('level', 'L1');
         $stage = $request->query('stage', '01');
         $user = $request->user();
+        $this->currencyService->recoverSpiritPower($user);
+        $user->refresh();
 
         $bankType = $type;
         $normalCount = $module['normal_count'];
@@ -69,6 +71,7 @@ class SkillPracticeController extends Controller
                 'message' => '该关卡暂时无题目',
             ], 404);
         }
+        $spiritCost = CurrencyService::SPIRIT_COST_PER_LEVEL;
 
         $demonCount = count(array_filter($questions, fn ($q) => !empty($q['_is_demon'])));
 
@@ -81,7 +84,8 @@ class SkillPracticeController extends Controller
                 'question_bank_type' => $bankType,
                 'questions' => $questions,
                 'total' => count($questions),
-                'spirit_cost' => count($questions) - $demonCount,
+                'spirit_cost' => $spiritCost,
+                'current_spirit_power' => (int) ($user->fresh()->spirit_power ?? 0),
                 'demon_injected' => $demonCount,
             ],
         ]);
@@ -142,7 +146,7 @@ class SkillPracticeController extends Controller
             }
         }
 
-        $settlement = $this->currencyService->settleBatch($user, $results, count($data['answers']));
+        $settlement = $this->currencyService->settleBatch($user, $results, count($data['answers']), 0);
         $newAchs = $this->achievementService->onLevelSubmit($user, $results, $settlement['accuracy']);
         $correctCount = count(array_filter($results, fn (array $item) => !empty($item['correct'])));
         $dimensionMap = [
