@@ -104,6 +104,8 @@ class SkillPracticeController extends Controller
             'answers' => 'required|array',
             'answers.*.question_id' => 'required|string',
             'answers.*.answer' => 'required|string',
+            'answers.*.mode' => 'nullable|string|in:choice,dictation,spelling',
+            'answers.*.answer_text' => 'nullable|string|max:120',
             'reported_wrong_ids' => 'sometimes|array',
             'reported_wrong_ids.*' => 'string',
         ]);

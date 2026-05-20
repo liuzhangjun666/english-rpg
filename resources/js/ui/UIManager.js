@@ -79,11 +79,15 @@ export class UIManager {
             if (res.success) {
                 this.clearErrorCountdown(errorId);
                 this.hideError(errorId);
+                let sentMessage = '验证码已发送';
                 // 开发模式在控制台输出验证码
                 if (res.debug_code) {
                     console.log(`[SMS-DEV] 验证码: ${res.debug_code}`);
+                    if (this.tryAutoFillDebugCode(action, res.debug_code)) {
+                        sentMessage = '验证码已发送（测试环境已自动填充）';
+                    }
                 }
-                this.showHermesBubble('验证码已发送', 2000);
+                this.showHermesBubble(sentMessage, 2000);
                 // 60秒倒计时
                 let sec = 60;
                 btn.textContent = `${sec}s`;
@@ -116,6 +120,20 @@ export class UIManager {
             this.clearErrorCountdown(errorId);
             this.showError(errorId, '网络错误');
         }
+    }
+
+    tryAutoFillDebugCode(action, code) {
+        const inputId = action === 'register'
+            ? 'reg-code'
+            : action === 'login'
+                ? 'login-code'
+                : null;
+        if (!inputId) return false;
+        const input = document.getElementById(inputId);
+        if (!input) return false;
+        input.value = String(code ?? '');
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        return true;
     }
 
     redirectToLoginFromRegister(phone, message) {

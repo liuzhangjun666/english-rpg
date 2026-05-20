@@ -235,10 +235,18 @@ export class InitiationPanel {
     async updateUserRealm(level) {
         const user = this.game.store.getState().user;
         if (user) {
-            this.game.store.updateUser({ realm: level.realm, realm_stage: level.stage });
+            this.game.store.updateUser({
+                realm: level.realm,
+                realm_stage: level.stage,
+                initiation_completed_at: new Date().toISOString(),
+            });
         }
         try {
-            await this.game.api.put('/user/profile', { realm: level.realm, realm_stage: level.stage });
+            await this.game.api.put('/user/profile', {
+                realm: level.realm,
+                realm_stage: level.stage,
+                initiation_completed: true,
+            });
         } catch (e) { /* 静默 */ }
     }
 

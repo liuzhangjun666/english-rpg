@@ -2,12 +2,69 @@ import * as THREE from 'three';
 import bgHall from '../../assets/images/bg_hall.png';
 
 export class HallScene {
-    build(scene) {
+    build(scene, camera, renderer) {
+        this.sceneRef = scene;
+        this.cameraRef = camera;
+        this.rendererRef = renderer;
+
         const loader = new THREE.TextureLoader();
-        loader.load(bgHall, (tex) => {
-            tex.colorSpace = THREE.SRGBColorSpace;
-            scene.background = tex;
-        });
+        const applyFallbackBg = () => {
+            if (this.bgApplied) return;
+            this.bgApplied = true;
+            loader.load(bgHall, (tex) => {
+                tex.colorSpace = THREE.SRGBColorSpace;
+                this.bgTexture = tex;
+                this.sceneRef.background = tex;
+                this.updateBackgroundTextureFit();
+            });
+        };
+
+        this.videoEl = document.createElement('video');
+        this.videoEl.src = '/effects/hall_gold_aura.mp4';
+        this.videoEl.loop = true;
+        this.videoEl.muted = true;
+        this.videoEl.playsInline = true;
+        this.videoEl.preload = 'auto';
+        this.videoEl.setAttribute('webkit-playsinline', 'true');
+        this.ensureVideoPlaying = () => {
+            if (!this.videoEl || document.hidden) return;
+            if (this.videoEl.paused || this.videoEl.ended) {
+                const p = this.videoEl.play();
+                if (p && typeof p.catch === 'function') p.catch(() => {});
+            }
+        };
+        this.onVisibilityChange = () => this.ensureVideoPlaying();
+        this.onVideoPause = () => this.ensureVideoPlaying();
+        this.onVideoEnded = () => {
+            if (!this.videoEl) return;
+            this.videoEl.currentTime = 0;
+            this.ensureVideoPlaying();
+        };
+        document.addEventListener('visibilitychange', this.onVisibilityChange);
+        this.videoEl.addEventListener('pause', this.onVideoPause);
+        this.videoEl.addEventListener('ended', this.onVideoEnded);
+
+        this.videoEl.addEventListener(
+            'loadeddata',
+            () => {
+                if (this.bgApplied) return;
+                this.bgApplied = true;
+                this.videoTexture = new THREE.VideoTexture(this.videoEl);
+                this.videoTexture.colorSpace = THREE.SRGBColorSpace;
+                this.videoTexture.minFilter = THREE.LinearFilter;
+                this.videoTexture.magFilter = THREE.LinearFilter;
+                this.videoTexture.generateMipmaps = false;
+                this.sceneRef.background = this.videoTexture;
+                this.updateBackgroundTextureFit();
+                const playPromise = this.videoEl.play();
+                if (playPromise && typeof playPromise.catch === 'function') {
+                    playPromise.catch(() => applyFallbackBg());
+                }
+            },
+            { once: true }
+        );
+        this.videoEl.addEventListener('error', () => applyFallbackBg(), { once: true });
+        this.videoEl.load();
 
         const ambient = new THREE.AmbientLight(0x4466aa, 0.55);
         scene.add(ambient);
@@ -139,6 +196,10 @@ export class HallScene {
     }
 
     animate(time) {
+        if (this.videoEl && (this.videoWatchAt === undefined || time - this.videoWatchAt > 2)) {
+            this.videoWatchAt = time;
+            this.ensureVideoPlaying();
+        }
         if (this.stars) {
             this.stars.rotation.y += 0.0003;
             this.stars.rotation.x += 0.00012;
@@ -161,6 +222,61 @@ export class HallScene {
                 const d = gem.userData;
                 gem.position.y = 3.8 + Math.sin(time * d.floatSpeed + d.floatOffset) * 0.2;
             });
+        }
+    }
+
+    updateBackgroundTextureFit() {
+        if (!this.sceneRef || !this.cameraRef) return;
+        const tex = this.sceneRef.background;
+        if (!tex?.isTexture) return;
+        const image = tex.image;
+        if (!image) return;
+        const iw = image.videoWidth || image.naturalWidth || image.width || 1;
+        const ih = image.videoHeight || image.naturalHeight || image.height || 1;
+        if (!iw || !ih) return;
+
+        const canvasAspect = this.cameraRef.aspect || (window.innerWidth / window.innerHeight);
+        const imageAspect = iw / ih;
+        const aspect = imageAspect / canvasAspect;
+
+        tex.offset.x = aspect > 1 ? (1 - 1 / aspect) / 2 : 0;
+        tex.repeat.x = aspect > 1 ? 1 / aspect : 1;
+        tex.offset.y = aspect > 1 ? 0 : (1 - aspect) / 2;
+        tex.repeat.y = aspect > 1 ? 1 : aspect;
+        tex.needsUpdate = true;
+    }
+
+    onResize() {
+        this.updateBackgroundTextureFit();
+    }
+
+    destroy() {
+        if (this.onVisibilityChange) {
+            document.removeEventListener('visibilitychange', this.onVisibilityChange);
+            this.onVisibilityChange = null;
+        }
+        if (this.videoEl && this.onVideoPause) {
+            this.videoEl.removeEventListener('pause', this.onVideoPause);
+            this.onVideoPause = null;
+        }
+        if (this.videoEl && this.onVideoEnded) {
+            this.videoEl.removeEventListener('ended', this.onVideoEnded);
+            this.onVideoEnded = null;
+        }
+        if (this.bgTexture) {
+            this.bgTexture.dispose();
+            this.bgTexture = null;
+        }
+        if (this.videoTexture) {
+            this.videoTexture.dispose();
+            this.videoTexture = null;
+        }
+        if (this.sceneRef) this.sceneRef.background = null;
+        if (this.videoEl) {
+            this.videoEl.pause();
+            this.videoEl.removeAttribute('src');
+            this.videoEl.load();
+            this.videoEl = null;
         }
     }
 }

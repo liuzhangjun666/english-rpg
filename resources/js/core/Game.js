@@ -71,7 +71,8 @@ export class Game {
         const isFresh =
             res.data.exp === 0 &&
             res.data.realm === 'L1' &&
-            res.data.realm_stage === 1;
+            res.data.realm_stage === 1 &&
+            !res.data.initiation_completed_at;
 
         if (isFresh) {
             this.isNewUser = true;

@@ -44,6 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('currency')->group(function () {
         Route::post('/daily-check', [CurrencyController::class, 'dailyCheck']);
         Route::get('/stones', [CurrencyController::class, 'stones']);
+        Route::post('/redeem-scroll', [CurrencyController::class, 'redeemScroll']);
     });
 
     Route::prefix('vocab')->group(function () {
