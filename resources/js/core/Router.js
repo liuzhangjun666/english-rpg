@@ -19,6 +19,7 @@ export class Router {
         // Lazy‑load panel modules only when needed
         this.panelLoaders = {
             reading: () => import('../ui/ReadingPanel.js').then(m => m.ReadingPanel),
+            practice: () => import('../ui/PracticePanel.js').then(m => m.PracticePanel),
             listening: () => import('../ui/PracticePanel.js').then(m => m.PracticePanel),
             speaking: () => import('../ui/PracticePanel.js').then(m => m.PracticePanel),
             writing: () => import('../ui/PracticePanel.js').then(m => m.PracticePanel),

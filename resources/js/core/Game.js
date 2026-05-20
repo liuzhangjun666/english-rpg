@@ -3,18 +3,11 @@ import { Store } from './Store.js';
 import { Router } from './Router.js';
 import { UIManager } from '../ui/UIManager.js';
 import { SceneManager } from '../scenes/SceneManager.js';
-import { PracticePanel } from '../ui/PracticePanel.js';
 import { ExamPanel } from '../ui/ExamPanel.js';
 import { InitiationPanel } from '../ui/InitiationPanel.js';
 import { ReviewPanel } from '../ui/ReviewPanel.js';
-import { DemonsPanel } from '../ui/DemonsPanel.js';
-import { ParentPanel } from '../ui/ParentPanel.js';
-import { AchievementPanel } from '../ui/AchievementPanel.js';
-import { LeaderboardPanel } from '../ui/LeaderboardPanel.js';
-import { MallPanel } from '../ui/MallPanel.js';
 import { MijingPanel } from '../ui/MijingPanel.js';
 import { ShareCard } from '../ui/ShareCard.js';
-import { ReadingPanel } from '../ui/ReadingPanel.js';
 import { HermesClient } from '../hermes/HermesClient.js';
 import {
     defaultProgressCurrency,
@@ -30,25 +23,49 @@ export class Game {
         this.router = new Router(this);
         this.ui = new UIManager(this);
         this.scene = new SceneManager();
-        this.practice = new PracticePanel(this);
         this.exam = new ExamPanel(this);
         this.initiation = new InitiationPanel(this);
         this.review = new ReviewPanel(this);
-        this.demons = new DemonsPanel(this);
-        this.parentPanel = new ParentPanel(this);
-        this.achievements = new AchievementPanel(this);
-        this.leaderboard = new LeaderboardPanel(this);
-        this.mall = new MallPanel(this);
         this.mijing = new MijingPanel(this);
-        this.reading = new ReadingPanel(this);
         this.shareCard = new ShareCard(this);
         this.hermes = new HermesClient(this);
+        
+        // Cache for lazy loaded panels
+        this._panelCache = {};
         this.isLoggedIn = false;
         this.isNewUser = false;
         this.sceneInitialized = false;
         this.routeRestoring = false;
         this.storySyncTimer = null;
         window.addEventListener('auth:logout', () => this.handleForceLogout());
+    }
+
+    // Getters for lazy‑loaded panels
+    get reading() { return this._panelCache['reading']; }
+    get practice() { return this._panelCache['practice']; }
+    get demons() { return this._panelCache['demons']; }
+    get parentPanel() { return this._panelCache['parent']; }
+    get achievements() { return this._panelCache['achievements']; }
+    get leaderboard() { return this._panelCache['leaderboard']; }
+    get mall() { return this._panelCache['mall']; }
+
+    async loadPanel(name) {
+        if (this._panelCache[name]) return this._panelCache[name];
+        const loader = this.router.panelLoaders[name];
+        if (!loader) throw new Error(`No panel loader defined for '${name}'`);
+        this.ui.showLoading('加载中…');
+        try {
+            const PanelClass = await loader();
+            const instance = new PanelClass(this);
+            this._panelCache[name] = instance;
+            return instance;
+        } catch (e) {
+            this.ui.showHermesBubble('加载失败，请稍后重试');
+            console.error(`Failed to load panel ${name}:`, e);
+            throw e;
+        } finally {
+            this.ui.hideLoading();
+        }
     }
 
     init() {
@@ -188,11 +205,11 @@ export class Game {
         }
     }
 
-    startPracticeModule(type) {
+    async startPracticeModule(type) {
         this.navigateIfNeeded(type);
 
         if (type === 'reading') {
-            this.startReadingAdventure();
+            await this.startReadingAdventure();
             return;
         }
 
@@ -205,28 +222,35 @@ export class Game {
 
         this.ensureSceneInitialized();
         this.scene.switchTo('practice', { mode: modeMap[type] || 'vocab' });
-        this.showLevelSelect(type);
+        await this.showLevelSelect(type);
     }
 
-    startReadingAdventure() {
+    async startPracticeModuleAsync(type) {
+        await this.startPracticeModule(type);
+    }
+
+    async startReadingAdventure() {
         this.ensureSceneInitialized();
         this.scene.switchTo('cangjingge');
         const stage = Number(this.store.getState().user?.realm_stage || 1);
         const targetLevel = stage >= 2 ? 2 : 1;
-        this.reading.showChapterList(targetLevel);
+        const readingPanel = await this.loadPanel('reading');
+        readingPanel.showChapterList(targetLevel);
     }
 
-    showLevelSelect(type) {
+    async showLevelSelect(type) {
         this.ui.hideAllPanels();
-        this.practice.showLevelSelect(type);
+        const practicePanel = await this.loadPanel('practice');
+        practicePanel.showLevelSelect(type);
     }
 
-    startPractice(type, level) {
+    async startPractice(type, level) {
         if (type === 'vocab') {
             const mode = Number(level) >= 2 ? 'dange' : 'vocab';
             this.scene.switchTo('practice', { mode });
         }
-        this.practice.startLevel(type, level);
+        const practicePanel = await this.loadPanel('practice');
+        practicePanel.startLevel(type, level);
     }
 
     startExam() {
@@ -237,24 +261,29 @@ export class Game {
         this.review.startReview();
     }
 
-    showDemons() {
-        this.demons.show();
+    async showDemons() {
+        const demonsPanel = await this.loadPanel('demons');
+        demonsPanel.show();
     }
 
-    showParentDashboard() {
-        this.parentPanel.show();
+    async showParentDashboard() {
+        const parentPanel = await this.loadPanel('parent');
+        parentPanel.show();
     }
 
-    showAchievements() {
-        this.achievements.show();
+    async showAchievements() {
+        const achievementsPanel = await this.loadPanel('achievements');
+        achievementsPanel.show();
     }
 
-    showLeaderboard() {
-        this.leaderboard.show();
+    async showLeaderboard() {
+        const leaderboardPanel = await this.loadPanel('leaderboard');
+        leaderboardPanel.show();
     }
 
-    showMall() {
-        this.mall.show();
+    async showMall() {
+        const mallPanel = await this.loadPanel('mall');
+        mallPanel.show();
     }
 
     onReadingAdventureCompleted(data = {}, chapterId = null) {
