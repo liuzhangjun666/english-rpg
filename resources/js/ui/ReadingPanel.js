@@ -285,24 +285,37 @@ export class ReadingPanel {
         const panel = document.getElementById('reading-task-panel');
         if (panel) panel.style.display = 'none';
 
+        // 创建模糊遮罩层以聚焦注意力
+        const mask = document.createElement('div');
+        mask.className = 'fate-overlay-mask';
+        mask.id = 'reading-branch-mask';
+        this.game.ui.overlay.appendChild(mask);
+
         const branchPanel = document.createElement('div');
-        branchPanel.className = 'panel';
+        branchPanel.className = 'panel fate-branch-panel';
         branchPanel.id = 'reading-branch-panel';
         branchPanel.innerHTML = `
-            <div class="panel-title" style="color: var(--gold);">命运岔路口</div>
-            <div style="color: var(--parchment-dark); margin-bottom: 20px; font-size: 14px; text-align: center;">
+            <div class="panel-title fate-panel-title">命运岔路口</div>
+            <div class="fate-panel-intro">
                 你在残卷中发现了隐藏的英文符文，你的选择将决定未来的修行路线。
             </div>
-            <div class="branch-options-container" style="display: flex; flex-direction: column; gap: 15px;">
-                ${chapter.branch_options.map(opt => `
-                    <div class="branch-option-card" data-branch-id="${opt.id}" style="padding: 15px; border: 1px solid var(--gold-dark); border-radius: 8px; cursor: pointer; background: rgba(10,15,35,0.8); transition: background 0.3s;" onmouseover="this.style.background='rgba(212,168,67,0.15)'" onmouseout="this.style.background='rgba(10,15,35,0.8)'">
-                        <div style="font-size: 16px; color: var(--gold); font-weight: bold; margin-bottom: 5px;">${this.escapeHtml(opt.label)}</div>
-                        <div style="font-size: 13px; color: var(--parchment); margin-bottom: 10px;">${this.escapeHtml(opt.hint)}</div>
-                        <div style="font-size: 12px; color: var(--gold-light);">
-                            奖励预测：灵气+${opt.reward_delta?.lingqi || 0} 剧情钥匙+${opt.reward_delta?.story_keys || 0} 道心+${opt.reward_delta?.daoxin || 0}
+            <div class="branch-options-container">
+                ${chapter.branch_options.map(opt => {
+                    let typeClass = '';
+                    if (opt.id.includes('guardian')) typeClass = 'branch-guardian';
+                    else if (opt.id.includes('explorer')) typeClass = 'branch-explorer';
+                    else if (opt.id.includes('heretic')) typeClass = 'branch-heretic';
+
+                    return `
+                        <div class="branch-option-card ${typeClass}" data-branch-id="${opt.id}">
+                            <div class="branch-card-label">${this.escapeHtml(opt.label)}</div>
+                            <div class="branch-card-hint">${this.escapeHtml(opt.hint)}</div>
+                            <div class="branch-card-reward">
+                                奖励预测：灵气+${opt.reward_delta?.lingqi || 0} 剧情钥匙+${opt.reward_delta?.story_keys || 0} 道心+${opt.reward_delta?.daoxin || 0}
+                            </div>
                         </div>
-                    </div>
-                `).join('')}
+                    `;
+                }).join('')}
             </div>
             <button class="btn btn-secondary" id="reading-branch-back" style="margin-top: 20px;">重新考虑（返回阅卷）</button>
         `;
@@ -323,6 +336,7 @@ export class ReadingPanel {
                 }
 
                 branchPanel.remove();
+                mask.remove();
                 if (panel) panel.style.display = 'block';
                 this.executeSubmit(chapter, tasks, branchId);
             });
@@ -330,6 +344,7 @@ export class ReadingPanel {
 
         document.getElementById('reading-branch-back')?.addEventListener('click', () => {
             branchPanel.remove();
+            mask.remove();
             if (panel) panel.style.display = 'block';
         });
     }
