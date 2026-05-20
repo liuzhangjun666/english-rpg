@@ -140,9 +140,9 @@ export class InitiationPanel {
             <div class="question-text">${this.game.ui.escapeHtml(q.question)}</div>
             <div class="options-container">
                 ${Object.entries(q.options).map(([k, v]) =>
-                    `<div class="option-btn ${savedAnswer === k ? 'selected' : ''}" data-value="${k}">
-                        <span class="option-label">${k}</span>
-                        <span class="option-text">${v}</span>
+                    `<div class="option-btn ${savedAnswer === k ? 'selected' : ''}" data-value="${this.game.ui.escapeHtml(k)}">
+                        <span class="option-label">${this.game.ui.escapeHtml(k)}</span>
+                        <span class="option-text">${this.game.ui.escapeHtml(v)}</span>
                     </div>`
                 ).join('')}
             </div>

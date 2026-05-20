@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#d4a843">
     <link rel="manifest" href="/manifest.webmanifest">
     @php
-        $viteEntries = ['resources/css/game.css', 'resources/js/main.js'];
+        $viteEntries = ['resources/js/main.js'];
         $hotFile = public_path('hot');
         $shouldUseDevServer = false;
 
@@ -40,7 +40,6 @@
         <div id="game-container"></div>
         <video
             class="hall-aura-video hall-aura-video-a active"
-            autoplay
             muted
             playsinline
             preload="auto"
@@ -64,6 +63,43 @@
         const FADE_SECONDS = 0.6;
         let activeIndex = 0;
         let switching = false;
+        let hallActive = false;
+
+        const isHallHash = () => {
+            const hash = window.location.hash || '';
+            if (!hash) return true;
+            return hash.startsWith('#hall');
+        };
+
+        const pauseAll = () => {
+            videos.forEach((video) => {
+                video.classList.remove('active');
+                video.pause();
+                try {
+                    video.currentTime = 0;
+                } catch (e) {}
+            });
+        };
+
+        const ensurePlaying = () => {
+            const current = videos[activeIndex];
+            if (!current) return;
+            current.classList.add('active');
+            const playPromise = current.play();
+            if (playPromise && typeof playPromise.catch === 'function') {
+                playPromise.catch(() => {});
+            }
+        };
+
+        const syncHallVideoState = () => {
+            hallActive = isHallHash() && !document.hidden;
+            if (!hallActive) {
+                switching = false;
+                pauseAll();
+                return;
+            }
+            ensurePlaying();
+        };
 
         videos.forEach((video, index) => {
             video.muted = true;
@@ -73,7 +109,6 @@
 
             if (index === 0) {
                 video.classList.add('active');
-                video.play().catch(console.warn);
             } else {
                 video.classList.remove('active');
                 video.pause();
@@ -81,7 +116,7 @@
         });
 
         function switchVideo() {
-            if (switching) return;
+            if (switching || !hallActive) return;
             switching = true;
 
             const current = videos[activeIndex];
@@ -92,11 +127,16 @@
                 next.currentTime = 0;
             } catch (e) {}
 
-            next.play().catch(console.warn);
+            next.play().catch(() => {});
             next.classList.add('active');
             current.classList.remove('active');
 
             setTimeout(() => {
+                if (!hallActive) {
+                    switching = false;
+                    pauseAll();
+                    return;
+                }
                 current.pause();
                 try {
                     current.currentTime = 0;
@@ -108,18 +148,22 @@
 
         videos.forEach((video) => {
             video.addEventListener('timeupdate', function () {
-                if (!video.duration || switching) return;
+                if (!hallActive || !video.duration || switching) return;
                 if (video.classList.contains('active') && video.currentTime >= video.duration - FADE_SECONDS) {
                     switchVideo();
                 }
             });
 
             video.addEventListener('ended', function () {
-                if (video.classList.contains('active')) {
+                if (hallActive && video.classList.contains('active')) {
                     switchVideo();
                 }
             });
         });
+
+        window.addEventListener('hashchange', syncHallVideoState);
+        document.addEventListener('visibilitychange', syncHallVideoState);
+        syncHallVideoState();
     });
     </script>
 </body>

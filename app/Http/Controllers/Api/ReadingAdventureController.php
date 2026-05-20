@@ -41,9 +41,9 @@ class ReadingAdventureController extends Controller
         ]);
     }
 
-    public function chapter(string $chapterId): JsonResponse
+    public function chapter(Request $request, string $chapterId): JsonResponse
     {
-        $chapter = $this->service->getChapterOrNull($chapterId);
+        $chapter = $this->service->getChapterOrNull($chapterId, $request->user());
         if (!$chapter) {
             return response()->json([
                 'success' => false,
@@ -65,9 +65,15 @@ class ReadingAdventureController extends Controller
             'answers' => 'required|array',
             'answers.*.task_id' => 'required|string',
             'answers.*.answer' => 'nullable|string',
+            'selected_branch_id' => 'nullable|string',
         ]);
 
-        $result = $this->service->submit($request->user(), $data['chapter_id'], $data['answers']);
+        $result = $this->service->submit(
+            $request->user(),
+            $data['chapter_id'],
+            $data['answers'],
+            $data['selected_branch_id'] ?? null
+        );
         if (!$result['success']) {
             return response()->json([
                 'success' => false,

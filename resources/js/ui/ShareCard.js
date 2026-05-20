@@ -56,6 +56,9 @@ export class ShareCard {
         if (existing) existing.remove();
 
         const popup = document.createElement('div');
+        const safeTitle = this.escapeHtml(title);
+        const safeSubtitle = this.escapeHtml(subtitle);
+        const safeDesc = this.escapeHtml(desc);
         popup.id = 'share-card-popup';
         popup.style.cssText = `
             position:fixed;top:0;left:0;width:100%;height:100%;z-index:300;
@@ -64,11 +67,11 @@ export class ShareCard {
         `;
         popup.innerHTML = `
             <div style="background:linear-gradient(135deg,#1a1a2e,#2d2d44);border:2px solid var(--gold);border-radius:20px;padding:28px;max-width:360px;width:88vw;box-shadow:0 16px 48px rgba(0,0,0,0.6);text-align:center;">
-                <div style="font-size:32px;margin-bottom:8px;">${title}</div>
-                <div style="font-family:var(--font-title);font-size:18px;color:var(--gold);margin-bottom:4px;">${subtitle}</div>
-                <div style="font-size:13px;color:var(--gold-light);margin-bottom:16px;">${desc}</div>
+                <div style="font-size:32px;margin-bottom:8px;">${safeTitle}</div>
+                <div style="font-family:var(--font-title);font-size:18px;color:var(--gold);margin-bottom:4px;">${safeSubtitle}</div>
+                <div style="font-size:13px;color:var(--gold-light);margin-bottom:16px;">${safeDesc}</div>
                 ${details.length > 0 ? `<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:12px;margin-bottom:16px;text-align:left;font-size:13px;color:var(--parchment-dark);line-height:1.8;">
-                    ${details.map(d => `<div>${d}</div>`).join('')}
+                    ${details.map(d => `<div>${this.escapeHtml(d)}</div>`).join('')}
                 </div>` : ''}
                 <div style="font-size:11px;color:var(--parchment-dark);margin-bottom:16px;">🎁 分享即可获得灵力奖励</div>
                 <button id="share-do-btn" style="width:100%;padding:12px;background:linear-gradient(135deg,var(--gold),#b8922e);border:none;border-radius:10px;color:var(--ink);font-family:var(--font-title);font-size:15px;font-weight:bold;cursor:pointer;">📤 分享到微信</button>
@@ -88,5 +91,9 @@ export class ShareCard {
             }
         });
         popup.querySelector('#share-close-btn').addEventListener('click', () => popup.remove());
+    }
+
+    escapeHtml(str) {
+        return this.game.ui.escapeHtml(str);
     }
 }

@@ -3,9 +3,16 @@ import * as THREE from 'three';
 import sceneBg from '../../assets/images/scene_breakthrough.png';
 
 export class ShilianchangScene {
-    constructor() { this.group = new THREE.Group(); this.boltTime = 0; }
+    constructor() {
+        this.group = new THREE.Group();
+        this.boltTime = 0;
+        this.timeouts = new Set();
+        this.tempEffects = new Set();
+        this.sceneRef = null;
+    }
 
-    build(scene, camera, spark) {
+    build(scene) {
+        this.sceneRef = scene;
         const loader = new THREE.TextureLoader();
         const tex = loader.load(sceneBg);
         tex.colorSpace = THREE.SRGBColorSpace;
@@ -76,6 +83,7 @@ export class ShilianchangScene {
         fog.position.set(0, -3, -8);
         fog.rotation.x = -0.2;
         this.group.add(fog);
+        scene.add(this.group);
     }
 
     animate(time) {
@@ -103,7 +111,8 @@ export class ShilianchangScene {
     }
 
     /** 评级特效：在场景中显示对应评级视觉效果 */
-    showGradeEffect(grade, scene) {
+    showGradeEffect(grade, scene = this.sceneRef) {
+        if (!scene) return;
         const colors = { S: 0xf0d68a, A: 0x9b59b6, B: 0x3498db, C: 0x2ecc71, D: 0x95a5a6 };
         const color = colors[grade] || 0x95a5a6;
 
@@ -114,7 +123,8 @@ export class ShilianchangScene {
         );
         beam.position.set(0, 2, 0);
         scene.add(beam);
-        setTimeout(() => scene.remove(beam), 3000);
+        this.tempEffects.add(beam);
+        this.setSceneTimeout(() => this.removeTempEffect(beam), 3000);
 
         // 评级粒子爆发
         const burstGeo = new THREE.BufferGeometry();
@@ -131,6 +141,31 @@ export class ShilianchangScene {
             blending: THREE.AdditiveBlending
         }));
         scene.add(burst);
-        setTimeout(() => scene.remove(burst), 2000);
+        this.tempEffects.add(burst);
+        this.setSceneTimeout(() => this.removeTempEffect(burst), 2000);
+    }
+
+    setSceneTimeout(callback, delay) {
+        const timer = setTimeout(() => {
+            this.timeouts.delete(timer);
+            callback();
+        }, delay);
+        this.timeouts.add(timer);
+        return timer;
+    }
+
+    removeTempEffect(object) {
+        if (!object) return;
+        this.sceneRef?.remove(object);
+        this.tempEffects.delete(object);
+        if (object.geometry) object.geometry.dispose();
+        if (object.material) object.material.dispose();
+    }
+
+    destroy() {
+        this.timeouts.forEach((timer) => clearTimeout(timer));
+        this.timeouts.clear();
+        Array.from(this.tempEffects).forEach((object) => this.removeTempEffect(object));
+        this.sceneRef = null;
     }
 }

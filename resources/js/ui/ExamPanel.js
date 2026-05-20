@@ -67,7 +67,7 @@ export class ExamPanel {
             <div class="question-text">${this.game.ui.escapeHtml(q.question)}</div>
             <div class="options-container">
                 ${Object.entries(q.options).map(([k, v]) =>
-                    `<div class="option-btn" data-value="${k}"><span class="option-label">${k}</span><span class="option-text">${v}</span></div>`
+                    `<div class="option-btn" data-value="${this.game.ui.escapeHtml(k)}"><span class="option-label">${this.game.ui.escapeHtml(k)}</span><span class="option-text">${this.game.ui.escapeHtml(v)}</span></div>`
                 ).join('')}
             </div>
             <button class="btn btn-primary btn-sm" id="demon-review-next-btn" disabled>下一题</button>
@@ -80,7 +80,12 @@ export class ExamPanel {
                 btn.classList.add('selected');
                 const correct = btn.dataset.value === q.correct_answer;
                 if (correct) { btn.classList.add('answer-correct'); }
-                else { btn.classList.add('answer-wrong'); panel.querySelector(`.option-btn[data-value="${q.correct_answer}"]`).classList.add('answer-correct'); }
+                else {
+                    btn.classList.add('answer-wrong');
+                    const correctBtn = Array.from(panel.querySelectorAll('.option-btn'))
+                        .find((node) => node.dataset.value === q.correct_answer);
+                    correctBtn?.classList.add('answer-correct');
+                }
                 // 记录心魔复习
                 this.game.api.post('/vocab/submit-batch', {
                     level: q.realm || 'L1', stage: 'review',
@@ -345,15 +350,15 @@ export class ExamPanel {
         if (!options) return '';
         return Object.entries(options).map(([key, text]) => {
             const isSelected = savedAnswer === key;
-            return `<div class="option-btn ${isSelected ? 'selected' : ''}" data-value="${key}">
-                <span class="option-label">${key}</span>
+            return `<div class="option-btn ${isSelected ? 'selected' : ''}" data-value="${this.game.ui.escapeHtml(key)}">
+                <span class="option-label">${this.game.ui.escapeHtml(key)}</span>
                 <span class="option-text">${this.game.ui.escapeHtml(text)}</span>
             </div>`;
         }).join('');
     }
 
     startTimer() {
-        if (this.timerId) clearInterval(this.timerId);
+        this.stopTimer();
         this.timerId = setInterval(() => {
             this.timeLeft--;
             this.timerTick++;
@@ -369,6 +374,13 @@ export class ExamPanel {
         }, 1000);
     }
 
+    stopTimer() {
+        if (this.timerId) {
+            clearInterval(this.timerId);
+            this.timerId = null;
+        }
+    }
+
     formatTime(seconds) {
         const m = Math.floor(seconds / 60);
         const s = seconds % 60;
@@ -376,10 +388,7 @@ export class ExamPanel {
     }
 
     async submitExam() {
-        if (this.timerId) {
-            clearInterval(this.timerId);
-            this.timerId = null;
-        }
+        this.stopTimer();
 
         const panel = document.getElementById('exam-panel');
         if (panel) panel.remove();
@@ -469,8 +478,9 @@ export class ExamPanel {
             this.game.enterHall();
             // 渡劫成功 → 弹出天道认证卡（PRD 11.4）
             if (data.grade_result.passed) {
-                setTimeout(() => {
-                    this.game.shareCard.showExamCard({
+                setTimeout(async () => {
+                    const shareCard = await this.game.ensureShareCard();
+                    shareCard.showExamCard({
                         grade: data.grade_result.grade,
                         score: data.grade_result.score,
                         realm_new: data.current_realm ? this.getRealmName(data.current_realm) : this.getRealmName(data.grade_result.grade >= 'C' ? data.current_realm : ''),
@@ -533,5 +543,12 @@ export class ExamPanel {
 
     clearSession() {
         localStorage.removeItem(this.getSessionKey());
+    }
+
+    cleanup() {
+        if (this.examActive) {
+            this.persistSession();
+        }
+        this.stopTimer();
     }
 }

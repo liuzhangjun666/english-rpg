@@ -219,20 +219,30 @@ export class MijingPanel {
         await this.loadNextQuestion();
     }
 
-    async finishChallenge() {
+    async finishChallenge({ silent = false } = {}) {
         if (!this.challengeId || this.finishing) return;
+        const challengeId = this.challengeId;
         this.finishing = true;
         this.stopTicker();
 
         const res = await this.game.api.post('/mijing/timed-challenge/finish', {
-            challenge_id: this.challengeId,
+            challenge_id: challengeId,
         });
         if (!res?.success) {
+            if (silent) {
+                this.challengeId = null;
+                this.finishing = false;
+                return;
+            }
             this.finishing = false;
             this.game.ui.showHermesBubble(res?.message || '结算失败，请稍后重试');
             return;
         }
 
+        this.challengeId = null;
+        this.finishing = false;
+        if (silent) return;
+        this.game.onMijingCompleted(res.data || {});
         this.renderResult(res.data || {});
     }
 
@@ -266,6 +276,11 @@ export class MijingPanel {
                 <div style="display:flex;justify-content:space-between;">
                     <span>获得灵石</span><b style="color:var(--gold);">+${Number(data.points_gained || 0)}</b>
                 </div>
+                ${data.collectible_id ? `
+                    <div style="display:flex;justify-content:space-between;margin-top:6px;">
+                        <span>剧情收集物</span><b style="color:#9ad4ff;">${this.escapeHtml(data.collectible_id)}</b>
+                    </div>
+                ` : ''}
             </div>
             <div style="font-size:12px;color:var(--parchment-dark);margin-bottom:12px;">
                 本次心魔执念：${weakText}
@@ -300,6 +315,14 @@ export class MijingPanel {
             clearInterval(this.timerId);
             this.timerId = null;
         }
+    }
+
+    cleanup() {
+        if (this.challengeId && !this.finishing) {
+            void this.finishChallenge({ silent: true });
+            return;
+        }
+        this.stopTicker();
     }
 
     updateIndicators() {

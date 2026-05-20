@@ -13,63 +13,13 @@ export class HallScene {
         const effectTexture = loader.load(clickRingGold);
         effectTexture.colorSpace = THREE.SRGBColorSpace;
 
-        const applyFallbackBg = () => {
-            if (this.bgApplied) return;
-            this.bgApplied = true;
-            loader.load(bgHall, (tex) => {
-                tex.colorSpace = THREE.SRGBColorSpace;
-                this.bgTexture = tex;
-                this.sceneRef.background = tex;
-                this.updateBackgroundTextureFit();
-            });
-        };
-
-        this.videoEl = document.createElement('video');
-        this.videoEl.src = '/effects/hall_gold_aura.mp4';
-        this.videoEl.loop = true;
-        this.videoEl.muted = true;
-        this.videoEl.playsInline = true;
-        this.videoEl.preload = 'auto';
-        this.videoEl.setAttribute('webkit-playsinline', 'true');
-        this.ensureVideoPlaying = () => {
-            if (!this.videoEl || document.hidden) return;
-            if (this.videoEl.paused || this.videoEl.ended) {
-                const p = this.videoEl.play();
-                if (p && typeof p.catch === 'function') p.catch(() => {});
-            }
-        };
-        this.onVisibilityChange = () => this.ensureVideoPlaying();
-        this.onVideoPause = () => this.ensureVideoPlaying();
-        this.onVideoEnded = () => {
-            if (!this.videoEl) return;
-            this.videoEl.currentTime = 0;
-            this.ensureVideoPlaying();
-        };
-        document.addEventListener('visibilitychange', this.onVisibilityChange);
-        this.videoEl.addEventListener('pause', this.onVideoPause);
-        this.videoEl.addEventListener('ended', this.onVideoEnded);
-
-        this.videoEl.addEventListener(
-            'loadeddata',
-            () => {
-                if (this.bgApplied) return;
-                this.bgApplied = true;
-                this.videoTexture = new THREE.VideoTexture(this.videoEl);
-                this.videoTexture.colorSpace = THREE.SRGBColorSpace;
-                this.videoTexture.minFilter = THREE.LinearFilter;
-                this.videoTexture.magFilter = THREE.LinearFilter;
-                this.videoTexture.generateMipmaps = false;
-                this.sceneRef.background = this.videoTexture;
-                this.updateBackgroundTextureFit();
-                const playPromise = this.videoEl.play();
-                if (playPromise && typeof playPromise.catch === 'function') {
-                    playPromise.catch(() => applyFallbackBg());
-                }
-            },
-            { once: true }
-        );
-        this.videoEl.addEventListener('error', () => applyFallbackBg(), { once: true });
-        this.videoEl.load();
+        loader.load(bgHall, (tex) => {
+            if (!this.sceneRef) return;
+            tex.colorSpace = THREE.SRGBColorSpace;
+            this.bgTexture = tex;
+            this.sceneRef.background = tex;
+            this.updateBackgroundTextureFit();
+        });
 
         const ambient = new THREE.AmbientLight(0x4466aa, 0.55);
         scene.add(ambient);
@@ -208,10 +158,6 @@ export class HallScene {
     }
 
     animate(time) {
-        if (this.videoEl && (this.videoWatchAt === undefined || time - this.videoWatchAt > 2)) {
-            this.videoWatchAt = time;
-            this.ensureVideoPlaying();
-        }
         if (this.stars) {
             this.stars.rotation.y += 0.0003;
             this.stars.rotation.x += 0.00012;
@@ -269,32 +215,13 @@ export class HallScene {
     }
 
     destroy() {
-        if (this.onVisibilityChange) {
-            document.removeEventListener('visibilitychange', this.onVisibilityChange);
-            this.onVisibilityChange = null;
-        }
-        if (this.videoEl && this.onVideoPause) {
-            this.videoEl.removeEventListener('pause', this.onVideoPause);
-            this.onVideoPause = null;
-        }
-        if (this.videoEl && this.onVideoEnded) {
-            this.videoEl.removeEventListener('ended', this.onVideoEnded);
-            this.onVideoEnded = null;
-        }
         if (this.bgTexture) {
             this.bgTexture.dispose();
             this.bgTexture = null;
         }
-        if (this.videoTexture) {
-            this.videoTexture.dispose();
-            this.videoTexture = null;
-        }
         if (this.sceneRef) this.sceneRef.background = null;
-        if (this.videoEl) {
-            this.videoEl.pause();
-            this.videoEl.removeAttribute('src');
-            this.videoEl.load();
-            this.videoEl = null;
-        }
+        this.sceneRef = null;
+        this.cameraRef = null;
+        this.rendererRef = null;
     }
 }
