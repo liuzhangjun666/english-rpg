@@ -8,6 +8,7 @@ use App\Models\Question;
 use App\Models\TimedChallengeAnswer;
 use App\Models\TimedChallengeSession;
 use App\Models\User;
+use App\Support\StoryProgressSupport;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -241,10 +242,10 @@ class TimedChallengeService
         }
 
         $weakTags = $this->extractWeakTags($session->weak_tag_stats ?? []);
-        $dimensionKey = $this->resolveDimensionKey((string) $session->module_type);
-        $realmProgress = $dimensionKey
-            ? $this->realmService->applyCultivationGain($user->fresh(), $dimensionKey, (int) $session->correct_count)
-            : $this->realmService->getCultivationProgress($user->fresh());
+        $storyReward = StoryProgressSupport::grantMijingCollectible($user, [
+            'final_score' => (int) $session->final_score,
+            'accuracy' => $accuracy,
+        ]);
 
         return [
             'success' => true,
@@ -256,6 +257,9 @@ class TimedChallengeService
                 'exp_gained' => $expGained,
                 'points_gained' => $pointsGained,
                 'weak_tags' => $weakTags,
+                'collectible_id' => $storyReward['collectible_id'] ?? null,
+                'story_progress' => $storyReward['story_progress'] ?? StoryProgressSupport::normalizeStoryProgress($user->story_progress),
+                'progress_currency' => $storyReward['progress_currency'] ?? StoryProgressSupport::normalizeProgressCurrency($user->progress_currency),
                 'review_pack_id' => 'rp_' . Str::lower(Str::random(12)),
                 'realm_progress' => $realmProgress,
             ],

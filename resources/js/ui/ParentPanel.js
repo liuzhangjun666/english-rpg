@@ -67,7 +67,7 @@ export class ParentPanel {
                 <div style="display:flex;align-items:flex-end;gap:6px;height:84px;">
                     ${trend7.map((item) => `
                         <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
-                            <div title="${item.date} · ${item.count}题" style="width:100%;height:${Math.max(6, Math.round((Number(item.count || 0) / maxCount) * 58))}px;background:linear-gradient(180deg, rgba(212,168,67,0.9), rgba(212,168,67,0.45));border-radius:6px 6px 2px 2px;"></div>
+                            <div title="${this.game.ui.escapeHtml(item.date)} · ${Number(item.count || 0)}题" style="width:100%;height:${Math.max(6, Math.round((Number(item.count || 0) / maxCount) * 58))}px;background:linear-gradient(180deg, rgba(212,168,67,0.9), rgba(212,168,67,0.45));border-radius:6px 6px 2px 2px;"></div>
                             <div style="font-size:10px;color:var(--parchment-dark);">${String(item.date || '').slice(5)}</div>
                         </div>
                     `).join('')}

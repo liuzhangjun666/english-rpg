@@ -4,7 +4,7 @@ import laravel from 'laravel-vite-plugin';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/game.css', 'resources/js/main.js'],
+            input: ['resources/js/main.js'],
             refresh: true,
         }),
     ],
@@ -12,5 +12,9 @@ export default defineConfig({
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },
+    },
+    build: {
+        // Three.js is intentionally isolated as a vendor chunk; keep warnings for larger regressions.
+        chunkSizeWarningLimit: 550,
     },
 });

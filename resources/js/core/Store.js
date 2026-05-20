@@ -21,6 +21,10 @@ export class Store {
             hermes: {
                 messages: [],
             },
+            story: {
+                progress: null,
+                currencies: null,
+            },
         };
 
         this.listeners = [];
@@ -62,6 +66,28 @@ export class Store {
             Object.assign(this.state.user, this.normalizeRealmUser(updates));
             this.notify();
         }
+    }
+
+    setStoryProgress(progress) {
+        this.state.story.progress = progress;
+        this.notify();
+    }
+
+    setProgressCurrencies(currencies) {
+        this.state.story.currencies = currencies;
+        this.notify();
+    }
+
+    updateStoryProgress(updates) {
+        const current = this.state.story.progress || {};
+        this.state.story.progress = { ...current, ...updates };
+        this.notify();
+    }
+
+    updateProgressCurrencies(updates) {
+        const current = this.state.story.currencies || {};
+        this.state.story.currencies = { ...current, ...updates };
+        this.notify();
     }
 
     // 每日数据

@@ -5,37 +5,37 @@ import { getRealmDisplayName } from '../utils/cultivation.js';
 
 const TIANJI_QUESTIONS = [
     // ── 词汇题 8题 (L1~L8各一题) ──
-    { id:'T-V01', diff:1, type:'vocab', question:'"apple" 的中文意思是？', options:{A:'苹果',B:'香蕉',C:'橘子',D:'葡萄'}, answer:'A' },
-    { id:'T-V02', diff:2, type:'vocab', question:'"beautiful" 的中文意思是？', options:{A:'丑陋的',B:'美丽的',C:'高大的',D:'弱小的'}, answer:'B' },
-    { id:'T-V03', diff:3, type:'vocab', question:'"The book is very _____（有趣的）." 选择正确单词', options:{A:'interest',B:'interesting',C:'interested',D:'interests'}, answer:'B' },
-    { id:'T-V04', diff:4, type:'vocab', question:'"important" 的反义词是？', options:{A:'unimportant',B:'inimportant',C:'disimportant',D:'nonimportant'}, answer:'A' },
-    { id:'T-V05', diff:5, type:'vocab', question:'He _____ (成功) in passing the exam.', options:{A:'success',B:'successful',C:'succeed',D:'succeeded'}, answer:'D' },
-    { id:'T-V06', diff:6, type:'vocab', question:'The _____ (环境) here is very beautiful.', options:{A:'environment',B:'enviroment',C:'environmant',D:'envirnment'}, answer:'A' },
-    { id:'T-V07', diff:7, type:'vocab', question:'"inevitable" 的中文意思是？', options:{A:'不可能的',B:'不可避免的',C:'不可想象的',D:'不可靠的'}, answer:'B' },
-    { id:'T-V08', diff:8, type:'vocab', question:'"sophisticated" 的中文意思是？', options:{A:'简单的',B:'复杂的/精密的',C:'过时的',D:'便宜的'}, answer:'B' },
+    { id: 'T-V01', diff: 1, type: 'vocab', question: '"apple" 的中文意思是？', options: { A: '苹果', B: '香蕉', C: '橘子', D: '葡萄' }, answer: 'A' },
+    { id: 'T-V02', diff: 2, type: 'vocab', question: '"beautiful" 的中文意思是？', options: { A: '丑陋的', B: '美丽的', C: '高大的', D: '弱小的' }, answer: 'B' },
+    { id: 'T-V03', diff: 3, type: 'vocab', question: '"The book is very _____（有趣的）." 选择正确单词', options: { A: 'interest', B: 'interesting', C: 'interested', D: 'interests' }, answer: 'B' },
+    { id: 'T-V04', diff: 4, type: 'vocab', question: '"important" 的反义词是？', options: { A: 'unimportant', B: 'inimportant', C: 'disimportant', D: 'nonimportant' }, answer: 'A' },
+    { id: 'T-V05', diff: 5, type: 'vocab', question: 'He _____ (成功) in passing the exam.', options: { A: 'success', B: 'successful', C: 'succeed', D: 'succeeded' }, answer: 'D' },
+    { id: 'T-V06', diff: 6, type: 'vocab', question: 'The _____ (环境) here is very beautiful.', options: { A: 'environment', B: 'enviroment', C: 'environmant', D: 'envirnment' }, answer: 'A' },
+    { id: 'T-V07', diff: 7, type: 'vocab', question: '"inevitable" 的中文意思是？', options: { A: '不可能的', B: '不可避免的', C: '不可想象的', D: '不可靠的' }, answer: 'B' },
+    { id: 'T-V08', diff: 8, type: 'vocab', question: '"sophisticated" 的中文意思是？', options: { A: '简单的', B: '复杂的/精密的', C: '过时的', D: '便宜的' }, answer: 'B' },
 
     // ── 语法题 8题 (L1~L8各一题) ──
-    { id:'T-G01', diff:1, type:'grammar', question:'She _____ a teacher.', options:{A:'are',B:'is',C:'am',D:'be'}, answer:'B' },
-    { id:'T-G02', diff:2, type:'grammar', question:'There _____ a book and two pens on the desk.', options:{A:'is',B:'are',C:'have',D:'has'}, answer:'A' },
-    { id:'T-G03', diff:3, type:'grammar', question:'I _____ breakfast at 7 o\'clock yesterday.', options:{A:'have',B:'has',C:'had',D:'having'}, answer:'C' },
-    { id:'T-G04', diff:4, type:'grammar', question:'_____ the rain, we still went out.', options:{A:'Because',B:'Although',C:'Despite',D:'Since'}, answer:'C' },
-    { id:'T-G05', diff:5, type:'grammar', question:'If I _____ you, I would study harder.', options:{A:'am',B:'was',C:'were',D:'be'}, answer:'C' },
-    { id:'T-G06', diff:6, type:'grammar', question:'The man _____ is standing there is my teacher.', options:{A:'who',B:'whom',C:'which',D:'what'}, answer:'A' },
-    { id:'T-G07', diff:7, type:'grammar', question:'_____ the meeting, he went home.', options:{A:'Finished',B:'Having finished',C:'Finishing',D:'To finish'}, answer:'B' },
-    { id:'T-G08', diff:8, type:'grammar', question:'Not until he came back _____ leave.', options:{A:'I did',B:'did I',C:'I do',D:'do I'}, answer:'B' },
+    { id: 'T-G01', diff: 1, type: 'grammar', question: 'She _____ a teacher.', options: { A: 'are', B: 'is', C: 'am', D: 'be' }, answer: 'B' },
+    { id: 'T-G02', diff: 2, type: 'grammar', question: 'There _____ a book and two pens on the desk.', options: { A: 'is', B: 'are', C: 'have', D: 'has' }, answer: 'A' },
+    { id: 'T-G03', diff: 3, type: 'grammar', question: 'I _____ breakfast at 7 o\'clock yesterday.', options: { A: 'have', B: 'has', C: 'had', D: 'having' }, answer: 'C' },
+    { id: 'T-G04', diff: 4, type: 'grammar', question: '_____ the rain, we still went out.', options: { A: 'Because', B: 'Although', C: 'Despite', D: 'Since' }, answer: 'C' },
+    { id: 'T-G05', diff: 5, type: 'grammar', question: 'If I _____ you, I would study harder.', options: { A: 'am', B: 'was', C: 'were', D: 'be' }, answer: 'C' },
+    { id: 'T-G06', diff: 6, type: 'grammar', question: 'The man _____ is standing there is my teacher.', options: { A: 'who', B: 'whom', C: 'which', D: 'what' }, answer: 'A' },
+    { id: 'T-G07', diff: 7, type: 'grammar', question: '_____ the meeting, he went home.', options: { A: 'Finished', B: 'Having finished', C: 'Finishing', D: 'To finish' }, answer: 'B' },
+    { id: 'T-G08', diff: 8, type: 'grammar', question: 'Not until he came back _____ leave.', options: { A: 'I did', B: 'did I', C: 'I do', D: 'do I' }, answer: 'B' },
 
     // ── 阅读题 5题 (L3~L7各一题) ──
-    { id:'T-R01', diff:3, type:'reading', question:'文章首句"The weather was nice, so we decided to go to the beach." 问：天气如何？', options:{A:'下雨',B:'很好',C:'很冷',D:'刮风'}, answer:'B' },
-    { id:'T-R02', diff:4, type:'reading', question:'"The main purpose of this passage is to..." 这种题考什么？', options:{A:'细节理解',B:'主旨大意',C:'词义猜测',D:'推理判断'}, answer:'B' },
-    { id:'T-R03', diff:5, type:'reading', question:'"It can be inferred from the passage that..." 这种题考什么？', options:{A:'细节定位',B:'主旨概括',C:'推理判断',D:'作者态度'}, answer:'C' },
-    { id:'T-R04', diff:6, type:'reading', question:'议论文中"However"后面的内容通常表示？', options:{A:'并列关系',B:'转折关系',C:'因果关系',D:'递进关系'}, answer:'B' },
-    { id:'T-R05', diff:7, type:'reading', question:'考研阅读中"Which of the following is true according to the passage?"属于什么题型？', options:{A:'主旨题',B:'细节题',C:'推断题',D:'态度题'}, answer:'B' },
+    { id: 'T-R01', diff: 3, type: 'reading', question: '文章首句"The weather was nice, so we decided to go to the beach." 问：天气如何？', options: { A: '下雨', B: '很好', C: '很冷', D: '刮风' }, answer: 'B' },
+    { id: 'T-R02', diff: 4, type: 'reading', question: '"The main purpose of this passage is to..." 这种题考什么？', options: { A: '细节理解', B: '主旨大意', C: '词义猜测', D: '推理判断' }, answer: 'B' },
+    { id: 'T-R03', diff: 5, type: 'reading', question: '"It can be inferred from the passage that..." 这种题考什么？', options: { A: '细节定位', B: '主旨概括', C: '推理判断', D: '作者态度' }, answer: 'C' },
+    { id: 'T-R04', diff: 6, type: 'reading', question: '议论文中"However"后面的内容通常表示？', options: { A: '并列关系', B: '转折关系', C: '因果关系', D: '递进关系' }, answer: 'B' },
+    { id: 'T-R05', diff: 7, type: 'reading', question: '考研阅读中"Which of the following is true according to the passage?"属于什么题型？', options: { A: '主旨题', B: '细节题', C: '推断题', D: '态度题' }, answer: 'B' },
 
     // ── 综合题 4题 (L4~L7各一题) ──
-    { id:'T-C01', diff:4, type:'comprehensive', question:'根据词根"port"(搬运)，"export"最可能的意思是？', options:{A:'进口',B:'出口',C:'运输',D:'报告'}, answer:'B' },
-    { id:'T-C02', diff:5, type:'comprehensive', question:'根据语境："The exam was a piece of cake." 这句话的意思是？', options:{A:'考试有蛋糕吃',B:'考试很简单',C:'考试很甜',D:'考试很长'}, answer:'B' },
-    { id:'T-C03', diff:6, type:'comprehensive', question:'以下哪句口语表达更地道？', options:{A:'I very like it.',B:'I like it very much.',C:'I like very it.',D:'I very much like it.'}, answer:'B' },
-    { id:'T-C04', diff:7, type:'comprehensive', question:'"Some people believe that... Others argue that..." 这种段落结构属于？', options:{A:'举例论证',B:'对比论证',C:'因果论证',D:'数据论证'}, answer:'B' },
+    { id: 'T-C01', diff: 4, type: 'comprehensive', question: '根据词根"port"(搬运)，"export"最可能的意思是？', options: { A: '进口', B: '出口', C: '运输', D: '报告' }, answer: 'B' },
+    { id: 'T-C02', diff: 5, type: 'comprehensive', question: '根据语境："The exam was a piece of cake." 这句话的意思是？', options: { A: '考试有蛋糕吃', B: '考试很简单', C: '考试很甜', D: '考试很长' }, answer: 'B' },
+    { id: 'T-C03', diff: 6, type: 'comprehensive', question: '以下哪句口语表达更地道？', options: { A: 'I very like it.', B: 'I like it very much.', C: 'I like very it.', D: 'I very much like it.' }, answer: 'B' },
+    { id: 'T-C04', diff: 7, type: 'comprehensive', question: '"Some people believe that... Others argue that..." 这种段落结构属于？', options: { A: '举例论证', B: '对比论证', C: '因果论证', D: '数据论证' }, answer: 'B' },
 ];
 
 const SCHOOL_GRADE_OPTIONS = [
@@ -260,7 +260,7 @@ export class InitiationPanel {
         const total = TIANJI_QUESTIONS.length;
         const savedAnswer = this.answers[q.id] || null;
 
-        const diffLabel = ['','基础','初级','初阶','中级','中高级','高级','高阶','精深'][q.diff] || '未知';
+        const diffLabel = ['', '基础', '初级', '初阶', '中级', '中高级', '高级', '高阶', '精深'][q.diff] || '未知';
 
         const panel = document.createElement('div');
         panel.className = 'panel';
@@ -272,21 +272,21 @@ export class InitiationPanel {
                 <span style="font-size:12px;color:var(--parchment-dark);">难度:${diffLabel} · ✓ ${this.correctCount}题</span>
             </div>
             <div class="progress-bar">
-                <div class="progress-fill" style="width:${(this.currentIndex/total)*100}%"></div>
+                <div class="progress-fill" style="width:${(this.currentIndex / total) * 100}%"></div>
             </div>
             <div style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;margin-bottom:8px;
-                background:${q.type==='vocab'?'rgba(74,144,217,0.2)':q.type==='grammar'?'rgba(78,192,122,0.2)':q.type==='reading'?'rgba(212,168,67,0.2)':'rgba(240,214,138,0.2)'};
-                color:${q.type==='vocab'?'#4a90d9':q.type==='grammar'?'#4ec07a':q.type==='reading'?'#d4a843':'#f0d68a'};">
-                ${q.type==='vocab'?'📖词汇':q.type==='grammar'?'🔮语法':q.type==='reading'?'📚阅读':'🎯综合'}
+                background:${q.type === 'vocab' ? 'rgba(74,144,217,0.2)' : q.type === 'grammar' ? 'rgba(78,192,122,0.2)' : q.type === 'reading' ? 'rgba(212,168,67,0.2)' : 'rgba(240,214,138,0.2)'};
+                color:${q.type === 'vocab' ? '#4a90d9' : q.type === 'grammar' ? '#4ec07a' : q.type === 'reading' ? '#d4a843' : '#f0d68a'};">
+                ${q.type === 'vocab' ? '📖词汇' : q.type === 'grammar' ? '🔮语法' : q.type === 'reading' ? '📚阅读' : '🎯综合'}
             </div>
             <div class="question-text">${this.game.ui.escapeHtml(q.question)}</div>
             <div class="options-container">
                 ${Object.entries(q.options).map(([k, v]) =>
-                    `<div class="option-btn ${savedAnswer === k ? 'selected' : ''}" data-value="${k}">
-                        <span class="option-label">${k}</span>
-                        <span class="option-text">${v}</span>
+            `<div class="option-btn ${savedAnswer === k ? 'selected' : ''}" data-value="${this.game.ui.escapeHtml(k)}">
+                        <span class="option-label">${this.game.ui.escapeHtml(k)}</span>
+                        <span class="option-text">${this.game.ui.escapeHtml(v)}</span>
                     </div>`
-                ).join('')}
+        ).join('')}
             </div>
             <button class="btn btn-primary" id="tianji-next-btn" ${savedAnswer ? '' : 'disabled'}>
                 ${this.currentIndex < total - 1 ? '下一题 →' : '查看结果'}
@@ -344,10 +344,10 @@ export class InitiationPanel {
             </div>
             <div class="hermes-judge" style="margin-top:16px;">
                 ${placement.foundationTier === 'strong'
-                    ? '善！根基良好，已按你当前年级对应的最高起点入门。'
-                    : (placement.foundationTier === 'medium'
-                        ? '不错！基础中等，已落在当前年级区间的中间起点。'
-                        : '先稳住根基。已按当前年级对应的最低起点开始修炼。')}
+                ? '善！根基良好，已按你当前年级对应的最高起点入门。'
+                : (placement.foundationTier === 'medium'
+                    ? '不错！基础中等，已落在当前年级区间的中间起点。'
+                    : '先稳住根基。已按当前年级对应的最低起点开始修炼。')}
             </div>
             <button class="btn btn-primary" id="tianji-done-btn">踏入宗门 · 开始修炼</button>
         `;

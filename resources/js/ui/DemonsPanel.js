@@ -129,8 +129,8 @@ export class DemonsPanel {
             <div class="question-text">${this.game.ui.escapeHtml(question.question || '')}</div>
             <div class="options-container">
                 ${Object.entries(options).map(([key, text]) => `
-                    <div class="option-btn ${selected === key ? 'selected' : ''}" data-value="${key}">
-                        <span class="option-label">${key}</span>
+                    <div class="option-btn ${selected === key ? 'selected' : ''}" data-value="${this.game.ui.escapeHtml(key)}">
+                        <span class="option-label">${this.game.ui.escapeHtml(key)}</span>
                         <span class="option-text">${this.game.ui.escapeHtml(text)}</span>
                     </div>
                 `).join('')}

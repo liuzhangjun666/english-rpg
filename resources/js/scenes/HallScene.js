@@ -1,12 +1,24 @@
 import * as THREE from 'three';
 import bgHall from '../../assets/images/bg_hall.png';
+import clickRingGold from '../../assets/images/custom/click_ring_gold.png';
+import { isLowPowerDevice, sceneFxProfiles } from './sceneConfig.js';
 
 export class HallScene {
-    build(scene) {
+    build(scene, camera, renderer) {
+        this.sceneRef = scene;
+        this.cameraRef = camera;
+        this.rendererRef = renderer;
+
         const loader = new THREE.TextureLoader();
+        const effectTexture = loader.load(clickRingGold);
+        effectTexture.colorSpace = THREE.SRGBColorSpace;
+
         loader.load(bgHall, (tex) => {
+            if (!this.sceneRef) return;
             tex.colorSpace = THREE.SRGBColorSpace;
-            scene.background = tex;
+            this.bgTexture = tex;
+            this.sceneRef.background = tex;
+            this.updateBackgroundTextureFit();
         });
 
         const ambient = new THREE.AmbientLight(0x4466aa, 0.55);
@@ -18,12 +30,10 @@ export class HallScene {
         centerGlow.position.set(0, 3, 0);
         scene.add(centerGlow);
 
-        const lowPower =
-            (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
-            (navigator.deviceMemory && navigator.deviceMemory <= 4) ||
-            window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+        const lowPower = isLowPowerDevice();
+        this.fxBudget = lowPower ? sceneFxProfiles.hall.low : sceneFxProfiles.hall.normal;
 
-        const starCount = lowPower ? 600 : 1200;
+        const starCount = this.fxBudget.starCount;
         const starGeo = new THREE.BufferGeometry();
         const pos = new Float32Array(starCount * 3);
         const col = new Float32Array(starCount * 3);
@@ -55,14 +65,17 @@ export class HallScene {
         scene.add(stars);
         this.stars = stars;
 
-        for (let layer = 0; layer < 2; layer++) {
+        for (let layer = 0; layer < this.fxBudget.ringLayers; layer++) {
             const ringR = 5.8 + layer * 0.5;
             const ring = new THREE.Mesh(
-                new THREE.RingGeometry(ringR - 0.1, ringR + 0.15, 64),
+                new THREE.PlaneGeometry((ringR + 0.15) * 2, (ringR + 0.15) * 2),
                 new THREE.MeshBasicMaterial({
-                    color: 0xc9a846,
+                    map: effectTexture,
+                    color: layer === 0 ? 0xffe4a8 : 0xffd892,
                     transparent: true,
-                    opacity: 0.12 + layer * 0.04,
+                    opacity: lowPower ? 0.2 : 0.2 + layer * 0.06,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false,
                     side: THREE.DoubleSide,
                 })
             );
@@ -78,41 +91,44 @@ export class HallScene {
             [-4, 0, 3.5],
             [4, 0, 3.5],
         ];
-        const colors = [0xc9a846, 0x4ecdc4, 0xff6b6b, 0x6c5ce7];
+        const colors = [0xffd486, 0xffe3a1, 0xffc56f, 0xffeec9];
         this.pillarGems = [];
-        pillarPositions.forEach(([x, _, z], i) => {
-            const gem = new THREE.Mesh(
-                new THREE.OctahedronGeometry(0.25, 0),
-                new THREE.MeshPhongMaterial({
+        pillarPositions.slice(0, this.fxBudget.pillarGemCount).forEach(([x, _, z], i) => {
+            const gem = new THREE.Sprite(
+                new THREE.SpriteMaterial({
+                    map: effectTexture,
                     color: colors[i],
-                    emissive: colors[i],
-                    emissiveIntensity: 0.6,
                     transparent: true,
-                    opacity: 0.9,
+                    opacity: this.fxBudget.baseOpacity,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false,
                 })
             );
             gem.position.set(x, 3.8, z);
+            gem.scale.set(0.95, 0.95, 1);
             gem.userData = { floatSpeed: 0.8 + i * 0.2, floatOffset: i * 1.5 };
             scene.add(gem);
             this.pillarGems.push(gem);
         });
 
         this.orbs = [];
-        const orbColors = [0xc9a846, 0x4ecdc4, 0xff6b6b, 0xffd93d, 0x6c5ce7, 0x00cec9];
-        for (let i = 0; i < 6; i++) {
-            const orb = new THREE.Mesh(
-                new THREE.SphereGeometry(0.35, 16, 16),
-                new THREE.MeshPhongMaterial({
+        this.orbGlows = [];
+        const orbColors = [0xffd68c, 0xffe6b5, 0xffc977, 0xffdb9f, 0xfff0d0, 0xffbf62];
+        for (let i = 0; i < this.fxBudget.orbCount; i++) {
+            const orb = new THREE.Sprite(
+                new THREE.SpriteMaterial({
+                    map: effectTexture,
                     color: orbColors[i],
-                    emissive: orbColors[i],
-                    emissiveIntensity: 0.4,
                     transparent: true,
-                    opacity: 0.85,
+                    opacity: this.fxBudget.baseOpacity,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false,
                 })
             );
-            const angle = (i / 6) * Math.PI * 2;
+            const angle = (i / this.fxBudget.orbCount) * Math.PI * 2;
             const radius = 3.2 + Math.random() * 0.8;
             orb.position.set(Math.cos(angle) * radius, 1.5 + Math.random(), Math.sin(angle) * radius);
+            orb.scale.set(1.05, 1.05, 1);
             orb.userData = {
                 angle,
                 radius,
@@ -124,17 +140,20 @@ export class HallScene {
             scene.add(orb);
             this.orbs.push(orb);
 
-            const glow = new THREE.Mesh(
-                new THREE.SphereGeometry(0.55, 12, 12),
-                new THREE.MeshBasicMaterial({
+            const glow = new THREE.Sprite(
+                new THREE.SpriteMaterial({
+                    map: effectTexture,
                     color: orbColors[i],
                     transparent: true,
-                    opacity: 0.1,
+                    opacity: lowPower ? 0.12 : 0.18,
                     blending: THREE.AdditiveBlending,
+                    depthWrite: false,
                 })
             );
             glow.position.copy(orb.position);
+            glow.scale.set(this.fxBudget.glowScale, this.fxBudget.glowScale, 1);
             scene.add(glow);
+            this.orbGlows.push(glow);
         }
     }
 
@@ -145,7 +164,7 @@ export class HallScene {
         }
 
         if (this.orbs) {
-            this.orbs.forEach((orb) => {
+            this.orbs.forEach((orb, index) => {
                 const d = orb.userData;
                 const a = d.angle + time * d.speed;
                 orb.position.x = Math.cos(a) * d.radius;
@@ -153,6 +172,12 @@ export class HallScene {
                 orb.position.y = d.baseY + Math.sin(time * d.floatSpeed + d.floatOffset) * 0.4;
                 const s = 1 + Math.sin(time * 2.5) * 0.12;
                 orb.scale.set(s, s, s);
+                const glow = this.orbGlows?.[index];
+                if (glow) {
+                    glow.position.copy(orb.position);
+                    const gs = s * this.fxBudget.glowScale;
+                    glow.scale.set(gs, gs, 1);
+                }
             });
         }
 
@@ -162,5 +187,41 @@ export class HallScene {
                 gem.position.y = 3.8 + Math.sin(time * d.floatSpeed + d.floatOffset) * 0.2;
             });
         }
+    }
+
+    updateBackgroundTextureFit() {
+        if (!this.sceneRef || !this.cameraRef) return;
+        const tex = this.sceneRef.background;
+        if (!tex?.isTexture) return;
+        const image = tex.image;
+        if (!image) return;
+        const iw = image.videoWidth || image.naturalWidth || image.width || 1;
+        const ih = image.videoHeight || image.naturalHeight || image.height || 1;
+        if (!iw || !ih) return;
+
+        const canvasAspect = this.cameraRef.aspect || (window.innerWidth / window.innerHeight);
+        const imageAspect = iw / ih;
+        const aspect = imageAspect / canvasAspect;
+
+        tex.offset.x = aspect > 1 ? (1 - 1 / aspect) / 2 : 0;
+        tex.repeat.x = aspect > 1 ? 1 / aspect : 1;
+        tex.offset.y = aspect > 1 ? 0 : (1 - aspect) / 2;
+        tex.repeat.y = aspect > 1 ? 1 : aspect;
+        tex.needsUpdate = true;
+    }
+
+    onResize() {
+        this.updateBackgroundTextureFit();
+    }
+
+    destroy() {
+        if (this.bgTexture) {
+            this.bgTexture.dispose();
+            this.bgTexture = null;
+        }
+        if (this.sceneRef) this.sceneRef.background = null;
+        this.sceneRef = null;
+        this.cameraRef = null;
+        this.rendererRef = null;
     }
 }

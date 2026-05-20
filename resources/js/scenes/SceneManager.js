@@ -25,6 +25,10 @@ export class SceneManager {
         };
     }
 
+    setEventBus(eventBus) {
+        this.eventBus = eventBus || null;
+    }
+
     init(container) {
         if (this.renderer) return;
 
@@ -63,6 +67,9 @@ export class SceneManager {
         const optionsKey = JSON.stringify(options || {});
         if (name === this.currentSceneName && optionsKey === this.currentSceneOptionsKey) return;
 
+        const prevSceneName = this.currentSceneName;
+        this.eventBus?.emit('scene:switch:start', { from: prevSceneName, to: name });
+
         this.currentSceneName = name;
         this.currentSceneOptionsKey = optionsKey;
         this.clearScene();
@@ -75,8 +82,14 @@ export class SceneManager {
             const sceneObj = new SceneClass();
             sceneObj.build(this.scene, this.camera, null, options);
             this.currentSceneObj = sceneObj;
+            this.eventBus?.emit('scene:switch:end', { from: prevSceneName, to: name });
         } catch (error) {
             console.error(`[SceneManager] Failed to load scene: ${name}`, error);
+            this.eventBus?.emit('scene:switch:error', {
+                from: prevSceneName,
+                to: name,
+                error,
+            });
         }
     }
 

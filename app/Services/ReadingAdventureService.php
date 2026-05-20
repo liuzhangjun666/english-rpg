@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\LearningRecord;
 use App\Models\User;
+use App\Support\StoryProgressSupport;
 
 class ReadingAdventureService
 {
@@ -20,8 +21,11 @@ class ReadingAdventureService
     {
         $chapters = array_values(array_filter($this->allChapters(), fn ($c) => $c['level'] === $level));
         $completed = $this->completedMap($user);
+        $storyProgress = StoryProgressSupport::normalizeStoryProgress($user->story_progress);
 
-        return array_map(function ($chapter) use ($completed) {
+        return array_map(function ($chapter) use ($completed, $storyProgress) {
+            $unlockRequirements = $chapter['unlock_requirements'] ?? [];
+            $selectedBranchId = $storyProgress['selected_branches'][$chapter['id']] ?? null;
             return [
                 'id' => $chapter['id'],
                 'level' => $chapter['level'],
@@ -30,24 +34,33 @@ class ReadingAdventureService
                 'difficulty' => $chapter['difficulty'],
                 'task_count' => count($chapter['tasks']),
                 'reward_preview' => $chapter['rewards'],
+                'chapter_rewards' => $chapter['chapter_rewards'] ?? [],
+                'unlock_requirements' => $unlockRequirements,
+                'branch_count' => count($chapter['branch_options'] ?? []),
+                'selected_branch_id' => $selectedBranchId,
                 'completed' => !empty($completed[$chapter['id']]),
             ];
         }, $chapters);
     }
 
-    public function getChapterOrNull(string $chapterId): ?array
+    public function getChapterOrNull(string $chapterId, ?User $user = null): ?array
     {
         $chapter = $this->allChapters()[$chapterId] ?? null;
         if (!$chapter) {
             return null;
         }
 
+        if ($user) {
+            $storyProgress = StoryProgressSupport::normalizeStoryProgress($user->story_progress);
+            $chapter['selected_branch_id'] = $storyProgress['selected_branches'][$chapterId] ?? null;
+        }
+
         return $chapter;
     }
 
-    public function submit(User $user, string $chapterId, array $answers): array
+    public function submit(User $user, string $chapterId, array $answers, ?string $selectedBranchId = null): array
     {
-        $chapter = $this->getChapterOrNull($chapterId);
+        $chapter = $this->getChapterOrNull($chapterId, $user);
         if (!$chapter) {
             return ['success' => false, 'message' => '阅读副本不存在'];
         }
@@ -108,6 +121,19 @@ class ReadingAdventureService
         $total = count($chapter['tasks']);
         $accuracy = $total > 0 ? (int) round(($correctCount / $total) * 100) : 0;
         $passed = $accuracy >= self::PASS_THRESHOLD;
+        $branchOptions = $chapter['branch_options'] ?? [];
+        $validBranchIds = array_values(array_map(fn ($item) => (string) ($item['id'] ?? ''), $branchOptions));
+
+        if ($passed && count($validBranchIds) > 0) {
+            if (!$selectedBranchId || !in_array($selectedBranchId, $validBranchIds, true)) {
+                return [
+                    'success' => false,
+                    'message' => '请先选择本章命盘分支后再提交',
+                ];
+            }
+        } else {
+            $selectedBranchId = null;
+        }
 
         $difficulty = max(1, (int)$chapter['difficulty']);
         $multiplier = 1 + (($difficulty - 1) * 0.25);
@@ -121,7 +147,17 @@ class ReadingAdventureService
             $user->increment('exp', $xp);
             $user->increment('spirit_stone', $spiritStone);
         }
-        $realmProgress = $this->realmService->applyCultivationGain($user->fresh(), 'reading', $correctCount);
+
+        $branchUnlockState = $this->resolveBranchUnlockState($chapterId, $selectedBranchId, $chapter);
+        $storySnapshot = StoryProgressSupport::applyReadingBranchResult(
+            $user,
+            $chapter,
+            $selectedBranchId,
+            $passed,
+            $accuracy,
+            $chapter['chapter_rewards'] ?? [],
+            $branchUnlockState,
+        );
 
         LearningRecord::create([
             'user_id' => $user->id,
@@ -154,7 +190,11 @@ class ReadingAdventureService
                 'xp_gained' => $passed ? $xp : 0,
                 'spirit_stone_gained' => $passed ? $spiritStone : 0,
                 'item_reward' => $passed ? ($chapter['rewards']['item'] ?? null) : null,
-                'realm_progress' => $realmProgress,
+                'selected_branch_id' => $selectedBranchId,
+                'branch_unlock_state' => $branchUnlockState,
+                'next_chapter_id' => $branchUnlockState['next_chapter_id'] ?? null,
+                'story_progress' => $storySnapshot['story_progress'] ?? StoryProgressSupport::normalizeStoryProgress($user->story_progress),
+                'progress_currency' => $storySnapshot['progress_currency'] ?? StoryProgressSupport::normalizeProgressCurrency($user->progress_currency),
             ],
         ];
     }
@@ -198,6 +238,92 @@ class ReadingAdventureService
     private function normalize(string $v): string
     {
         return mb_strtolower(trim($v));
+    }
+
+    private function resolveBranchUnlockState(string $chapterId, ?string $selectedBranchId, array $chapter): array
+    {
+        $nextByBranch = [];
+        foreach (($chapter['branch_options'] ?? []) as $option) {
+            $branchId = (string) ($option['id'] ?? '');
+            if ($branchId === '') {
+                continue;
+            }
+            $nextByBranch[$branchId] = (string) ($option['next_chapter_id'] ?? '');
+        }
+
+        $nextChapterId = $selectedBranchId ? ($nextByBranch[$selectedBranchId] ?? '') : '';
+        if ($nextChapterId === '' && !empty($chapter['next_chapter_id'])) {
+            $nextChapterId = (string) $chapter['next_chapter_id'];
+        }
+
+        $isEndingChapter = preg_match('/-15$/', $chapterId) === 1;
+
+        return [
+            'selected_branch_id' => $selectedBranchId,
+            'next_chapter_id' => $nextChapterId ?: null,
+            'branch_count' => count($chapter['branch_options'] ?? []),
+            'recommended_module' => $nextChapterId ? 'reading' : 'practice',
+            'ending_id' => $isEndingChapter ? $selectedBranchId : null,
+        ];
+    }
+
+    private function decorateStoryMeta(array $chapters): array
+    {
+        $storyArcs = [
+            'R1' => ['mainline' => 'chapter_1', 'name' => '宗门初启'],
+            'R2' => ['mainline' => 'chapter_2', 'name' => '山门试炼'],
+        ];
+
+        $branchTemplates = [
+            ['id' => 'path_guardian', 'label' => '守正之路', 'hint' => '稳扎稳打，重视基础与秩序'],
+            ['id' => 'path_explorer', 'label' => '探秘之路', 'hint' => '偏探索与推理，收集线索更快'],
+            ['id' => 'path_heretic', 'label' => '问心之路', 'hint' => '高风险高收益，道心波动更大'],
+        ];
+
+        $chapterIds = array_keys($chapters);
+        sort($chapterIds);
+
+        foreach ($chapterIds as $index => $chapterId) {
+            $chapter = $chapters[$chapterId];
+            [$arcPrefix] = explode('-', $chapterId);
+            $arc = $storyArcs[$arcPrefix] ?? ['mainline' => 'chapter_3', 'name' => '终章'];
+
+            $options = [];
+            $isStoryHub = (($index + 1) % 5) === 0;
+            if ($isStoryHub) {
+                foreach ($branchTemplates as $template) {
+                    $nextChapter = $chapterIds[$index + 1] ?? null;
+                    $branchId = $chapterId . '_' . $template['id'];
+                    $options[] = [
+                        'id' => $branchId,
+                        'label' => $template['label'],
+                        'hint' => $template['hint'],
+                        'next_chapter_id' => $nextChapter,
+                        'reward_delta' => [
+                            'lingqi' => 6,
+                            'story_keys' => 1,
+                            'daoxin' => 1,
+                        ],
+                    ];
+                }
+            }
+
+            $chapters[$chapterId]['story_arc'] = $arc;
+            $chapters[$chapterId]['unlock_requirements'] = [
+                'min_accuracy' => self::PASS_THRESHOLD,
+                'required_module' => 'reading',
+            ];
+            $chapters[$chapterId]['chapter_rewards'] = [
+                'lingqi' => 4 + (($index + 1) % 3),
+                'story_keys' => $isStoryHub ? 1 : 0,
+                'daoxin' => 1,
+                'collectible_id' => $isStoryHub ? 'scroll_' . strtolower(str_replace('-', '_', $chapterId)) : null,
+            ];
+            $chapters[$chapterId]['branch_options'] = $options;
+            $chapters[$chapterId]['next_chapter_id'] = $chapterIds[$index + 1] ?? null;
+        }
+
+        return $chapters;
     }
 
     private function allChapters(): array
@@ -314,6 +440,6 @@ class ReadingAdventureService
             ];
         }
 
-        return $chapters;
+        return $this->decorateStoryMeta($chapters);
     }
 }

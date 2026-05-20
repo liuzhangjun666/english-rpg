@@ -44,4 +44,56 @@ class CurrencyController extends Controller
             ],
         ]);
     }
+
+    /**
+     * 卷轴兑换
+     * POST /api/currency/redeem-scroll
+     */
+    public function redeemScroll(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'target' => 'required|string|in:stone,exp,skill',
+            'count' => 'nullable|integer|min:1|max:20',
+        ]);
+
+        $user = $request->user();
+        $count = (int) ($data['count'] ?? 1);
+        $owned = (int) ($user->secret_scroll ?? 0);
+        if ($owned < $count) {
+            return response()->json([
+                'success' => false,
+                'code' => 'SCROLL_NOT_ENOUGH',
+                'message' => '秘境卷轴不足',
+            ], 422);
+        }
+
+        $target = $data['target'];
+        $gain = 0;
+        if ($target === 'stone') {
+            $gain = $count * 3;
+            $user->spirit_stone = (int) $user->spirit_stone + $gain;
+        } elseif ($target === 'exp') {
+            $gain = $count * 20;
+            $user->exp = (int) $user->exp + $gain;
+        } else {
+            $gain = $count;
+            $user->skill_point = (int) $user->skill_point + $gain;
+        }
+
+        $user->secret_scroll = max(0, $owned - $count);
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'target' => $target,
+                'count' => $count,
+                'gain' => $gain,
+                'secret_scroll' => (int) $user->secret_scroll,
+                'spirit_stone' => (int) $user->spirit_stone,
+                'exp' => (int) $user->exp,
+                'skill_point' => (int) $user->skill_point,
+            ],
+        ]);
+    }
 }
