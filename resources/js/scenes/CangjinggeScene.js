@@ -1,6 +1,7 @@
 // 藏经阁 3D 场景（语法修炼）
 import * as THREE from 'three';
 import sceneBg from '../../assets/images/scene_cangjingge_gpt.png';
+import talismanGold from '../../assets/images/custom/talisman_gold_01.png';
 
 export class CangjinggeScene {
     constructor() {
@@ -18,6 +19,8 @@ export class CangjinggeScene {
         const loader = new THREE.TextureLoader();
         const tex = loader.load(sceneBg);
         tex.colorSpace = THREE.SRGBColorSpace;
+        const runeTexture = loader.load(talismanGold);
+        runeTexture.colorSpace = THREE.SRGBColorSpace;
         scene.background = tex;
         scene.add(this.group);
 
@@ -84,11 +87,13 @@ export class CangjinggeScene {
 
         for (let i = 0; i < 12; i++) {
             const rune = new THREE.Mesh(
-                new THREE.PlaneGeometry(0.16, 0.38),
+                new THREE.PlaneGeometry(0.3, 0.48),
                 new THREE.MeshBasicMaterial({
-                    color: 0xf5d28a,
+                    map: runeTexture,
+                    color: 0xffefcb,
                     transparent: true,
-                    opacity: 0.22,
+                    opacity: 0.26,
+                    blending: THREE.AdditiveBlending,
                     side: THREE.DoubleSide,
                     depthWrite: false,
                 })
