@@ -36,7 +36,10 @@ export class APIClient {
         if (this.token) headers.Authorization = `Bearer ${this.token}`;
 
         const options = { method, headers };
-        if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+        if (data instanceof FormData) {
+            delete headers['Content-Type'];
+            options.body = data;
+        } else if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
             options.body = JSON.stringify(data);
         }
 

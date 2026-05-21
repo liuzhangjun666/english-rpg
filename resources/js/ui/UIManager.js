@@ -741,15 +741,15 @@ export class UIManager {
                 </div>
             </div>
             ${entries
-            .map((item) => {
-                const tutorialClass = this.getTutorialEntryClass(item.key, tutorialStep);
-                const isRecommended = item.key === storyGuide.recommendedModule;
-                const recommendStyle = isRecommended
-                    ? 'border-color:rgba(212,168,67,0.88);box-shadow:0 0 14px rgba(212,168,67,0.35);'
-                    : '';
-                return `<div class="entry-btn entry-btn-icon ${tutorialClass}" data-scene="${item.key}" title="${this.escapeHtml(item.label)}" aria-label="${this.escapeHtml(item.label)}" style="${recommendStyle}">${this.renderHallEntryIcon(item.key)}</div>`;
-            })
-            .join('')}
+                .map((item) => {
+                    const tutorialClass = this.getTutorialEntryClass(item.key, tutorialStep);
+                    const isRecommended = item.key === storyGuide.recommendedModule;
+                    const recommendStyle = isRecommended
+                        ? 'border-color:rgba(212,168,67,0.88);box-shadow:0 0 14px rgba(212,168,67,0.35);'
+                        : '';
+                    return `<div class="entry-btn entry-btn-icon ${tutorialClass}" data-scene="${item.key}" title="${this.escapeHtml(item.label)}" aria-label="${this.escapeHtml(item.label)}" style="${recommendStyle}">${this.renderHallEntryIcon(item.key)}</div>`;
+                })
+                .join('')}
         `;
 
         this.overlay.appendChild(entry);
@@ -954,7 +954,11 @@ export class UIManager {
         panel.innerHTML = `
             <div class="profile-header">
                 <div class="profile-header-title">
-                    <img src="${this.assets.realmBadge}" class="realm-badge-img" alt="badge" style="width:28px;height:28px;">
+                    <div style="position:relative; width:32px; height:32px; cursor:pointer;" id="profile-avatar-upload-trigger" title="点击更换道影">
+                        <img src="${this.escapeHtml(user.avatar_url || this.assets.avatarDefault)}" class="profile-header-avatar" alt="avatar" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--gold);object-fit:cover;transition:opacity 0.2s;">
+                        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;font-size:10px;color:white;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">更换</div>
+                    </div>
+                    <input type="file" id="profile-avatar-file" accept="image/png, image/jpeg, image/gif, image/webp" style="display:none;">
                     仙躯根骨 · 命盘
                 </div>
                 <button class="profile-close-btn" id="profile-close-btn">闭关 / 离开</button>
@@ -1005,6 +1009,7 @@ export class UIManager {
                                 <button class="btn btn-primary btn-sm" id="profile-save-btn">更名</button>
                             </div>
                         </div>
+
                         <div style="display:flex; gap:8px; flex-wrap:wrap;">
                             <button class="btn btn-secondary btn-sm" id="profile-share-btn">📤 邀请道友</button>
                             <button class="btn btn-secondary btn-sm" id="profile-review-btn">🔄 温故复盘</button>
@@ -1050,6 +1055,33 @@ export class UIManager {
             if (r.success) { this.game.store.updateUser({ nickname: r.data.nickname }); this.showHermesBubble('道号已更新。'); }
         });
 
+        const trigger = document.getElementById('profile-avatar-upload-trigger');
+        const fileInput = document.getElementById('profile-avatar-file');
+
+        trigger?.addEventListener('click', () => {
+            fileInput?.click();
+        });
+
+        fileInput?.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('avatar', file);
+
+            this.showHermesBubble('正在凝结道影...', 0);
+            const r = await this.game.api.post('/user/avatar', formData);
+
+            if (r.success) {
+                this.game.store.updateUser({ avatar_url: r.data.avatar_url });
+                this.showHermesBubble('道影已焕然一新。');
+                const headerImg = panel.querySelector('.profile-header-avatar');
+                if (headerImg) headerImg.src = r.data.avatar_url || this.assets.avatarDefault;
+            } else {
+                this.showHermesBubble(r.message || '道影凝结失败');
+            }
+            e.target.value = '';
+        });
+
         document.getElementById('profile-share-btn')?.addEventListener('click', async () => {
             const res = await this.game.api.get('/share/info');
             const code = res.success ? res.data.invite_code : '';
@@ -1077,9 +1109,9 @@ export class UIManager {
                 this.game.logout();
             }
         });
-        
+
         // 静默刷新一下用户数据
-        this.refreshRealmProfileProgress(panel).catch(() => {});
+        this.refreshRealmProfileProgress(panel).catch(() => { });
     }
 
     buildHiddenEndingGap(user, catalog = []) {
@@ -1237,11 +1269,11 @@ export class UIManager {
     // ========== 通用 ==========
     hideAllPanels() {
         ['level-select-panel', 'practice-panel', 'reward-popup', 'exam-panel', 'exam-info-panel', 'exam-result-panel', 'login-panel', 'register-panel', 'profile-panel',
-         'achievement-panel', 'leaderboard-panel', 'mall-panel', 'demons-panel', 'reading-panel', 'reading-task-panel', 'reading-result-popup', 'mijing-entry-panel',
-         'mijing-challenge-panel', 'mijing-result-panel', 'confirm-dialog-mask', 'confirm-dialog-panel'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-        });
+            'achievement-panel', 'leaderboard-panel', 'mall-panel', 'demons-panel', 'reading-panel', 'reading-task-panel', 'reading-result-popup', 'mijing-entry-panel',
+            'mijing-challenge-panel', 'mijing-result-panel', 'confirm-dialog-mask', 'confirm-dialog-panel'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.remove();
+            });
         document.getElementById('tutorial-finish-panel')?.remove();
         const hallEntry = document.getElementById('hall-entry');
         if (hallEntry) hallEntry.remove();
