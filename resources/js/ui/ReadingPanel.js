@@ -410,17 +410,16 @@ export class ReadingPanel {
         if (old) old.remove();
 
         const panel = document.createElement('div');
-        panel.className = 'panel';
+        panel.className = 'panel reading-demon-trial-panel';
         panel.id = 'reading-demon-trial-panel';
-        panel.style.maxWidth = '620px';
 
         panel.innerHTML = `
             <div class="panel-title">问心试炼 · 心魔破除</div>
-            <div style="font-size:13px;color:var(--parchment-dark);line-height:1.7;margin-bottom:12px;">
+            <div class="reading-demon-trial-tip">
                 问心路线已触发。请完成 ${questions.length} 道近期错题，全部答对才可破除心魔并解锁隐藏命盘。
             </div>
-            <div id="reading-demon-questions"></div>
-            <div class="reading-actions" style="margin-top:12px;">
+            <div id="reading-demon-questions" class="reading-demon-question-list"></div>
+            <div class="reading-actions reading-demon-actions">
                 <button class="btn btn-secondary" id="reading-demon-cancel">取消问心（回常规节点）</button>
                 <button class="btn btn-primary" id="reading-demon-submit">提交心魔试炼</button>
             </div>
@@ -436,12 +435,8 @@ export class ReadingPanel {
                     if (!qid) return;
                     list.querySelectorAll(`.reading-demon-option[data-question-id="${qid}"]`).forEach((el) => {
                         el.classList.remove('selected');
-                        el.style.background = 'rgba(255,255,255,0.04)';
-                        el.style.borderColor = 'rgba(255,255,255,0.2)';
                     });
                     node.classList.add('selected');
-                    node.style.background = 'rgba(212,168,67,0.18)';
-                    node.style.borderColor = 'rgba(212,168,67,0.7)';
                 });
             });
         }
@@ -477,13 +472,13 @@ export class ReadingPanel {
         const qid = this.escapeHtml(question.question_id || `Q${index}`);
         const options = this.normalizeDemonOptions(question.options);
         return `
-            <div style="border:1px solid rgba(212,168,67,0.25);border-radius:10px;padding:10px;margin-bottom:10px;">
-                <div style="font-size:13px;color:var(--gold-light);margin-bottom:6px;">第 ${index} 题</div>
-                <div style="font-size:14px;color:var(--parchment);margin-bottom:8px;line-height:1.6;">${stem}</div>
-                <div style="display:flex;flex-direction:column;gap:6px;">
+            <div class="reading-demon-card">
+                <div class="reading-demon-card-index">第 ${index} 题</div>
+                <div class="reading-demon-card-question">${stem}</div>
+                <div class="reading-demon-option-group">
                     ${options.map((opt) => `
-                        <button class="reading-demon-option" data-question-id="${qid}" data-value="${this.escapeHtml(opt.value)}" style="text-align:left;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 10px;color:var(--parchment);cursor:pointer;">
-                            <span style="color:var(--gold-light);margin-right:6px;">${this.escapeHtml(opt.label)}</span>
+                        <button class="reading-demon-option" data-question-id="${qid}" data-value="${this.escapeHtml(opt.value)}">
+                            <span class="reading-demon-option-label">${this.escapeHtml(opt.label)}</span>
                             <span>${this.escapeHtml(opt.text)}</span>
                         </button>
                     `).join('')}
