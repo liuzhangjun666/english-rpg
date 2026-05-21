@@ -134,6 +134,9 @@ export class SceneManager {
         const time = Date.now() * 0.001;
         if (!this.isPaused) {
             if (this.currentSceneObj?.animate) this.currentSceneObj.animate(time);
+            // Some scene backgrounds are loaded asynchronously. Re-try fit here so mobile
+            // gets correct cover-crop once the image dimensions become available.
+            this.fitBackgroundToViewport();
             this.renderer.render(this.scene, this.camera);
         }
 

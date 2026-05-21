@@ -83,6 +83,47 @@
     display: inline-block;
 }
 
+.hall-entry .entry-btn .entry-icon-wrap {
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.hall-entry .entry-btn.entry-btn-icon {
+    width: auto;
+    height: auto;
+    min-width: 0;
+    padding: 0;
+    border-radius: 0;
+    flex: 0 0 auto;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.hall-entry .entry-btn.entry-btn-icon .entry-icon-wrap {
+    width: 84px;
+    height: 96px;
+    margin-right: 0;
+}
+
+.hall-entry .entry-btn.entry-btn-icon:hover {
+    background: transparent;
+    box-shadow: none;
+    transform: translateY(-2px) scale(1.03);
+}
+
+.hall-entry .entry-btn .entry-icon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 3px rgba(212,168,67,0.35));
+}
+
 .hall-entry .entry-btn:hover {
     background: rgba(212,168,67,0.15);
     transform: translateY(-2px);
@@ -132,19 +173,26 @@
 }
 
 .progress-bar {
-    height: 4px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 2px;
+    height: 8px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 999px;
     margin-bottom: 20px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--gold), var(--gold-light));
-    border-radius: 2px;
+    background-image: url('../assets/images/ui/bar_blue.png');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    border-radius: 999px;
     transition: width 0.3s ease;
 }
+
+.progress-fill.progress-gold { background-image: url('../assets/images/ui/bar_gold.png'); }
+.progress-fill.progress-green { background-image: url('../assets/images/ui/bar_green.png'); }
+.progress-fill.progress-blue { background-image: url('../assets/images/ui/bar_blue.png'); }
+.progress-fill.progress-red { background-image: url('../assets/images/ui/bar_red.png'); }
 
 .question-text {
     font-size: 16px;
@@ -2367,6 +2415,168 @@
     background: rgba(212, 168, 67, 0.2);
     color: var(--gold);
     border-color: var(--gold);
+}
+
+.btn.btn-art {
+    position: relative;
+    border: none;
+    color: transparent;
+    font-weight: 700;
+    text-shadow: none;
+    background: transparent;
+    background-image: var(--btn-art-bg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    --btn-art-scale: 0.68;
+    width: min(100%, calc(var(--btn-art-max-width, 335px) * var(--btn-art-scale)));
+    max-width: 100%;
+    aspect-ratio: var(--btn-art-ratio, 325 / 135);
+    min-height: 0;
+    height: auto;
+    padding: 0;
+    box-shadow: none;
+    font-size: 0;
+    line-height: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.confirm-dialog-actions .btn.btn-art,
+.practice-actions .btn.btn-art,
+.reading-action-right .btn.btn-art {
+    flex: 0 1 auto;
+}
+
+.btn.btn-art.btn-art-enter,
+.btn.btn-art.btn-art-challenge,
+.btn.btn-art.btn-art-submit {
+    --btn-art-ratio: 325 / 135;
+    --btn-art-max-width: 325px;
+}
+
+.btn.btn-art.btn-art-back {
+    --btn-art-ratio: 334 / 135;
+    --btn-art-max-width: 334px;
+}
+
+.btn.btn-art.btn-art-confirm {
+    --btn-art-ratio: 335 / 135;
+    --btn-art-max-width: 335px;
+}
+
+.btn.btn-art.btn-art-continue {
+    --btn-art-ratio: 335 / 135;
+    --btn-art-max-width: 335px;
+}
+
+.btn.btn-art.btn-art-restart {
+    --btn-art-ratio: 335 / 135;
+    --btn-art-max-width: 335px;
+}
+
+.btn.btn-art:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.06);
+    box-shadow: none;
+}
+
+.btn.btn-art:disabled {
+    opacity: 0.6;
+    filter: grayscale(0.35);
+}
+
+.realm-profile-progress {
+    border: 1px solid rgba(212, 168, 67, 0.22);
+    border-radius: 12px;
+    background: rgba(12, 20, 36, 0.45);
+    padding: 10px 12px;
+    margin-bottom: 16px;
+}
+
+.realm-profile-loading {
+    color: var(--parchment-dark);
+    font-size: 12px;
+}
+
+.realm-profile-topline {
+    margin-bottom: 6px;
+}
+
+.realm-profile-meta {
+    color: var(--parchment-dark);
+    font-size: 11px;
+    margin-bottom: 8px;
+}
+
+.realm-progress-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 36px;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.realm-progress-label {
+    color: var(--parchment-dark);
+    font-size: 11px;
+}
+
+.realm-progress-track {
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+}
+
+.realm-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+.realm-progress-fill.realm-progress-gold { background-image: url('../assets/images/ui/bar_gold.png'); }
+.realm-progress-fill.realm-progress-green { background-image: url('../assets/images/ui/bar_green.png'); }
+.realm-progress-fill.realm-progress-blue { background-image: url('../assets/images/ui/bar_blue.png'); }
+.realm-progress-fill.realm-progress-red { background-image: url('../assets/images/ui/bar_red.png'); }
+
+.realm-progress-value {
+    color: var(--gold-light);
+    font-size: 11px;
+    text-align: right;
+}
+
+.realm-profile-note {
+    color: var(--parchment-dark);
+    font-size: 11px;
+    line-height: 1.6;
+    margin-top: 4px;
+}
+
+.realm-profile-dimensions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.realm-dimension-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px 2px 6px;
+    border-radius: 999px;
+    border: 1px solid rgba(212, 168, 67, 0.28);
+    background: rgba(212, 168, 67, 0.08);
+    color: var(--parchment-dark);
+    font-size: 11px;
+}
+
+.realm-dimension-chip img {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
 }
 
 .profile-body {

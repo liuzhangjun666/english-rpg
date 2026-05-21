@@ -40,6 +40,12 @@ class MallController extends Controller
         ]);
     }
 
+    /** POST /api/mall/buy */
+    public function buy(Request $request): JsonResponse
+    {
+        return $this->purchase($request);
+    }
+
     /** GET /api/mall/inventory */
     public function inventory(Request $request): JsonResponse
     {

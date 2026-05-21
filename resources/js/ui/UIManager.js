@@ -3,8 +3,85 @@ import avatarDefault from '../../assets/images/avatar_default.png';
 import hermesAvatar from '../../assets/images/hermes_avatar.png';
 import loadingTai from '../../assets/images/loading_tai.png';
 import realmBadge from '../../assets/images/realm_badge.png';
+import abilityVocabIcon from '../../assets/images/ui/ability_vocab.png';
+import abilityGrammarIcon from '../../assets/images/ui/ability_grammar.png';
+import abilityReadingIcon from '../../assets/images/ui/ability_reading.png';
+import abilityListeningIcon from '../../assets/images/ui/ability_listening.png';
+import abilityWritingIcon from '../../assets/images/ui/ability_writing.png';
+import abilitySpeakingIcon from '../../assets/images/ui/ability_speaking.png';
+import cultBreakthroughIcon from '../../assets/images/ui/cult_breakthrough_compass.png';
+import cultRealmTokenIcon from '../../assets/images/ui/cult_realm_token.png';
+import cultTaskScrollIcon from '../../assets/images/ui/cult_task_scroll.png';
+import cultManualBookIcon from '../../assets/images/ui/cult_manual_book.png';
+import cultQiOrbIcon from '../../assets/images/ui/cult_qi_orb.png';
+import cultXiuliiCrystalIcon from '../../assets/images/ui/cult_xiulii_crystal.png';
+import hintScrollIcon from '../../assets/images/ui/hint_scroll.png';
+import btnEnterIcon from '../../assets/images/ui/btn_enter.png';
+import btnChallengeIcon from '../../assets/images/ui/btn_challenge.png';
+import btnSubmitIcon from '../../assets/images/ui/btn_submit.png';
+import btnConfirmIcon from '../../assets/images/ui/btn_confirm.png';
+import btnBackIcon from '../../assets/images/ui/btn_back.png';
+import btnContinueIcon from '../../assets/images/ui/btn_continue.png';
+import btnRestartIcon from '../../assets/images/ui/btn_restart.png';
+import realmLianqiIcon from '../../assets/images/ui/realm_lianqi.png';
+import realmZhujiIcon from '../../assets/images/ui/realm_zhuji.png';
+import realmJindanIcon from '../../assets/images/ui/realm_jindan.png';
+import realmYuanyingIcon from '../../assets/images/ui/realm_yuanying.png';
+import realmHuashenIcon from '../../assets/images/ui/realm_huashen.png';
+import realmLianxuIcon from '../../assets/images/ui/realm_lianxu.png';
+import realmHetiIcon from '../../assets/images/ui/realm_heti.png';
+import realmDachengIcon from '../../assets/images/ui/realm_dacheng.png';
+import realmDujieIcon from '../../assets/images/ui/realm_dujie.png';
+import hallPracticeIcon from '../../assets/images/ui/hall_practice.png';
+import hallShilianchangIcon from '../../assets/images/ui/hall_shilianchang.png';
+import hallCangjinggeIcon from '../../assets/images/ui/hall_cangjingge.png';
+import hallListeningIcon from '../../assets/images/ui/hall_listening.png';
+import hallSpeakingIcon from '../../assets/images/ui/hall_speaking.png';
+import hallReadingIcon from '../../assets/images/ui/hall_reading.png';
+import hallWritingIcon from '../../assets/images/ui/hall_writing.png';
+import hallMijingIcon from '../../assets/images/ui/hall_mijing.png';
+import hallMallIcon from '../../assets/images/ui/hall_mall.png';
+import hallLeaderboardIcon from '../../assets/images/ui/hall_leaderboard.png';
+import hallReviewIcon from '../../assets/images/ui/hall_review.png';
+import hallDemonsIcon from '../../assets/images/ui/hall_demons.png';
+import hallAchievementsIcon from '../../assets/images/ui/hall_achievements.png';
+import hallProfileIcon from '../../assets/images/ui/hall_profile.png';
+import realmMajorBadgeIcon from '../../assets/images/ui/realm_major_badge.png';
+import realmMinorBadgeIcon from '../../assets/images/ui/realm_minor_badge.png';
 import { getRealmDisplayName } from '../utils/cultivation.js';
-import { storyNodeCatalog } from '../core/StoryState.js';
+import {
+    buildDailyDestiny,
+    buildHallStoryGuide,
+    buildWeeklyBranchWindow,
+    storyNodeCatalog,
+} from '../core/StoryState.js';
+
+const HALL_ENTRY_ICON_MAP = {
+    practice: hallPracticeIcon,
+    shilianchang: hallShilianchangIcon,
+    cangjingge: hallCangjinggeIcon,
+    listening: hallListeningIcon,
+    speaking: hallSpeakingIcon,
+    reading: hallReadingIcon,
+    writing: hallWritingIcon,
+    mijing: hallMijingIcon,
+    mall: hallMallIcon,
+    leaderboard: hallLeaderboardIcon,
+    review: hallReviewIcon,
+    demons: hallDemonsIcon,
+    achievements: hallAchievementsIcon,
+    profile: hallProfileIcon,
+};
+
+const BUTTON_SKIN_CLASS_NAMES = [
+    'btn-art-enter',
+    'btn-art-challenge',
+    'btn-art-submit',
+    'btn-art-confirm',
+    'btn-art-back',
+    'btn-art-continue',
+    'btn-art-restart',
+];
 
 export class UIManager {
     constructor(game) {
@@ -18,6 +95,7 @@ export class UIManager {
         this.learningProgressRefreshIntervalMs = 30000;
         this.spiritRecoverIntervalSec = 300;
         this._spiritRecoverTicker = null;
+        this.initButtonSkinObserver();
     }
 
     showLoading(text = '加载中...') {
@@ -280,25 +358,43 @@ export class UIManager {
         bar.className = 'character-bar';
         bar.id = 'character-bar';
         bar.innerHTML = `
-            <img src="${this.assets.avatarDefault}" class="avatar" alt="avatar">
-            <div class="info">
-                <div class="name">${this.escapeHtml(user.nickname)}</div>
-                <div class="realm">${this.getCurrentRealmLabel(user)}</div>
-                <div id="learning-progress-mini" style="margin-top:4px;padding:4px 6px;border:1px solid rgba(212,168,67,0.18);border-radius:8px;background:rgba(255,255,255,0.03);">
-                    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--parchment-dark);margin-bottom:3px;">
-                        <span>修为进度</span>
-                        <span id="learning-progress-text">--</span>
+            <div class="character-card-top">
+                <div class="character-id-block">
+                    <img src="${this.assets.avatarDefault}" class="avatar" alt="avatar">
+                    <div class="info">
+                        <div class="name">${this.escapeHtml(user.nickname)}</div>
+                        <div class="realm realm-with-icon">${this.renderRealmBadge(this.getCurrentRealmLabel(user))}</div>
                     </div>
-                    <div style="height:3px;background:rgba(255,255,255,0.12);border-radius:4px;overflow:hidden;">
-                        <div id="learning-progress-fill" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold),#f4d98a);"></div>
+                </div>
+                <div class="stats character-resource-stats">
+                    <div class="stat resource-pill">
+                        <span class="stat-glyph">⚡</span>
+                        <span class="stat-value" id="stat-exp-value">${user.exp}</span>
+                        <span class="stat-label">灵力</span>
                     </div>
-                    <div id="learning-progress-breakthrough" style="display:none;margin-top:4px;font-size:9px;line-height:1.35;color:var(--parchment-dark);"></div>
+                    <div class="stat resource-pill">
+                        <span class="stat-glyph">💧</span>
+                        <span class="stat-value" id="spirit-power-value">${user.spirit_power}/${user.spirit_power_max}</span>
+                        <span class="stat-label">灵液</span>
+                        <span class="stat-tag" id="spirit-recover-countdown">--</span>
+                    </div>
+                    <div class="stat resource-pill">
+                        <span class="stat-glyph">💎</span>
+                        <span class="stat-value" id="stat-stone-value">${user.spirit_stone}</span>
+                        <span class="stat-label">灵玉</span>
+                    </div>
                 </div>
             </div>
-            <div class="stats">
-                <div class="stat">⚡ ${user.exp}</div>
-                <div class="stat">💧 <span id="spirit-power-value">${user.spirit_power}/${user.spirit_power_max}</span> <span id="spirit-recover-countdown" style="font-size:10px;color:var(--gold-light);margin-left:4px;">--</span></div>
-                <div class="stat">💎 ${user.spirit_stone}</div>
+
+            <div id="learning-progress-mini" class="learning-progress-mini">
+                <div class="learning-progress-head">
+                    <span>修为进度</span>
+                    <span id="learning-progress-text">--</span>
+                </div>
+                <div class="learning-progress-track">
+                    <div id="learning-progress-fill" class="learning-progress-fill"></div>
+                </div>
+                <div id="learning-progress-breakthrough" class="learning-progress-breakthrough"></div>
             </div>
         `;
         document.body.appendChild(bar);
@@ -308,12 +404,15 @@ export class UIManager {
         this.refreshLearningProgress(bar);
         this.storeUnsubscribe = this.game.store.subscribe((state) => {
             if (state.user) {
-                const n = bar.querySelector('.name'); const r = bar.querySelector('.realm'); const s = bar.querySelectorAll('.stat');
+                const n = bar.querySelector('.name');
+                const r = bar.querySelector('.realm');
+                const expEl = bar.querySelector('#stat-exp-value');
+                const stoneEl = bar.querySelector('#stat-stone-value');
                 if (n) n.textContent = state.user.nickname;
-                if (r) r.textContent = this.getCurrentRealmLabel(state.user);
-                if (s[0]) s[0].innerHTML = `⚡ ${state.user.exp}`;
+                if (r) r.innerHTML = this.renderRealmBadge(this.getCurrentRealmLabel(state.user));
+                if (expEl) expEl.textContent = String(state.user.exp ?? 0);
                 this.renderSpiritRecoverInBar(bar, state.user);
-                if (s[2]) s[2].innerHTML = `💎 ${state.user.spirit_stone}`;
+                if (stoneEl) stoneEl.textContent = String(state.user.spirit_stone ?? 0);
                 this.refreshLearningProgress(bar);
             }
         });
@@ -516,7 +615,10 @@ export class UIManager {
         const view = this.getSpiritRecoverView(user);
         valueEl.textContent = `${view.spirit}/${view.max}`;
         cdEl.textContent = view.countdownText;
-        cdEl.style.color = view.countdownText === '已满' ? '#9ee8bf' : 'var(--gold-light)';
+        const isFull = view.countdownText === '已满';
+        cdEl.style.color = isFull ? '#8fe7d1' : '#f2d79b';
+        cdEl.style.borderColor = isFull ? 'rgba(111, 224, 196, 0.5)' : 'rgba(236, 190, 99, 0.45)';
+        cdEl.style.background = isFull ? 'rgba(46, 166, 150, 0.16)' : 'rgba(199, 146, 52, 0.15)';
     }
 
     getRealmName(realm, stage = null) {
@@ -539,34 +641,116 @@ export class UIManager {
         };
     }
 
+    getAbilityIconByKey(key) {
+        const map = {
+            vocabulary: abilityVocabIcon,
+            grammar: abilityGrammarIcon,
+            reading: abilityReadingIcon,
+            listening: abilityListeningIcon,
+            writing: abilityWritingIcon,
+            speaking: abilitySpeakingIcon,
+        };
+        return map[String(key || '').trim()] || '';
+    }
+
+    getRealmIconByLabel(realmLabel) {
+        const name = String(realmLabel || '').trim();
+        if (!name) return '';
+        if (name.includes('渡劫')) return realmDujieIcon;
+        if (name.includes('大乘')) return realmDachengIcon;
+        if (name.includes('合体')) return realmHetiIcon;
+        if (name.includes('炼虚')) return realmLianxuIcon;
+        if (name.includes('化神')) return realmHuashenIcon;
+        if (name.includes('元婴')) return realmYuanyingIcon;
+        if (name.includes('金丹')) return realmJindanIcon;
+        if (name.includes('筑基')) return realmZhujiIcon;
+        return realmLianqiIcon;
+    }
+
+    renderRealmBadge(realmLabel) {
+        const safeLabel = this.escapeHtml(String(realmLabel || '练气一层'));
+        const majorText = this.escapeHtml(this.getMajorRealmText(realmLabel));
+        return `
+            <span class="realm-chip realm-chip-badges">
+                <span class="realm-major-wrap">
+                    <img class="realm-major-badge" src="${realmMajorBadgeIcon}" alt="">
+                    <span class="realm-major-text">${majorText}</span>
+                </span>
+                <span class="realm-minor-wrap">
+                    <img class="realm-minor-badge" src="${realmMinorBadgeIcon}" alt="">
+                    <span class="realm-minor-text">${safeLabel}</span>
+                </span>
+            </span>
+        `;
+    }
+
+    getMajorRealmText(realmLabel) {
+        const text = String(realmLabel || '').trim();
+        if (!text) return '炼';
+        if (text.includes('练气') || text.includes('炼气')) return '炼';
+        if (text.includes('筑基')) return '筑';
+        if (text.includes('金丹')) return '金';
+        if (text.includes('元婴')) return '元';
+        if (text.includes('化神')) return '化';
+        if (text.includes('炼虚')) return '虚';
+        if (text.includes('合体')) return '合';
+        if (text.includes('大乘')) return '乘';
+        if (text.includes('渡劫')) return '劫';
+        return text.charAt(0) || '炼';
+    }
+
     // ========== 宗门大厅（P1+P2 完整入口） ==========
     showHallScene() {
         const user = this.game.store.getState().user;
         const tutorialStep = Number(user?.tutorial_step || 0);
+        const storyGuide = this.ensureHallStoryGuide();
+        const recommendedLabel = this.getModuleDisplayLabel(storyGuide.recommendedModule);
+        const dailyTitle = this.escapeHtml(storyGuide.dailyDestiny?.event_title || '晨钟悟字');
+        const dailyRewardHint = this.escapeHtml(storyGuide.dailyDestiny?.reward_hint || '完成推荐修炼可获得命盘奖励');
         const entry = document.createElement('div');
         entry.className = 'hall-entry';
         entry.id = 'hall-entry';
 
         const entries = [
-            { key: 'practice', icon: '\u{1F4D6}', label: '练功房' },
-            { key: 'shilianchang', icon: '\u26A1', label: '试炼场' },
-            { key: 'cangjingge', icon: '\u{1F4DA}', label: '阵法峰' },
-            { key: 'listening', icon: '\u{1F3A7}', label: '听风谷' },
-            { key: 'speaking', icon: '\u{1F5E3}', label: '诵咒峰' },
-            { key: 'reading', icon: '\u{1F4D8}', label: '藏经阁' },
-            { key: 'writing', icon: '\u270D', label: '符箓台' },
-            { key: 'mijing', icon: '\u{1F33F}', label: '秘境' },
-            { key: 'mall', icon: '\u{1F3EA}', label: '坊市' },
-            { key: 'leaderboard', icon: '\u{1F3C5}', label: '宗门榜' },
-            { key: 'review', icon: '\u{1F504}', label: '温故复盘' },
-            { key: 'demons', icon: '\u{1F9D8}', label: '心魔录' },
-            { key: 'achievements', icon: '\u{1F3C6}', label: '成就碑' },
-            { key: 'profile', icon: '\u{1F464}', label: '我的洞府' },
+            { key: 'practice', label: '练功房' },
+            { key: 'shilianchang', label: '试炼场' },
+            { key: 'cangjingge', label: '阵法峰' },
+            { key: 'listening', label: '听风谷' },
+            { key: 'speaking', label: '诵咒峰' },
+            { key: 'reading', label: '藏经阁' },
+            { key: 'writing', label: '符箓台' },
+            { key: 'mijing', label: '秘境' },
+            { key: 'mall', label: '坊市' },
+            { key: 'leaderboard', label: '宗门榜' },
+            { key: 'review', label: '温故复盘' },
+            { key: 'demons', label: '心魔录' },
+            { key: 'achievements', label: '成就碑' },
+            { key: 'profile', label: '我的洞府' },
         ];
 
-        entry.innerHTML = entries
-            .map((item) => `<div class="entry-btn ${this.getTutorialEntryClass(item.key, tutorialStep)}" data-scene="${item.key}"><span class="entry-icon">${item.icon}</span>${this.escapeHtml(item.label)}</div>`)
-            .join('');
+        entry.innerHTML = `
+            <div style="grid-column:1 / -1;padding:10px 12px;margin-bottom:2px;border:1px solid rgba(212,168,67,0.35);border-radius:10px;background:linear-gradient(180deg,rgba(212,168,67,0.14),rgba(212,168,67,0.05));">
+                <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--gold-light);margin-bottom:6px;">
+                    <span>今日命盘：${dailyTitle}</span>
+                    <span>${dailyRewardHint}</span>
+                </div>
+                <div style="font-size:13px;color:var(--parchment-dark);line-height:1.8;">
+                    <div>当前主线：${this.escapeHtml(storyGuide.currentMainlineLabel || '第一章·宗门初启')} · ${this.escapeHtml(storyGuide.currentChapterId || 'R1-01')} ${this.escapeHtml(storyGuide.chapterTitle || '')}</div>
+                    <div>下一步：${this.escapeHtml(storyGuide.nextGoal || '完成推荐修炼并推进主线')}</div>
+                    <div>推荐入口：<span style="color:var(--gold);font-weight:600;">${this.escapeHtml(recommendedLabel)}</span></div>
+                </div>
+            </div>
+            ${entries
+            .map((item) => {
+                const tutorialClass = this.getTutorialEntryClass(item.key, tutorialStep);
+                const isRecommended = item.key === storyGuide.recommendedModule;
+                const recommendStyle = isRecommended
+                    ? 'border-color:rgba(212,168,67,0.88);box-shadow:0 0 14px rgba(212,168,67,0.35);'
+                    : '';
+                return `<div class="entry-btn entry-btn-icon ${tutorialClass}" data-scene="${item.key}" title="${this.escapeHtml(item.label)}" aria-label="${this.escapeHtml(item.label)}" style="${recommendStyle}">${this.renderHallEntryIcon(item.key)}</div>`;
+            })
+            .join('')}
+        `;
 
         this.overlay.appendChild(entry);
         this.showTutorialGuideIfNeeded(entry, tutorialStep);
@@ -597,6 +781,53 @@ export class UIManager {
         if (tutorialStep === 1 && sceneKey === 'practice') return 'tutorial-focus tutorial-pulse';
         if (tutorialStep === 2 && sceneKey === 'cangjingge') return 'tutorial-focus tutorial-pulse';
         return '';
+    }
+
+    renderHallEntryIcon(sceneKey) {
+        const icon = HALL_ENTRY_ICON_MAP[String(sceneKey || '').trim()];
+        if (!icon) return '';
+        return `<span class="entry-icon entry-icon-wrap"><img class="entry-icon-img" src="${icon}" alt=""></span>`;
+    }
+
+    ensureHallStoryGuide() {
+        const state = this.game.store.getState();
+        const currentProgress = state.story?.progress || state.user?.story_progress || {};
+        const currentCurrencies = state.story?.currencies || state.user?.progress_currency || {};
+
+        const todayDestiny = buildDailyDestiny();
+        const weeklyWindow = buildWeeklyBranchWindow(new Date());
+        const updates = {};
+
+        if ((currentProgress?.daily_destiny?.date || null) !== todayDestiny.date) {
+            updates.daily_destiny = todayDestiny;
+        }
+        if ((currentProgress?.weekly_branch_window?.week_key || null) !== weeklyWindow.week_key) {
+            updates.weekly_branch_window = weeklyWindow;
+        }
+
+        let effectiveProgress = currentProgress;
+        if (Object.keys(updates).length > 0 && typeof this.game?.updateStoryProgress === 'function') {
+            this.game.updateStoryProgress(updates);
+            effectiveProgress = { ...currentProgress, ...updates };
+        }
+
+        return buildHallStoryGuide(effectiveProgress, currentCurrencies);
+    }
+
+    getModuleDisplayLabel(moduleKey) {
+        const map = {
+            practice: '练功房',
+            shilianchang: '试炼场',
+            cangjingge: '阵法峰',
+            listening: '听风谷',
+            speaking: '诵咒峰',
+            reading: '藏经阁',
+            writing: '符箓台',
+            mijing: '秘境',
+            review: '温故复盘',
+            demons: '心魔录',
+        };
+        return map[String(moduleKey || '').toLowerCase()] || '藏经阁';
     }
 
     showTutorialGuideIfNeeded(entry, tutorialStep) {
@@ -689,6 +920,7 @@ export class UIManager {
         const catalog = typeof storyNodeCatalog === 'function' ? storyNodeCatalog() : [];
         const unlockedIds = Array.isArray(user.unlocked_nodes) ? user.unlocked_nodes : [];
         const fateNodes = catalog.filter(n => unlockedIds.includes(n.id) || (n.type && n.type.includes('ending') && unlockedIds.includes(n.id)));
+        const hiddenGap = this.buildHiddenEndingGap(user, catalog);
 
         const panel = document.createElement('div');
         panel.className = 'cultivation-profile-panel';
@@ -712,6 +944,12 @@ export class UIManager {
                 </div>
             `).join('')
             : `<div class="fate-node-empty">暂无命盘记录，去藏经阁推演天机吧。</div>`;
+        const hiddenGapRows = hiddenGap.requirements
+            .map((item) => `<div class="fate-node-item" style="padding:8px 10px;">
+                    <div class="fate-node-title">${this.escapeHtml(item.label)}</div>
+                    <div class="fate-node-desc">${this.escapeHtml(item.progressText)}</div>
+                </div>`)
+            .join('');
 
         panel.innerHTML = `
             <div class="profile-header">
@@ -727,7 +965,7 @@ export class UIManager {
                     <div class="profile-stats-grid">
                         <div class="profile-stat-item">
                             <span class="profile-stat-label">当前境界</span>
-                            <span class="profile-stat-val">${this.escapeHtml(this.getCurrentRealmLabel(user))}</span>
+                            <span class="profile-stat-val">${this.renderRealmBadge(this.getCurrentRealmLabel(user))}</span>
                         </div>
                         <div class="profile-stat-item">
                             <span class="profile-stat-label">道心值</span>
@@ -743,14 +981,19 @@ export class UIManager {
                         </div>
                     </div>
 
+                    <div class="profile-section-title">境界进度</div>
+                    <div id="realm-profile-progress" class="realm-profile-progress">
+                        <div class="realm-profile-loading">正在推演境界数据...</div>
+                    </div>
+
                     <div class="profile-section-title">英语根骨 (六维)</div>
                     <div class="profile-eng-grid" style="margin-bottom: 24px;">
-                        <div class="profile-eng-item"><div class="profile-stat-label">词汇</div><div class="profile-eng-val">${dimensions.vocabulary}</div></div>
-                        <div class="profile-eng-item"><div class="profile-stat-label">语法</div><div class="profile-eng-val">${dimensions.grammar}</div></div>
-                        <div class="profile-eng-item"><div class="profile-stat-label">阅读</div><div class="profile-eng-val">${dimensions.reading}</div></div>
-                        <div class="profile-eng-item"><div class="profile-stat-label">听力</div><div class="profile-eng-val">${dimensions.listening}</div></div>
-                        <div class="profile-eng-item"><div class="profile-stat-label">口语</div><div class="profile-eng-val">${dimensions.speaking}</div></div>
-                        <div class="profile-eng-item"><div class="profile-stat-label">写作</div><div class="profile-eng-val">${dimensions.writing}</div></div>
+                        <div class="profile-eng-item"><div class="profile-stat-label"><img src="${this.getAbilityIconByKey('vocabulary')}" alt="" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:4px;">词汇</div><div class="profile-eng-val">${dimensions.vocabulary}</div></div>
+                        <div class="profile-eng-item"><div class="profile-stat-label"><img src="${this.getAbilityIconByKey('grammar')}" alt="" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:4px;">语法</div><div class="profile-eng-val">${dimensions.grammar}</div></div>
+                        <div class="profile-eng-item"><div class="profile-stat-label"><img src="${this.getAbilityIconByKey('reading')}" alt="" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:4px;">阅读</div><div class="profile-eng-val">${dimensions.reading}</div></div>
+                        <div class="profile-eng-item"><div class="profile-stat-label"><img src="${this.getAbilityIconByKey('listening')}" alt="" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:4px;">听力</div><div class="profile-eng-val">${dimensions.listening}</div></div>
+                        <div class="profile-eng-item"><div class="profile-stat-label"><img src="${this.getAbilityIconByKey('speaking')}" alt="" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:4px;">口语</div><div class="profile-eng-val">${dimensions.speaking}</div></div>
+                        <div class="profile-eng-item"><div class="profile-stat-label"><img src="${this.getAbilityIconByKey('writing')}" alt="" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:4px;">写作</div><div class="profile-eng-val">${dimensions.writing}</div></div>
                     </div>
                     
                     <div class="profile-section-title">宗门杂务</div>
@@ -776,10 +1019,19 @@ export class UIManager {
                     <div class="fate-nodes-list">
                         ${fateNodesHtml}
                     </div>
+                    <div class="profile-section-title" style="margin-top:12px;">隐藏结局缺口</div>
+                    <div class="fate-nodes-list">
+                        ${hiddenGapRows}
+                        <div class="fate-node-item" style="padding:8px 10px;border-color:${hiddenGap.ready ? 'rgba(78,192,122,0.45)' : 'rgba(212,168,67,0.25)'};">
+                            <div class="fate-node-title">${hiddenGap.ready ? '条件已满足' : '尚未满足'}</div>
+                            <div class="fate-node-desc">${this.escapeHtml(hiddenGap.summary)}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
         this.overlay.appendChild(panel);
+        this.applyButtonSkins(panel);
 
         const closePanel = () => {
             panel.classList.add('fade-out');
@@ -830,6 +1082,58 @@ export class UIManager {
         this.refreshRealmProfileProgress(panel).catch(() => {});
     }
 
+    buildHiddenEndingGap(user, catalog = []) {
+        const storyProgress = user?.story_progress || {};
+        const progressCurrency = user?.progress_currency || {};
+        const unlockedEndings = Array.isArray(storyProgress.unlocked_endings) ? storyProgress.unlocked_endings : [];
+        const collectedItems = Array.isArray(storyProgress.collected_items) ? storyProgress.collected_items : [];
+        const endingNodes = catalog.filter((node) => node.type === 'ending');
+        const ordinaryEndingCount = endingNodes.filter((node) => unlockedEndings.includes(node.id)).length;
+        const hasMijingScroll = collectedItems.includes('mijing_scroll');
+        const storyKeys = Number(user?.story_keys ?? progressCurrency.story_keys ?? 0);
+        const lingqi = Number(progressCurrency?.lingqi ?? 0);
+
+        const requirements = [
+            {
+                label: '普通结局',
+                current: ordinaryEndingCount,
+                target: 2,
+                progressText: `${Math.min(ordinaryEndingCount, 2)}/2`,
+            },
+            {
+                label: '秘境残卷',
+                current: hasMijingScroll ? 1 : 0,
+                target: 1,
+                progressText: `${hasMijingScroll ? 1 : 0}/1`,
+            },
+            {
+                label: '剧情钥匙',
+                current: storyKeys,
+                target: 6,
+                progressText: `${Math.min(storyKeys, 6)}/6`,
+            },
+            {
+                label: '灵气储备',
+                current: lingqi,
+                target: 30,
+                progressText: `${Math.min(lingqi, 30)}/30`,
+            },
+        ];
+
+        const ready = requirements.every((item) => item.current >= item.target);
+        const missing = requirements
+            .filter((item) => item.current < item.target)
+            .map((item) => `${item.label}差 ${item.target - item.current}`);
+
+        return {
+            ready,
+            requirements,
+            summary: ready
+                ? '可前往藏经阁终章或秘境继续触发隐藏结局。'
+                : `仍需补齐：${missing.join('、')}`,
+        };
+    }
+
     async refreshRealmProfileProgress(panel) {
         const container = panel.querySelector('#realm-profile-progress');
         if (!container) return;
@@ -866,20 +1170,56 @@ export class UIManager {
             : '按当前境界条件';
 
         const dimensionRows = Object.keys(dimensionLabels)
-            .map((key) => `<span style="display:inline-block;min-width:80px;margin:2px 4px 2px 0;">${dimensionLabels[key]} ${Number(dimensions[key] || 0)}</span>`)
+            .map((key) => `
+                <span class="realm-dimension-chip">
+                    <img src="${this.getAbilityIconByKey(key)}" alt="">
+                    <span>${dimensionLabels[key]} ${Number(dimensions[key] || 0)}</span>
+                </span>
+            `)
             .join('');
+        const requiredAbility = Number(abilityCondition.required_each ?? 0);
+        const abilityAvg = Object.keys(dimensionLabels).reduce((acc, key) => acc + Number(dimensions[key] || 0), 0) / 6;
+        const abilityPercent = requiredAbility > 0
+            ? Math.max(0, Math.min(100, (abilityAvg / requiredAbility) * 100))
+            : 0;
+        const readyPercent = data.can_breakthrough
+            ? 100
+            : Math.min(percent, abilityPercent || percent);
+        const remainPercent = Math.max(0, 100 - percent);
 
         container.innerHTML = `
-            <div style="font-size:12px;color:var(--gold-light);margin-bottom:6px;">境界与修为</div>
-            <div style="font-size:12px;color:var(--parchment-dark);line-height:1.8;">当前境界：${this.escapeHtml(currentRealm)}</div>
-            <div style="font-size:12px;color:var(--parchment-dark);line-height:1.8;">修为值：${energy}</div>
-            <div style="height:6px;background:rgba(255,255,255,0.12);border-radius:5px;overflow:hidden;margin:6px 0 8px;">
-                <div style="height:100%;width:${percent}%;background:linear-gradient(90deg,var(--gold),#f4d98a);"></div>
+            <div class="realm-profile-topline">${this.renderRealmBadge(currentRealm)}</div>
+            <div class="realm-profile-meta">修为值：${energy} · 距离下一层：${remain}</div>
+            <div class="realm-progress-row">
+                <div class="realm-progress-label">修为进度</div>
+                <div class="realm-progress-track">
+                    <div class="realm-progress-fill realm-progress-gold" style="width:${percent}%;"></div>
+                </div>
+                <div class="realm-progress-value">${Math.round(percent)}%</div>
             </div>
-            <div style="font-size:11px;color:var(--parchment-dark);line-height:1.8;">突破条件：修为 ${energyCondition.current ?? energy}/${energyCondition.required ?? energy}</div>
-            <div style="font-size:11px;color:var(--parchment-dark);line-height:1.8;">突破条件：六维单项 ≥ ${abilityRequiredEach}</div>
-            <div style="font-size:11px;color:var(--parchment-dark);line-height:1.8;">距离下一层：${remain}</div>
-            <div style="font-size:11px;color:var(--parchment-dark);line-height:1.8;margin-top:4px;">六维能力：${dimensionRows}</div>
+            <div class="realm-progress-row">
+                <div class="realm-progress-label">六维达标</div>
+                <div class="realm-progress-track">
+                    <div class="realm-progress-fill realm-progress-green" style="width:${abilityPercent}%;"></div>
+                </div>
+                <div class="realm-progress-value">${Math.round(abilityPercent)}%</div>
+            </div>
+            <div class="realm-progress-row">
+                <div class="realm-progress-label">突破准备</div>
+                <div class="realm-progress-track">
+                    <div class="realm-progress-fill realm-progress-blue" style="width:${readyPercent}%;"></div>
+                </div>
+                <div class="realm-progress-value">${Math.round(readyPercent)}%</div>
+            </div>
+            <div class="realm-progress-row">
+                <div class="realm-progress-label">瓶颈压力</div>
+                <div class="realm-progress-track">
+                    <div class="realm-progress-fill realm-progress-red" style="width:${remainPercent}%;"></div>
+                </div>
+                <div class="realm-progress-value">${Math.round(remainPercent)}%</div>
+            </div>
+            <div class="realm-profile-note">突破条件：修为 ${energyCondition.current ?? energy}/${energyCondition.required ?? energy}，六维单项 ≥ ${abilityRequiredEach}</div>
+            <div class="realm-profile-dimensions">${dimensionRows}</div>
         `;
 
         this.game.store.updateUser({
@@ -971,8 +1311,8 @@ export class UIManager {
                 <div class="panel-title">${this.escapeHtml(title)}</div>
                 <div class="confirm-dialog-text">${this.escapeHtml(message)}</div>
                 <div class="confirm-dialog-actions">
-                    <button class="btn btn-secondary" id="confirm-dialog-cancel">${this.escapeHtml(cancelText)}</button>
-                    <button class="btn btn-primary" id="confirm-dialog-ok">${this.escapeHtml(confirmText)}</button>
+                    <button class="btn btn-secondary" data-btn-skin="back" id="confirm-dialog-cancel">${this.escapeHtml(cancelText)}</button>
+                    <button class="btn btn-primary" data-btn-skin="confirm" id="confirm-dialog-ok">${this.escapeHtml(confirmText)}</button>
                 </div>
             `;
 
@@ -985,9 +1325,76 @@ export class UIManager {
             mask.addEventListener('click', () => cleanup(false));
             this.overlay.appendChild(mask);
             this.overlay.appendChild(panel);
+            this.applyButtonSkins(panel);
 
             panel.querySelector('#confirm-dialog-cancel')?.addEventListener('click', () => cleanup(false));
             panel.querySelector('#confirm-dialog-ok')?.addEventListener('click', () => cleanup(true));
+        });
+    }
+
+    initButtonSkinObserver() {
+        if (typeof MutationObserver === 'undefined' || !document?.body) return;
+        this.applyButtonSkins(document.body);
+        let pending = false;
+        this._buttonSkinObserver = new MutationObserver(() => {
+            if (pending) return;
+            pending = true;
+            requestAnimationFrame(() => {
+                pending = false;
+                this.applyButtonSkins(document.body);
+            });
+        });
+        this._buttonSkinObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
+    }
+
+    normalizeButtonLabel(label) {
+        return String(label || '')
+            .replace(/[\s\r\n\t]/g, '')
+            .replace(/[^\u4e00-\u9fa5A-Za-z0-9]/g, '')
+            .trim();
+    }
+
+    getButtonSkinKeyByLabel(label) {
+        const normalized = this.normalizeButtonLabel(label);
+        if (!normalized) return '';
+        if (normalized.includes('重新开始') || normalized.includes('重开') || normalized.includes('再来')) return 'restart';
+        if (normalized.includes('继续')) return 'continue';
+        if (normalized.includes('挑战') || normalized.includes('试炼')) return 'challenge';
+        if (normalized.includes('提交') || normalized.includes('交卷')) return 'submit';
+        if (normalized.includes('确定') || normalized.includes('确认')) return 'confirm';
+        if (normalized.includes('返回') || normalized.includes('取消') || normalized.includes('离开') || normalized.includes('退出')) return 'back';
+        if (normalized.includes('进入') || normalized.includes('前往') || normalized.includes('开始')) return 'enter';
+        return '';
+    }
+
+    getButtonSkinAssetByKey(skinKey) {
+        const map = {
+            enter: btnEnterIcon,
+            challenge: btnChallengeIcon,
+            submit: btnSubmitIcon,
+            confirm: btnConfirmIcon,
+            back: btnBackIcon,
+            continue: btnContinueIcon,
+            restart: btnRestartIcon,
+        };
+        return map[String(skinKey || '').trim()] || '';
+    }
+
+    applyButtonSkins(root) {
+        const scope = root && root.querySelectorAll ? root : document;
+        const buttons = Array.from(scope.querySelectorAll('button.btn'));
+        buttons.forEach((btn) => {
+            if (btn.classList.contains('code-btn')) return;
+            const forcedSkin = String(btn.dataset?.btnSkin || '').trim();
+            const skinKey = forcedSkin || this.getButtonSkinKeyByLabel(btn.textContent);
+            BUTTON_SKIN_CLASS_NAMES.forEach((cls) => btn.classList.remove(cls));
+            btn.classList.remove('btn-art');
+            btn.style.removeProperty('--btn-art-bg');
+            if (!skinKey) return;
+            const asset = this.getButtonSkinAssetByKey(skinKey);
+            if (!asset) return;
+            btn.classList.add('btn-art', `btn-art-${skinKey}`);
+            btn.style.setProperty('--btn-art-bg', `url("${asset}")`);
         });
     }
 

@@ -46,7 +46,6 @@ class ReadingAdventureController extends Controller
     }
 
     public function chapter(Request $request, string $chapterId): JsonResponse
-    public function chapter(Request $request, string $chapterId): JsonResponse
     {
         $user = $request->user();
         $this->currencyService->recoverSpiritPower($user);

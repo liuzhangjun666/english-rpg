@@ -203,23 +203,40 @@ html, body {
     top: 0;
     left: 0;
     right: 0;
-    min-height: 70px;
-    background: linear-gradient(180deg, rgba(26,26,46,0.95), rgba(26,26,46,0.7));
-    border-bottom: 1px solid rgba(212,168,67,0.3);
+    min-height: 108px;
+    background:
+        radial-gradient(120% 180% at 70% -40%, rgba(64, 132, 255, 0.22), transparent 56%),
+        linear-gradient(180deg, rgba(8, 20, 52, 0.95), rgba(10, 19, 46, 0.88));
+    border-bottom: 1px solid rgba(212,168,67,0.45);
+    box-shadow: 0 10px 24px rgba(2, 8, 24, 0.42);
+    display: block;
+    padding: 8px 14px 6px;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+.character-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.character-id-block {
     display: flex;
     align-items: center;
-    padding: 6px 16px;
-    z-index: 100;
-    backdrop-filter: blur(8px);
+    gap: 8px;
+    min-width: 0;
 }
 
 .character-bar .avatar {
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     border: 2px solid var(--gold);
-    margin-right: 12px;
+    box-shadow: 0 0 0 2px rgba(245, 216, 139, 0.2), 0 6px 12px rgba(0, 0, 0, 0.35);
     object-fit: cover;
+    flex-shrink: 0;
 }
 
 .character-bar .info {
@@ -228,29 +245,195 @@ html, body {
 }
 
 .character-bar .name {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: bold;
-    color: var(--gold-light);
+    color: #f3dc97;
+    letter-spacing: 0.3px;
 }
 
 .character-bar .realm {
-    font-size: 11px;
+    font-size: 13px;
     color: var(--parchment-dark);
+}
+
+.character-bar .realm-with-icon {
+    margin-top: 2px;
+}
+
+.realm-chip {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+}
+
+.realm-major-wrap,
+.realm-minor-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.realm-major-badge {
+    width: 40px;
+    height: 94px;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+
+.realm-major-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #17374a;
+    font-family: var(--font-title);
+    font-size: 28px;
+    font-weight: 800;
+    text-shadow: 0 1px 0 rgba(238, 255, 250, 0.45), 0 2px 4px rgba(0, 0, 0, 0.18);
+    line-height: 1;
+    pointer-events: none;
+}
+
+.realm-minor-badge {
+    width: 176px;
+    height: 52px;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+
+.realm-minor-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f2e5bf;
+    font-family: var(--font-title);
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    line-height: 1;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.45);
+    padding: 0 18px 1px 12px;
+    pointer-events: none;
+}
+
+.realm-chip-badges {
+    padding-left: 10px;
+}
+
+.realm-chip-badges .realm-major-wrap {
+    z-index: 2;
+}
+
+.realm-chip-badges .realm-minor-wrap {
+    margin-left: -9px;
+    margin-top: 2px;
+    z-index: 1;
 }
 
 .character-bar .stats {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     align-items: center;
     font-size: 12px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: flex-end;
+    flex-shrink: 0;
 }
 
 .character-bar .stat {
     display: flex;
     align-items: center;
-    gap: 4px;
+}
+
+.character-resource-stats .resource-pill {
+    gap: 5px;
+    border: 1px solid rgba(226, 193, 111, 0.22);
+    border-radius: 999px;
+    padding: 3px 8px;
+    background: rgba(3, 16, 44, 0.5);
+    box-shadow: inset 0 0 0 1px rgba(255, 214, 124, 0.08);
+}
+
+.stat-glyph {
+    font-size: 12px;
+    line-height: 1;
+}
+
+.stat-value {
+    font-size: 16px;
+    line-height: 1;
+    font-weight: 700;
+    color: #f6ead1;
+    min-width: max-content;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: rgba(244, 222, 170, 0.92);
+}
+
+.stat-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 16px;
+    padding: 0 6px;
+    border-radius: 999px;
+    border: 1px solid rgba(111, 224, 196, 0.5);
+    background: rgba(46, 166, 150, 0.16);
+    color: #8fe7d1;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.learning-progress-mini {
+    margin-top: 6px;
+    padding: 6px 8px 5px;
+    border: 1px solid rgba(212, 168, 67, 0.34);
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(14, 31, 67, 0.72), rgba(11, 27, 58, 0.56));
+    box-shadow: inset 0 0 0 1px rgba(255, 226, 162, 0.08);
+}
+
+.learning-progress-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #f3deb3;
+    margin-bottom: 4px;
+    font-weight: 700;
+}
+
+.learning-progress-track {
+    height: 9px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(10, 24, 58, 0.95), rgba(7, 18, 44, 0.95));
+    border: 1px solid rgba(114, 175, 255, 0.35);
+    overflow: hidden;
+}
+
+.learning-progress-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #58bcff 0%, #8de6ff 55%, #7fb7ff 100%);
+    box-shadow: 0 0 10px rgba(100, 195, 255, 0.35);
+    transition: width 0.35s ease;
+}
+
+.learning-progress-breakthrough {
+    display: none;
+    margin-top: 4px;
+    font-size: 10px;
+    line-height: 1.45;
+    color: var(--parchment-dark);
 }
 
 #app {
@@ -311,7 +494,7 @@ html, body {
 }
 
 .hall-aura-video.active {
-    opacity: 0.75 !important;
+    opacity: 0.32 !important;
 }
 
 #ui-overlay {

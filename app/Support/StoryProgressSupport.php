@@ -120,6 +120,7 @@ class StoryProgressSupport
         if (!empty($unlockState['next_chapter_id'])) {
             $story['current_chapter_id'] = (string) $unlockState['next_chapter_id'];
         }
+        $story['current_mainline'] = self::resolveMainlineByChapterId((string) ($story['current_chapter_id'] ?? 'R1-01'));
 
         if (!empty($unlockState['ending_id'])) {
             $story['unlocked_endings'] = self::normalizeList(array_merge(
@@ -222,5 +223,14 @@ class StoryProgressSupport
         $user->story_keys = max(0, (int) ($currency['story_keys'] ?? 0));
         $user->unlocked_nodes = self::normalizeList($story['collected_nodes'] ?? []);
         $user->save();
+    }
+
+    private static function resolveMainlineByChapterId(string $chapterId): string
+    {
+        if (preg_match('/^R(\d+)-/i', trim($chapterId), $match) === 1) {
+            $index = max(1, (int) ($match[1] ?? 1));
+            return 'chapter_' . $index;
+        }
+        return 'chapter_1';
     }
 }

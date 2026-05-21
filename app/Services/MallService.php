@@ -67,8 +67,8 @@ class MallService
             ['item_id'=>'exp_pill', 'name'=>'修为丹', 'description'=>'立即获得100修为', 'category'=>'consumable', 'price_stones'=>20, 'effect'=>['type'=>'exp_boost','value'=>100]],
             ['item_id'=>'exp_boost_talisman', 'name'=>'聚灵符', 'description'=>'下次答题修为×1.5', 'category'=>'boost', 'price_stones'=>50, 'effect'=>['type'=>'exp_multiplier','value'=>1.5,'duration'=>'next_batch']],
             ['item_id'=>'streak_freeze', 'name'=>'时光沙漏', 'description'=>'保存一天连续修炼纪录', 'category'=>'consumable', 'price_stones'=>30, 'effect'=>['type'=>'streak_freeze']],
-            ['item_id'=>'herb_bundle', 'name'=>'灵草药包', 'description':'练功房随机掉落灵草，答题额外+5修为', 'category'=>'consumable', 'price_stones'=>15, 'effect'=>['type'=>'exp_bonus','value'=>5,'count'=>10]],
-            ['item_id'=>'title_scroll', 'name'=>'道号卷轴', 'description':'解锁特殊称号「灵草居士」', 'category'=>'title', 'price_stones'=>100, 'effect'=>['type'=>'title','value'=>'灵草居士']],
+            ['item_id'=>'herb_bundle', 'name'=>'灵草药包', 'description'=>'练功房随机掉落灵草，答题额外+5修为', 'category'=>'consumable', 'price_stones'=>15, 'effect'=>['type'=>'exp_bonus','value'=>5,'count'=>10]],
+            ['item_id'=>'title_scroll', 'name'=>'道号卷轴', 'description'=>'解锁特殊称号「灵草居士」', 'category'=>'title', 'price_stones'=>100, 'effect'=>['type'=>'title','value'=>'灵草居士']],
         ];
         foreach ($items as $item) {
             ShopItem::firstOrCreate(['item_id'=>$item['item_id']], $item);

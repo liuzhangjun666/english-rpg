@@ -18,6 +18,7 @@ class StoryProgressService
                 $story['current_chapter_id'] = $chapter;
             }
         }
+        $story['current_mainline'] = $this->resolveMainlineByChapterId((string) ($story['current_chapter_id'] ?? 'R1-01'));
 
         if (array_key_exists('dao_heart', $payload)) {
             $currency['daoxin'] = max(0, (int) $payload['dao_heart']);
@@ -57,6 +58,7 @@ class StoryProgressService
         if ($chapterId !== '') {
             $story['current_chapter_id'] = $chapterId;
         }
+        $story['current_mainline'] = $this->resolveMainlineByChapterId((string) ($story['current_chapter_id'] ?? 'R1-01'));
 
         $nodeId = trim((string) ($payload['node_id'] ?? $payload['selected_branch_id'] ?? ''));
         if ($nodeId !== '') {
@@ -137,5 +139,13 @@ class StoryProgressService
         }
         return array_keys($normalized);
     }
-}
 
+    private function resolveMainlineByChapterId(string $chapterId): string
+    {
+        if (preg_match('/^R(\d+)-/i', trim($chapterId), $match) === 1) {
+            $index = max(1, (int) ($match[1] ?? 1));
+            return 'chapter_' . $index;
+        }
+        return 'chapter_1';
+    }
+}

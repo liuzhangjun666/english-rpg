@@ -47,19 +47,56 @@
     }
 
     .character-bar {
-        min-height: 72px;
-        padding: 6px 10px;
+        min-height: 102px;
+        padding: 7px 8px 6px;
+    }
+
+    .character-card-top {
+        gap: 8px;
+    }
+
+    .character-id-block {
+        gap: 6px;
+        min-width: 0;
     }
 
     .character-bar .avatar {
-        width: 30px;
-        height: 30px;
-        margin-right: 8px;
+        width: 34px;
+        height: 34px;
     }
 
-    .character-bar .name { font-size: 12px; }
-    .character-bar .realm { font-size: 10px; }
-    .character-bar .stats { gap: 8px; font-size: 11px; }
+    .character-bar .name { font-size: 13px; }
+    .character-bar .realm { font-size: 12px; }
+    .character-bar .stats { gap: 6px; font-size: 11px; }
+    .realm-major-badge { width: 33px; height: 80px; }
+    .realm-major-text { font-size: 24px; }
+    .realm-minor-badge { width: 144px; height: 44px; }
+    .realm-minor-text { font-size: 19px; letter-spacing: 0.4px; padding: 0 14px 1px 10px; }
+    .realm-chip-badges { padding-left: 8px; }
+    .realm-chip-badges .realm-minor-wrap { margin-left: -10px; margin-top: 1px; }
+
+    .character-resource-stats .resource-pill {
+        padding: 3px 8px;
+        gap: 4px;
+    }
+
+    .stat-glyph { font-size: 12px; }
+    .stat-value { font-size: 15px; }
+    .stat-label { font-size: 9px; }
+    .stat-tag {
+        min-width: 28px;
+        height: 16px;
+        padding: 0 6px;
+        font-size: 9px;
+    }
+
+    .learning-progress-mini {
+        margin-top: 5px;
+        padding: 5px 7px 5px;
+    }
+    .learning-progress-head { font-size: 11px; }
+    .learning-progress-track { height: 8px; }
+    .learning-progress-breakthrough { font-size: 9px; }
 
     .hall-entry {
         bottom: 40px;
@@ -71,6 +108,26 @@
         padding: 8px 12px;
         font-size: 11px;
         min-width: 65px;
+    }
+
+    .hall-entry .entry-btn.entry-btn-icon {
+        width: 72px;
+        height: 82px;
+        min-width: 72px;
+        padding: 0;
+        flex: 0 0 72px;
+    }
+
+    .hall-entry .entry-btn .entry-icon-wrap {
+        width: 16px;
+        height: 16px;
+        margin-right: 5px;
+    }
+
+    .hall-entry .entry-btn.entry-btn-icon .entry-icon-wrap {
+        width: 64px;
+        height: 74px;
+        margin-right: 0;
     }
 
     .level-grid {
@@ -239,6 +296,13 @@
     }
 
     .btn { padding: 10px; font-size: 14px; }
+    .btn.btn-art {
+        --btn-art-scale: 0.56;
+        width: min(100%, calc(var(--btn-art-max-width, 335px) * var(--btn-art-scale)));
+        min-height: 0;
+        padding: 0;
+        font-size: 0;
+    }
 
     .breakthrough-realm-flow {
         font-size: 14px;
@@ -382,6 +446,15 @@
         font-size: 12px;
         padding: 7px 10px;
     }
+
+    .realm-progress-row {
+        grid-template-columns: 52px 1fr 30px;
+        gap: 6px;
+    }
+    .realm-progress-label,
+    .realm-progress-value {
+        font-size: 10px;
+    }
 }
 
 @media (max-width: 360px) {
@@ -389,6 +462,25 @@
         padding: 8px 12px;
         font-size: 11px;
         min-width: 60px;
+    }
+
+    .hall-entry .entry-btn .entry-icon-wrap {
+        width: 14px;
+        height: 14px;
+        margin-right: 4px;
+    }
+
+    .hall-entry .entry-btn.entry-btn-icon {
+        width: 64px;
+        height: 74px;
+        min-width: 64px;
+        flex: 0 0 64px;
+    }
+
+    .hall-entry .entry-btn.entry-btn-icon .entry-icon-wrap {
+        width: 56px;
+        height: 66px;
+        margin-right: 0;
     }
 
     .level-grid {
