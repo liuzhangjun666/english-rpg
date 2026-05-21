@@ -98,6 +98,42 @@ class UserController extends Controller
     }
 
     /**
+     * 上传并更新头像
+     * POST /api/user/avatar
+     */
+    public function uploadAvatar(Request $request): JsonResponse
+    {
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ], [
+            'avatar.required' => '请选择要上传的图片',
+            'avatar.image' => '文件必须是图片',
+            'avatar.max' => '图片大小不能超过 2MB',
+            'avatar.mimes' => '仅支持 JPG, PNG, GIF, WEBP 格式',
+        ]);
+
+        $user = $request->user();
+        
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $url = \Illuminate\Support\Facades\Storage::url($path);
+            
+            $user->update(['avatar_url' => $url]);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $user,
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => '上传失败',
+        ], 400);
+    }
+
+
+    /**
      * 获取今日统计
      * GET /api/user/stats
      */

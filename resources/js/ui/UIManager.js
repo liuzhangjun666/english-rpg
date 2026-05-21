@@ -244,7 +244,7 @@ export class UIManager {
         bar.className = 'character-bar';
         bar.id = 'character-bar';
         bar.innerHTML = `
-            <img src="${this.assets.avatarDefault}" class="avatar" alt="avatar">
+            <img src="${user.avatar_url || this.assets.avatarDefault}" class="avatar" alt="avatar" style="object-fit:cover;">
             <div class="info">
                 <div class="name">${this.escapeHtml(user.nickname)}</div>
                 <div class="realm">${this.getCurrentRealmLabel(user)}</div>
@@ -269,8 +269,10 @@ export class UIManager {
         this.storeUnsubscribe = this.game.store.subscribe((state) => {
             if (state.user) {
                 const n = bar.querySelector('.name'); const r = bar.querySelector('.realm'); const s = bar.querySelectorAll('.stat');
+                const av = bar.querySelector('.avatar');
                 if (n) n.textContent = state.user.nickname;
                 if (r) r.textContent = this.getCurrentRealmLabel(state.user);
+                if (av) av.src = state.user.avatar_url || this.assets.avatarDefault;
                 if (s[0]) s[0].innerHTML = `⚡ ${state.user.exp}`;
                 if (s[1]) s[1].innerHTML = `💧 ${state.user.spirit_power}/${state.user.spirit_power_max}`;
                 if (s[2]) s[2].innerHTML = `💎 ${state.user.spirit_stone}`;
@@ -521,7 +523,11 @@ export class UIManager {
         panel.innerHTML = `
             <div class="profile-header">
                 <div class="profile-header-title">
-                    <img src="${this.assets.realmBadge}" class="realm-badge-img" alt="badge" style="width:28px;height:28px;">
+                    <div style="position:relative; width:32px; height:32px; cursor:pointer;" id="profile-avatar-upload-trigger" title="点击更换道影">
+                        <img src="${this.escapeHtml(user.avatar_url || this.assets.avatarDefault)}" class="profile-header-avatar" alt="avatar" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--gold);object-fit:cover;transition:opacity 0.2s;">
+                        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;font-size:10px;color:white;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">更换</div>
+                    </div>
+                    <input type="file" id="profile-avatar-file" accept="image/png, image/jpeg, image/gif, image/webp" style="display:none;">
                     仙躯根骨 · 命盘
                 </div>
                 <button class="profile-close-btn" id="profile-close-btn">闭关 / 离开</button>
@@ -567,6 +573,7 @@ export class UIManager {
                                 <button class="btn btn-primary btn-sm" id="profile-save-btn">更名</button>
                             </div>
                         </div>
+
                         <div style="display:flex; gap:8px; flex-wrap:wrap;">
                             <button class="btn btn-secondary btn-sm" id="profile-share-btn">📤 邀请道友</button>
                             <button class="btn btn-secondary btn-sm" id="profile-review-btn">🔄 温故复盘</button>
@@ -601,6 +608,33 @@ export class UIManager {
             if (!n) { this.showError('请填写道号'); return; }
             const r = await this.game.api.put('/user/profile', { nickname: n });
             if (r.success) { this.game.store.updateUser({ nickname: r.data.nickname }); this.showHermesBubble('道号已更新。'); }
+        });
+
+        const trigger = document.getElementById('profile-avatar-upload-trigger');
+        const fileInput = document.getElementById('profile-avatar-file');
+        
+        trigger?.addEventListener('click', () => {
+            fileInput?.click();
+        });
+
+        fileInput?.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('avatar', file);
+            
+            this.showHermesBubble('正在凝结道影...', 0);
+            const r = await this.game.api.post('/user/avatar', formData);
+            
+            if (r.success) {
+                this.game.store.updateUser({ avatar_url: r.data.avatar_url });
+                this.showHermesBubble('道影已焕然一新。');
+                const headerImg = panel.querySelector('.profile-header-avatar');
+                if (headerImg) headerImg.src = r.data.avatar_url || this.assets.avatarDefault;
+            } else {
+                this.showHermesBubble(r.message || '道影凝结失败');
+            }
+            e.target.value = '';
         });
 
         document.getElementById('profile-share-btn')?.addEventListener('click', async () => {

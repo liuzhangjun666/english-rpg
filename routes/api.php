@@ -36,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('user')->group(function () {
         Route::get('/profile', [UserController::class, 'profile']);
         Route::put('/profile', [UserController::class, 'updateProfile']);
+        Route::post('/avatar', [UserController::class, 'uploadAvatar']);
         Route::patch('/tutorial-step', [UserController::class, 'updateTutorialStep']);
         Route::get('/stats', [UserController::class, 'stats']);
         Route::get('/learning-progress', [UserController::class, 'learningProgress']);
