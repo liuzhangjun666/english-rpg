@@ -801,7 +801,7 @@ export class PracticePanel {
         const isVocabChoiceGame = isVocab && !isVocabAlchemy;
         const grammarPlayMode = isGrammar ? this.getGrammarPlayMode(q) : null;
         const isGrammarWordOrder = isGrammar && grammarPlayMode === 'word_order';
-        const showPronounce = isVocab && pronounceWord;
+        const showPronounce = isVocab && pronounceWord && !isVocabAlchemy;
         const showListeningPlayer = isListening;
         const showListeningMaterial = isListening && hasFeedback && !!(listeningMaterial && listeningMaterial.trim());
         const showSpeakingPanel = isSpeaking;
@@ -813,10 +813,12 @@ export class PracticePanel {
                 ? '请朗读咒语文本并完成跟读打卡。'
                 : promptText);
         const targetWord = this.getVocabTargetWord(q) || pronounceWord || '';
+        const targetMeaning = this.getVocabMeaningHint(q);
+        const vocabDisplayTarget = (isVocabAlchemy ? (targetMeaning || targetWord) : targetWord);
         let resolvedPrompt = basePrompt;
         if (isVocab) {
             resolvedPrompt = vocabPlayMode === 'alchemy'
-                ? '丹方缺失，请补全灵草名'
+                ? `丹方缺失，请按释义炼词：${vocabDisplayTarget || '词义线索'}`
                 : (vocabPlayMode === 'herb'
                     ? `寻药指令：Find the herb: ${targetWord || 'herb'}`
                     : `${targetWord || 'word'} 的中文意思是？`);
@@ -827,7 +829,7 @@ export class PracticePanel {
                     ? '语法捉虫：找出正确语法结构。'
                     : '阵法择位：请选择正确语法位。');
         }
-        const vocabQuestStatusHtml = isVocab ? this.renderVocabQuestStatus(vocabPlayMode, targetWord) : '';
+        const vocabQuestStatusHtml = isVocab ? this.renderVocabQuestStatus(vocabPlayMode, vocabDisplayTarget) : '';
         const grammarQuestStatusHtml = isGrammar ? this.renderGrammarQuestStatus(grammarPlayMode, q) : '';
         const vocabDoneCount = this.currentIndex + (hasFeedback ? 1 : 0);
         const progressHeaderHtml = isVocabChoiceGame
@@ -1222,7 +1224,7 @@ export class PracticePanel {
     }
 
     getVocabObjective(mode, targetWord) {
-        if (mode === 'alchemy') return `炼制单词丹：拼出 ${targetWord || 'target'}。`;
+        if (mode === 'alchemy') return `炼制单词丹：根据释义拼出英文单词（${targetWord || '词义线索'}）。`;
         if (mode === 'herb') return '识别灵草图谱，选出正确英文。';
         return `采集灵草释义：为 ${targetWord || 'target'} 选择中文含义。`;
     }
@@ -1328,6 +1330,21 @@ export class PracticePanel {
         }
         const fromQuestion = String(question?.question || '').match(/[A-Za-z][A-Za-z'-]{2,}/);
         return fromQuestion ? fromQuestion[0].toLowerCase().replace(/[^a-z]/g, '') : '';
+    }
+
+    getVocabMeaningHint(question) {
+        const options = question?.options;
+        const correctKey = String(question?.correct_answer || '').trim();
+        const byOption = String(options?.[correctKey] || '').trim();
+        if (byOption) return byOption;
+
+        const explanation = String(question?.explanation || '').trim();
+        if (explanation) {
+            const matched = explanation.match(/=\s*([^（(。；;]+)/);
+            if (matched && matched[1]) return String(matched[1]).trim();
+        }
+
+        return '';
     }
 
     getVocabPlayMode(question) {
@@ -1527,6 +1544,7 @@ export class PracticePanel {
         if (!targetWord) {
             return this.renderVocabHerbOptions(question);
         }
+        const meaningHint = this.getVocabMeaningHint(question);
         this.getOrInitAlchemyState(question, targetWord);
         return `
             <div class="vocab-scene-box vocab-scene-alchemy" id="vocab-alchemy-box">
@@ -1535,7 +1553,11 @@ export class PracticePanel {
                     <span>第 ${this.currentIndex + 1}/${this.questions.length} 炉</span>
                 </div>
                 <div class="vocab-alchemy-box">
-                    <div class="vocab-scene-prompt">丹方缺失，请补全灵草名</div>
+                    <div class="vocab-scene-prompt">丹方缺失，请补全灵草名：${this.game.ui.escapeHtml(meaningHint || '根据中文释义拼词')}</div>
+                    <div class="word-pronounce-row alchemy-pronounce-row">
+                        <span class="word-pronounce-text">传音提示：点击听取灵草读音</span>
+                        <button class="word-pronounce-btn" id="alchemy-pronounce-btn" title="播放单词读音">🔊</button>
+                    </div>
                     <div class="vocab-alchemy-word">${'□ '.repeat(targetWord.length).trim()}</div>
                     <div class="vocab-alchemy-pool" id="alchemy-pool"></div>
                     <div class="vocab-alchemy-slots" id="alchemy-slots"></div>
@@ -1581,6 +1603,8 @@ export class PracticePanel {
     bindVocabAlchemy(panel, question, hasFeedback) {
         const targetWord = this.getVocabTargetWord(question);
         if (!targetWord) return;
+        const targetDisplay = this.getVocabMeaningHint(question) || targetWord;
+        panel.querySelector('#alchemy-pronounce-btn')?.addEventListener('click', () => this.speakWord(targetWord));
 
         const state = this.getOrInitAlchemyState(question, targetWord);
         const explainBox = panel.querySelector('#answer-explain-box');
@@ -1636,7 +1660,7 @@ export class PracticePanel {
                     this.applyVocabAdventureResult({
                         correct: true,
                         mode: 'alchemy',
-                        targetWord,
+                        targetWord: targetDisplay,
                         qiGain: this.getVocabQiReward(question),
                     });
                     explainBox.style.display = 'block';
@@ -1650,12 +1674,12 @@ export class PracticePanel {
             this.playAnswerFeedbackTone(false, 0);
             this.combo = 0;
             if (explainBox) {
-                this.applyVocabAdventureResult({
-                    correct: false,
-                    mode: 'alchemy',
-                    targetWord,
-                    qiGain: 0,
-                });
+                    this.applyVocabAdventureResult({
+                        correct: false,
+                        mode: 'alchemy',
+                        targetWord: targetDisplay,
+                        qiGain: 0,
+                    });
                 explainBox.style.display = 'block';
                 explainBox.innerHTML = `<div style="color:#ffb3b3;">丹炉不稳，再试一次</div>`;
             }

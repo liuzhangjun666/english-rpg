@@ -68,11 +68,15 @@ export class Game {
         this.store.setUser(res.data);
         this.isLoggedIn = true;
 
-        const isFresh =
-            res.data.exp === 0 &&
-            res.data.realm === 'L1' &&
-            res.data.realm_stage === 1 &&
-            !res.data.initiation_completed_at;
+        const initiationDone =
+            !!res.data.initiation_completed_at ||
+            Number(res.data.tutorial_step || 0) >= 1;
+        const hasLearningProgress =
+            Number(res.data.exp || 0) > 0 ||
+            String(res.data.realm || 'L1') !== 'L1' ||
+            Number(res.data.realm_stage || 1) > 1 ||
+            Number(res.data.cultivation_energy || 0) > 0;
+        const isFresh = !initiationDone && !hasLearningProgress;
 
         if (isFresh) {
             this.isNewUser = true;

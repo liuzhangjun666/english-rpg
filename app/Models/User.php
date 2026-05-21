@@ -45,6 +45,7 @@ class User extends Authenticatable
         'daily_minutes_date',
         'password',
         'last_login_at',
+        'initiation_completed_at',
         'tutorial_step',
     ];
 
@@ -58,6 +59,7 @@ class User extends Authenticatable
         return [
             'vip_expired_at' => 'datetime',
             'last_login_at' => 'datetime',
+            'initiation_completed_at' => 'datetime',
             'spirit_power_last_recover_at' => 'datetime',
             'password' => 'hashed',
             'is_minor' => 'boolean',

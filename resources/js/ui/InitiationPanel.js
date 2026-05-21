@@ -356,11 +356,12 @@ export class InitiationPanel {
         // 更新用户境界到后端
         this.updateUserPlacement(placement);
 
-        document.getElementById('tianji-done-btn').addEventListener('click', () => {
+        document.getElementById('tianji-done-btn').addEventListener('click', async () => {
             panel.remove();
             const bubble = document.getElementById('hermes-bubble');
             if (bubble) bubble.remove();
-            this.progressTutorialStep(1);
+            await this.markInitiationCompleted();
+            await this.progressTutorialStep(1);
             this.game.enterHall();
             setTimeout(() => {
                 const bubbleMessage = placement.foundationTier === 'strong'
@@ -379,6 +380,16 @@ export class InitiationPanel {
         this.game.store.updateUser({ school_grade: schoolGrade });
         try {
             await this.game.api.put('/user/profile', { school_grade: schoolGrade });
+        } catch {
+            // keep local state on patch failure
+        }
+    }
+
+    async markInitiationCompleted() {
+        const completedAt = new Date().toISOString();
+        this.game.store.updateUser({ initiation_completed_at: completedAt });
+        try {
+            await this.game.api.put('/user/profile', { initiation_completed_at: completedAt });
         } catch {
             // keep local state on patch failure
         }

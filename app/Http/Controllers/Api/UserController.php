@@ -31,6 +31,11 @@ class UserController extends Controller
         $this->currencyService->recoverSpiritPower($user);
         $user->refresh();
         $snapshot = $this->realmService->getCultivationProgress($user);
+        if ((int) ($user->tutorial_step ?? 0) >= 1 && empty($user->initiation_completed_at)) {
+            $user->initiation_completed_at = now();
+            $user->save();
+            $user->refresh();
+        }
         if (($user->current_realm ?? null) !== $snapshot['current_realm']) {
             $user->current_realm = $snapshot['current_realm'];
             $user->save();
@@ -56,6 +61,7 @@ class UserController extends Controller
             'realm'       => 'nullable|string|max:10',
             'realm_stage' => 'nullable|integer|min:1|max:9',
             'current_realm' => 'nullable|string|max:32',
+            'initiation_completed_at' => 'nullable|date',
         ], [
             'nickname.max' => '道号最长50个字符',
             'school_grade.max' => '年级信息过长',
@@ -63,6 +69,7 @@ class UserController extends Controller
             'realm.string' => '境界格式错误',
             'realm_stage.integer' => '阶段格式错误',
             'current_realm.max' => '当前境界信息过长',
+            'initiation_completed_at.date' => '天机测试完成时间格式错误',
         ]);
 
         if ($validator->fails()) {
@@ -93,6 +100,9 @@ class UserController extends Controller
         }
         if ($request->filled('current_realm')) {
             $updates['current_realm'] = $request->current_realm;
+        }
+        if ($request->filled('initiation_completed_at')) {
+            $updates['initiation_completed_at'] = $request->initiation_completed_at;
         }
 
         if (!array_key_exists('current_realm', $updates)
@@ -175,6 +185,9 @@ class UserController extends Controller
         $nextStep = (int) $data['tutorial_step'];
         if ($nextStep > (int) ($user->tutorial_step ?? 0)) {
             $user->tutorial_step = $nextStep;
+            if ($nextStep >= 1 && empty($user->initiation_completed_at)) {
+                $user->initiation_completed_at = now();
+            }
             $user->save();
         }
 
