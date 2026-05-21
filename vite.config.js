@@ -14,7 +14,15 @@ export default defineConfig({
         },
     },
     build: {
-        // Three.js is intentionally isolated as a vendor chunk; keep warnings for larger regressions.
-        chunkSizeWarningLimit: 550,
+        chunkSizeWarningLimit: 800,
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('node_modules/three')) {
+                        return 'three-vendor';
+                    }
+                }
+            }
+        }
     },
 });

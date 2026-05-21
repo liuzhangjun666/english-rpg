@@ -398,25 +398,109 @@ export class ReadingPanel {
             return;
         }
 
+        const correctCount = tasks.filter((task) => this.isTaskAnswerCorrect(task, this.answers[task.id])).length;
+        const accuracy = tasks.length > 0 ? Math.round((correctCount / tasks.length) * 100) : 0;
+        const passed = accuracy >= 60;
+
+        if (passed && chapter.branch_options && chapter.branch_options.length > 0) {
+            this.showBranchChoiceUI(chapter, tasks);
+            return;
+        }
+
+        this.executeSubmit(chapter, tasks, null);
+    }
+
+    showBranchChoiceUI(chapter, tasks) {
+        const panel = document.getElementById('reading-task-panel');
+        if (panel) panel.style.display = 'none';
+
+        // 创建模糊遮罩层以聚焦注意力
+        const mask = document.createElement('div');
+        mask.className = 'fate-overlay-mask';
+        mask.id = 'reading-branch-mask';
+        this.game.ui.overlay.appendChild(mask);
+
+        const branchPanel = document.createElement('div');
+        branchPanel.className = 'panel fate-branch-panel';
+        branchPanel.id = 'reading-branch-panel';
+        branchPanel.innerHTML = `
+            <div class="panel-title fate-panel-title">命运岔路口</div>
+            <div class="fate-panel-intro">
+                你在残卷中发现了隐藏的英文符文，你的选择将决定未来的修行路线。
+            </div>
+            <div class="branch-options-container">
+                ${chapter.branch_options.map(opt => {
+            let typeClass = '';
+            if (opt.id.includes('guardian')) typeClass = 'branch-guardian';
+            else if (opt.id.includes('explorer')) typeClass = 'branch-explorer';
+            else if (opt.id.includes('heretic')) typeClass = 'branch-heretic';
+
+            return `
+                        <div class="branch-option-card ${typeClass}" data-branch-id="${opt.id}">
+                            <div class="branch-card-label">${this.escapeHtml(opt.label)}</div>
+                            <div class="branch-card-hint">${this.escapeHtml(opt.hint)}</div>
+                            <div class="branch-card-reward">
+                                奖励预测：灵气+${opt.reward_delta?.lingqi || 0} 剧情钥匙+${opt.reward_delta?.story_keys || 0} 道心+${opt.reward_delta?.daoxin || 0}
+                            </div>
+                        </div>
+                    `;
+        }).join('')}
+            </div>
+            <button class="btn btn-secondary" id="reading-branch-back" style="margin-top: 20px;">重新考虑（返回阅卷）</button>
+        `;
+        this.game.ui.overlay.appendChild(branchPanel);
+
+        branchPanel.querySelectorAll('.branch-option-card').forEach(card => {
+            card.addEventListener('click', async () => {
+                const branchId = card.dataset.branchId;
+                if (!branchId) return;
+
+                const preSync = await this.game.submitStoryChoice({
+                    chapter_id: chapter.id,
+                    node_id: branchId,
+                    selected_branch_id: branchId,
+                });
+                if (!preSync) {
+                    this.game.ui.showHermesBubble('分支已选择，正在排队同步到云端...');
+                }
+
+                branchPanel.remove();
+                mask.remove();
+                if (panel) panel.style.display = 'block';
+                this.executeSubmit(chapter, tasks, branchId);
+            });
+        });
+
+        document.getElementById('reading-branch-back')?.addEventListener('click', () => {
+            branchPanel.remove();
+            mask.remove();
+            if (panel) panel.style.display = 'block';
+        });
+    }
+
+    async executeSubmit(chapter, tasks, selectedBranchId, demonTrialAnswers = null, skipDemonTrial = false) {
         const answers = tasks.map((task) => ({
             task_id: task.id,
             answer: String(this.answers[task.id] || ''),
         }));
 
         this.game.ui.showLoading('提交阅读结果...');
-        let res;
-        try {
-            res = await this.game.api.post('/reading/submit-adventure', {
-                chapter_id: chapter.id,
-                answers,
-            });
-        } catch (err) {
-            console.error('Submit reading chapter failed', err);
-            this.game.ui.showHermesBubble('提交失败，请稍后重试');
-            return;
-        } finally {
-            this.game.ui.hideLoading();
+        const payload = {
+            chapter_id: chapter.id,
+            answers,
+        };
+        if (selectedBranchId) {
+            payload.selected_branch_id = selectedBranchId;
         }
+        if (Array.isArray(demonTrialAnswers) && demonTrialAnswers.length > 0) {
+            payload.demon_trial_answers = demonTrialAnswers;
+        }
+        if (skipDemonTrial) {
+            payload.skip_demon_trial = true;
+        }
+
+        const res = await this.game.api.post('/reading/submit-adventure', payload);
+        this.game.ui.hideLoading();
 
         if (!res.success) {
             this.game.ui.showHermesBubble(res.message || '提交失败');
@@ -424,6 +508,11 @@ export class ReadingPanel {
         }
 
         const data = res.data || {};
+        if (data.need_demon_trial) {
+            this.showDemonTrialPanel(data, chapter, tasks, selectedBranchId);
+            return;
+        }
+
         if (data.xp_gained) {
             this.game.store.updateUser({
                 exp: (this.game.store.getState().user?.exp || 0) + data.xp_gained,
@@ -431,8 +520,130 @@ export class ReadingPanel {
             });
         }
 
+        this.game.onReadingAdventureCompleted(data, chapter.id);
+        this.game.scheduleStorySync('reading-submit');
+
         this.clearSession();
         this.showResult(data);
+    }
+
+    showDemonTrialPanel(data, chapter, tasks, selectedBranchId) {
+        const questions = Array.isArray(data.demon_trial_questions) ? data.demon_trial_questions : [];
+        if (!questions.length) {
+            this.game.ui.showHermesBubble('未获取到心魔题，已跳过问心试炼');
+            this.executeSubmit(chapter, tasks, selectedBranchId, []);
+            return;
+        }
+
+        const old = document.getElementById('reading-demon-trial-panel');
+        if (old) old.remove();
+
+        const panel = document.createElement('div');
+        panel.className = 'panel';
+        panel.id = 'reading-demon-trial-panel';
+        panel.style.maxWidth = '620px';
+
+        panel.innerHTML = `
+            <div class="panel-title">问心试炼 · 心魔破除</div>
+            <div style="font-size:13px;color:var(--parchment-dark);line-height:1.7;margin-bottom:12px;">
+                问心路线已触发。请完成 ${questions.length} 道近期错题，全部答对才可破除心魔并解锁隐藏命盘。
+            </div>
+            <div id="reading-demon-questions"></div>
+            <div class="reading-actions" style="margin-top:12px;">
+                <button class="btn btn-secondary" id="reading-demon-cancel">取消问心（回常规节点）</button>
+                <button class="btn btn-primary" id="reading-demon-submit">提交心魔试炼</button>
+            </div>
+        `;
+
+        this.game.ui.overlay.appendChild(panel);
+        const list = panel.querySelector('#reading-demon-questions');
+        if (list) {
+            list.innerHTML = questions.map((q, idx) => this.renderDemonQuestion(q, idx + 1)).join('');
+            list.querySelectorAll('.reading-demon-option').forEach((node) => {
+                node.addEventListener('click', () => {
+                    const qid = node.dataset.questionId;
+                    if (!qid) return;
+                    list.querySelectorAll(`.reading-demon-option[data-question-id="${qid}"]`).forEach((el) => {
+                        el.classList.remove('selected');
+                        el.style.background = 'rgba(255,255,255,0.04)';
+                        el.style.borderColor = 'rgba(255,255,255,0.2)';
+                    });
+                    node.classList.add('selected');
+                    node.style.background = 'rgba(212,168,67,0.18)';
+                    node.style.borderColor = 'rgba(212,168,67,0.7)';
+                });
+            });
+        }
+
+        panel.querySelector('#reading-demon-submit')?.addEventListener('click', async () => {
+            const demonAnswers = questions.map((q) => {
+                const qid = String(q.question_id || '');
+                const selected = panel.querySelector(`.reading-demon-option.selected[data-question-id="${qid}"]`);
+                return {
+                    question_id: qid,
+                    answer: selected?.dataset.value || '',
+                };
+            });
+
+            const missing = demonAnswers.find((item) => !item.answer || !String(item.answer).trim());
+            if (missing) {
+                this.game.ui.showHermesBubble('请先完成全部心魔题再提交');
+                return;
+            }
+
+            panel.remove();
+            await this.executeSubmit(chapter, tasks, selectedBranchId, demonAnswers);
+        });
+
+        panel.querySelector('#reading-demon-cancel')?.addEventListener('click', async () => {
+            panel.remove();
+            await this.executeSubmit(chapter, tasks, selectedBranchId, [], true);
+        });
+    }
+
+    renderDemonQuestion(question, index) {
+        const stem = this.escapeHtml(question.question || `心魔题 ${index}`);
+        const qid = this.escapeHtml(question.question_id || `Q${index}`);
+        const options = this.normalizeDemonOptions(question.options);
+        return `
+            <div style="border:1px solid rgba(212,168,67,0.25);border-radius:10px;padding:10px;margin-bottom:10px;">
+                <div style="font-size:13px;color:var(--gold-light);margin-bottom:6px;">第 ${index} 题</div>
+                <div style="font-size:14px;color:var(--parchment);margin-bottom:8px;line-height:1.6;">${stem}</div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    ${options.map((opt) => `
+                        <button class="reading-demon-option" data-question-id="${qid}" data-value="${this.escapeHtml(opt.value)}" style="text-align:left;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 10px;color:var(--parchment);cursor:pointer;">
+                            <span style="color:var(--gold-light);margin-right:6px;">${this.escapeHtml(opt.label)}</span>
+                            <span>${this.escapeHtml(opt.text)}</span>
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    normalizeDemonOptions(options) {
+        if (Array.isArray(options)) {
+            if (options.length && typeof options[0] === 'object') {
+                return options.map((item, idx) => ({
+                    label: item.label || String.fromCharCode(65 + idx),
+                    text: item.text || item.value || '',
+                    value: item.value || item.label || String.fromCharCode(65 + idx),
+                }));
+            }
+            return options.map((text, idx) => ({
+                label: String.fromCharCode(65 + idx),
+                text: String(text),
+                value: String.fromCharCode(65 + idx),
+            }));
+        }
+        if (options && typeof options === 'object') {
+            return Object.keys(options).map((key) => ({
+                label: key,
+                text: String(options[key]),
+                value: key,
+            }));
+        }
+        return [];
     }
 
     showResult(data) {
@@ -451,6 +662,8 @@ export class ReadingPanel {
                 <div class="reward-row"><span>修为奖励</span><span class="text-gold">+${data.xp_gained || 0}</span></div>
                 <div class="reward-row"><span>灵石奖励</span><span class="text-gold">+${data.spirit_stone_gained || 0}</span></div>
                 <div class="reward-row"><span>掉落道具</span><span class="text-blue">${this.escapeHtml(data.item_reward || '无')}</span></div>
+                ${data.demon_trial ? `<div class="reward-row"><span>问心试炼</span><span class="${data.demon_trial.passed ? 'text-gold' : 'text-red'}">${data.demon_trial.passed ? '心魔破除' : '退回常规节点'}</span></div>` : ''}
+                ${data.selected_branch_id ? `<div class="reward-row"><span>命盘变动</span><span class="text-gold">隐藏分支已记录</span></div>` : ''}
             </div>
             <div class="reward-actions">
                 <button class="btn btn-primary" id="reading-result-continue">继续阅读</button>

@@ -159,7 +159,9 @@ export class APIClient {
     shouldQueueOffline(method, path) {
         if (String(method || '').toUpperCase() !== 'POST') return false;
         const p = String(path || '');
-        return /\/(submit|submit-batch|submit-one)$/.test(p);
+        return /\/(submit|submit-batch|submit-one)$/.test(p)
+            || p === '/story/sync'
+            || p === '/story/choice';
     }
 
     enqueueOfflineIfNeeded(method, path, data, errorCode) {
@@ -237,5 +239,13 @@ export class APIClient {
 
     delete(path) {
         return this.request('DELETE', path);
+    }
+
+    syncStoryProgress(payload) {
+        return this.post('/story/sync', payload);
+    }
+
+    submitStoryChoice(payload) {
+        return this.post('/story/choice', payload);
     }
 }

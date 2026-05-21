@@ -9,6 +9,7 @@ use App\Support\CultivationProfile;
 use App\Services\CurrencyService;
 use App\Services\RealmService;
 use App\Services\ReportService;
+use App\Services\StoryProgressService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -19,6 +20,7 @@ class UserController extends Controller
         private readonly ReportService $reportService,
         private readonly RealmService $realmService,
         private readonly CurrencyService $currencyService,
+        private readonly StoryProgressService $storyService,
     ) {
     }
     /**
@@ -42,9 +44,12 @@ class UserController extends Controller
             $user->refresh();
         }
 
+        $snapshot = $this->storyService->snapshot($user);
+        $data = array_merge($user->toArray(), $snapshot);
+
         return response()->json([
             'success' => true,
-            'data' => $user,
+            'data' => $data,
         ]);
     }
 

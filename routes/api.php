@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\ShareController;
 use App\Http\Controllers\Api\SkillPracticeController;
 use App\Http\Controllers\Api\SmsController;
+use App\Http\Controllers\Api\StoryController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VocabController;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +41,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/learning-progress', [UserController::class, 'learningProgress']);
         Route::get('/analytics', [UserController::class, 'analytics']);
         Route::post('/consume-spirit', [UserController::class, 'consumeSpirit']);
+    });
+
+    Route::prefix('story')->group(function () {
+        Route::post('/sync', [StoryController::class, 'sync']);
+        Route::post('/choice', [StoryController::class, 'choice']);
     });
 
     Route::prefix('currency')->group(function () {

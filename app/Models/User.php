@@ -47,6 +47,13 @@ class User extends Authenticatable
         'last_login_at',
         'initiation_completed_at',
         'tutorial_step',
+        'story_progress',
+        'progress_currency',
+        'current_chapter',
+        'current_node',
+        'dao_heart',
+        'story_keys',
+        'unlocked_nodes',
     ];
 
     protected $hidden = [
@@ -71,6 +78,13 @@ class User extends Authenticatable
             'listening' => 'integer',
             'writing' => 'integer',
             'speaking' => 'integer',
+            'story_progress' => 'array',
+            'progress_currency' => 'array',
+            'current_chapter' => 'string',
+            'current_node' => 'string',
+            'dao_heart' => 'integer',
+            'story_keys' => 'integer',
+            'unlocked_nodes' => 'array',
         ];
     }
 }

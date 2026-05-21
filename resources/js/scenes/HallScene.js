@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import bgHall from '../../assets/images/bg_hall.png';
 import clickRingGold from '../../assets/images/custom/click_ring_gold.png';
 import { isLowPowerDevice, sceneFxProfiles } from './sceneConfig.js';
+import { buildHallStoryGuide } from '../core/StoryState.js';
 
 export class HallScene {
     build(scene, camera, renderer) {
@@ -111,6 +112,32 @@ export class HallScene {
             this.pillarGems.push(gem);
         });
 
+        // --- 核心：创建代表四大模块的 3D 建筑物高亮 Mesh ---
+        this.buildingMarkers = [];
+        const buildingModules = ['reading', 'practice', 'shilianchang', 'mijing'];
+        // 沿用 pillarPositions 作为各大模块在 3D 场景中的轴向节点基础坐标
+        pillarPositions.forEach(([x, y, z], i) => {
+            const moduleId = buildingModules[i];
+            const markerGeo = new THREE.SphereGeometry(1.5, 32, 32);
+            const markerMat = new THREE.MeshStandardMaterial({
+                color: 0xffd486,
+                emissive: new THREE.Color(0xc9a846),
+                emissiveIntensity: 0,
+                transparent: true,
+                opacity: 0,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
+            });
+            const marker = new THREE.Mesh(markerGeo, markerMat);
+            marker.position.set(x, 3.8, z); // 包裹在 pillarGem 附近
+            marker.userData = { id: moduleId, baseY: 3.8 };
+            marker.visible = false;
+            scene.add(marker);
+            this.buildingMarkers.push(marker);
+        });
+        this._lastGuideUpdate = 0;
+        this.currentRecommendModule = 'reading';
+
         this.orbs = [];
         this.orbGlows = [];
         const orbColors = [0xffd68c, 0xffe6b5, 0xffc977, 0xffdb9f, 0xfff0d0, 0xffbf62];
@@ -185,6 +212,40 @@ export class HallScene {
             this.pillarGems.forEach((gem) => {
                 const d = gem.userData;
                 gem.position.y = 3.8 + Math.sin(time * d.floatSpeed + d.floatOffset) * 0.2;
+            });
+        }
+
+        // 动态获取当前推荐场景模块并应用视觉高亮联动
+        if (time - this._lastGuideUpdate > 1.0) { // 每秒更新一次，避免性能浪费
+            this._lastGuideUpdate = time;
+            if (window.game?.store) {
+                const storeState = window.game.store.getState();
+                const storyProgress = storeState.story?.progress || {};
+                const progressCurrency = storeState.story?.currencies || {};
+                const guide = buildHallStoryGuide(storyProgress, progressCurrency);
+                this.currentRecommendModule = guide.recommendedModule || 'reading';
+            }
+        }
+
+        if (this.buildingMarkers) {
+            this.buildingMarkers.forEach((marker) => {
+                if (marker.userData.id === this.currentRecommendModule) {
+                    marker.visible = true;
+                    // 呼吸灯高亮光晕效果：材质的 emissive / emissiveIntensity 随时间做正弦波动
+                    // 也可以使用 marker.material.emissive.setScalar(Math.sin(time * 2) * 0.5 + 0.5) 
+                    const intensity = Math.sin(time * 2.5) * 0.5 + 0.5;
+                    marker.material.emissiveIntensity = intensity * 1.5;
+                    marker.material.opacity = 0.2 + intensity * 0.6;
+                    
+                    // 增加轻微浮动
+                    marker.position.y = marker.userData.baseY + Math.sin(time * 1.5) * 0.3;
+                    
+                    // 让内部包含的几何体微微缩放呼吸
+                    const scale = 1 + intensity * 0.15;
+                    marker.scale.set(scale, scale, scale);
+                } else {
+                    marker.visible = false;
+                }
             });
         }
     }

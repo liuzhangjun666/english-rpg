@@ -9,12 +9,25 @@ export class Router {
             'practice': () => this.game.goToScene('practice'),
             'shilianchang': () => this.game.goToScene('shilianchang'),
             'cangjingge': () => this.game.goToScene('cangjingge'),
-            'listening': () => this.game.startPracticeModule('listening'),
-            'speaking': () => this.game.startPracticeModule('speaking'),
-            'reading': () => this.game.startPracticeModule('reading'),
-            'writing': () => this.game.startPracticeModule('writing'),
+            'listening': async () => await this.game.startPracticeModuleAsync('listening'),
+            'speaking': async () => await this.game.startPracticeModuleAsync('speaking'),
+            'reading': async () => await this.game.startPracticeModuleAsync('reading'),
+            'writing': async () => await this.game.startPracticeModuleAsync('writing'),
             'mijing': () => this.game.goToScene('mijing'),
             'profile': () => this.game.ui.showProfilePanel(),
+        };
+        // Lazy‑load panel modules only when needed
+        this.panelLoaders = {
+            reading: () => import('../ui/ReadingPanel.js').then(m => m.ReadingPanel),
+            practice: () => import('../ui/PracticePanel.js').then(m => m.PracticePanel),
+            listening: () => import('../ui/PracticePanel.js').then(m => m.PracticePanel),
+            speaking: () => import('../ui/PracticePanel.js').then(m => m.PracticePanel),
+            writing: () => import('../ui/PracticePanel.js').then(m => m.PracticePanel),
+            demons: () => import('../ui/DemonsPanel.js').then(m => m.DemonsPanel),
+            parent: () => import('../ui/ParentPanel.js').then(m => m.ParentPanel),
+            achievements: () => import('../ui/AchievementPanel.js').then(m => m.AchievementPanel),
+            leaderboard: () => import('../ui/LeaderboardPanel.js').then(m => m.LeaderboardPanel),
+            mall: () => import('../ui/MallPanel.js').then(m => m.MallPanel),
         };
         window.addEventListener('hashchange', () => this.handleRoute());
     }

@@ -78,13 +78,19 @@ class ReadingAdventureController extends Controller
             'answers.*.task_id' => 'required|string',
             'answers.*.answer' => 'nullable|string',
             'selected_branch_id' => 'nullable|string',
+            'demon_trial_answers' => 'nullable|array',
+            'demon_trial_answers.*.question_id' => 'required_with:demon_trial_answers|string',
+            'demon_trial_answers.*.answer' => 'nullable|string',
+            'skip_demon_trial' => 'nullable|boolean',
         ]);
 
         $result = $this->service->submit(
             $request->user(),
             $data['chapter_id'],
             $data['answers'],
-            $data['selected_branch_id'] ?? null
+            $data['selected_branch_id'] ?? null,
+            $data['demon_trial_answers'] ?? null,
+            (bool) ($data['skip_demon_trial'] ?? false),
         );
         if (!$result['success']) {
             return response()->json([

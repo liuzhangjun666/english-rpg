@@ -128,6 +128,18 @@ class StoryProgressSupport
             ));
         }
 
+        if (!empty($unlockState['hidden_node_id'])) {
+            $hiddenNodeId = (string) $unlockState['hidden_node_id'];
+            $story['collected_nodes'] = self::normalizeList(array_merge(
+                $story['collected_nodes'],
+                [$hiddenNodeId]
+            ));
+            $story['unlocked_endings'] = self::normalizeList(array_merge(
+                $story['unlocked_endings'],
+                [$hiddenNodeId]
+            ));
+        }
+
         if (!empty($chapterRewards['collectible_id']) && $passed) {
             $story['collected_items'] = self::normalizeList(array_merge(
                 $story['collected_items'],
@@ -137,9 +149,7 @@ class StoryProgressSupport
 
         $story['recommended_module'] = $unlockState['recommended_module'] ?? 'reading';
 
-        $user->story_progress = $story;
-        $user->progress_currency = $currency;
-        $user->save();
+        self::applySnapshotToUser($user, $story, $currency, $selectedBranchId);
 
         return [
             'story_progress' => $story,
@@ -166,9 +176,7 @@ class StoryProgressSupport
             }
         }
 
-        $user->story_progress = $story;
-        $user->progress_currency = $currency;
-        $user->save();
+        self::applySnapshotToUser($user, $story, $currency);
 
         return [
             'collectible_id' => $collectibleId,
@@ -194,5 +202,25 @@ class StoryProgressSupport
             $normalized[$k] = $value;
         }
         return $normalized;
+    }
+
+    private static function applySnapshotToUser(User $user, array $story, array $currency, ?string $preferredNode = null): void
+    {
+        $chapterId = (string) ($story['current_chapter_id'] ?? 'R1-01');
+        $selectedMap = is_array($story['selected_branches'] ?? null) ? $story['selected_branches'] : [];
+        $fromMap = trim((string) ($selectedMap[$chapterId] ?? ''));
+        $currentNode = trim((string) ($preferredNode ?? ''));
+        if ($currentNode === '') {
+            $currentNode = $fromMap;
+        }
+
+        $user->story_progress = $story;
+        $user->progress_currency = $currency;
+        $user->current_chapter = $chapterId;
+        $user->current_node = $currentNode !== '' ? $currentNode : null;
+        $user->dao_heart = max(0, (int) ($currency['daoxin'] ?? 0));
+        $user->story_keys = max(0, (int) ($currency['story_keys'] ?? 0));
+        $user->unlocked_nodes = self::normalizeList($story['collected_nodes'] ?? []);
+        $user->save();
     }
 }

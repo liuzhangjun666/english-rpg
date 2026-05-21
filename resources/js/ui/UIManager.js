@@ -4,6 +4,7 @@ import hermesAvatar from '../../assets/images/hermes_avatar.png';
 import loadingTai from '../../assets/images/loading_tai.png';
 import realmBadge from '../../assets/images/realm_badge.png';
 import { getRealmDisplayName } from '../utils/cultivation.js';
+import { storyNodeCatalog } from '../core/StoryState.js';
 
 export class UIManager {
     constructor(game) {
@@ -675,58 +676,129 @@ export class UIManager {
     // ========== 个人面板（P1+P2 完整版） ==========
     showProfilePanel() {
         const existing = document.getElementById('profile-panel');
-        if (existing) existing.remove();
+        if (existing) {
+            existing.classList.add('fade-out');
+            setTimeout(() => existing.remove(), 300);
+            return;
+        }
+
         const hallEntry = document.getElementById('hall-entry');
         if (hallEntry) hallEntry.classList.add('hidden');
-        const user = this.game.store.getState().user;
-        if (!user) return;
+
+        const user = this.game.store.getState().user || {};
+        const catalog = typeof storyNodeCatalog === 'function' ? storyNodeCatalog() : [];
+        const unlockedIds = Array.isArray(user.unlocked_nodes) ? user.unlocked_nodes : [];
+        const fateNodes = catalog.filter(n => unlockedIds.includes(n.id) || (n.type && n.type.includes('ending') && unlockedIds.includes(n.id)));
+
         const panel = document.createElement('div');
-        panel.className = 'panel';
+        panel.className = 'cultivation-profile-panel';
         panel.id = 'profile-panel';
-        panel.innerHTML = `
-            <div class="panel-title">
-                <img src="${this.assets.realmBadge}" class="realm-badge-img" alt="badge">
-                我的信息
-            </div>
-            <div class="profile-avatar-section">
-                <img src="${this.assets.avatarDefault}" class="profile-avatar" alt="avatar">
-            </div>
-            <div class="input-group"><label>道号</label><input type="text" id="profile-nickname" maxlength="50" value="${this.escapeHtml(user.nickname)}"></div>
-            <div class="input-group"><label>手机号</label><input type="text" value="${user.phone}" disabled style="opacity:0.6;"></div>
-            <div class="input-group"><label>当前境界</label><input type="text" value="${this.getCurrentRealmLabel(user)}" disabled style="opacity:0.6;"></div>
-            <div class="input-group" style="display:flex;gap:8px;">
-                <span style="flex:1;text-align:center;padding:8px;background:rgba(255,255,255,0.05);border-radius:8px;">⚡ ${user.exp}</span>
-                <span style="flex:1;text-align:center;padding:8px;background:rgba(255,255,255,0.05);border-radius:8px;">💧 ${user.spirit_power}/${user.spirit_power_max}</span>
-                <span style="flex:1;text-align:center;padding:8px;background:rgba(255,255,255,0.05);border-radius:8px;">💎 ${user.spirit_stone}</span>
-            </div>
-            <div id="realm-profile-progress" style="padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(212,168,67,0.15);margin:10px 0;">
-                <div style="font-size:12px;color:var(--gold-light);margin-bottom:6px;">境界与修为</div>
-                <div style="font-size:12px;color:var(--parchment-dark);">加载中...</div>
-            </div>
-            <div style="padding:12px;background:rgba(212,168,67,0.06);border-radius:10px;margin:12px 0;border:1px solid rgba(212,168,67,0.15);">
-                <div style="font-size:12px;color:var(--gold-light);margin-bottom:6px;">🎁 邀请好友得灵力</div>
-                <div style="font-size:11px;color:var(--parchment-dark);line-height:1.6;">
-                    好友注册填你的邀请码 → 双方各得灵力奖励
+
+        // 整理六维数据
+        const dimensions = {
+            vocabulary: Number(user.vocabulary || 0),
+            grammar: Number(user.grammar || 0),
+            reading: Number(user.reading || 0),
+            listening: Number(user.listening || 0),
+            writing: Number(user.writing || 0),
+            speaking: Number(user.speaking || 0),
+        };
+
+        const fateNodesHtml = fateNodes.length > 0
+            ? fateNodes.map(n => `
+                <div class="fate-node-item">
+                    <div class="fate-node-title">${this.escapeHtml(n.title)}</div>
+                    <div class="fate-node-desc">${this.escapeHtml(n.description || n.hint || '')}</div>
                 </div>
-                <button class="btn btn-primary btn-sm" id="profile-share-btn" style="margin-top:8px;font-size:12px;padding:8px;">📤 复制邀请码去分享</button>
+            `).join('')
+            : `<div class="fate-node-empty">暂无命盘记录，去藏经阁推演天机吧。</div>`;
+
+        panel.innerHTML = `
+            <div class="profile-header">
+                <div class="profile-header-title">
+                    <img src="${this.assets.realmBadge}" class="realm-badge-img" alt="badge" style="width:28px;height:28px;">
+                    仙躯根骨 · 命盘
+                </div>
+                <button class="profile-close-btn" id="profile-close-btn">闭关 / 离开</button>
             </div>
-            <button class="btn btn-primary" id="profile-save-btn" style="margin-top:4px;">保存道号</button>
-            <button class="btn btn-secondary" id="profile-review-btn" style="margin-top:8px;">🔄 温故复盘</button>
-            <button class="btn btn-secondary" id="profile-demons-btn" style="margin-top:8px;">🧘 心魔录</button>
-            <button class="btn btn-secondary" id="profile-achievements-btn" style="margin-top:8px;">🏆 成就</button>
-            <button class="btn btn-secondary" id="profile-parent-btn" style="margin-top:8px;">📋 护道人</button>
-            <button class="btn btn-secondary" id="profile-back-btn" style="margin-top:8px;">返回宗门</button>
-            <button class="btn btn-secondary" id="profile-logout-btn" style="margin-top:8px;border-color:var(--cinnabar);color:var(--cinnabar);">退出登录</button>
+            <div class="profile-body">
+                <div class="profile-left-pane">
+                    <div class="profile-section-title">仙躯核心</div>
+                    <div class="profile-stats-grid">
+                        <div class="profile-stat-item">
+                            <span class="profile-stat-label">当前境界</span>
+                            <span class="profile-stat-val">${this.escapeHtml(this.getCurrentRealmLabel(user))}</span>
+                        </div>
+                        <div class="profile-stat-item">
+                            <span class="profile-stat-label">道心值</span>
+                            <span class="profile-stat-val" style="color: #ff9e9e;">${Number(user.dao_heart || 0)}</span>
+                        </div>
+                        <div class="profile-stat-item">
+                            <span class="profile-stat-label">剧情钥匙</span>
+                            <span class="profile-stat-val" style="color: #8cc5ff;">${Number(user.story_keys || 0)}</span>
+                        </div>
+                        <div class="profile-stat-item">
+                            <span class="profile-stat-label">修为灵气</span>
+                            <span class="profile-stat-val">⚡ ${Number(user.exp || 0)}</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-section-title">英语根骨 (六维)</div>
+                    <div class="profile-eng-grid" style="margin-bottom: 24px;">
+                        <div class="profile-eng-item"><div class="profile-stat-label">词汇</div><div class="profile-eng-val">${dimensions.vocabulary}</div></div>
+                        <div class="profile-eng-item"><div class="profile-stat-label">语法</div><div class="profile-eng-val">${dimensions.grammar}</div></div>
+                        <div class="profile-eng-item"><div class="profile-stat-label">阅读</div><div class="profile-eng-val">${dimensions.reading}</div></div>
+                        <div class="profile-eng-item"><div class="profile-stat-label">听力</div><div class="profile-eng-val">${dimensions.listening}</div></div>
+                        <div class="profile-eng-item"><div class="profile-stat-label">口语</div><div class="profile-eng-val">${dimensions.speaking}</div></div>
+                        <div class="profile-eng-item"><div class="profile-stat-label">写作</div><div class="profile-eng-val">${dimensions.writing}</div></div>
+                    </div>
+                    
+                    <div class="profile-section-title">宗门杂务</div>
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <div class="input-group" style="margin-bottom:8px;">
+                            <label style="color:var(--parchment-dark);font-size:12px;">道号</label>
+                            <div style="display:flex; gap:8px;">
+                                <input type="text" id="profile-nickname" maxlength="50" value="${this.escapeHtml(user.nickname)}" style="flex:1;">
+                                <button class="btn btn-primary btn-sm" id="profile-save-btn">更名</button>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <button class="btn btn-secondary btn-sm" id="profile-share-btn">📤 邀请道友</button>
+                            <button class="btn btn-secondary btn-sm" id="profile-review-btn">🔄 温故复盘</button>
+                            <button class="btn btn-secondary btn-sm" id="profile-parent-btn">📋 护道人</button>
+                            <button class="btn btn-secondary btn-sm" id="profile-logout-btn" style="border-color:var(--cinnabar);color:var(--cinnabar);">退出登出</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-right-pane">
+                    <div class="profile-section-title">已通关命盘图鉴</div>
+                    <div class="fate-nodes-list">
+                        ${fateNodesHtml}
+                    </div>
+                </div>
+            </div>
         `;
         this.overlay.appendChild(panel);
-        this.refreshRealmProfileProgress(panel);
-        document.getElementById('profile-save-btn').addEventListener('click', async () => {
+
+        const closePanel = () => {
+            panel.classList.add('fade-out');
+            setTimeout(() => {
+                panel.remove();
+                if (hallEntry) hallEntry.classList.remove('hidden');
+            }, 300);
+        };
+
+        document.getElementById('profile-close-btn')?.addEventListener('click', closePanel);
+
+        document.getElementById('profile-save-btn')?.addEventListener('click', async () => {
             const n = document.getElementById('profile-nickname').value.trim();
             if (!n) { this.showError('请填写道号'); return; }
             const r = await this.game.api.put('/user/profile', { nickname: n });
             if (r.success) { this.game.store.updateUser({ nickname: r.data.nickname }); this.showHermesBubble('道号已更新。'); }
         });
-        document.getElementById('profile-share-btn').addEventListener('click', async () => {
+
+        document.getElementById('profile-share-btn')?.addEventListener('click', async () => {
             const res = await this.game.api.get('/share/info');
             const code = res.success ? res.data.invite_code : '';
             const text = `我用 LevelUp 英语修仙学英语！🎯\n邀请码：${code}\n输入邀请码注册，我们各得灵力奖励！\n👉 一起来修炼吧～`;
@@ -737,20 +809,25 @@ export class UIManager {
                 prompt('复制以下内容去分享：', text);
             }
         });
-        document.getElementById('profile-review-btn').addEventListener('click', () => { const p = document.getElementById('profile-panel'); if (p) p.remove(); if (hallEntry) hallEntry.classList.remove('hidden'); this.game.startReview(); });
-        document.getElementById('profile-demons-btn').addEventListener('click', () => { const p = document.getElementById('profile-panel'); if (p) p.remove(); if (hallEntry) hallEntry.classList.remove('hidden'); this.game.showDemons(); });
-        document.getElementById('profile-achievements-btn').addEventListener('click', () => { const p = document.getElementById('profile-panel'); if (p) p.remove(); if (hallEntry) hallEntry.classList.remove('hidden'); this.game.showAchievements(); });
-        document.getElementById('profile-parent-btn').addEventListener('click', () => { const p = document.getElementById('profile-panel'); if (p) p.remove(); if (hallEntry) hallEntry.classList.remove('hidden'); this.game.showParentDashboard(); });
-        document.getElementById('profile-back-btn').addEventListener('click', () => { const p = document.getElementById('profile-panel'); if (p) p.remove(); if (hallEntry) hallEntry.classList.remove('hidden'); });
-        document.getElementById('profile-logout-btn').addEventListener('click', async () => {
+
+        document.getElementById('profile-review-btn')?.addEventListener('click', () => { closePanel(); this.game.startReview(); });
+        document.getElementById('profile-parent-btn')?.addEventListener('click', () => { closePanel(); this.game.showParentDashboard(); });
+
+        document.getElementById('profile-logout-btn')?.addEventListener('click', async () => {
             const ok = await this.showConfirmDialog({
                 title: '退出确认',
                 message: '确定要退出宗门吗？',
                 confirmText: '退出',
                 cancelText: '取消',
             });
-            if (ok) this.game.logout();
+            if (ok) {
+                closePanel();
+                this.game.logout();
+            }
         });
+        
+        // 静默刷新一下用户数据
+        this.refreshRealmProfileProgress(panel).catch(() => {});
     }
 
     async refreshRealmProfileProgress(panel) {
