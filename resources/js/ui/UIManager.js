@@ -241,13 +241,13 @@ export class UIManager {
         this.showLoading('正在登录...');
         const res = await this.game.api.post('/auth/login', { phone, code });
         this.hideLoading();
-        if (res.success) {
+        if (res.success && res?.data?.token) {
             this.game.api.setToken(res.data.token);
             this.game.store.setUser(res.data.user);
             this.game.isLoggedIn = true;
             this.game.enterHall();
         } else {
-            this.showError('login-error', res.message || '登录失败');
+            this.showError('login-error', res?.message || '登录失败，请重试');
         }
     }
 
