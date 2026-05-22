@@ -424,37 +424,34 @@ export class ExamPanel {
         const { grade_result, reward, breakthrough } = data;
         const colors = { 'S':'#f0d68a', 'A':'#4ec07a', 'B':'#4a90d9', 'C':'#d4a843', 'D':'#c0392b' };
         const judgeMsg = this.game.hermes.getMessage('exam_result', { grade: grade_result.grade });
+        const passed = Boolean(grade_result?.passed);
 
         const panel = document.createElement('div');
-        panel.className = 'panel';
+        panel.className = `reward-popup ${passed ? 'reward-pass' : 'reward-fail'}`;
         panel.id = 'exam-result-panel';
-        panel.style.maxWidth = '420px';
         panel.innerHTML = `
-            <div class="panel-title">${grade_result.passed ? '🎉 渡劫成功' : '💔 渡劫未过'}</div>
-            <div style="text-align:center;margin-bottom:20px;">
-                <div style="font-size:56px;font-weight:bold;color:${colors[grade_result.grade] || '#d4a843'};text-shadow:0 0 30px ${colors[grade_result.grade] || '#d4a843'}40;">
+            <div class="reward-icon">${passed ? '⚡' : '🔁'}</div>
+            <div class="reward-title">${passed ? '渡劫通关奖励' : '渡劫未过'}</div>
+            <div style="text-align:center;margin-bottom:14px;">
+                <div style="font-size:52px;font-weight:bold;color:${colors[grade_result.grade] || '#d4a843'};text-shadow:0 0 28px ${colors[grade_result.grade] || '#d4a843'}40;">
                     ${grade_result.grade}
                 </div>
-                <div style="font-size:16px;color:var(--gold-light);margin-top:4px;">${grade_result.score}分 · ${grade_result.correct}/${grade_result.total}题正确</div>
+                <div style="font-size:14px;color:var(--gold-light);margin-top:2px;">${grade_result.score}分 · ${grade_result.correct}/${grade_result.total}题正确</div>
             </div>
             <div class="reward-details">
+                <div class="reward-row"><span>关卡评级</span><span class="text-gold">${grade_result.grade}</span></div>
                 <div class="reward-row"><span>获得修为</span><span class="text-gold">+${reward.exp_gained}</span></div>
                 <div class="reward-row"><span>修为倍率</span><span class="text-gold">×${reward.multiplier}</span></div>
                 <div class="reward-row"><span>获得灵石</span><span class="text-gold">+${reward.stones_gained}</span></div>
                 <div class="reward-row"><span>消耗灵力</span><span class="text-blue">-30</span></div>
             </div>
-            <div class="hermes-judge">${judgeMsg}</div>
-            ${breakthrough ? `
-            <div style="text-align:center;padding:16px;background:rgba(212,168,67,0.12);border-radius:12px;margin-bottom:16px;animation:pulse 2s infinite;">
-                <div style="font-size:32px;">✨</div>
-                <div style="color:var(--gold);font-family:var(--font-title);font-size:18px;margin-top:4px;">
-                    ${this.getRealmName(breakthrough.new_realm)} · ${breakthrough.new_stage}重
-                </div>
-                <div style="color:var(--gold-light);font-size:13px;margin-top:4px;">
-                    ${breakthrough.type === 'realm_up' ? '境界突破！' : '修为精进！'}
-                </div>
-            </div>` : ''}
-            <button class="btn btn-primary" id="exam-done-btn">返回宗门</button>
+            <div class="hermes-judge">
+                ${judgeMsg}
+                ${breakthrough ? `<br>✨ ${this.getRealmName(breakthrough.new_realm)} · ${breakthrough.new_stage}重（${breakthrough.type === 'realm_up' ? '境界突破' : '修为精进'}）` : ''}
+            </div>
+            <div class="reward-actions">
+                <button class="btn btn-primary" id="exam-done-btn">${passed ? '收下奖励，返回宗门' : '返回宗门'}</button>
+            </div>
         `;
         this.game.ui.overlay.appendChild(panel);
 

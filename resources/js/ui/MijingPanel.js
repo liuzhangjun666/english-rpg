@@ -250,43 +250,29 @@ export class MijingPanel {
         document.getElementById('mijing-challenge-panel')?.remove();
         const weakTags = Array.isArray(data.weak_tags) ? data.weak_tags : [];
         const weakText = weakTags.length ? weakTags.map((tag) => this.escapeHtml(tag)).join('、') : '暂无';
+        const accuracy = Number(data.accuracy || 0);
+        const passed = accuracy >= 60;
 
         const panel = document.createElement('div');
-        panel.className = 'panel';
+        panel.className = `reward-popup ${passed ? 'reward-pass' : 'reward-fail'}`;
         panel.id = 'mijing-result-panel';
-        panel.style.maxWidth = '480px';
         panel.innerHTML = `
-            <div class="panel-title">限时试炼结算</div>
-            <div style="padding:12px;border:1px solid rgba(212,168,67,0.25);border-radius:10px;margin-bottom:12px;">
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-                    <span>总分</span><b style="color:var(--gold);">${Number(data.final_score || 0)}</b>
-                </div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-                    <span>答题数</span><b>${Number(data.total_answered || 0)}</b>
-                </div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-                    <span>正确数</span><b>${Number(data.correct_count || 0)}</b>
-                </div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-                    <span>正确率</span><b>${Number(data.accuracy || 0)}%</b>
-                </div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-                    <span>获得修为</span><b style="color:var(--gold);">+${Number(data.exp_gained || 0)}</b>
-                </div>
-                <div style="display:flex;justify-content:space-between;">
-                    <span>获得灵石</span><b style="color:var(--gold);">+${Number(data.points_gained || 0)}</b>
-                </div>
-                ${data.collectible_id ? `
-                    <div style="display:flex;justify-content:space-between;margin-top:6px;">
-                        <span>剧情收集物</span><b style="color:#9ad4ff;">${this.escapeHtml(data.collectible_id)}</b>
-                    </div>
-                ` : ''}
+            <div class="reward-icon">${passed ? '🧭' : '🔁'}</div>
+            <div class="reward-title">${passed ? '秘境通关奖励' : '秘境试炼结算'}</div>
+            <div class="reward-details">
+                <div class="reward-row"><span>总分</span><span class="text-gold">${Number(data.final_score || 0)}</span></div>
+                <div class="reward-row"><span>答题数</span><span>${Number(data.total_answered || 0)}</span></div>
+                <div class="reward-row"><span>正确数</span><span>${Number(data.correct_count || 0)}</span></div>
+                <div class="reward-row"><span>正确率</span><span class="${accuracy >= 60 ? 'text-gold' : 'text-red'}">${accuracy}%</span></div>
+                <div class="reward-row"><span>获得修为</span><span class="text-gold">+${Number(data.exp_gained || 0)}</span></div>
+                <div class="reward-row"><span>获得灵石</span><span class="text-gold">+${Number(data.points_gained || 0)}</span></div>
+                ${data.collectible_id ? `<div class="reward-row"><span>剧情收集物</span><span class="text-blue">${this.escapeHtml(data.collectible_id)}</span></div>` : ''}
             </div>
-            <div style="font-size:12px;color:var(--parchment-dark);margin-bottom:12px;">
-                本次心魔执念：${weakText}
+            <div class="hermes-judge">本次心魔执念：${weakText}</div>
+            <div class="reward-actions">
+                <button class="btn btn-primary" id="mijing-retry-btn">再闯一局</button>
+                <button class="btn btn-secondary" id="mijing-back-hall-btn">返回大厅</button>
             </div>
-            <button class="btn btn-primary" id="mijing-retry-btn">再闯一局</button>
-            <button class="btn btn-secondary" id="mijing-back-hall-btn" style="margin-top:8px;">返回大厅</button>
         `;
         this.game.ui.overlay.appendChild(panel);
 

@@ -171,21 +171,30 @@ export class ReviewPanel {
         const correct = res.success ? res.data.correct_count : 0;
         const total = this.questions.length;
         const accuracy = total > 0 ? Math.round(correct / total * 100) : 0;
+        const passed = accuracy >= 60;
+        const expGained = Number(res?.data?.exp_gained ?? res?.data?.reward?.exp_gained ?? 0);
+        const stoneGained = Number(res?.data?.stones_gained ?? res?.data?.spirit_stone_gained ?? res?.data?.reward?.stones_gained ?? 0);
 
         const panel = document.createElement('div');
-        panel.className = 'panel';
+        panel.className = `reward-popup ${passed ? 'reward-pass' : 'reward-fail'}`;
         panel.id = 'review-result';
         panel.innerHTML = `
-            <div class="panel-title">📊 复习成果</div>
-            <div style="text-align:center;padding:12px 0;">
-                <div style="font-size:36px;color:var(--gold);font-weight:bold;">${correct}/${total}</div>
-                <div style="font-size:13px;color:var(--parchment-dark);margin-top:4px;">正确率 ${accuracy}%</div>
-                <div style="margin-top:12px;padding:12px;background:rgba(255,255,255,0.04);border-radius:8px;font-size:14px;color:var(--gold-light);">
-                    ${accuracy >= 80 ? '善！错题已基本掌握。' : accuracy >= 50 ? '尚可，仍有部分错题需巩固。' : '错题较多，建议多复习几次。'}
-                </div>
+            <div class="reward-icon">${passed ? '📘' : '🔁'}</div>
+            <div class="reward-title">${passed ? '复盘通关奖励' : '复盘结果'}</div>
+            <div class="reward-details">
+                <div class="reward-row"><span>正确题数</span><span class="text-gold">${correct}/${total}</span></div>
+                <div class="reward-row"><span>正确率</span><span class="${accuracy >= 60 ? 'text-gold' : 'text-red'}">${accuracy}%</span></div>
+                <div class="reward-row"><span>净化心魔</span><span class="text-green">+${correct}</span></div>
+                <div class="reward-row"><span>获得修为</span><span class="text-gold">+${expGained}</span></div>
+                <div class="reward-row"><span>获得灵石</span><span class="text-gold">+${stoneGained}</span></div>
             </div>
-            <button class="btn btn-primary" id="review-done-btn">返回宗门</button>
-            <button class="btn btn-secondary" id="review-again-btn" style="margin-top:8px;">再来一轮</button>
+            <div class="hermes-judge">
+                ${accuracy >= 80 ? '善！错题已基本掌握。' : accuracy >= 50 ? '尚可，仍有部分错题需巩固。' : '错题较多，建议多复习几次。'}
+            </div>
+            <div class="reward-actions">
+                <button class="btn btn-primary" id="review-done-btn">返回宗门</button>
+                <button class="btn btn-secondary" id="review-again-btn">再来一轮</button>
+            </div>
         `;
         this.game.ui.overlay.appendChild(panel);
         this.clearSession();

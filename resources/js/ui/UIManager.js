@@ -1290,7 +1290,7 @@ export class UIManager {
     // ========== 通用 ==========
     hideAllPanels() {
         ['level-select-panel', 'practice-panel', 'reward-popup', 'exam-panel', 'exam-info-panel', 'exam-result-panel', 'login-panel', 'register-panel', 'profile-panel',
-            'achievement-panel', 'leaderboard-panel', 'mall-panel', 'demons-panel', 'reading-panel', 'reading-task-panel', 'reading-result-popup', 'mijing-entry-panel',
+            'achievement-panel', 'leaderboard-panel', 'mall-panel', 'demons-panel', 'reading-panel', 'reading-task-panel', 'reading-result-popup', 'review-panel', 'review-result', 'mijing-entry-panel',
             'mijing-challenge-panel', 'mijing-result-panel', 'confirm-dialog-mask', 'confirm-dialog-panel'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.remove();
