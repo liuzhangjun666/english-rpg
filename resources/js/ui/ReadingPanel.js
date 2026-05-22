@@ -326,10 +326,10 @@ export class ReadingPanel {
                 </div>
                 <div class="reading-actions">
                     <button class="btn btn-secondary" id="reading-task-back">返回章节列表</button>
+                    <button class="btn btn-primary" id="reading-task-submit">提交阅读任务</button>
                     <div class="reading-action-right">
                         <button class="btn btn-secondary" id="reading-task-prev" ${this.currentTaskIndex === 0 ? 'disabled' : ''}>上一个事件</button>
                         <button class="btn btn-secondary" id="reading-task-next" ${this.currentTaskIndex >= displayTasks.length - 1 ? 'disabled' : ''}>下一个事件</button>
-                        <button class="btn btn-primary" id="reading-task-submit">提交阅读任务</button>
                     </div>
                 </div>
             </div>

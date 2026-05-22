@@ -1765,20 +1765,22 @@
 .reading-actions {
     margin-top: 14px;
     display: grid;
-    grid-template-columns: minmax(260px, 1fr) auto;
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
     gap: 10px;
-    align-items: stretch;
+    align-items: center;
 }
 
 .reading-action-right {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
     gap: 8px;
-    flex-wrap: nowrap;
+    grid-column: 1 / -1;
 }
 
+.reading-actions .btn,
 .reading-action-right .btn {
     min-width: 120px;
-    width: auto;
+    width: 100%;
     white-space: nowrap;
     writing-mode: horizontal-tb;
     text-orientation: mixed;
@@ -2428,7 +2430,7 @@
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
-    --btn-art-scale: 0.68;
+    --btn-art-scale: 0.64;
     width: min(100%, calc(var(--btn-art-max-width, 335px) * var(--btn-art-scale)));
     max-width: 100%;
     aspect-ratio: var(--btn-art-ratio, 325 / 135);
@@ -2450,29 +2452,14 @@
 
 .btn.btn-art.btn-art-enter,
 .btn.btn-art.btn-art-challenge,
-.btn.btn-art.btn-art-submit {
-    --btn-art-ratio: 325 / 135;
-    --btn-art-max-width: 325px;
-}
-
-.btn.btn-art.btn-art-back {
-    --btn-art-ratio: 334 / 135;
-    --btn-art-max-width: 334px;
-}
-
-.btn.btn-art.btn-art-confirm {
-    --btn-art-ratio: 335 / 135;
-    --btn-art-max-width: 335px;
-}
-
-.btn.btn-art.btn-art-continue {
-    --btn-art-ratio: 335 / 135;
-    --btn-art-max-width: 335px;
-}
-
+.btn.btn-art.btn-art-submit,
+.btn.btn-art.btn-art-back,
+.btn.btn-art.btn-art-confirm,
+.btn.btn-art.btn-art-continue,
 .btn.btn-art.btn-art-restart {
     --btn-art-ratio: 335 / 135;
     --btn-art-max-width: 335px;
+    --btn-art-scale: 0.60;
 }
 
 .btn.btn-art:hover {

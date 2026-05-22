@@ -48,6 +48,9 @@ import hallAchievementsIcon from '../../assets/images/ui/hall_achievements.png';
 import hallProfileIcon from '../../assets/images/ui/hall_profile.png';
 import realmMajorBadgeIcon from '../../assets/images/ui/realm_major_badge.png';
 import realmMinorBadgeIcon from '../../assets/images/ui/realm_minor_badge.png';
+import hudStatLingliIcon from '../../assets/images/ui/hud_stat_lingli.png';
+import hudStatSpiritIcon from '../../assets/images/ui/hud_stat_spirit.png';
+import hudStatJadeIcon from '../../assets/images/ui/hud_stat_jade.png';
 import { getRealmDisplayName } from '../utils/cultivation.js';
 import {
     buildDailyDestiny,
@@ -367,21 +370,39 @@ export class UIManager {
                     </div>
                 </div>
                 <div class="stats character-resource-stats">
-                    <div class="stat resource-pill">
-                        <span class="stat-glyph">⚡</span>
-                        <span class="stat-value" id="stat-exp-value">${user.exp}</span>
-                        <span class="stat-label">灵力</span>
+                    <div class="stat resource-col">
+                        <span class="stat-glyph"><img class="stat-glyph-img" src="${hudStatLingliIcon}" alt=""></span>
+                        <div class="resource-copy">
+                            <div class="resource-main">
+                                <span class="stat-value" id="stat-exp-value">${user.exp}</span>
+                            </div>
+                            <div class="resource-sub">
+                                <span class="stat-label">灵力</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat resource-pill">
-                        <span class="stat-glyph">💧</span>
-                        <span class="stat-value" id="spirit-power-value">${user.spirit_power}/${user.spirit_power_max}</span>
-                        <span class="stat-label">灵液</span>
-                        <span class="stat-tag" id="spirit-recover-countdown">--</span>
+                    <div class="stat resource-col">
+                        <span class="stat-glyph"><img class="stat-glyph-img" src="${hudStatSpiritIcon}" alt=""></span>
+                        <div class="resource-copy">
+                            <div class="resource-main">
+                                <span class="stat-value" id="spirit-power-value">${user.spirit_power}/${user.spirit_power_max}</span>
+                            </div>
+                            <div class="resource-sub">
+                                <span class="stat-label">灵液</span>
+                                <span class="stat-tag" id="spirit-recover-countdown">--</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat resource-pill">
-                        <span class="stat-glyph">💎</span>
-                        <span class="stat-value" id="stat-stone-value">${user.spirit_stone}</span>
-                        <span class="stat-label">灵玉</span>
+                    <div class="stat resource-col">
+                        <span class="stat-glyph"><img class="stat-glyph-img" src="${hudStatJadeIcon}" alt=""></span>
+                        <div class="resource-copy">
+                            <div class="resource-main">
+                                <span class="stat-value" id="stat-stone-value">${user.spirit_stone}</span>
+                            </div>
+                            <div class="resource-sub">
+                                <span class="stat-label">灵玉</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -686,8 +707,8 @@ export class UIManager {
 
     getMajorRealmText(realmLabel) {
         const text = String(realmLabel || '').trim();
-        if (!text) return '炼';
-        if (text.includes('练气') || text.includes('炼气')) return '炼';
+        if (!text) return '练';
+        if (text.includes('练气') || text.includes('炼气')) return '练';
         if (text.includes('筑基')) return '筑';
         if (text.includes('金丹')) return '金';
         if (text.includes('元婴')) return '元';
@@ -696,7 +717,7 @@ export class UIManager {
         if (text.includes('合体')) return '合';
         if (text.includes('大乘')) return '乘';
         if (text.includes('渡劫')) return '劫';
-        return text.charAt(0) || '炼';
+        return text.charAt(0) || '练';
     }
 
     // ========== 宗门大厅（P1+P2 完整入口） ==========
