@@ -11,21 +11,31 @@ export class BreakthroughScene {
         tex.colorSpace = THREE.SRGBColorSpace;
         scene.background = tex;
 
-        // 金光粒子阵
-        const goldGeo = new THREE.BufferGeometry();
-        const pos = new Float32Array(600 * 3);
-        for (let i = 0; i < 600; i++) {
-            pos[i*3] = (Math.random()-0.5)*30;
-            pos[i*3+1] = (Math.random()-0.5)*20;
-            pos[i*3+2] = (Math.random()-0.5)*20 - 5;
+        // ⚡️ 九天雷劫：真正的全屏动态闪电特效 (抛弃细线，使用有体积的真实闪电柱)
+        this.lightnings = [];
+        for (let i = 0; i < 4; i++) { // 减少数量，提升质量
+            const lightning = new THREE.Mesh(
+                new THREE.TubeGeometry(new THREE.LineCurve3(new THREE.Vector3(0,0,0), new THREE.Vector3(0,1,0)), 2, 0.15, 5, false),
+                new THREE.MeshBasicMaterial({ 
+                    color: 0xaaddff, // 刺眼的雷电蓝白光
+                    transparent: true, 
+                    opacity: 0, 
+                    depthWrite: false,
+                    blending: THREE.AdditiveBlending 
+                })
+            );
+            lightning.userData = { nextStrike: Math.random() * 2, duration: 0 };
+            this.group.add(lightning);
+            this.lightnings.push(lightning);
         }
-        goldGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        const gold = new THREE.Points(goldGeo, new THREE.PointsMaterial({
-            color: 0xf0d68a, size: 0.08, transparent: true, opacity: 0.3,
-            blending: THREE.AdditiveBlending
-        }));
-        gold.userData = { float: true };
-        this.group.add(gold);
+
+        // 💥 雷电全屏泛光：当闪电劈下时，整个天地为之煞白
+        this.flashPlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(200, 200),
+            new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })
+        );
+        this.flashPlane.position.z = -10; 
+        this.group.add(this.flashPlane);
 
         // 祥云光环
         for (let i = 0; i < 3; i++) {
@@ -72,13 +82,59 @@ export class BreakthroughScene {
                 c.scale.setScalar(1 + Math.sin(time*0.3)*0.05);
                 c.material.opacity = 0.02 + Math.sin(time*0.3)*0.025;
             }
-            if (c.userData?.float) {
-                const p = c.geometry.attributes.position;
-                for (let i = 0; i < p.count; i++) {
-                    p.array[i*3+1] += Math.sin(time + i*0.05) * 0.0005;
+        // 动态真·闪电逻辑：有体积的闪电柱 + 全屏强光泛光
+        if (this.lightnings) {
+            let anyStrike = false;
+            
+            this.lightnings.forEach(L => {
+                if (time > L.userData.nextStrike) {
+                    const points = [];
+                    let y = 15 + Math.random() * 5;
+                    let x = (Math.random() - 0.5) * 40;
+                    let z = (Math.random() - 0.5) * 20 - 5;
+                    
+                    points.push(new THREE.Vector3(x, y, z));
+                    while (y > -2) {
+                        y -= (Math.random() * 4 + 2); // 跨度极大，极具攻击性
+                        x += (Math.random() - 0.5) * 8; // 扭曲度极大
+                        z += (Math.random() - 0.5) * 6;
+                        points.push(new THREE.Vector3(x, y, z));
+                    }
+                    
+                    // 利用 CurvePath 拼接直线段，打造具有真实厚度、锐利折角的闪电柱！
+                    const curvePath = new THREE.CurvePath();
+                    for(let j = 0; j < points.length - 1; j++) {
+                        curvePath.add(new THREE.LineCurve3(points[j], points[j+1]));
+                    }
+                    
+                    L.geometry.dispose(); // 释放旧几何体
+                    // 半径设为 0.15~0.3，非常粗大耀眼
+                    L.geometry = new THREE.TubeGeometry(curvePath, points.length * 2, 0.15 + Math.random() * 0.15, 5, false);
+                    
+                    L.material.opacity = 0.9; // 极度高亮
+                    
+                    L.userData.nextStrike = time + Math.random() * 4 + 1.5; // 冷却 1.5~5.5秒
+                    L.userData.duration = time + 0.15 + Math.random() * 0.1; // 存活极短时间
+                    anyStrike = true;
                 }
-                p.needsUpdate = true;
+                
+                // 存活期间剧烈频闪，结束后快速衰减
+                if (time < L.userData.duration) {
+                    L.material.opacity = Math.random() > 0.3 ? 1.0 : 0.0;
+                } else {
+                    L.material.opacity *= 0.7; // 快速隐没
+                }
+            });
+            
+            // 伴随闪电劈下，触发全屏强光泛光（天地同光）
+            if (anyStrike && this.flashPlane) {
+                this.flashPlane.material.opacity = 0.4 + Math.random() * 0.4;
             }
-        });
+        }
+        
+        // 全屏泛光平滑衰减
+        if (this.flashPlane && this.flashPlane.material.opacity > 0) {
+            this.flashPlane.material.opacity -= 0.04;
+        }
     }
 }
