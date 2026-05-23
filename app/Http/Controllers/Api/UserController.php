@@ -45,7 +45,30 @@ class UserController extends Controller
         }
 
         $snapshot = $this->storyService->snapshot($user);
-        $data = array_merge($user->toArray(), $snapshot);
+
+        $realm = (string) $user->realm;
+        $stage = max(1, (int) $user->realm_stage);
+        $exp = (int) $user->exp;
+
+        $currentThreshold = CurrencyService::getStageExpThreshold($realm, $stage);
+        $nextThreshold = CurrencyService::getStageExpThreshold($realm, $stage + 1);
+        if ($nextThreshold <= $currentThreshold) {
+            $nextThreshold = $currentThreshold + 1;
+        }
+
+        $progressRange = max(1, $nextThreshold - $currentThreshold);
+        $progressValue = max(0, min($exp - $currentThreshold, $progressRange));
+        $progressPercent = (int) round(($progressValue / $progressRange) * 100);
+        $remainingExp = max(0, $nextThreshold - $exp);
+
+        $extraData = [
+            'current_threshold' => $currentThreshold,
+            'next_threshold' => $nextThreshold,
+            'progress_percent' => $progressPercent,
+            'remaining_exp' => $remainingExp,
+        ];
+
+        $data = array_merge($user->toArray(), $snapshot, $extraData);
 
         return response()->json([
             'success' => true,

@@ -163,6 +163,12 @@ class LegacyBridge {
     const game = await this.getGame();
     game.ui.hideAllPanels();
   }
+
+  async openProfilePanel() {
+    const game = await this.getGame();
+    this.applySessionToGame(game, this.pendingProfile);
+    game.ui.showProfilePanel();
+  }
 }
 
 const singleton = new LegacyBridge();

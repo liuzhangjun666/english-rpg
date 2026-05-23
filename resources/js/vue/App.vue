@@ -6,17 +6,57 @@
 
     <template v-else>
     <header v-if="auth.bootstrapped && auth.isAuthenticated" class="shell-header">
-      <div class="brand">LevelUp · 英语修仙</div>
-      <el-space>
-        <el-button text @click="goHall">大厅</el-button>
-        <el-button text @click="goPractice">练功</el-button>
-        <el-button text @click="goReading">藏经阁</el-button>
-        <el-button text @click="goExam">试炼</el-button>
-        <el-button text @click="goMijing">秘境</el-button>
-        <el-button text @click="goMall">仙坊</el-button>
-        <el-button text @click="goLeaderboard">天榜</el-button>
-        <el-button type="danger" plain @click="logout">退出</el-button>
-      </el-space>
+      <!-- 左侧：修仙者信息看板 -->
+      <div class="cultivator-board">
+        <!-- 灵力头像（带聚灵法阵） -->
+        <div class="board-avatar-wrap" @click="openProfile" title="点击查看个人中心">
+          <img 
+            :src="user.profile?.avatar_url || '/build/assets/avatar_default-kzYH69OO.png'" 
+            class="board-avatar" 
+            alt="头像" 
+          />
+          <div class="board-avatar-halo"></div>
+        </div>
+        <!-- 姓名与境界标签 -->
+        <div class="board-meta">
+          <div class="meta-row">
+            <span class="cultivator-name">{{ user.profile?.nickname || '匿名前辈' }}</span>
+            <span class="cultivator-realm">{{ user.profile?.current_realm || '初入仙途' }}</span>
+          </div>
+          <!-- 灵气/修为经验条 -->
+          <div class="cultivator-exp-bar" :title="'剩余修为: ' + (user.profile?.remaining_exp ?? 0)">
+            <div 
+              class="exp-progress" 
+              :style="{ width: (user.profile?.progress_percent ?? 0) + '%' }"
+            >
+              <div class="exp-flow"></div>
+            </div>
+            <span class="exp-text">
+              修为: {{ user.profile?.exp ?? 0 }} / {{ user.profile?.next_threshold ?? 100 }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 中间：资源资产看板 -->
+      <div class="cultivator-assets">
+        <!-- 灵力/灵液 -->
+        <div class="asset-item" title="每日修炼消耗灵力，随时间自动恢复">
+          <span class="asset-icon">⚡</span>
+          <span class="asset-label">灵力:</span>
+          <span class="asset-value">{{ user.profile?.spirit_power ?? 0 }}/{{ user.profile?.spirit_power_max ?? 100 }}</span>
+        </div>
+        <!-- 灵石/灵玉 -->
+        <div class="asset-item" title="在仙坊中购买修行道具和灵药">
+          <span class="asset-icon">💎</span>
+          <span class="asset-label">灵石:</span>
+          <span class="asset-value">{{ user.profile?.spirit_stone ?? 0 }}</span>
+        </div>
+      </div>
+
+      <div class="shell-nav">
+        <el-button class="nav-portal-btn logout-btn" type="danger" plain @click="logout">退出</el-button>
+      </div>
     </header>
 
     <main class="shell-main">
@@ -97,5 +137,9 @@ async function logout() {
     ui.hideLoading();
     router.replace('/login');
   }
+}
+
+function openProfile() {
+  bridge.openProfilePanel();
 }
 </script>

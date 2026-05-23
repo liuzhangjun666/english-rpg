@@ -7,7 +7,8 @@
         "check:text": "python tools/check_text_integrity.py",
         "build": "npm run check:conflicts && npm run check:text && vite build",
         "smoke:frontend": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/smoke_frontend.ps1",
-        "dev": "start \"\" http://127.0.0.1:8000 && vite"
+        "dev": "vite --config vite.config.js --host 127.0.0.1 --port 5173 --strictPort",
+        "dev:open": "start \"\" http://127.0.0.1:8000 && npm run dev"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

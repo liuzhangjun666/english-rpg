@@ -83,6 +83,8 @@ html, body {
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(212, 168, 67, 0.25);
+    z-index: 350 !important;
+    pointer-events: auto !important;
     border-radius: 16px;
     padding: var(--spacing-xl);
     min-width: 320px;
@@ -527,9 +529,26 @@ html, body {
     inset: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    z-index: 100 !important;
+    z-index: 300 !important;
     pointer-events: none !important;
     background: transparent !important;
+    transition: background 0.4s ease, backdrop-filter 0.4s ease;
+}
+
+#ui-overlay:has(.cultivation-profile-panel),
+#ui-overlay:has(.panel) {
+    pointer-events: auto !important;
+}
+
+#ui-overlay:has(.cultivation-profile-panel) {
+    background: rgba(8, 12, 24, 0.75) !important;
+    backdrop-filter: blur(6px);
+}
+
+#ui-overlay:has(.cultivation-profile-panel) .hall-page {
+    transform: translate(-50%, 150%) !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
 }
 
 #ui-overlay > * {
@@ -560,7 +579,7 @@ html, body {
 }
 
 #ui-overlay {
-    z-index: 100 !important;
+    z-index: 300 !important;
 }
 
 .character-bar {
