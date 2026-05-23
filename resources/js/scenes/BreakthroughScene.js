@@ -82,6 +82,8 @@ export class BreakthroughScene {
                 c.scale.setScalar(1 + Math.sin(time*0.3)*0.05);
                 c.material.opacity = 0.02 + Math.sin(time*0.3)*0.025;
             }
+        });
+
         // 动态真·闪电逻辑：有体积的闪电柱 + 全屏强光泛光
         if (this.lightnings) {
             let anyStrike = false;

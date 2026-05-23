@@ -5,8 +5,23 @@ import '../css/components.css';
 import '../css/animations.css';
 import '../css/mobile.css';
 
-const game = new Game();
-game.init();
+let gameInstance = null;
+
+export function ensureLegacyGame({ autoInit = false } = {}) {
+    if (!gameInstance) {
+        gameInstance = new Game();
+        window.__legacyGame = gameInstance;
+    }
+    if (autoInit) {
+        gameInstance.init();
+    }
+    return gameInstance;
+}
+
+const migrationMode = window.__VUE_MIGRATION_ACTIVE__ === true;
+if (!migrationMode) {
+    ensureLegacyGame({ autoInit: true });
+}
 
 if ('serviceWorker' in navigator) {
     const host = window.location.hostname;
