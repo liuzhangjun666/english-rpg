@@ -1,77 +1,35 @@
 <template>
   <div class="hall-page">
-    <el-card class="hall-status" shadow="hover">
-      <template #header>
-        <div class="card-header">宗门大厅</div>
-      </template>
-      <div class="status-grid">
-        <div><span class="label">道号</span><span>{{ user.profile?.nickname || '-' }}</span></div>
-        <div><span class="label">境界</span><span>{{ user.profile?.current_realm || user.profile?.realm || '-' }}</span></div>
-        <div><span class="label">灵气</span><span>{{ user.profile?.exp ?? 0 }}</span></div>
-        <div><span class="label">灵力</span><span>{{ user.profile?.spirit_power ?? 0 }}/{{ user.profile?.spirit_power_max ?? 0 }}</span></div>
-      </div>
-    </el-card>
 
     <el-row :gutter="12" class="hall-actions">
-      <el-col :xs="24" :sm="12" :md="8">
-        <el-card class="action-card" shadow="hover" @click="goPractice('vocab')">
-          <h3>练功房</h3>
-          <p>词汇采集、炼丹拼词、语法修炼</p>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :md="8">
-        <el-card class="action-card" shadow="hover" @click="goPractice('listening')">
-          <h3>听风谷</h3>
-          <p>听力/口语练习，沿用当前题库流程</p>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :md="8">
-        <el-card class="action-card" shadow="hover" @click="goPractice('writing')">
-          <h3>符箓台</h3>
-          <p>写作、阅读等高级模块入口</p>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :md="8">
-        <el-card class="action-card" shadow="hover" @click="goReading">
-          <h3>藏经阁</h3>
-          <p>剧情阅读冒险（legacy 面板）</p>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :md="8">
-        <el-card class="action-card" shadow="hover" @click="goExam">
-          <h3>试炼场</h3>
-          <p>章节试炼与关卡验证</p>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :md="8">
-        <el-card class="action-card" shadow="hover" @click="goMijing">
-          <h3>秘境</h3>
-          <p>限时挑战与剧情收集物</p>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :md="8">
-        <el-card class="action-card" shadow="hover" @click="goMall">
-          <h3>仙坊</h3>
-          <p>商城道具与资源补给</p>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :md="8">
-        <el-card class="action-card" shadow="hover" @click="goLeaderboard">
-          <h3>天榜</h3>
-          <p>查看修士排行与进度</p>
-        </el-card>
+      <el-col v-for="item in actionItems" :key="item.key" :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+        <button type="button" class="action-card" @click="item.onClick">
+          <img :src="item.image" :alt="item.title" class="action-thumb" />
+          <div class="action-meta">
+            <h3>{{ item.title }}</h3>
+          </div>
+          <span class="action-enter">进入</span>
+        </button>
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUserStore } from '../stores/user';
 import { useUiStore } from '../stores/ui';
+import hallPractice from '../../../assets/images/ui/hall_practice.png';
+import hallListening from '../../../assets/images/ui/hall_listening.png';
+import hallWriting from '../../../assets/images/ui/hall_writing.png';
+import hallReading from '../../../assets/images/ui/hall_reading.png';
+import hallExam from '../../../assets/images/ui/hall_shilianchang.png';
+import hallMijing from '../../../assets/images/ui/hall_mijing.png';
+import hallMall from '../../../assets/images/ui/hall_mall.png';
+import hallLeaderboard from '../../../assets/images/ui/hall_leaderboard.png';
 
 const router = useRouter();
 const bridge = useLegacyBridge();
@@ -92,6 +50,65 @@ onMounted(async () => {
 function goPractice(mode = 'vocab') {
   router.push({ path: '/practice', query: { mode } });
 }
+
+const actionItems = computed(() => [
+  {
+    key: 'practice-vocab',
+    title: '练功房',
+    desc: '炼词筑基，语法淬体',
+    image: hallPractice,
+    onClick: () => goPractice('vocab'),
+  },
+  {
+    key: 'practice-listening',
+    title: '听风谷',
+    desc: '听音辨律，口诵仙诀',
+    image: hallListening,
+    onClick: () => goPractice('listening'),
+  },
+  {
+    key: 'practice-writing',
+    title: '符箓台',
+    desc: '以笔画符，书写乾坤',
+    image: hallWriting,
+    onClick: () => goPractice('writing'),
+  },
+  {
+    key: 'reading',
+    title: '藏经阁',
+    desc: '阅外域残卷，寻无上机缘',
+    image: hallReading,
+    onClick: () => goReading(),
+  },
+  {
+    key: 'exam',
+    title: '试炼场',
+    desc: '答题渡劫，宗门考核',
+    image: hallExam,
+    onClick: () => goExam(),
+  },
+  {
+    key: 'mijing',
+    title: '秘境',
+    desc: '限时历练，夺取真意',
+    image: hallMijing,
+    onClick: () => goMijing(),
+  },
+  {
+    key: 'mall',
+    title: '仙坊',
+    desc: '灵石交易，法宝补给',
+    image: hallMall,
+    onClick: () => goMall(),
+  },
+  {
+    key: 'leaderboard',
+    title: '天榜',
+    desc: '诸天万界，群仙斗法',
+    image: hallLeaderboard,
+    onClick: () => goLeaderboard(),
+  },
+]);
 
 function goReading() {
   router.push('/reading');

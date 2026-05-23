@@ -18,20 +18,15 @@
 }
 
 #vue-app .shell-header {
-  height: 58px;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
-  background: rgba(10, 12, 22, 0.72);
-  border-bottom: 1px solid rgba(212, 168, 67, 0.25);
-  backdrop-filter: blur(10px);
-}
-
-#vue-app .brand {
-  color: #f4d98a;
-  font-size: 15px;
-  font-weight: 600;
+  padding: 0 20px;
+  background: linear-gradient(180deg, rgba(14, 20, 38, 0.95) 0%, rgba(8, 12, 24, 0.9) 100%);
+  border-bottom: 2px solid rgba(212, 168, 67, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(255, 236, 184, 0.15);
+  backdrop-filter: blur(12px);
 }
 
 #vue-app .shell-main {
@@ -57,7 +52,6 @@
 }
 
 #vue-app .login-page,
-#vue-app .hall-page,
 #vue-app .practice-page,
 #vue-app .legacy-module-page,
 #vue-app .reading-page,
@@ -65,6 +59,34 @@
 #vue-app .mijing-page {
   width: min(1024px, 100%);
   margin: 0 auto;
+}
+
+#vue-app .hall-page {
+  position: absolute;
+  top: 86px; /* header 70px + 16px spacing */
+  bottom: 40px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: min(1024px, calc(100% - 32px));
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  pointer-events: none;
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.4s ease, visibility 0.4s ease;
+}
+
+@media (max-height: 680px), (max-width: 768px) {
+  #vue-app .hall-page {
+    position: static;
+    transform: none;
+    width: min(1024px, 100%);
+    display: block;
+    height: auto;
+    pointer-events: auto;
+  }
+  #vue-app .hall-actions {
+    margin: 16px auto 0 !important;
+  }
 }
 
 #vue-app .mall-page,
@@ -116,26 +138,118 @@
   color: #c8b685;
 }
 
+#vue-app .hall-status,
 #vue-app .hall-actions {
-  margin-top: 12px;
+  pointer-events: auto;
+}
+
+#vue-app .hall-actions {
+  margin: 0 auto;
+  max-width: 1240px;
 }
 
 #vue-app .action-card {
+  appearance: none;
+  -webkit-appearance: none;
   cursor: pointer;
-  min-height: 130px;
-  background: rgba(14, 18, 34, 0.8);
-  border: 1px solid rgba(212, 168, 67, 0.2);
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 0;
+  background:
+    linear-gradient(180deg, rgba(21, 34, 70, 0.9) 0%, rgba(9, 18, 40, 0.92) 100%);
+  border: 1px solid rgba(214, 178, 92, 0.52);
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 184, 0.26),
+    inset 0 -8px 16px rgba(0, 0, 0, 0.2),
+    0 8px 20px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+  padding: 8px 10px;
+  text-align: left;
+  width: 100%;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+#vue-app .action-thumb {
+  clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+  display: block;
+  height: 60px;
+  margin-bottom: 0;
+  object-fit: cover;
+  width: 60px;
+  border: 2px solid rgba(233, 200, 122, 0.85);
+  box-shadow: 0 0 10px rgba(212, 168, 67, 0.4);
+  object-position: center;
+  transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), filter 0.25s ease, border-color 0.25s ease;
+  animation: thumb-spiritual-breath 4s ease-in-out infinite alternate;
+}
+
+@keyframes thumb-spiritual-breath {
+  0% {
+    filter: drop-shadow(0 0 2px rgba(212, 168, 67, 0.3));
+  }
+  100% {
+    filter: drop-shadow(0 0 6px rgba(212, 168, 67, 0.6));
+  }
+}
+
+#vue-app .action-card:hover .action-thumb {
+  transform: scale(1.08) rotate(4deg);
+  border-color: rgba(255, 223, 120, 0.95);
+  filter: drop-shadow(0 0 10px rgba(212, 168, 67, 0.85));
+}
+
+#vue-app .action-meta {
+  min-width: 0;
+}
+
+#vue-app .action-card:focus-visible {
+  outline: 2px solid rgba(212, 168, 67, 0.85);
+  outline-offset: 2px;
 }
 
 #vue-app .action-card h3 {
   color: #f4d98a;
-  margin: 0 0 6px;
+  margin: 0 0 2px;
+  font-size: 22px;
+  line-height: 1.08;
+  letter-spacing: 0.5px;
 }
 
 #vue-app .action-card p {
   color: #d7d0b9;
   margin: 0;
-  line-height: 1.6;
+  line-height: 1.2;
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#vue-app .action-enter {
+  justify-self: end;
+  color: #f8e7b3;
+  font-size: 14px;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(226, 189, 102, 0.55);
+  background: linear-gradient(180deg, rgba(208, 162, 68, 0.25) 0%, rgba(112, 73, 22, 0.2) 100%);
+}
+
+#vue-app .action-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(233, 200, 122, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 184, 0.32),
+    inset 0 -8px 16px rgba(0, 0, 0, 0.2),
+    0 10px 24px rgba(10, 18, 42, 0.44);
+}
+
+#vue-app .action-card:active {
+  transform: translateY(0);
 }
 
 #vue-app .practice-page .hint {
@@ -599,4 +713,438 @@
     height: 54px;
     padding: 0 10px;
   }
+
+  #vue-app .action-card {
+    grid-template-columns: 56px 1fr auto;
+    padding: 8px;
+  }
+
+  #vue-app .action-thumb {
+    width: 52px;
+    height: 52px;
+  }
+
+  #vue-app .action-card h3 {
+    font-size: 18px;
+  }
+
+  #vue-app .action-card p {
+    font-size: 14px;
+  }
+
+  #vue-app .action-enter {
+    font-size: 16px;
+    padding: 3px 6px;
+  }
+}
+
+/* ================== 修仙者看板与状态顶栏 ================== */
+#vue-app .cultivator-board {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: auto;
+  flex-shrink: 0; /* 防止被导航按钮挤扁为 0 宽度 */
+}
+
+#vue-app .board-avatar-wrap {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+#vue-app .board-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid #d4a843;
+  box-shadow: 0 0 10px rgba(212, 168, 67, 0.6);
+  object-fit: cover;
+  z-index: 2;
+  background: #0f1426;
+  transition: transform 0.22s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+#vue-app .board-avatar-wrap:hover .board-avatar {
+  border-color: #ffe89e;
+  box-shadow: 0 0 14px rgba(255, 236, 184, 0.85);
+  transform: scale(1.05);
+}
+
+#vue-app .board-avatar-wrap:hover .board-avatar-halo {
+  border-color: rgba(255, 223, 120, 0.9);
+  animation-duration: 4s;
+}
+
+/* 旋转聚灵法阵 */
+#vue-app .board-avatar-halo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px dashed rgba(212, 168, 67, 0.6);
+  animation: board-spin-halo 16s linear infinite;
+  z-index: 1;
+}
+
+@keyframes board-spin-halo {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+#vue-app .board-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#vue-app .meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#vue-app .cultivator-name {
+  color: #f7f3e8;
+  font-size: 15px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+#vue-app .cultivator-realm {
+  font-size: 11px;
+  color: #f4d98a;
+  background: rgba(212, 168, 67, 0.16);
+  border: 1px solid rgba(212, 168, 67, 0.45);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: 'STKaiti', 'KaiTi', sans-serif;
+  text-shadow: 0 0 4px rgba(212, 168, 67, 0.2);
+}
+
+/* 灵气槽 */
+#vue-app .cultivator-exp-bar {
+  position: relative;
+  width: 190px;
+  height: 15px;
+  background: rgba(8, 12, 24, 0.85);
+  border: 1px solid rgba(212, 168, 67, 0.4);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+}
+
+#vue-app .exp-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #1d976c 0%, #93f9b9 100%);
+  box-shadow: 0 0 8px rgba(147, 249, 185, 0.6);
+  transition: width 0.4s ease;
+  position: relative;
+}
+
+/* 经验流光动效 */
+#vue-app .exp-flow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.22) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: board-exp-flow-light 3s infinite linear;
+}
+
+@keyframes board-exp-flow-light {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+#vue-app .exp-text {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  font-size: 10px;
+  color: #f7f3e8;
+  font-weight: bold;
+  z-index: 3;
+  line-height: 13px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9), 0 0 4px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+/* 右侧传送门（导航按钮） */
+#vue-app .shell-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+#vue-app .nav-portal-btn {
+  color: #c8b685 !important;
+  font-size: 13px !important;
+  border-radius: 6px !important;
+  padding: 6px 12px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.2s ease !important;
+  font-family: 'STKaiti', 'KaiTi', sans-serif;
+  background: transparent !important;
+}
+
+#vue-app .nav-portal-btn:hover {
+  color: #f4d98a !important;
+  background: rgba(212, 168, 67, 0.08) !important;
+  border-color: rgba(212, 168, 67, 0.35) !important;
+  box-shadow: 0 0 12px rgba(212, 168, 67, 0.2) !important;
+  text-shadow: 0 0 6px rgba(244, 217, 138, 0.6);
+}
+
+/* 退出传送阵 */
+#vue-app .logout-btn {
+  color: #f56c6c !important;
+  border: 1px solid rgba(245, 108, 108, 0.35) !important;
+  background: rgba(245, 108, 108, 0.06) !important;
+  margin-left: 6px !important;
+}
+
+#vue-app .logout-btn:hover {
+  color: #ffffff !important;
+  background: rgba(245, 108, 108, 0.85) !important;
+  border-color: #f56c6c !important;
+  box-shadow: 0 0 12px rgba(245, 108, 108, 0.45) !important;
+}
+
+/* ================== 隐藏冲突状态栏与新资源面板 ================== */
+#character-bar {
+  display: none !important;
+}
+
+#vue-app .cultivator-assets {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: 20px;
+  pointer-events: auto;
+  flex-shrink: 0; /* 防止被挤扁 */
+}
+
+/* 窄屏幕/移动端自适应折叠降级，防溢出 */
+@media (max-width: 768px) {
+  #vue-app .cultivator-exp-bar,
+  #vue-app .cultivator-assets {
+    display: none !important;
+  }
+  #vue-app .shell-header {
+    height: 58px !important;
+    padding: 0 10px !important;
+  }
+}
+
+#vue-app .asset-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(212, 168, 67, 0.08);
+  border: 1px solid rgba(212, 168, 67, 0.35);
+  border-radius: 20px;
+  padding: 4px 12px;
+  box-shadow: inset 0 0 8px rgba(212, 168, 67, 0.1);
+  transition: all 0.2s ease;
+}
+
+#vue-app .asset-item:hover {
+  background: rgba(212, 168, 67, 0.12);
+  border-color: rgba(212, 168, 67, 0.5);
+  box-shadow: 0 0 10px rgba(212, 168, 67, 0.15);
+}
+
+#vue-app .asset-icon {
+  font-size: 14px;
+  text-shadow: 0 0 6px rgba(212, 168, 67, 0.5);
+}
+
+#vue-app .asset-label {
+  font-size: 11px;
+  color: #c8b685;
+  font-family: 'STKaiti', 'KaiTi', sans-serif;
+}
+
+  #vue-app .asset-value {
+    font-size: 13px;
+    color: #f4d98a;
+    font-weight: bold;
+    font-family: monospace;
+  }
+
+/* ================== 登入宗门修仙风格弹窗重构 ================== */
+#vue-app .login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 120px) !important;
+  pointer-events: auto;
+}
+
+#vue-app .login-card {
+  width: min(440px, 92%) !important;
+  margin: 0 auto !important;
+  background: rgba(15, 20, 38, 0.82) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  border: 1px solid rgba(212, 168, 67, 0.45) !important;
+  border-radius: 16px !important;
+  box-shadow: 
+    0 15px 35px rgba(0, 0, 0, 0.6), 
+    inset 0 0 15px rgba(212, 168, 67, 0.1) !important;
+  overflow: hidden;
+}
+
+/* 弹窗头部 */
+#vue-app .login-card .el-card__header {
+  border-bottom: 1px solid rgba(212, 168, 67, 0.25) !important;
+  background: linear-gradient(180deg, rgba(212, 168, 67, 0.1) 0%, transparent 100%) !important;
+  padding: 16px 20px !important;
+}
+
+#vue-app .login-card .card-header {
+  color: #f4d98a !important;
+  font-family: 'STKaiti', 'KaiTi', sans-serif !important;
+  font-size: 22px !important;
+  font-weight: bold !important;
+  letter-spacing: 1px !important;
+  text-align: center !important;
+  text-shadow: 0 0 10px rgba(244, 217, 138, 0.4) !important;
+}
+
+/* Tabs 标签重绘 */
+#vue-app .login-card .el-tabs__nav-wrap::after {
+  background-color: rgba(212, 168, 67, 0.15) !important;
+}
+
+#vue-app .login-card .el-tabs__active-bar {
+  background: linear-gradient(90deg, #d4a843 0%, #f4d98a 100%) !important;
+  height: 2px !important;
+  box-shadow: 0 0 8px rgba(244, 217, 138, 0.8) !important;
+}
+
+#vue-app .login-card .el-tabs__item {
+  color: #c8b685 !important;
+  font-family: 'STKaiti', 'KaiTi', sans-serif !important;
+  font-size: 17px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+#vue-app .login-card .el-tabs__item.is-active {
+  color: #f4d98a !important;
+  text-shadow: 0 0 6px rgba(244, 217, 138, 0.5) !important;
+  font-weight: bold !important;
+}
+
+#vue-app .login-card .el-tabs__item:hover {
+  color: #f4d98a !important;
+}
+
+/* 表单与输入框 */
+#vue-app .login-card .el-form-item__label {
+  color: #c8b685 !important;
+  font-size: 13px !important;
+  padding-bottom: 4px !important;
+  font-family: 'STKaiti', 'KaiTi', sans-serif !important;
+}
+
+#vue-app .login-card .el-input__wrapper {
+  background-color: rgba(8, 12, 24, 0.7) !important;
+  border: 1px solid rgba(212, 168, 67, 0.3) !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+  padding: 4px 12px !important;
+  transition: all 0.25s ease !important;
+}
+
+#vue-app .login-card .el-input__wrapper.is-focus,
+#vue-app .login-card .el-input__wrapper:hover {
+  border-color: rgba(212, 168, 67, 0.8) !important;
+  box-shadow: 0 0 10px rgba(212, 168, 67, 0.25) !important;
+}
+
+#vue-app .login-card .el-input__inner {
+  color: #f7f3e8 !important;
+  font-size: 14px !important;
+}
+
+#vue-app .login-card .el-input__inner::placeholder {
+  color: rgba(200, 182, 133, 0.45) !important;
+}
+
+/* 验证码这行 */
+#vue-app .login-card .code-row {
+  display: grid !important;
+  grid-template-columns: 1fr 100px !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+
+/* 获取验证码按钮 */
+#vue-app .login-card .code-row .el-button {
+  background: rgba(212, 168, 67, 0.08) !important;
+  border: 1px solid rgba(212, 168, 67, 0.4) !important;
+  color: #f4d98a !important;
+  border-radius: 8px !important;
+  font-family: 'STKaiti', 'KaiTi', sans-serif !important;
+  font-size: 13px !important;
+  height: 34px !important;
+  transition: all 0.2s ease !important;
+  margin-left: 0 !important;
+}
+
+#vue-app .login-card .code-row .el-button:hover:not(.is-disabled) {
+  background: rgba(212, 168, 67, 0.15) !important;
+  border-color: rgba(212, 168, 67, 0.8) !important;
+  box-shadow: 0 0 10px rgba(212, 168, 67, 0.25) !important;
+}
+
+#vue-app .login-card .code-row .el-button.is-disabled {
+  color: rgba(200, 182, 133, 0.4) !important;
+  border-color: rgba(212, 168, 67, 0.15) !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 登入/注册 大按钮 */
+#vue-app .login-card .full-btn {
+  width: 100% !important;
+  height: 40px !important;
+  background: linear-gradient(135deg, #d4a843 0%, #a17816 100%) !important;
+  border: 1px solid rgba(255, 236, 184, 0.3) !important;
+  border-radius: 8px !important;
+  color: #0c1222 !important;
+  font-family: 'STKaiti', 'KaiTi', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  letter-spacing: 2px !important;
+  box-shadow: 0 4px 15px rgba(161, 120, 22, 0.2) !important;
+  transition: all 0.2s ease !important;
+  margin-top: 10px !important;
+}
+
+#vue-app .login-card .full-btn:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px rgba(212, 168, 67, 0.5) !important;
+  color: #ffffff !important;
+}
+
+#vue-app .login-card .full-btn:active {
+  transform: translateY(1px) !important;
 }

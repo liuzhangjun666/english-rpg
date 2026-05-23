@@ -973,17 +973,34 @@ export class UIManager {
             .join('');
 
         panel.innerHTML = `
-            <div class="profile-header">
-                <div class="profile-header-title">
-                    <div style="position:relative; width:32px; height:32px; cursor:pointer;" id="profile-avatar-upload-trigger" title="点击更换道影">
-                        <img src="${this.escapeHtml(user.avatar_url || this.assets.avatarDefault)}" class="profile-header-avatar" alt="avatar" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--gold);object-fit:cover;transition:opacity 0.2s;">
-                        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;font-size:10px;color:white;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">更换</div>
+            <div class="profile-header" style="justify-content: space-between; display: flex; align-items: center; padding-right: 20px;">
+                <div class="profile-header-title" style="display: flex; align-items: center; gap: 16px; flex: 1;">
+                    <div style="position:relative; width:48px; height:48px; cursor:pointer; flex-shrink: 0;" id="profile-avatar-upload-trigger" title="点击更换道影">
+                        <img src="${this.escapeHtml(user.avatar_url || this.assets.avatarDefault)}" class="profile-header-avatar" alt="avatar" style="width:48px;height:48px;border-radius:50%;border:2px solid var(--gold);object-fit:cover;transition:opacity 0.2s;">
+                        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;font-size:12px;color:white;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">更换</div>
                     </div>
                     <input type="file" id="profile-avatar-file" accept="image/png, image/jpeg, image/gif, image/webp" style="display:none;">
-                    仙躯根骨 · 命盘
+                    
+                    <div style="display: flex; flex-direction: column; gap: 6px; flex: 1; align-items: flex-start; line-height: 1.2;">
+                        <div style="display: flex; align-items: baseline; gap: 8px;">
+                            <span id="profile-nickname-display" style="font-size: 20px; font-weight: bold; color: var(--gold); cursor: pointer; border-bottom: 1px dashed var(--gold);" title="点击修改道号">${this.escapeHtml(user.nickname || '匿名前辈')}</span>
+                            <input type="text" id="profile-nickname-input" maxlength="50" value="${this.escapeHtml(user.nickname || '')}" style="display: none; background: rgba(0,0,0,0.5); border: 1px solid var(--gold); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 18px; width: 140px; margin-bottom: -1px;">
+                            <span style="font-size: 14px; color: var(--parchment); opacity: 0.8;">的仙躯 · 命盘</span>
+                        </div>
+                        <div style="display: flex; gap: 12px; font-size: 13px; font-weight: normal;">
+                            <span class="header-action-btn" id="profile-share-btn">📤 邀请道友</span>
+                            <span class="header-action-btn" id="profile-review-btn">🔄 温故复盘</span>
+                            <span class="header-action-btn" id="profile-parent-btn">📋 护道人</span>
+                            <span class="header-action-btn" id="profile-logout-btn" style="color:var(--cinnabar);">退出登出</span>
+                        </div>
+                    </div>
                 </div>
-                <button class="profile-close-btn" id="profile-close-btn">闭关 / 离开</button>
+                <button class="profile-close-btn" id="profile-close-btn">关闭</button>
             </div>
+            <style>
+                .header-action-btn { color: var(--primary); cursor: pointer; opacity: 0.8; transition: all 0.2s; user-select: none; }
+                .header-action-btn:hover { opacity: 1; text-shadow: 0 0 5px currentColor; transform: scale(1.05); }
+            </style>
             <div class="profile-body">
                 <div class="profile-left-pane">
                     <div class="profile-section-title">仙躯核心</div>
@@ -1020,24 +1037,6 @@ export class UIManager {
                         <div class="profile-eng-item"><div class="profile-stat-label"><img src="${this.getAbilityIconByKey('speaking')}" alt="" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:4px;">口语</div><div class="profile-eng-val">${dimensions.speaking}</div></div>
                         <div class="profile-eng-item"><div class="profile-stat-label"><img src="${this.getAbilityIconByKey('writing')}" alt="" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:4px;">写作</div><div class="profile-eng-val">${dimensions.writing}</div></div>
                     </div>
-                    
-                    <div class="profile-section-title">宗门杂务</div>
-                    <div style="display:flex; flex-direction:column; gap:10px;">
-                        <div class="input-group" style="margin-bottom:8px;">
-                            <label style="color:var(--parchment-dark);font-size:12px;">道号</label>
-                            <div style="display:flex; gap:8px;">
-                                <input type="text" id="profile-nickname" maxlength="50" value="${this.escapeHtml(user.nickname)}" style="flex:1;">
-                                <button class="btn btn-primary btn-sm" id="profile-save-btn">更名</button>
-                            </div>
-                        </div>
-
-                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                            <button class="btn btn-secondary btn-sm" id="profile-share-btn">📤 邀请道友</button>
-                            <button class="btn btn-secondary btn-sm" id="profile-review-btn">🔄 温故复盘</button>
-                            <button class="btn btn-secondary btn-sm" id="profile-parent-btn">📋 护道人</button>
-                            <button class="btn btn-secondary btn-sm" id="profile-logout-btn" style="border-color:var(--cinnabar);color:var(--cinnabar);">退出登出</button>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="profile-right-pane">
@@ -1069,12 +1068,47 @@ export class UIManager {
 
         document.getElementById('profile-close-btn')?.addEventListener('click', closePanel);
 
-        document.getElementById('profile-save-btn')?.addEventListener('click', async () => {
-            const n = document.getElementById('profile-nickname').value.trim();
-            if (!n) { this.showError('请填写道号'); return; }
-            const r = await this.game.api.put('/user/profile', { nickname: n });
-            if (r.success) { this.game.store.updateUser({ nickname: r.data.nickname }); this.showHermesBubble('道号已更新。'); }
-        });
+        const displaySpan = document.getElementById('profile-nickname-display');
+        const inputEl = document.getElementById('profile-nickname-input');
+        
+        if (displaySpan && inputEl) {
+            displaySpan.addEventListener('click', () => {
+                displaySpan.style.display = 'none';
+                inputEl.style.display = 'inline-block';
+                inputEl.focus();
+                inputEl.select();
+            });
+
+            const saveNickname = async () => {
+                if (inputEl.style.display === 'none') return;
+                const n = inputEl.value.trim();
+                if (!n) { this.showError('请填写道号'); inputEl.focus(); return; }
+                if (n !== (user.nickname || '')) {
+                    const r = await this.game.api.put('/user/profile', { nickname: n });
+                    if (r.success) {
+                        this.game.store.updateUser({ nickname: r.data.nickname });
+                        user.nickname = r.data.nickname;
+                        displaySpan.textContent = r.data.nickname;
+                        this.showHermesBubble('道号已更新。');
+                    } else {
+                        inputEl.value = user.nickname || '';
+                        this.showError('更新失败');
+                    }
+                }
+                inputEl.style.display = 'none';
+                displaySpan.style.display = 'inline-block';
+            };
+
+            inputEl.addEventListener('blur', saveNickname);
+            inputEl.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') inputEl.blur();
+                else if (e.key === 'Escape') {
+                    inputEl.value = user.nickname || '';
+                    inputEl.style.display = 'none';
+                    displaySpan.style.display = 'inline-block';
+                }
+            });
+        }
 
         const trigger = document.getElementById('profile-avatar-upload-trigger');
         const fileInput = document.getElementById('profile-avatar-file');

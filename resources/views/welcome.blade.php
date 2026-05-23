@@ -14,15 +14,23 @@
 
         if (file_exists($hotFile)) {
             $hotUrl = trim((string) file_get_contents($hotFile));
-            $probeUrl = rtrim($hotUrl, '/') . '/@vite/client';
             $ctx = stream_context_create([
                 'http' => [
                     'method' => 'GET',
                     'timeout' => 0.35,
                 ],
             ]);
-            $probe = @file_get_contents($probeUrl, false, $ctx);
-            $shouldUseDevServer = is_string($probe) && str_contains($probe, 'vite');
+
+            $probePaths = array_merge(['@vite/client'], $viteEntries);
+            $probeResults = [];
+
+            foreach ($probePaths as $path) {
+                $probeUrl = rtrim($hotUrl, '/') . '/' . ltrim($path, '/');
+                $probe = @file_get_contents($probeUrl, false, $ctx);
+                $probeResults[] = is_string($probe) && $probe !== '';
+            }
+
+            $shouldUseDevServer = !in_array(false, $probeResults, true);
         }
     @endphp
 
