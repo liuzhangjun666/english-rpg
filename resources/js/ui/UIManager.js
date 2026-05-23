@@ -926,7 +926,7 @@ export class UIManager {
     }
 
     // ========== 个人面板（P1+P2 完整版） ==========
-    showProfilePanel() {
+    async showProfilePanel() {
         const existing = document.getElementById('profile-panel');
         if (existing) {
             existing.classList.add('fade-out');
@@ -934,10 +934,24 @@ export class UIManager {
             return;
         }
 
+        this.showHermesBubble('正在推演命盘天机...', 0);
+        let user = this.game.store.getState().user || {};
+        try {
+            const res = await this.game.api.get('/user/profile');
+            if (res.success && res.data) {
+                this.game.store.updateUser(res.data);
+                user = this.game.store.getState().user;
+            }
+        } catch (e) {
+            console.error('获取个人数据失败', e);
+        }
+        
+        const bubble = document.getElementById('hermes-bubble');
+        if (bubble) bubble.remove();
+
         const hallEntry = document.getElementById('hall-entry');
         if (hallEntry) hallEntry.classList.add('hidden');
 
-        const user = this.game.store.getState().user || {};
         const catalog = typeof storyNodeCatalog === 'function' ? storyNodeCatalog() : [];
         const unlockedIds = Array.isArray(user.unlocked_nodes) ? user.unlocked_nodes : [];
         const fateNodes = catalog.filter(n => unlockedIds.includes(n.id) || (n.type && n.type.includes('ending') && unlockedIds.includes(n.id)));
