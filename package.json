@@ -6,17 +6,26 @@
         "check:conflicts": "python tools/check_conflicts.py",
         "check:text": "python tools/check_text_integrity.py",
         "build": "npm run check:conflicts && npm run check:text && vite build",
+        "smoke:frontend": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/smoke_frontend.ps1",
         "dev": "start \"\" http://127.0.0.1:8000 && vite"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
+        "@types/node": "^25.9.1",
+        "@vitejs/plugin-vue": "^6.0.7",
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^3.0.0",
         "tailwindcss": "^4.0.0",
-        "vite": "^8.0.0"
+        "typescript": "^6.0.3",
+        "vite": "^8.0.0",
+        "vue-tsc": "^3.3.1"
     },
     "dependencies": {
         "@sparkjsdev/spark": "^2.0.0",
-        "three": "^0.180.0"
+        "element-plus": "^2.14.0",
+        "pinia": "^3.0.4",
+        "three": "^0.180.0",
+        "vue": "^3.5.34",
+        "vue-router": "^5.0.7"
     }
 }

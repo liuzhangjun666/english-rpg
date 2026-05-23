@@ -1,0 +1,602 @@
+#vue-app {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  pointer-events: auto;
+}
+
+#vue-app .vue-shell {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+}
+
+#vue-app .vue-shell > * {
+  pointer-events: auto;
+}
+
+#vue-app .shell-header {
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: rgba(10, 12, 22, 0.72);
+  border-bottom: 1px solid rgba(212, 168, 67, 0.25);
+  backdrop-filter: blur(10px);
+}
+
+#vue-app .brand {
+  color: #f4d98a;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+#vue-app .shell-main {
+  flex: 1;
+  padding: 16px;
+  overflow: auto;
+}
+
+#vue-app .boot-splash {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(7, 9, 16, 0.68);
+  backdrop-filter: blur(8px);
+}
+
+#vue-app .boot-text {
+  color: #f4d98a;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+#vue-app .login-page,
+#vue-app .hall-page,
+#vue-app .practice-page,
+#vue-app .legacy-module-page,
+#vue-app .reading-page,
+#vue-app .exam-page,
+#vue-app .mijing-page {
+  width: min(1024px, 100%);
+  margin: 0 auto;
+}
+
+#vue-app .mall-page,
+#vue-app .leaderboard-page {
+  width: min(1024px, 100%);
+  margin: 0 auto;
+}
+
+#vue-app .login-card {
+  width: min(460px, 96%);
+  margin: 7vh auto 0;
+}
+
+#vue-app .card-header {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+#vue-app .code-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  width: 100%;
+}
+
+#vue-app .full-btn {
+  width: 100%;
+}
+
+#vue-app .hall-status,
+#vue-app .practice-page .el-card {
+  background: rgba(15, 20, 38, 0.78);
+  border-color: rgba(212, 168, 67, 0.25);
+}
+
+#vue-app .status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+#vue-app .status-grid > div {
+  display: flex;
+  justify-content: space-between;
+  color: #f7f3e8;
+}
+
+#vue-app .status-grid .label {
+  color: #c8b685;
+}
+
+#vue-app .hall-actions {
+  margin-top: 12px;
+}
+
+#vue-app .action-card {
+  cursor: pointer;
+  min-height: 130px;
+  background: rgba(14, 18, 34, 0.8);
+  border: 1px solid rgba(212, 168, 67, 0.2);
+}
+
+#vue-app .action-card h3 {
+  color: #f4d98a;
+  margin: 0 0 6px;
+}
+
+#vue-app .action-card p {
+  color: #d7d0b9;
+  margin: 0;
+  line-height: 1.6;
+}
+
+#vue-app .practice-page .hint {
+  color: #c8b685;
+  margin: 0 0 12px;
+}
+
+#vue-app .practice-shell {
+  background: rgba(15, 20, 38, 0.78);
+  border-color: rgba(212, 168, 67, 0.25);
+}
+
+#vue-app .reading-shell {
+  background: rgba(15, 20, 38, 0.78);
+  border-color: rgba(212, 168, 67, 0.25);
+}
+
+#vue-app .exam-shell {
+  background: rgba(15, 20, 38, 0.78);
+  border-color: rgba(212, 168, 67, 0.25);
+}
+
+#vue-app .mijing-shell {
+  background: rgba(15, 20, 38, 0.78);
+  border-color: rgba(212, 168, 67, 0.25);
+}
+
+#vue-app .mall-shell,
+#vue-app .leaderboard-shell {
+  background: rgba(15, 20, 38, 0.78);
+  border-color: rgba(212, 168, 67, 0.25);
+}
+
+#vue-app .module-card {
+  background: rgba(15, 20, 38, 0.78);
+  border-color: rgba(212, 168, 67, 0.25);
+}
+
+#vue-app .practice-toolbar {
+  margin-bottom: 14px;
+}
+
+#vue-app .level-box {
+  border: 1px dashed rgba(212, 168, 67, 0.35);
+  background: rgba(212, 168, 67, 0.06);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+#vue-app .level-title {
+  color: #d7d0b9;
+  font-size: 13px;
+}
+
+#vue-app .level-main {
+  color: #f4d98a;
+  font-size: 24px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+#vue-app .level-sub {
+  color: #d7d0b9;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+#vue-app .question-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+#vue-app .question-level {
+  color: #c8b685;
+  font-size: 12px;
+}
+
+#vue-app .question-stem {
+  color: #f7f3e8;
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+#vue-app .writing-meta {
+  margin-bottom: 12px;
+}
+
+#vue-app .writing-meta h3 {
+  margin: 0 0 6px;
+  color: #f4d98a;
+  font-size: 18px;
+}
+
+#vue-app .writing-meta p {
+  margin: 0;
+  color: #d7d0b9;
+  line-height: 1.6;
+}
+
+#vue-app .writing-word-limit {
+  margin-top: 6px !important;
+  color: #c8b685 !important;
+  font-size: 12px;
+}
+
+#vue-app .option-group {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+}
+
+#vue-app .option-item {
+  margin-right: 0;
+  height: auto;
+  min-height: 42px;
+  width: 100%;
+}
+
+#vue-app .practice-actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+}
+
+#vue-app .module-actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+}
+
+#vue-app .reading-toolbar {
+  margin-bottom: 12px;
+}
+
+#vue-app .chapter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+#vue-app .chapter-card {
+  background: rgba(12, 18, 34, 0.85);
+  border: 1px solid rgba(212, 168, 67, 0.2);
+  border-radius: 10px;
+  color: #f7f3e8;
+  cursor: pointer;
+  padding: 12px;
+  text-align: left;
+}
+
+#vue-app .chapter-card.completed {
+  border-color: rgba(99, 187, 126, 0.55);
+}
+
+#vue-app .chapter-top {
+  display: flex;
+  font-size: 12px;
+  justify-content: space-between;
+}
+
+#vue-app .chapter-title {
+  color: #f4d98a;
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+#vue-app .chapter-meta {
+  color: #d7d0b9;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+#vue-app .reading-confirm {
+  color: #d7d0b9;
+  font-size: 14px;
+  line-height: 1.8;
+  margin-top: 10px;
+}
+
+#vue-app .reading-answer-header {
+  align-items: center;
+  color: #f4d98a;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+#vue-app .reading-passage {
+  background: rgba(212, 168, 67, 0.08);
+  border: 1px dashed rgba(212, 168, 67, 0.3);
+  border-radius: 10px;
+  color: #e9e3cc;
+  line-height: 1.8;
+  margin: 0 0 12px;
+  padding: 12px;
+}
+
+#vue-app .reading-task-block {
+  border: 1px solid rgba(212, 168, 67, 0.22);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+#vue-app .reading-task-title {
+  align-items: center;
+  color: #f7f3e8;
+  display: flex;
+  justify-content: space-between;
+  line-height: 1.6;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+#vue-app .reading-option-group {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+#vue-app .reading-branch-box {
+  background: rgba(212, 168, 67, 0.07);
+  border: 1px dashed rgba(212, 168, 67, 0.3);
+  border-radius: 10px;
+  margin-top: 12px;
+  padding: 10px;
+}
+
+#vue-app .reading-branch-title {
+  color: #f4d98a;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+#vue-app .reading-demon-progress {
+  color: #f4d98a;
+  font-size: 13px;
+  margin: 10px 0;
+}
+
+#vue-app .exam-toolbar {
+  margin-bottom: 12px;
+}
+
+#vue-app .exam-meta {
+  color: #d7d0b9;
+  font-size: 14px;
+  line-height: 1.8;
+  margin-top: 10px;
+}
+
+#vue-app .exam-conditions {
+  margin-top: 10px;
+}
+
+#vue-app .exam-condition {
+  align-items: center;
+  border: 1px solid rgba(212, 168, 67, 0.2);
+  border-radius: 8px;
+  color: #f7f3e8;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding: 8px 10px;
+}
+
+#vue-app .exam-condition.met {
+  border-color: rgba(99, 187, 126, 0.45);
+}
+
+#vue-app .exam-condition.unmet {
+  border-color: rgba(230, 120, 120, 0.45);
+}
+
+#vue-app .exam-header {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+#vue-app .exam-question {
+  color: #f7f3e8;
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+#vue-app .exam-option-group {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+#vue-app .mijing-toolbar {
+  margin-bottom: 12px;
+}
+
+#vue-app .mijing-entry-grid {
+  margin-top: 10px;
+}
+
+#vue-app .mijing-metrics {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(100px, 1fr));
+  margin-bottom: 10px;
+}
+
+#vue-app .mijing-metric {
+  border: 1px solid rgba(212, 168, 67, 0.2);
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+}
+
+#vue-app .mijing-metric-label {
+  color: #c8b685;
+  font-size: 12px;
+}
+
+#vue-app .mijing-metric-value {
+  color: #f4d98a;
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+#vue-app .mijing-question {
+  color: #f7f3e8;
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+#vue-app .mijing-option-group {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+#vue-app .mall-toolbar,
+#vue-app .leaderboard-toolbar {
+  margin-bottom: 12px;
+}
+
+#vue-app .mall-stones {
+  color: #f4d98a;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+#vue-app .mall-empty,
+#vue-app .leaderboard-empty {
+  color: #c8b685;
+  padding: 18px 0;
+  text-align: center;
+}
+
+#vue-app .mall-list {
+  display: grid;
+  gap: 8px;
+}
+
+#vue-app .mall-item {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+}
+
+#vue-app .mall-item-icon {
+  font-size: 26px;
+}
+
+#vue-app .mall-item-body {
+  flex: 1;
+}
+
+#vue-app .mall-item-name {
+  color: #f7f3e8;
+  font-size: 14px;
+}
+
+#vue-app .mall-item-desc {
+  color: #c8b685;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+#vue-app .mall-item-right {
+  text-align: right;
+}
+
+#vue-app .mall-item-price {
+  color: #f4d98a;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+#vue-app .leaderboard-meta {
+  color: #c8b685;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+#vue-app .leaderboard-list {
+  display: grid;
+  gap: 6px;
+}
+
+#vue-app .leaderboard-row {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 48px 1fr auto;
+  padding: 8px 10px;
+}
+
+#vue-app .leaderboard-row.top3 {
+  border-color: rgba(212, 168, 67, 0.35);
+}
+
+#vue-app .leaderboard-rank {
+  color: #f4d98a;
+  text-align: center;
+}
+
+#vue-app .leaderboard-name {
+  color: #f7f3e8;
+  font-size: 13px;
+}
+
+#vue-app .leaderboard-realm {
+  color: #c8b685;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+#vue-app .leaderboard-metric {
+  color: #f4d98a;
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  #vue-app .shell-main {
+    padding: 12px;
+  }
+
+  #vue-app .shell-header {
+    height: 54px;
+    padding: 0 10px;
+  }
+}

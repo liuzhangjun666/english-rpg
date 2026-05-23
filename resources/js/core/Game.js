@@ -69,23 +69,37 @@ export class Game {
     }
 
     init() {
-        // Never block startup on network: always show login first.
-        this.showLogin();
-
         const token = this.api.getStoredToken();
-        if (!token) return;
+        if (!token) {
+            this.showLogin();
+            return;
+        }
 
         this.api.setToken(token);
+        this.ui.hideAllPanels();
+        this.ui.showLoading('正在恢复登录...');
         this.tryAutoLogin();
     }
 
     async tryAutoLogin() {
-        const res = await this.api.get('/user/profile');
-        if (!res?.success) {
-            // 仅在明确鉴权失效时清理 token；网络抖动/超时不应导致刷新即掉线。
+        let res = null;
+        const maxAttempt = 3;
+        for (let attempt = 1; attempt <= maxAttempt; attempt += 1) {
+            res = await this.api.get('/user/profile');
+            if (res?.success) break;
+
             if (res?.code === 'TOKEN_EXPIRED') {
                 this.api.clearToken();
+                break;
             }
+
+            const retryable = ['NETWORK_ERROR', 'REQUEST_TIMEOUT', 'INVALID_RESPONSE'].includes(res?.code);
+            if (!retryable || attempt === maxAttempt) break;
+            await this.sleep(350 * attempt);
+        }
+
+        if (!res?.success) {
+            this.showLogin();
             return;
         }
 
@@ -107,8 +121,13 @@ export class Game {
             this.isNewUser = true;
             this.startInitiation();
         } else {
+            this.ui.hideLoading();
             this.restoreRouteAfterLogin();
         }
+    }
+
+    sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     restoreRouteAfterLogin() {
