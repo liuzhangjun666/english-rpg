@@ -439,13 +439,13 @@ export class UIManager {
         });
     }
 
-    async refreshLearningProgress(bar) {
+    async refreshLearningProgress(bar, force = false) {
         const fill = bar.querySelector('#learning-progress-fill');
         const text = bar.querySelector('#learning-progress-text');
         if (!fill || !text) return;
         if (this._learningProgressLoading) return;
         const now = Date.now();
-        if (this._learningProgressLastAt && now - this._learningProgressLastAt < this.learningProgressRefreshIntervalMs) return;
+        if (!force && this._learningProgressLastAt && now - this._learningProgressLastAt < this.learningProgressRefreshIntervalMs) return;
 
         this._learningProgressLoading = true;
         try {
@@ -488,6 +488,13 @@ export class UIManager {
         } finally {
             this._learningProgressLoading = false;
         }
+    }
+
+    async forceRefreshLearningProgress() {
+        const bar = document.getElementById('character-bar');
+        if (!bar) return;
+        this._learningProgressLastAt = 0;
+        await this.refreshLearningProgress(bar, true);
     }
 
     readLearningProgressCache() {

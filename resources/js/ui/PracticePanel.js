@@ -525,8 +525,11 @@ export class PracticePanel {
         this.speakingRecording = false;
         this.vocabAlchemyStates = {};
         this.vocabFlightRoutes = {};
+        this.vocabWoodenPostChoices = {};
         this.vocabAdventureState = null;
         this.vocabAutoNextTimer = null;
+        this.woodenPostTimer = null;
+        this.woodenPostDeadlineTs = 0;
         this.grammarOrderStates = {};
         this.isStartingLevel = false;
         // 写作专属子面板
@@ -567,6 +570,7 @@ export class PracticePanel {
     showLevelSelect(type) {
         this.game.ui.hideAllPanels();
         this.clearVocabAutoNextTimer();
+        this.clearWoodenPostTimer();
         this.currentLevel = null;
         this.combo = 0;
         this.maxCombo = 0;
@@ -643,6 +647,7 @@ export class PracticePanel {
             this.game.ui.showLoading('加载题库...');
             this.currentType = type;
             this.clearVocabAutoNextTimer();
+            this.clearWoodenPostTimer();
             this.currentLevel = levelId;
             this.currentIndex = 0;
             this.answers = {};
@@ -653,6 +658,7 @@ export class PracticePanel {
             this.listeningReplayStates = {};
             this.vocabAlchemyStates = {};
             this.vocabFlightRoutes = {};
+            this.vocabWoodenPostChoices = {};
             this.vocabAdventureState = null;
             this.grammarOrderStates = {};
             this.stopSpeakingRecording(true);
@@ -767,6 +773,7 @@ export class PracticePanel {
     /** 渲染当前题目（即时反馈版） */
     renderQuestion() {
         this.clearVocabAutoNextTimer();
+        this.clearWoodenPostTimer();
         const existing = document.getElementById('practice-panel');
         if (existing) existing.remove();
 
@@ -798,6 +805,7 @@ export class PracticePanel {
         const speakingTodayCount = isSpeaking ? this.getSpeakingTodayCount() : 0;
         const vocabPlayMode = isVocab ? this.getVocabPlayMode(q) : null;
         const isVocabAlchemy = vocabPlayMode === 'alchemy';
+        const isVocabWoodenPost = vocabPlayMode === 'wooden_post';
         const isVocabChoiceGame = isVocab && !isVocabAlchemy;
         const grammarPlayMode = isGrammar ? this.getGrammarPlayMode(q) : null;
         const isGrammarWordOrder = isGrammar && grammarPlayMode === 'word_order';
@@ -819,9 +827,11 @@ export class PracticePanel {
         if (isVocab) {
             resolvedPrompt = vocabPlayMode === 'alchemy'
                 ? `丹方缺失，请按释义炼词：${vocabDisplayTarget || '词义线索'}`
+                : (vocabPlayMode === 'wooden_post'
+                    ? `看清木桩上的词，快速击中正确释义：${targetWord || 'word'}`
                 : (vocabPlayMode === 'herb'
                     ? `寻药指令：Find the herb: ${targetWord || 'herb'}`
-                    : `${targetWord || 'word'} 的中文意思是？`);
+                    : `${targetWord || 'word'} 的中文意思是？`));
         } else if (isGrammar) {
             resolvedPrompt = grammarPlayMode === 'word_order'
                 ? '词序布阵：请将词块组合成正确句子。'
@@ -835,14 +845,17 @@ export class PracticePanel {
         const progressHeaderHtml = isVocabChoiceGame
             ? this.renderVocabHarvestBasket(vocabDoneCount, total)
             : `${this.currentIndex + 1}/${total}`;
+        const vocabComboLabel = vocabPlayMode === 'wooden_post' ? '连击' : '连采';
         const vocabComboHtml = isVocabChoiceGame
-            ? `<div class="vocab-chain-indicator">连采 x${Math.max(0, this.combo)}</div>`
+            ? `<div class="vocab-chain-indicator">${vocabComboLabel} x${Math.max(0, this.combo)}</div>`
             : (this.combo >= 3 ? `<div class="combo-display">🔥 ${this.combo} 连击</div>` : '');
 
         let vocabGameplayHtml = '';
         if (isVocab && showOptionArea) {
             if (vocabPlayMode === 'alchemy') {
                 vocabGameplayHtml = this.renderVocabAlchemy(q, hasFeedback);
+            } else if (vocabPlayMode === 'wooden_post') {
+                vocabGameplayHtml = this.renderVocabWoodenPostOptions(q);
             } else if (vocabPlayMode === 'herb') {
                 vocabGameplayHtml = this.renderVocabHerbOptions(q);
             } else {
@@ -986,7 +999,7 @@ export class PracticePanel {
                 }
                 b.style.pointerEvents = 'none';
             });
-            if (isVocabChoiceGame && currentAnswer) {
+            if (isVocabChoiceGame && !isVocabWoodenPost && currentAnswer) {
                 const selectedIndex = this.getVocabOptionIndexFromValue(q, currentAnswer, vocabPlayMode);
                 this.moveVocabPetTo(panel, selectedIndex);
                 this.scheduleVocabAutoNext(220);
@@ -1027,11 +1040,12 @@ export class PracticePanel {
                     const selected = btn.dataset.value;
                     const correct = selected === q.correct_answer;
                     const selectedIndex = Number(btn.dataset.laneIndex || 1);
-                    if (isVocabChoiceGame) {
+                    if (isVocabChoiceGame && !isVocabWoodenPost) {
                         this.moveVocabPetTo(panel, selectedIndex);
                     }
                     this.answers[q.question_id] = selected;
                     this.game.store.answerQuestion(q.question_id, selected);
+                    this.clearWoodenPostTimer();
 
                     // 即时反馈：正确绿闪，错误红闪
                     optionBtns.forEach(b => b.style.pointerEvents = 'none');
@@ -1040,12 +1054,20 @@ export class PracticePanel {
                         this.playAnswerFeedbackTone(true, this.combo + 1);
                         this.combo++;
                         if (this.combo > this.maxCombo) this.maxCombo = this.combo;
-                        if (this.combo >= 3) {
+                        if (isVocabWoodenPost) {
+                            if (this.combo === 5) {
+                                this.showComboFx(this.combo, '疾风连斩！');
+                            } else if (this.combo === 10) {
+                                this.showComboFx(this.combo, '基础功大成！');
+                            } else if (this.combo >= 3) {
+                                this.showComboFx(this.combo);
+                            }
+                        } else if (this.combo >= 3) {
                             this.showComboFx(this.combo);
                         }
                         if (isVocab && explainBox) {
-                            const baseQi = 10;
-                            const comboBonusQi = this.combo >= 3 ? 10 : 0;
+                            const baseQi = isVocabWoodenPost ? 5 : 10;
+                            const comboBonusQi = isVocabWoodenPost ? 0 : (this.combo >= 3 ? 10 : 0);
                             this.applyVocabAdventureResult({
                                 correct: true,
                                 mode: vocabPlayMode,
@@ -1053,11 +1075,20 @@ export class PracticePanel {
                                 qiGain: baseQi + comboBonusQi,
                             });
                             explainBox.style.display = 'block';
-                            explainBox.innerHTML = `
-                                <div style="color:#9ee8bf;">采集成功</div>
-                                <div style="color:#9ee8bf;">灵草 +1 ｜ 灵气 +${baseQi} ｜ 连采 +1</div>
-                                ${this.combo >= 3 ? '<div style="margin-top:4px;color:#f4dfa1;">灵草暴长，额外灵气 +10</div>' : ''}
-                            `;
+                            if (isVocabWoodenPost) {
+                                explainBox.innerHTML = `
+                                    <div style="color:#9ee8bf;">木桩被击中，连击 +1</div>
+                                    <div style="color:#9ee8bf;">修为 +${baseQi}</div>
+                                    ${this.combo === 5 ? '<div style="margin-top:4px;color:#f4dfa1;">触发：疾风连斩</div>' : ''}
+                                    ${this.combo === 10 ? '<div style="margin-top:4px;color:#f4dfa1;">触发：基础功大成</div>' : ''}
+                                `;
+                            } else {
+                                explainBox.innerHTML = `
+                                    <div style="color:#9ee8bf;">采集成功</div>
+                                    <div style="color:#9ee8bf;">灵草 +1 ｜ 灵气 +${baseQi} ｜ 连采 +1</div>
+                                    ${this.combo >= 3 ? '<div style="margin-top:4px;color:#f4dfa1;">灵草暴长，额外灵气 +10</div>' : ''}
+                                `;
+                            }
                         } else if (isGrammar && explainBox) {
                             const runeGain = this.getGrammarRuneReward(q);
                             const zhouTianBonus = this.combo === 3 ? '<div style="margin-top:4px;color:#f4dfa1;">连成小周天，额外获得语法灵纹</div>' : '';
@@ -1091,10 +1122,18 @@ export class PracticePanel {
                             if (isVocab) {
                                 const correctText = String((q.options || {})[q.correct_answer] || '').trim();
                                 const displayWord = targetWord || this.getPronounceWord(q) || 'word';
-                                explainBox.innerHTML = `
-                                    <div style="color:#ffb3b3;">采集失败，${this.game.ui.escapeHtml(displayWord)} = ${this.game.ui.escapeHtml(correctText)}</div>
-                                    <div style="margin-top:4px;color:#ffd6d2;">连采清零，当前题已加入错题回炉</div>
-                                `;
+                                if (isVocabWoodenPost) {
+                                    explainBox.innerHTML = `
+                                        <div style="color:#ffb3b3;">木桩反震，连击中断</div>
+                                        <div style="margin-top:4px;color:#ffd6d2;">正确释义：${this.game.ui.escapeHtml(displayWord)} = ${this.game.ui.escapeHtml(correctText)}</div>
+                                        <div style="margin-top:4px;color:#ffd6d2;">建议前往心魔录回炉修炼</div>
+                                    `;
+                                } else {
+                                    explainBox.innerHTML = `
+                                        <div style="color:#ffb3b3;">采集失败，${this.game.ui.escapeHtml(displayWord)} = ${this.game.ui.escapeHtml(correctText)}</div>
+                                        <div style="margin-top:4px;color:#ffd6d2;">连采清零，当前题已加入错题回炉</div>
+                                    `;
+                                }
                             } else if (isGrammar) {
                                 explainBox.innerHTML = `
                                     <div style="color:#ffb3b3;">阵眼错位，请查看规则提示</div>
@@ -1124,6 +1163,9 @@ export class PracticePanel {
                 });
             });
         }
+        if (isVocabWoodenPost && !hasFeedback) {
+            this.startWoodenPostTimer(panel, q);
+        }
 
         // 下一题/提交
         const nextBtn = document.getElementById('practice-next-btn');
@@ -1142,6 +1184,7 @@ export class PracticePanel {
             if (ok) {
                 this.stopSpeech();
                 this.clearVocabAutoNextTimer();
+                this.clearWoodenPostTimer();
                 panel.remove();
                 this.game.enterHall();
             }
@@ -1155,8 +1198,17 @@ export class PracticePanel {
         }
     }
 
+    clearWoodenPostTimer() {
+        if (this.woodenPostTimer) {
+            clearInterval(this.woodenPostTimer);
+            this.woodenPostTimer = null;
+        }
+        this.woodenPostDeadlineTs = 0;
+    }
+
     goNextQuestionOrSubmit() {
         this.clearVocabAutoNextTimer();
+        this.clearWoodenPostTimer();
         this._feedbackShown = false;
         if (this.currentIndex < this.questions.length - 1) {
             this.currentIndex++;
@@ -1172,6 +1224,74 @@ export class PracticePanel {
         this.vocabAutoNextTimer = setTimeout(() => {
             this.goNextQuestionOrSubmit();
         }, Math.max(120, Number(delay || 800)));
+    }
+
+    getWoodenPostTimeLimitSec(question) {
+        const raw = Number(
+            question?.time_limit
+            || question?.timeLimit
+            || question?.countdown
+            || question?.content?.time_limit
+            || 8
+        );
+        if (!Number.isFinite(raw)) return 8;
+        return Math.max(4, Math.min(20, Math.floor(raw)));
+    }
+
+    startWoodenPostTimer(panel, question) {
+        this.clearWoodenPostTimer();
+        if (!panel || this._feedbackShown) return;
+        const fillEl = panel.querySelector('#wooden-post-time-fill');
+        const textEl = panel.querySelector('#wooden-post-time-text');
+        if (!fillEl || !textEl) return;
+        const limitSec = this.getWoodenPostTimeLimitSec(question);
+        this.woodenPostDeadlineTs = Date.now() + limitSec * 1000;
+        const update = () => {
+            const remainMs = Math.max(0, this.woodenPostDeadlineTs - Date.now());
+            const remainSec = Math.ceil(remainMs / 1000);
+            const pct = Math.max(0, Math.min(100, (remainMs / (limitSec * 1000)) * 100));
+            fillEl.style.width = `${pct}%`;
+            textEl.textContent = `剩余 ${remainSec}s`;
+            if (remainMs <= 0) {
+                this.handleWoodenPostTimeout(panel, question);
+            }
+        };
+        update();
+        this.woodenPostTimer = setInterval(update, 100);
+    }
+
+    handleWoodenPostTimeout(panel, question) {
+        if (this._feedbackShown) return;
+        this.clearWoodenPostTimer();
+        const optionBtns = panel?.querySelectorAll('.option-btn') || [];
+        optionBtns.forEach((b) => {
+            b.style.pointerEvents = 'none';
+            if (b.dataset.value === question?.correct_answer) {
+                b.classList.add('answer-correct');
+            }
+        });
+        this.playAnswerFeedbackTone(false, 0);
+        this.combo = 0;
+        const targetWord = this.getVocabTargetWord(question) || this.getPronounceWord(question) || 'word';
+        const correctText = String((question?.options || {})[question?.correct_answer] || '').trim();
+        this.applyVocabAdventureResult({
+            correct: false,
+            mode: 'wooden_post',
+            targetWord,
+            qiGain: 0,
+        });
+        const explainBox = panel?.querySelector('#answer-explain-box');
+        if (explainBox) {
+            explainBox.style.display = 'block';
+            explainBox.innerHTML = `
+                <div style="color:#ffb3b3;">出手慢了，木桩反震，连击中断</div>
+                <div style="margin-top:4px;color:#ffd6d2;">正确释义：${this.game.ui.escapeHtml(targetWord)} = ${this.game.ui.escapeHtml(correctText)}</div>
+                <div style="margin-top:4px;color:#ffd6d2;">建议前往心魔录回炉修炼</div>
+            `;
+        }
+        this._feedbackShown = true;
+        this.persistSession();
+        this.scheduleVocabAutoNext(650);
     }
 
     getVocabOptionIndexFromValue(question, value, mode) {
@@ -1204,6 +1324,7 @@ export class PracticePanel {
     renderVocabModeBadge(mode) {
         if (mode === 'alchemy') return '⚗️ 炼丹拼词：拼写单词';
         if (mode === 'herb') return '🌱 灵草识别：派灵宠采药';
+        if (mode === 'wooden_post') return '🪵 木桩连击：限时击中正确释义，冲击高连击';
         return '🌿 灵草采集：派灵宠采药';
     }
 
@@ -1226,18 +1347,21 @@ export class PracticePanel {
     getVocabObjective(mode, targetWord) {
         if (mode === 'alchemy') return `炼制单词丹：根据释义拼出英文单词（${targetWord || '词义线索'}）。`;
         if (mode === 'herb') return '识别灵草图谱，选出正确英文。';
+        if (mode === 'wooden_post') return `木桩连击：为 ${targetWord || 'target'} 快速选择中文释义。`;
         return `采集灵草释义：为 ${targetWord || 'target'} 选择中文含义。`;
     }
 
     getVocabRoleAction(mode) {
         if (mode === 'alchemy') return '角色动作：控火排字，稳定丹炉。';
         if (mode === 'herb') return '角色动作：观察图谱，识别灵草。';
+        if (mode === 'wooden_post') return '角色动作：提剑出手，连续击中木桩。';
         return '角色动作：御行采集，锁定词义。';
     }
 
     getVocabDropText(mode, targetWord, qiGain) {
         if (mode === 'alchemy') return `回灵丹 x1（${targetWord || 'word'}）`;
         if (mode === 'herb') return `灵草样本 x1（${targetWord || 'herb'}）`;
+        if (mode === 'wooden_post') return `木桩感悟 x1（修为 +${qiGain}）`;
         return `词义灵叶 x1（灵气 +${qiGain}）`;
     }
 
@@ -1353,6 +1477,7 @@ export class PracticePanel {
         const canAlchemy = targetWord.length >= 4;
         const canHerb = options.length >= 2;
         const canFlight = options.length >= 3;
+        const canWoodenPost = options.length >= 3;
         const rawMode = String(question?.mode || '').trim().toLowerCase();
         const modeAliasMap = {
             alchemy: 'alchemy',
@@ -1378,20 +1503,30 @@ export class PracticePanel {
             translation: 'flight',
             看英文选中文: 'flight',
             灵草采集: 'flight',
+            wooden_post: 'wooden_post',
+            post_combo: 'wooden_post',
+            pile_strike: 'wooden_post',
+            word_strike: 'wooden_post',
+            timed_translation: 'wooden_post',
+            木桩连击: 'wooden_post',
+            练功木桩: 'wooden_post',
         };
 
         const mapped = modeAliasMap[rawMode];
         if (mapped === 'alchemy' && canAlchemy) return mapped;
         if (mapped === 'herb' && canHerb) return mapped;
         if (mapped === 'flight' && canFlight) return mapped;
+        if (mapped === 'wooden_post' && canWoodenPost) return mapped;
+        if (!mapped && canWoodenPost) return 'wooden_post';
 
         const key = this.getQuestionKey(question);
         const hash = [...key].reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
-        const ordered = ['alchemy', 'herb', 'flight'];
+        const ordered = ['wooden_post', 'alchemy', 'herb', 'flight'];
         const preferred = ordered[hash % ordered.length];
         const candidates = [preferred, ...ordered.filter((m) => m !== preferred)];
 
         for (const mode of candidates) {
+            if (mode === 'wooden_post' && canWoodenPost) return mode;
             if (mode === 'alchemy' && canAlchemy) return mode;
             if (mode === 'herb' && canHerb) return mode;
             if (mode === 'flight' && canFlight) return mode;
@@ -1512,6 +1647,52 @@ export class PracticePanel {
                 </div>
                 <div class="vocab-pet-lane">
                     <div class="vocab-pet-avatar" id="vocab-pet-avatar">🐉</div>
+                </div>
+            </div>
+        `;
+    }
+
+    getVocabWoodenPostChoices(question) {
+        const key = this.getQuestionKey(question);
+        if (this.vocabWoodenPostChoices[key]) return this.vocabWoodenPostChoices[key];
+        const options = this.getOptionPairs(question?.options);
+        const correctKey = String(question?.correct_answer || '');
+        const correct = options.find((item) => item.key === correctKey);
+        if (!correct) return [];
+        const others = this.shuffleArray(options.filter((item) => item.key !== correctKey));
+        const picked = [correct, ...others.slice(0, 3)];
+        const choices = this.shuffleArray(picked).slice(0, 4).map((item, idx) => ({
+            ...item,
+            slotNo: idx + 1,
+        }));
+        this.vocabWoodenPostChoices[key] = choices;
+        return choices;
+    }
+
+    renderVocabWoodenPostOptions(question) {
+        const choices = this.getVocabWoodenPostChoices(question);
+        const targetWord = this.getVocabTargetWord(question) || 'word';
+        const limitSec = this.getWoodenPostTimeLimitSec(question);
+        return `
+            <div class="vocab-scene-box vocab-scene-wooden-post">
+                <div class="vocab-scene-hud">
+                    <span>🪵 木桩连击</span>
+                    <span id="wooden-post-time-text">剩余 ${limitSec}s</span>
+                </div>
+                <div class="wooden-post-time-bar">
+                    <i id="wooden-post-time-fill" style="width:100%"></i>
+                </div>
+                <div class="wooden-post-dummy">
+                    <div class="wooden-post-hit-word">${this.game.ui.escapeHtml(targetWord)}</div>
+                    <div class="wooden-post-hit-tip">看清词义，快速出手</div>
+                </div>
+                <div class="vocab-garden-grid vocab-wooden-options options-container" id="options-container">
+                    ${choices.map((item) => `
+                        <div class="option-btn vocab-farm-card wooden-post-option" data-value="${this.game.ui.escapeHtml(item.key)}">
+                            <span class="flight-lane-tag">${item.slotNo}</span>
+                            <span class="flight-lane-banner vocab-farm-text">${this.game.ui.escapeHtml(item.text)}</span>
+                        </div>
+                    `).join('')}
                 </div>
             </div>
         `;
@@ -1928,13 +2109,13 @@ export class PracticePanel {
     }
 
     /** 连击特效 */
-    showComboFx(count) {
+    showComboFx(count, textOverride = '') {
         const existing = document.getElementById('combo-fx');
         if (existing) existing.remove();
         const el = document.createElement('div');
         el.id = 'combo-fx';
         el.className = 'combo-fx';
-        el.textContent = `🔥 ${count}连击！`;
+        el.textContent = textOverride || `🔥 ${count}连击！`;
         document.body.appendChild(el);
         setTimeout(() => { if (el.parentNode) el.remove(); }, 1200);
     }
@@ -1993,6 +2174,7 @@ export class PracticePanel {
     /** 批量提交 */
     async submitAll() {
         this.clearVocabAutoNextTimer();
+        this.clearWoodenPostTimer();
         const panel = document.getElementById('practice-panel');
         if (panel) panel.remove();
         this.stopSpeakingRecording(true);
@@ -2015,14 +2197,7 @@ export class PracticePanel {
         this.game.ui.hideLoading();
 
         if (res.success) {
-            const updates = {};
-            if (res.data.total_exp) {
-                updates.exp = (this.game.store.getState().user?.exp || 0) + res.data.total_exp;
-            }
-            if (res.data.total_spirit_cost) {
-                updates.spirit_power = Math.max(0, (this.game.store.getState().user?.spirit_power || 0) - res.data.total_spirit_cost);
-            }
-            this.game.store.updateUser(updates);
+            await this.syncUserStateAfterPracticeSubmit(res.data);
 
             // 附加 maxCombo 数据传给结果面板
             res.data._maxCombo = this.maxCombo;
@@ -2030,6 +2205,71 @@ export class PracticePanel {
         } else {
             this.game.ui.showHermesBubble(res.message || '提交失败');
             this.game.enterHall();
+        }
+    }
+
+    async syncUserStateAfterPracticeSubmit(data) {
+        const user = this.game.store.getState().user || {};
+        const updates = {};
+        const payload = (data && typeof data === 'object') ? data : {};
+
+        if (payload.user && typeof payload.user === 'object') {
+            Object.assign(updates, payload.user);
+        }
+
+        const totalExp = Number(payload.total_exp || 0);
+        if (updates.exp === undefined && Number.isFinite(totalExp) && totalExp > 0) {
+            updates.exp = Number(user.exp || 0) + totalExp;
+        }
+
+        const stones = Number(payload.stones_gained || payload.total_stones_gained || 0);
+        if (updates.spirit_stone === undefined && Number.isFinite(stones) && stones > 0) {
+            updates.spirit_stone = Number(user.spirit_stone || 0) + stones;
+        }
+
+        const currentSpirit = Number(payload.current_spirit_power);
+        if (Number.isFinite(currentSpirit)) {
+            updates.spirit_power = currentSpirit;
+        } else {
+            const spiritCost = Number(payload.total_spirit_cost || 0);
+            if (updates.spirit_power === undefined && Number.isFinite(spiritCost) && spiritCost > 0) {
+                updates.spirit_power = Math.max(0, Number(user.spirit_power || 0) - spiritCost);
+            }
+        }
+
+        const knownProgressFields = [
+            'realm',
+            'realm_stage',
+            'current_realm',
+            'cultivation_energy',
+            'vocabulary',
+            'grammar',
+            'reading',
+            'listening',
+            'writing',
+            'speaking',
+        ];
+        knownProgressFields.forEach((key) => {
+            if (payload[key] !== undefined && updates[key] === undefined) {
+                updates[key] = payload[key];
+            }
+        });
+
+        if (Object.keys(updates).length > 0) {
+            this.game.store.updateUser(updates);
+        }
+
+        try {
+            const profileRes = await this.game.api.get('/user/profile');
+            if (profileRes?.success && profileRes.data) {
+                this.game.store.setUser(profileRes.data);
+            }
+        } catch {
+            // ignore profile refresh failures and keep optimistic updates
+        }
+
+        if (typeof this.game?.ui?.forceRefreshLearningProgress === 'function') {
+            await this.game.ui.forceRefreshLearningProgress();
         }
     }
 
@@ -2529,6 +2769,7 @@ export class PracticePanel {
 
     stopSpeech() {
         this.clearVocabAutoNextTimer();
+        this.clearWoodenPostTimer();
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
         }
@@ -2604,6 +2845,7 @@ export class PracticePanel {
             feedbackShown: !!this._feedbackShown,
             listeningReplayStates: this.currentType === 'listening' ? this.listeningReplayStates : {},
             vocabFlightRoutes: this.currentType === 'vocab' ? this.vocabFlightRoutes : {},
+            vocabWoodenPostChoices: this.currentType === 'vocab' ? this.vocabWoodenPostChoices : {},
             vocabAdventureState: this.currentType === 'vocab' ? this.vocabAdventureState : null,
             grammarOrderStates: this.currentType === 'grammar' ? this.grammarOrderStates : {},
             ts: Date.now(),
@@ -2640,6 +2882,7 @@ export class PracticePanel {
         this.listeningReplayStates = data.listeningReplayStates || {};
         this.vocabAlchemyStates = {};
         this.vocabFlightRoutes = data.vocabFlightRoutes || {};
+        this.vocabWoodenPostChoices = data.vocabWoodenPostChoices || {};
         this.vocabAdventureState = data.vocabAdventureState || null;
         this.grammarOrderStates = data.grammarOrderStates || {};
         const currentQuestion = this.questions[this.currentIndex];
