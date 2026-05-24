@@ -1,14 +1,10 @@
 <template>
   <div class="hall-page">
 
-    <el-row :gutter="12" class="hall-actions">
-      <el-col v-for="item in actionItems" :key="item.key" :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
-        <button type="button" class="action-card" @click="item.onClick">
-          <img :src="item.image" :alt="item.title" class="action-thumb" />
-          <div class="action-meta">
-            <h3>{{ item.title }}</h3>
-          </div>
-          <span class="action-enter">进入</span>
+    <el-row :gutter="16" class="hall-actions">
+      <el-col v-for="item in actionItems" :key="item.key" :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
+        <button type="button" class="action-card-icon-only" @click="item.onClick" :title="item.title">
+          <img :src="item.image" :alt="item.title" class="action-thumb-icon" />
         </button>
       </el-col>
     </el-row>
