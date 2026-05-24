@@ -816,15 +816,81 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
 }
 
-#vue-app .cultivator-realm {
-  font-size: 11px;
-  color: #f4d98a;
-  background: rgba(212, 168, 67, 0.16);
-  border: 1px solid rgba(212, 168, 67, 0.45);
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-family: 'STKaiti', 'KaiTi', sans-serif;
-  text-shadow: 0 0 4px rgba(212, 168, 67, 0.2);
+#vue-app .realm-chip-mini {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  padding-left: 3px;
+  height: 38px;
+  margin-top: -6px;
+  margin-bottom: -6px;
+}
+
+#vue-app .realm-chip-mini .realm-major-wrap {
+  z-index: 2;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+#vue-app .realm-chip-mini .realm-minor-wrap {
+  margin-left: -4px;
+  z-index: 1;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+#vue-app .realm-chip-mini .realm-major-badge {
+  width: 16px;
+  height: 38px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+#vue-app .realm-chip-mini .realm-major-text {
+  position: absolute;
+  top: 41.6%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #17374a;
+  font-family: var(--font-title);
+  font-size: 10px;
+  font-weight: 800;
+  text-shadow: 0 0.5px 0 rgba(238, 255, 250, 0.45), 0 1px 2px rgba(0, 0, 0, 0.18);
+  line-height: 1;
+  padding: 0;
+  pointer-events: none;
+}
+
+#vue-app .realm-chip-mini .realm-minor-badge {
+  width: 70px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+#vue-app .realm-chip-mini .realm-minor-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f2e5bf;
+  font-family: var(--font-title);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  padding: 0 6px 1px 4px;
+  pointer-events: none;
 }
 
 /* 灵气槽 */
