@@ -953,9 +953,19 @@
   box-shadow: 0 0 10px rgba(212, 168, 67, 0.15);
 }
 
-#vue-app .asset-icon {
-  font-size: 14px;
-  text-shadow: 0 0 6px rgba(212, 168, 67, 0.5);
+#vue-app .asset-icon-img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+}
+
+#vue-app .resource-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
 }
 
 #vue-app .asset-label {

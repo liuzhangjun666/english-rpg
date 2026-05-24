@@ -51,13 +51,13 @@
       <div class="cultivator-assets">
         <!-- 灵力/灵液 -->
         <div class="asset-item" title="每日修炼消耗灵力，随时间自动恢复">
-          <span class="asset-icon">⚡</span>
+          <span class="asset-icon-img"><img :src="spiritPowerIcon" alt="⚡" class="resource-icon-img" /></span>
           <span class="asset-label">灵力:</span>
           <span class="asset-value">{{ user.profile?.spirit_power ?? 0 }}/{{ user.profile?.spirit_power_max ?? 100 }}</span>
         </div>
         <!-- 灵石/灵玉 -->
         <div class="asset-item" title="在仙坊中购买修行道具和灵药">
-          <span class="asset-icon">💎</span>
+          <span class="asset-icon-img"><img :src="spiritStoneIcon" alt="💎" class="resource-icon-img" /></span>
           <span class="asset-label">灵石:</span>
           <span class="asset-value">{{ user.profile?.spirit_stone ?? 0 }}</span>
         </div>
@@ -97,6 +97,8 @@ import { useStoryStore } from './stores/story';
 import { useLegacyBridge } from './composables/useLegacyBridge';
 import realmMajorBadge from '../../assets/images/ui/realm_major_badge.png';
 import realmMinorBadge from '../../assets/images/ui/realm_minor_badge.png';
+import spiritPowerIcon from '../../assets/images/ui/hud_stat_spirit_new.png';
+import spiritStoneIcon from '../../assets/images/ui/hud_stat_jade_new.png';
 
 function getMajorRealmText(realmLabel?: string): string {
   const text = String(realmLabel || '').trim();
