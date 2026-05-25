@@ -21,7 +21,16 @@
         <div class="board-meta">
           <div class="meta-row">
             <span class="cultivator-name">{{ user.profile?.nickname || '匿名前辈' }}</span>
-            <span class="cultivator-realm">{{ user.profile?.current_realm || '初入仙途' }}</span>
+            <span class="realm-chip-mini">
+              <span class="realm-major-wrap">
+                <img class="realm-major-badge" :src="realmMajorBadge" alt="">
+                <span class="realm-major-text">{{ getMajorRealmText(user.profile?.current_realm) }}</span>
+              </span>
+              <span class="realm-minor-wrap">
+                <img class="realm-minor-badge" :src="realmMinorBadge" alt="">
+                <span class="realm-minor-text">{{ user.profile?.current_realm || '初入仙途' }}</span>
+              </span>
+            </span>
           </div>
           <!-- 灵气/修为经验条 -->
           <div class="cultivator-exp-bar" :title="'剩余修为: ' + (user.profile?.remaining_exp ?? 0)">
@@ -42,13 +51,13 @@
       <div class="cultivator-assets">
         <!-- 灵力/灵液 -->
         <div class="asset-item" title="每日修炼消耗灵力，随时间自动恢复">
-          <span class="asset-icon">⚡</span>
+          <span class="asset-icon-img"><img :src="spiritPowerIcon" alt="⚡" class="resource-icon-img" /></span>
           <span class="asset-label">灵力:</span>
           <span class="asset-value">{{ user.profile?.spirit_power ?? 0 }}/{{ user.profile?.spirit_power_max ?? 100 }}</span>
         </div>
         <!-- 灵石/灵玉 -->
         <div class="asset-item" title="在仙坊中购买修行道具和灵药">
-          <span class="asset-icon">💎</span>
+          <span class="asset-icon-img"><img :src="spiritStoneIcon" alt="💎" class="resource-icon-img" /></span>
           <span class="asset-label">灵石:</span>
           <span class="asset-value">{{ user.profile?.spirit_stone ?? 0 }}</span>
         </div>
@@ -86,6 +95,25 @@ import { useUserStore } from './stores/user';
 import { useUiStore } from './stores/ui';
 import { useStoryStore } from './stores/story';
 import { useLegacyBridge } from './composables/useLegacyBridge';
+import realmMajorBadge from '../../assets/images/ui/realm_major_badge.png';
+import realmMinorBadge from '../../assets/images/ui/realm_minor_badge.png';
+import spiritPowerIcon from '../../assets/images/ui/hud_stat_spirit_new.png';
+import spiritStoneIcon from '../../assets/images/ui/hud_stat_jade_new.png';
+
+function getMajorRealmText(realmLabel?: string): string {
+  const text = String(realmLabel || '').trim();
+  if (!text) return '练';
+  if (text.includes('练气') || text.includes('炼气')) return '练';
+  if (text.includes('筑基')) return '筑';
+  if (text.includes('金丹')) return '金';
+  if (text.includes('元婴')) return '元';
+  if (text.includes('化神')) return '化';
+  if (text.includes('炼虚')) return '虚';
+  if (text.includes('合体')) return '合';
+  if (text.includes('大乘')) return '乘';
+  if (text.includes('渡劫')) return '劫';
+  return text.charAt(0) || '练';
+}
 
 const router = useRouter();
 const route = useRoute();
