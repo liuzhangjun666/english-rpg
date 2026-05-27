@@ -21,6 +21,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/grammar',
+    name: 'grammar',
+    component: () => import('../views/PracticeView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/reading',
     name: 'reading',
     component: () => import('../views/ReadingAdventureView.vue'),
@@ -79,6 +85,7 @@ export function normalizeLegacyHashRoute() {
   const mapping: Record<string, string> = {
     '#hall': '/hall',
     '#practice': '/practice',
+    '#grammar': '/grammar',
     '#login': '/login',
     '#vocab': '/practice',
     '#listening': '/practice',

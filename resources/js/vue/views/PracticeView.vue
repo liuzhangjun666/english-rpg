@@ -1,8 +1,8 @@
 <template>
-  <div class="practice-page" :class="{ 'practice-page-arena': sessionState === 'answering' && isVocabModule }">
-    <el-card shadow="hover" class="practice-shell" :class="{ 'practice-shell-arena': sessionState === 'answering' && isVocabModule }">
-      <template v-if="!(sessionState === 'answering' && isVocabModule)" #header>
-        <div class="card-header">练功房 · {{ moduleLabel }}</div>
+  <div class="practice-page" :class="{ 'practice-page-arena': sessionState === 'answering' && (isVocabModule || isGrammarModule) }">
+    <el-card shadow="hover" class="practice-shell" :class="{ 'practice-shell-arena': sessionState === 'answering' && (isVocabModule || isGrammarModule) }">
+      <template v-if="!(sessionState === 'answering' && (isVocabModule || isGrammarModule))" #header>
+        <div class="card-header">{{ sceneLabel }} · {{ moduleLabel }}</div>
       </template>
 
       <template v-if="sessionState === 'idle'">
@@ -97,6 +97,52 @@
               <span :ref="(el) => setOptionTextRef(option.key, el)" class="ws-option-text" :class="getOptionTextClass(option.text)">{{ option.text }}</span>
             </button>
           </div>
+        </div>
+
+        <div v-else-if="isGrammarModule" class="grammar-arena">
+          <img class="zf-bg" :src="zfSceneBg" alt="阵法峰场景" />
+          <div class="zf-mask"></div>
+
+          <div class="zf-top">
+            <button class="zf-back-btn" type="button" @click="backHall">
+              <img :src="zfTopBack" alt="返回" />
+            </button>
+            <img class="zf-title" :src="zfTopTitlePlate" alt="阵法峰·语法机关桥" />
+            <div class="zf-level-chip">{{ currentLevel.realm }} · 第{{ String(currentLevel.stageNo).padStart(2, '0') }}关</div>
+            <div class="zf-progress-chip">
+              <div class="zf-progress-text">{{ currentIndex + 1 }}/{{ questions.length }}</div>
+              <div class="zf-progress-track">
+                <div class="zf-progress-fill" :style="{ width: `${progressPercent}%` }"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="zf-question-wrap">
+            <img class="zf-question-bg" :src="zfQuestionPanel" alt="" />
+            <div ref="zfQuestionRef" class="zf-question-text">{{ currentQuestionText }}</div>
+          </div>
+
+          <div class="zf-bridge-wrap" :style="{ visibility: grammarFeedbackType !== 'idle' ? 'visible' : 'hidden' }">
+            <img class="zf-bridge" :src="grammarBridgeImage" alt="机关桥" />
+          </div>
+
+          <div class="zf-options">
+            <button
+              v-for="option in grammarOptions"
+              :key="option.key"
+              class="zf-option-btn"
+              :class="getGrammarOptionClass(option.key)"
+              :disabled="grammarAnswerLocked"
+              @click="selectGrammarOption(option.key)"
+            >
+              <img class="zf-option-stone" :src="resolveGrammarStone(option.key)" alt="" />
+              <span
+                :ref="(el) => setGrammarOptionTextRef(option.key, el)"
+                class="zf-option-text"
+              >{{ option.text }}</span>
+            </button>
+          </div>
+
         </div>
 
         <template v-else>
@@ -201,6 +247,14 @@ import wsStakePlain from '../../../assets/images/ui/wood_stake/question.png';
 import wsOptionBoard from '../../../assets/images/ui/wood_stake/choose.png';
 import wsOptionBoardActive from '../../../assets/images/ui/wood_stake/correct_choose.png';
 import wsFxHit from '../../../assets/images/ui/wood_stake/zhengquetexiao.png';
+import zfSceneBg from '../../../assets/images/ui/zhenfafeng/background.png';
+import zfTopBack from '../../../assets/images/ui/zhenfafeng/back.png';
+import zfTopTitlePlate from '../../../assets/images/ui/zhenfafeng/title.png';
+import zfQuestionPanel from '../../../assets/images/ui/zhenfafeng/question.png';
+import zfOptionStone from '../../../assets/images/ui/zhenfafeng/choose.png';
+import zfOptionStoneActive from '../../../assets/images/ui/zhenfafeng/correct_choose.png';
+import zfBridgeCorrect from '../../../assets/images/ui/zhenfafeng/correct_bridge.png';
+import zfBridgeError from '../../../assets/images/ui/zhenfafeng/error_bridge.png';
 
 type PracticeType = 'vocab' | 'grammar' | 'listening' | 'speaking' | 'reading' | 'writing';
 
@@ -246,6 +300,8 @@ const bridge = useLegacyBridge();
 const ui = useUiStore();
 const user = useUserStore();
 
+const sceneType = computed<'practice' | 'grammar'>(() => (route.path === '/grammar' ? 'grammar' : 'practice'));
+
 const currentType = ref<PracticeType>('vocab');
 const sessionState = ref<'idle' | 'confirm' | 'answering' | 'result'>('idle');
 const questions = ref<Array<Record<string, any>>>([]);
@@ -271,9 +327,20 @@ const autoAdvanceTimer = ref<number | null>(null);
 const vocabCombo = ref(0);
 const wsWordRef = ref<HTMLElement | null>(null);
 const optionTextRefs = reactive<Record<string, HTMLElement | null>>({});
+const grammarAnswerLocked = ref(false);
+const grammarFeedbackType = ref<'idle' | 'success' | 'error'>('idle');
+const grammarAutoAdvanceTimer = ref<number | null>(null);
+const zfQuestionRef = ref<HTMLElement | null>(null);
+const grammarOptionTextRefs = reactive<Record<string, HTMLElement | null>>({});
+const grammarBridgeImage = computed(() => {
+  if (grammarFeedbackType.value === 'error') return zfBridgeError;
+  return zfBridgeCorrect;
+});
 
 const moduleLabel = computed(() => modules.find((m) => m.type === currentType.value)?.label || '练功');
+const sceneLabel = computed(() => (sceneType.value === 'grammar' ? '阵法峰' : '练功房'));
 const isVocabModule = computed(() => currentType.value === 'vocab');
+const isGrammarModule = computed(() => currentType.value === 'grammar');
 const isWritingModule = computed(() => currentType.value === 'writing');
 const currentLevel = computed(() => getCurrentPlayableLevel(currentType.value));
 const isLastQuestion = computed(() => currentIndex.value >= questions.value.length - 1);
@@ -290,6 +357,7 @@ const optionEntries = computed(() => {
   return Object.entries(options).map(([key, value]) => ({ key: String(key), text: String(value ?? '') }));
 });
 const woodStakeOptions = computed(() => optionEntries.value.slice(0, 4));
+const grammarOptions = computed(() => optionEntries.value.slice(0, 4));
 const correctAnswerKey = computed(() => String(currentQuestion.value?.correct_answer || '').trim().toUpperCase());
 const progressPercent = computed(() => {
   if (!questions.value.length) return 0;
@@ -305,6 +373,7 @@ const currentWord = computed(() => {
   return raw.replace(/的中文意思是.*/g, '').trim() || 'word';
 });
 const vocabRewardHint = computed(() => 5);
+const grammarRewardHint = computed(() => 6);
 const resultSubtitle = computed(() => {
   if (isWritingModule.value) {
     return `平均分 ${resultAccuracy.value} ｜ 通过 ${writingPassedCount.value}/${Math.max(1, writingSubmittedCount.value)} ｜ 灵气 +${resultExp.value} ｜ 灵石 +${resultStones.value}`;
@@ -322,12 +391,13 @@ onBeforeUnmount(() => {
   window.removeEventListener('legacy:enterHall', onLegacyEnterHall);
   window.removeEventListener('resize', fitArenaTexts);
   clearAutoAdvanceTimer();
+  clearGrammarAutoAdvanceTimer();
   persistPracticeSession();
   void bridge.closeLegacyPanels();
 });
 
 watch(
-  () => route.query.mode,
+  () => [route.path, route.query.mode],
   async () => {
     await bootstrapModuleFromRoute();
   }
@@ -337,17 +407,20 @@ watch(
   () => currentQuestion.value?.question_id,
   () => {
     resetVocabRoundState();
+    resetGrammarRoundState();
     if (sessionState.value === 'answering' && isVocabModule.value) {
       queueWordAudioPlay();
+    }
+    if (sessionState.value === 'answering' && (isVocabModule.value || isGrammarModule.value)) {
       fitArenaTexts();
     }
   }
 );
 
 watch(
-  () => [currentWord.value, ...woodStakeOptions.value.map((it) => `${it.key}:${it.text}`)],
+  () => [currentQuestionText.value, currentWord.value, ...optionEntries.value.map((it) => `${it.key}:${it.text}`)],
   () => {
-    if (sessionState.value === 'answering' && isVocabModule.value) {
+    if (sessionState.value === 'answering' && (isVocabModule.value || isGrammarModule.value)) {
       fitArenaTexts();
     }
   }
@@ -415,6 +488,7 @@ function resetQuestionState() {
   vocabCombo.value = 0;
   sessionState.value = 'idle';
   resetVocabRoundState();
+  resetGrammarRoundState();
 }
 
 function resetVocabRoundState() {
@@ -430,6 +504,19 @@ function clearAutoAdvanceTimer() {
     clearTimeout(autoAdvanceTimer.value);
     autoAdvanceTimer.value = null;
   }
+}
+
+function clearGrammarAutoAdvanceTimer() {
+  if (grammarAutoAdvanceTimer.value !== null) {
+    clearTimeout(grammarAutoAdvanceTimer.value);
+    grammarAutoAdvanceTimer.value = null;
+  }
+}
+
+function resetGrammarRoundState() {
+  clearGrammarAutoAdvanceTimer();
+  grammarAnswerLocked.value = false;
+  grammarFeedbackType.value = 'idle';
 }
 
 function clearPracticeSession(type = currentType.value) {
@@ -497,11 +584,15 @@ function restorePracticeSession(session: PracticeSession) {
   if (sessionState.value === 'answering' && isVocabModule.value) {
     queueWordAudioPlay();
   }
+  if (sessionState.value === 'answering' && (isVocabModule.value || isGrammarModule.value)) {
+    fitArenaTexts();
+  }
 }
 
 function parseMode(raw: unknown): PracticeType {
+  if (sceneType.value === 'grammar') return 'grammar';
   const str = String(raw || 'vocab').toLowerCase();
-  const supported: PracticeType[] = ['vocab', 'grammar', 'listening', 'speaking', 'reading', 'writing'];
+  const supported: PracticeType[] = ['vocab', 'listening', 'speaking', 'reading', 'writing'];
   return supported.includes(str as PracticeType) ? (str as PracticeType) : 'vocab';
 }
 
@@ -511,9 +602,13 @@ async function bootstrapModuleFromRoute() {
   resetQuestionState();
   resumeSession.value = null;
 
-  ui.showLoading('切换练功场景...');
+  ui.showLoading(sceneType.value === 'grammar' ? '切换阵法峰场景...' : '切换练功场景...');
   try {
-    await bridge.switchToPracticeScene(type);
+    if (sceneType.value === 'grammar') {
+      await bridge.switchToGrammarScene();
+    } else {
+      await bridge.switchToPracticeScene(type);
+    }
     await bridge.closeLegacyPanels();
     resumeSession.value = loadPracticeSession(type);
     if (resumeSession.value) {
@@ -531,13 +626,19 @@ function onLegacyEnterHall() {
 }
 
 async function switchModule(type: PracticeType) {
-  if (type === currentType.value && route.query.mode === type) return;
+  if (type === 'grammar') {
+    if (sceneType.value === 'grammar') return;
+    await router.replace('/grammar');
+    return;
+  }
+  if (sceneType.value === 'practice' && type === currentType.value && route.query.mode === type) return;
   await router.replace({ path: '/practice', query: { mode: type } });
 }
 
 async function startChallenge() {
   resumeSession.value = null;
   resetVocabRoundState();
+  resetGrammarRoundState();
   const level = currentLevel.value;
   ui.showLoading('加载题库...');
   try {
@@ -605,10 +706,14 @@ async function confirmChallenge() {
   writingContent.value = '';
   Object.keys(answers).forEach((key) => delete answers[key]);
   vocabCombo.value = 0;
+  resetGrammarRoundState();
   sessionState.value = 'answering';
   restoreAnswerForCurrentQuestion();
   if (isVocabModule.value) {
     queueWordAudioPlay();
+  }
+  if (isGrammarModule.value) {
+    fitArenaTexts();
   }
   persistPracticeSession();
 }
@@ -645,6 +750,7 @@ function backQuestion() {
 
 async function nextQuestion() {
   if (isVocabModule.value) return;
+  if (isGrammarModule.value) return;
   if (isWritingModule.value) return;
   const qid = String(currentQuestion.value?.question_id || '');
   if (!qid) return;
@@ -826,6 +932,11 @@ function setOptionTextRef(optionKey: string, el: Element | null) {
   optionTextRefs[key] = el as HTMLElement | null;
 }
 
+function setGrammarOptionTextRef(optionKey: string, el: Element | null) {
+  const key = String(optionKey || '').toUpperCase();
+  grammarOptionTextRefs[key] = el as HTMLElement | null;
+}
+
 function getOptionTextClass(optionText: string) {
   const score = visualTextScore(optionText);
   if (score >= 16) return 'is-xlong';
@@ -860,24 +971,41 @@ function fitArenaTexts() {
 }
 
 function applyArenaTextFit() {
-  if (wsWordRef.value) {
+  if (isVocabModule.value && wsWordRef.value) {
     fitTextToBounds(wsWordRef.value, 12, 36);
   }
-  const optionMin = window.innerWidth <= 900 ? 10 : 14;
-  const optionMax = window.innerWidth <= 900 ? 20 : 28;
-  woodStakeOptions.value.forEach((it) => {
-    const key = String(it.key || '').toUpperCase();
-    const el = optionTextRefs[key];
-    if (el) {
-      fitTextToBounds(el, optionMin, optionMax);
+  if (isVocabModule.value) {
+    const optionMin = window.innerWidth <= 900 ? 10 : 14;
+    const optionMax = window.innerWidth <= 900 ? 20 : 28;
+    woodStakeOptions.value.forEach((it) => {
+      const key = String(it.key || '').toUpperCase();
+      const el = optionTextRefs[key];
+      if (el) {
+        fitTextToBounds(el, optionMin, optionMax);
+      }
+    });
+  }
+  if (isGrammarModule.value) {
+    if (zfQuestionRef.value) {
+      fitTextToBounds(zfQuestionRef.value, 20, 58);
     }
-  });
+    const optionMin = window.innerWidth <= 900 ? 10 : 12;
+    const optionMax = window.innerWidth <= 900 ? 34 : 52;
+    grammarOptions.value.forEach((it) => {
+      const key = String(it.key || '').toUpperCase();
+      const el = grammarOptionTextRefs[key];
+      if (el) {
+        fitTextToBounds(el, optionMin, optionMax);
+      }
+    });
+  }
 }
 
 function fitTextToBounds(el: HTMLElement, minPx: number, maxPx: number) {
   if (!el.clientWidth || !el.clientHeight) return;
   let size = Math.max(Number(maxPx || 56), Number(minPx || 10));
   const min = Number(minPx || 10);
+  el.style.lineHeight = '';
   el.style.fontSize = `${size}px`;
   while (size > min && (el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1)) {
     size -= 1;
@@ -902,6 +1030,78 @@ function resolveOptionBoard(optionKey: string) {
   if (key === correct) return wsOptionBoardActive;
   if (selectedAnswer.value === key && key !== correct) return wsOptionBoard;
   return wsOptionBoard;
+}
+
+function getGrammarOptionClass(optionKey: string) {
+  const key = String(optionKey || '').toUpperCase();
+  if (!grammarAnswerLocked.value) {
+    return { selected: selectedAnswer.value === key };
+  }
+  const correct = correctAnswerKey.value;
+  return {
+    selected: selectedAnswer.value === key,
+    correct: key === correct,
+    wrong: selectedAnswer.value === key && key !== correct,
+    locked: true,
+  };
+}
+
+function resolveGrammarStone(optionKey: string) {
+  const key = String(optionKey || '').toUpperCase();
+  if (!grammarAnswerLocked.value) {
+    return selectedAnswer.value === key ? zfOptionStoneActive : zfOptionStone;
+  }
+  const correct = correctAnswerKey.value;
+  if (key === correct) return zfOptionStoneActive;
+  return zfOptionStone;
+}
+
+function selectGrammarOption(optionKey: string) {
+  if (!isGrammarModule.value || sessionState.value !== 'answering' || grammarAnswerLocked.value) return;
+  selectedAnswer.value = String(optionKey || '').toUpperCase();
+  submitGrammarAnswer();
+}
+
+function showGrammarHint() {
+  const hint = String(currentQuestion.value?.explanation || currentQuestion.value?.hint || '').trim();
+  if (hint) {
+    ElMessage.info(hint);
+    return;
+  }
+  ElMessage.info('请先找主语，再判断时态和主谓一致。');
+}
+
+async function submitGrammarAnswer() {
+  if (!isGrammarModule.value || sessionState.value !== 'answering' || grammarAnswerLocked.value) return;
+  const qid = String(currentQuestion.value?.question_id || '');
+  if (!qid) return;
+  const selected = String(selectedAnswer.value || '').toUpperCase();
+  const correct = correctAnswerKey.value;
+  if (!selected) {
+    ElMessage.warning('请先选择一个答案');
+    return;
+  }
+  if (!correct) return;
+
+  answers[qid] = selected;
+  grammarAnswerLocked.value = true;
+  grammarFeedbackType.value = selected === correct ? 'success' : 'error';
+  persistPracticeSession();
+
+  const delay = grammarFeedbackType.value === 'success' ? 2000 : 5000;
+  clearGrammarAutoAdvanceTimer();
+  grammarAutoAdvanceTimer.value = window.setTimeout(async () => {
+    grammarAutoAdvanceTimer.value = null;
+    if (isLastQuestion.value) {
+      await submitChallenge();
+      return;
+    }
+    currentIndex.value += 1;
+    restoreAnswerForCurrentQuestion();
+    resetGrammarRoundState();
+    fitArenaTexts();
+    persistPracticeSession();
+  }, delay);
 }
 
 function selectVocabOption(optionKey: string) {
@@ -980,6 +1180,7 @@ async function openLegacy(type: PracticeType) {
 }
 
 function backHall() {
+  clearGrammarAutoAdvanceTimer();
   persistPracticeSession();
   void bridge.closeLegacyPanels();
   router.push('/hall');
@@ -1266,7 +1467,7 @@ function backHall() {
 .ws-option-text {
   position: absolute;
   left: 50%;
-  top: 39.5%;
+  top: 37.6%;
   transform: translate(-50%, -50%);
   width: 62%;
   height: 42%;
@@ -1305,6 +1506,245 @@ function backHall() {
   font-size: 13px;
   line-height: 1.12;
 }
+
+.grammar-arena {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  width: 100vw;
+  min-height: 100vh;
+  overflow: hidden;
+  border-radius: 0;
+  color: #e9f4ff;
+}
+
+.zf-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.zf-mask {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(1, 8, 22, 0.36), rgba(1, 8, 22, 0.7));
+}
+
+.zf-top,
+.zf-subtitle,
+.zf-reward,
+.zf-question-wrap,
+.zf-bridge-wrap,
+.zf-options,
+.zf-actions {
+  position: relative;
+  z-index: 1;
+}
+
+.zf-top {
+  width: min(94%, 1280px);
+  margin: 12px auto 0;
+  min-height: 120px;
+}
+
+.zf-back-btn {
+  position: fixed;
+  left: 24px;
+  top: 24px;
+  z-index: 100;
+  width: 94px;
+  height: 94px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.zf-back-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.zf-title {
+  display: block;
+  width: min(72vw, 760px);
+  margin: 0 auto;
+}
+
+.zf-level-chip {
+  position: absolute;
+  right: 0;
+  top: 14px;
+  padding: 10px 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(98, 214, 244, 0.62);
+  background: transparent;
+  color: #a8f5ff;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.zf-progress-chip {
+  position: absolute;
+  right: 0;
+  top: 72px;
+  width: min(230px, 26vw);
+}
+
+.zf-progress-text {
+  text-align: center;
+  font-size: 38px;
+  line-height: 1;
+  font-weight: 800;
+  color: #f7fcff;
+}
+
+.zf-progress-track {
+  margin-top: 8px;
+  width: 100%;
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(141, 236, 253, 0.56);
+  background: rgba(0, 18, 45, 0.86);
+  overflow: hidden;
+}
+
+.zf-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7ff5ff, #47d0ff);
+  box-shadow: 0 0 12px rgba(130, 237, 255, 0.85);
+  transition: width 0.25s ease;
+}
+
+.zf-subtitle {
+  width: min(88%, 980px);
+  margin: 10px auto 0;
+  text-align: center;
+  font-size: clamp(20px, 2vw, 40px);
+  letter-spacing: 1px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+.zf-reward {
+  width: fit-content;
+  margin: 12px auto 0;
+  padding: 10px 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 214, 136, 0.8);
+  background: transparent;
+  color: #8af899;
+  font-size: clamp(24px, 2vw, 42px);
+  font-weight: 800;
+  box-shadow: 0 0 20px rgba(255, 190, 86, 0.28);
+}
+
+.zf-question-wrap {
+  width: min(90%, 980px);
+  margin: 20px auto 0;
+  aspect-ratio: 1300 / 385;
+}
+
+.zf-question-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.zf-question-text {
+  position: absolute;
+  left: 50%;
+  top: 51%;
+  transform: translate(-50%, -50%);
+  width: 66%;
+  height: 44%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #1b1b1b;
+  font-size: 50px;
+  line-height: 1.2;
+  font-weight: 700;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  overflow: hidden;
+}
+
+.zf-bridge-wrap {
+  width: min(70%, 650px);
+  margin: -4px auto 0;
+}
+
+.zf-bridge {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.zf-options {
+  width: min(98%, 1280px);
+  margin: -10px auto 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(6px, 1vw, 16px);
+}
+
+.zf-option-btn {
+  position: relative;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.16s ease;
+}
+
+.zf-option-btn:hover {
+  transform: translateY(-4px);
+}
+
+.zf-option-btn:disabled {
+  cursor: default;
+}
+
+.zf-option-stone {
+  width: 100%;
+  display: block;
+  object-fit: contain;
+  transform: scale(1.24);
+  transform-origin: center;
+}
+
+.zf-option-btn.wrong .zf-option-stone {
+  filter: hue-rotate(320deg) saturate(1.55) brightness(0.84);
+}
+
+.zf-option-text {
+  position: absolute;
+  left: 50%;
+  top: 26%;
+  transform: translate(-50%, -50%);
+  width: 58%;
+  height: 22%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #121212;
+  font-size: 40px;
+  line-height: 1.05;
+  font-weight: 700;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+
 
 @media (max-width: 900px) {
   .vocab-arena {
@@ -1420,7 +1860,7 @@ function backHall() {
   }
 
   .ws-option-text {
-    top: 39.5%;
+    top: 37.6%;
     width: 63%;
     height: 42%;
     font-size: 15px;
@@ -1441,6 +1881,85 @@ function backHall() {
     font-size: 10px;
   }
 
+  .zf-top {
+    width: 96%;
+    margin-top: 8px;
+    min-height: 84px;
+  }
+
+  .zf-back-btn {
+    width: 62px;
+    height: 62px;
+    left: 12px;
+    top: 12px;
+  }
+
+  .zf-title {
+    width: min(74vw, 430px);
+  }
+
+  .zf-level-chip {
+    right: 0;
+    top: 8px;
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+
+  .zf-progress-chip {
+    top: 40px;
+    width: min(132px, 34vw);
+  }
+
+  .zf-progress-text {
+    font-size: 21px;
+  }
+
+  .zf-progress-track {
+    margin-top: 5px;
+    height: 8px;
+  }
+
+  .zf-subtitle {
+    margin-top: 8px;
+    font-size: clamp(13px, 2.8vw, 18px);
+  }
+
+  .zf-reward {
+    margin-top: 8px;
+    padding: 6px 16px;
+    font-size: clamp(14px, 3vw, 20px);
+  }
+
+  .zf-question-wrap {
+    width: 95%;
+    margin-top: 12px;
+  }
+
+  .zf-question-text {
+    width: 74%;
+    height: 46%;
+    font-size: 26px;
+  }
+
+  .zf-bridge-wrap {
+    width: min(80%, 420px);
+    margin-top: 0;
+  }
+
+  .zf-options {
+    width: 99%;
+    margin-top: -10px;
+    gap: 4px;
+  }
+
+  .zf-option-text {
+    width: 62%;
+    top: 27%;
+    height: 24%;
+    font-size: 20px;
+  }
+
+
+
 }
 </style>
-

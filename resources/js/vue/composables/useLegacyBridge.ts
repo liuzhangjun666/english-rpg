@@ -105,6 +105,14 @@ class LegacyBridge {
     game.ui.hideAllPanels();
   }
 
+  async switchToGrammarScene() {
+    const game = await this.getGame();
+    this.applySessionToGame(game, this.pendingProfile);
+    game.ensureSceneInitialized();
+    await game.scene.switchTo('grammar');
+    game.ui.hideAllPanels();
+  }
+
   async openReadingAdventure() {
     const game = await this.getGame();
     this.applySessionToGame(game, this.pendingProfile);

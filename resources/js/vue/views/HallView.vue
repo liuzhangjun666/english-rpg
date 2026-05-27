@@ -55,6 +55,10 @@ function goPractice(mode = 'vocab') {
   router.push({ path: '/practice', query: { mode } });
 }
 
+function goGrammar() {
+  router.push('/grammar');
+}
+
 const actionItems = computed(() => [
   {
     key: 'practice',
@@ -72,7 +76,7 @@ const actionItems = computed(() => [
     key: 'practice-grammar',
     title: '阵法峰',
     image: hallCangjingge,
-    onClick: () => goPractice('grammar'),
+    onClick: () => goGrammar(),
   },
   {
     key: 'practice-listening',
