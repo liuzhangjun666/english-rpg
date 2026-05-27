@@ -1465,8 +1465,8 @@ export class UIManager {
     getButtonSkinKeyByLabel(label) {
         const normalized = this.normalizeButtonLabel(label);
         if (!normalized) return '';
-        if (normalized.includes('重新开始') || normalized.includes('重开') || normalized.includes('再来')) return 'restart';
-        if (normalized.includes('继续')) return 'continue';
+        if (normalized.includes('重新开始') || normalized.includes('重开') || normalized.includes('再来') || normalized.includes('再试') || normalized.includes('重试') || normalized.includes('再闯')) return 'restart';
+        if (normalized.includes('继续') || normalized.includes('下一')) return 'continue';
         if (normalized.includes('挑战') || normalized.includes('试炼')) return 'challenge';
         if (normalized.includes('提交') || normalized.includes('交卷')) return 'submit';
         if (normalized.includes('确定') || normalized.includes('确认')) return 'confirm';
@@ -1490,9 +1490,10 @@ export class UIManager {
 
     applyButtonSkins(root) {
         const scope = root && root.querySelectorAll ? root : document;
-        const buttons = Array.from(scope.querySelectorAll('button.btn'));
+        const buttons = Array.from(scope.querySelectorAll('button.btn, button.el-button'));
         buttons.forEach((btn) => {
             if (btn.classList.contains('code-btn')) return;
+            if (btn.classList.contains('nav-portal-btn')) return;
             const forcedSkin = String(btn.dataset?.btnSkin || '').trim();
             const skinKey = forcedSkin || this.getButtonSkinKeyByLabel(btn.textContent);
             BUTTON_SKIN_CLASS_NAMES.forEach((cls) => btn.classList.remove(cls));

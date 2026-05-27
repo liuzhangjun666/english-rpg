@@ -64,6 +64,7 @@
       </div>
 
       <div class="shell-nav">
+        <el-button v-if="showHallBackButton" class="nav-portal-btn back-hall-btn" plain @click="goHall">返回大厅</el-button>
         <el-button class="nav-portal-btn logout-btn" type="danger" plain @click="logout">退出</el-button>
       </div>
     </header>
@@ -125,32 +126,9 @@ const bridge = useLegacyBridge();
 const api = useApiClient();
 
 const isLoginRoute = computed(() => route.path === '/login');
+const showHallBackButton = computed(() => auth.isAuthenticated && route.path !== '/hall' && route.path !== '/login');
 function goHall() {
   router.push('/hall');
-}
-
-function goPractice() {
-  router.push('/practice');
-}
-
-function goReading() {
-  router.push('/reading');
-}
-
-function goExam() {
-  router.push('/exam');
-}
-
-function goMijing() {
-  router.push('/mijing');
-}
-
-function goMall() {
-  router.push('/mall');
-}
-
-function goLeaderboard() {
-  router.push('/leaderboard');
 }
 
 async function logout() {

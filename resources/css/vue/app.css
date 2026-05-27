@@ -75,17 +75,56 @@
   transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.4s ease, visibility 0.4s ease;
 }
 
+#vue-app .practice-page.practice-page-arena {
+  width: 100vw;
+  max-width: none;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+#vue-app .practice-page.practice-page-arena .practice-shell {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+#vue-app .practice-page.practice-page-arena .practice-shell > .el-card__body {
+  padding: 0;
+}
+
+#vue-app .shell-main:has(.practice-page.practice-page-arena) {
+  padding: 0;
+  overflow: hidden;
+}
+
+#vue-app .practice-page.practice-page-arena .practice-shell,
+#vue-app .practice-page.practice-page-arena .practice-shell.el-card {
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+
 @media (max-height: 680px), (max-width: 768px) {
   #vue-app .hall-page {
-    position: static;
-    transform: none;
-    width: min(1024px, 100%);
-    display: block;
+    position: absolute;
+    top: 86px;
+    bottom: 16px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: min(1024px, calc(100% - 16px));
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
     height: auto;
-    pointer-events: auto;
+    pointer-events: none;
+  }
+
+  #vue-app .practice-page.practice-page-arena {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
   }
   #vue-app .hall-actions {
-    margin: 16px auto 0 !important;
+    margin: 0 auto !important;
   }
 }
 
@@ -145,7 +184,13 @@
 
 #vue-app .hall-actions {
   margin: 0 auto;
-  max-width: 1240px;
+  width: fit-content;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 116px);
+  column-gap: 10px;
+  row-gap: 8px;
+  justify-content: center;
 }
 
 #vue-app .action-card-icon-only {
@@ -174,7 +219,7 @@
 }
 
 #vue-app .action-thumb-icon {
-  width: 140px;
+  width: 116px;
   max-width: 100%;
   height: auto;
   aspect-ratio: 276 / 316;
@@ -639,6 +684,51 @@
   font-size: 12px;
 }
 
+/* ================== Vue 按钮图标皮肤 ================== */
+#vue-app .el-button.btn-art {
+  position: relative;
+  border: none !important;
+  color: transparent !important;
+  text-shadow: none !important;
+  background: transparent !important;
+  background-image: var(--btn-art-bg) !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+  --btn-art-ratio: 335 / 135;
+  --btn-art-max-width: 335px;
+  --btn-art-scale: 0.60;
+  width: min(100%, calc(var(--btn-art-max-width) * var(--btn-art-scale)));
+  max-width: 100%;
+  aspect-ratio: var(--btn-art-ratio);
+  min-height: 0 !important;
+  height: auto !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#vue-app .el-button.btn-art > span,
+#vue-app .el-button.btn-art .el-button__text {
+  color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+
+#vue-app .el-button.btn-art:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+  box-shadow: none !important;
+}
+
+#vue-app .el-button.btn-art:disabled {
+  opacity: 0.6;
+  filter: grayscale(0.35);
+}
+
 @media (max-width: 768px) {
   #vue-app .shell-main {
     padding: 12px;
@@ -649,9 +739,19 @@
     padding: 0 10px;
   }
 
+  #vue-app .hall-actions {
+    grid-template-columns: repeat(4, 78px);
+    column-gap: 6px;
+    row-gap: 6px;
+  }
+
   #vue-app .action-thumb-icon {
-    width: 90px;
-    height: 103px;
+    width: 78px;
+    height: 89px;
+  }
+
+  #vue-app .el-button.btn-art {
+    --btn-art-scale: 0.56;
   }
 }
 
@@ -900,6 +1000,19 @@
   border: 1px solid rgba(245, 108, 108, 0.35) !important;
   background: rgba(245, 108, 108, 0.06) !important;
   margin-left: 6px !important;
+}
+
+#vue-app .back-hall-btn {
+  color: #7ec8ff !important;
+  border: 1px solid rgba(126, 200, 255, 0.4) !important;
+  background: rgba(45, 120, 188, 0.14) !important;
+}
+
+#vue-app .back-hall-btn:hover {
+  color: #ffffff !important;
+  background: rgba(70, 150, 220, 0.88) !important;
+  border-color: #7ec8ff !important;
+  box-shadow: 0 0 12px rgba(126, 200, 255, 0.45) !important;
 }
 
 #vue-app .logout-btn:hover {

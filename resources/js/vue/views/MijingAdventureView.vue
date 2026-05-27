@@ -14,6 +14,15 @@
 
       <template v-if="stage === 'entry'">
         <el-alert
+          v-if="resumeCandidate"
+          type="warning"
+          :closable="false"
+          show-icon
+          title="检测到上次秘境进度"
+          description="请选择继续上次挑战，或重新开始新的限时挑战。"
+          style="margin-bottom: 10px;"
+        />
+        <el-alert
           type="info"
           :closable="false"
           show-icon
@@ -36,7 +45,11 @@
             <el-input v-model="entry.stage" maxlength="2" />
           </el-form-item>
         </div>
-        <div class="module-actions">
+        <div v-if="resumeCandidate" class="module-actions">
+          <el-button type="primary" @click="continueChallenge">继续上次进度</el-button>
+          <el-button type="danger" @click="restartChallenge">重新开始挑战</el-button>
+        </div>
+        <div v-else class="module-actions">
           <el-button type="primary" @click="startChallenge">开始限时挑战</el-button>
         </div>
       </template>
@@ -138,6 +151,7 @@ const answerSubmitting = ref(false);
 const finishing = ref(false);
 const resultData = ref<Record<string, any> | null>(null);
 const ticker = ref<number | null>(null);
+const resumeCandidate = ref<MijingSession | null>(null);
 
 const entry = reactive({
   moduleType: 'vocab',
@@ -160,10 +174,8 @@ onMounted(async () => {
     await bridge.closeLegacyPanels();
     const restored = loadSession();
     if (restored && restored.stage === 'challenge' && Date.now() - restored.startedAtMs < restored.durationSec * 1000) {
-      restoreSession(restored);
-      if (!currentQuestion.value) {
-        await loadNextQuestion();
-      }
+      resumeCandidate.value = restored;
+      ElMessage.info('检测到上次秘境进度，请选择继续或重开');
     } else {
       clearSession();
     }
@@ -175,9 +187,6 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
-  if (stage.value === 'challenge' && challengeId.value && !finishing.value) {
-    void finishChallenge({ silent: true });
-  }
   stopTicker();
   persistSession();
   void bridge.closeLegacyPanels();
@@ -241,6 +250,8 @@ function restoreSession(session: MijingSession) {
 }
 
 async function startChallenge() {
+  resumeCandidate.value = null;
+  clearSession();
   ui.showLoading('正在开启秘境试炼...');
   try {
     const res = await api.post('/mijing/timed-challenge/start', {
@@ -267,6 +278,21 @@ async function startChallenge() {
   } finally {
     ui.hideLoading();
   }
+}
+
+async function continueChallenge() {
+  if (!resumeCandidate.value) return;
+  restoreSession(resumeCandidate.value);
+  resumeCandidate.value = null;
+  if (!currentQuestion.value) {
+    await loadNextQuestion();
+  }
+}
+
+async function restartChallenge() {
+  clearSession();
+  resumeCandidate.value = null;
+  await startChallenge();
 }
 
 async function loadNextQuestion() {
@@ -430,9 +456,7 @@ async function openLegacy() {
 
 function backHall() {
   stopTicker();
-  if (stage.value === 'challenge' && challengeId.value && !finishing.value) {
-    void finishChallenge({ silent: true });
-  }
+  persistSession();
   void bridge.closeLegacyPanels();
   router.push('/hall');
 }

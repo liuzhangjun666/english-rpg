@@ -159,6 +159,24 @@ class LegacyBridge {
     await game.showLeaderboard();
   }
 
+  async openReview() {
+    const game = await this.getGame();
+    this.applySessionToGame(game, this.pendingProfile);
+    await game.startReview();
+  }
+
+  async openDemons() {
+    const game = await this.getGame();
+    this.applySessionToGame(game, this.pendingProfile);
+    await game.showDemons();
+  }
+
+  async openAchievements() {
+    const game = await this.getGame();
+    this.applySessionToGame(game, this.pendingProfile);
+    await game.showAchievements();
+  }
+
   async closeLegacyPanels() {
     const game = await this.getGame();
     game.ui.hideAllPanels();

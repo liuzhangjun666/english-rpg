@@ -2489,13 +2489,14 @@
     border-color: var(--gold);
 }
 
-.btn.btn-art {
+.btn.btn-art,
+.el-button.btn-art {
     position: relative;
-    border: none;
+    border: none !important;
     color: transparent;
     font-weight: 700;
     text-shadow: none;
-    background: transparent;
+    background: transparent !important;
     background-image: var(--btn-art-bg);
     background-repeat: no-repeat;
     background-position: center;
@@ -2506,12 +2507,19 @@
     aspect-ratio: var(--btn-art-ratio, 325 / 135);
     min-height: 0;
     height: auto;
-    padding: 0;
+    padding: 0 !important;
     box-shadow: none;
     font-size: 0;
     line-height: 0;
     margin-left: auto;
     margin-right: auto;
+}
+
+.el-button.btn-art > span,
+.el-button.btn-art .el-button__text {
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
 }
 
 .confirm-dialog-actions .btn.btn-art,
@@ -2526,19 +2534,28 @@
 .btn.btn-art.btn-art-back,
 .btn.btn-art.btn-art-confirm,
 .btn.btn-art.btn-art-continue,
-.btn.btn-art.btn-art-restart {
+.btn.btn-art.btn-art-restart,
+.el-button.btn-art.btn-art-enter,
+.el-button.btn-art.btn-art-challenge,
+.el-button.btn-art.btn-art-submit,
+.el-button.btn-art.btn-art-back,
+.el-button.btn-art.btn-art-confirm,
+.el-button.btn-art.btn-art-continue,
+.el-button.btn-art.btn-art-restart {
     --btn-art-ratio: 335 / 135;
     --btn-art-max-width: 335px;
     --btn-art-scale: 0.60;
 }
 
-.btn.btn-art:hover {
+.btn.btn-art:hover,
+.el-button.btn-art:hover {
     transform: translateY(-1px);
     filter: brightness(1.06);
     box-shadow: none;
 }
 
-.btn.btn-art:disabled {
+.btn.btn-art:disabled,
+.el-button.btn-art:disabled {
     opacity: 0.6;
     filter: grayscale(0.35);
 }

@@ -1,13 +1,17 @@
 <template>
   <div class="hall-page">
-
-    <el-row :gutter="16" class="hall-actions">
-      <el-col v-for="item in actionItems" :key="item.key" :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
-        <button type="button" class="action-card-icon-only" @click="item.onClick" :title="item.title">
-          <img :src="item.image" :alt="item.title" class="action-thumb-icon" />
-        </button>
-      </el-col>
-    </el-row>
+    <div class="hall-actions">
+      <button
+        v-for="item in actionItems"
+        :key="item.key"
+        type="button"
+        class="action-card-icon-only"
+        @click="item.onClick"
+        :title="item.title"
+      >
+        <img :src="item.image" :alt="item.title" class="action-thumb-icon" />
+      </button>
+    </div>
   </div>
 </template>
 
@@ -16,20 +20,24 @@ import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
-import { useUserStore } from '../stores/user';
 import { useUiStore } from '../stores/ui';
 import hallPractice from '../../../assets/images/ui/hall_practice.png';
+import hallShilianchang from '../../../assets/images/ui/hall_shilianchang.png';
+import hallCangjingge from '../../../assets/images/ui/hall_cangjingge.png';
 import hallListening from '../../../assets/images/ui/hall_listening.png';
-import hallWriting from '../../../assets/images/ui/hall_writing.png';
+import hallSpeaking from '../../../assets/images/ui/hall_speaking.png';
 import hallReading from '../../../assets/images/ui/hall_reading.png';
-import hallExam from '../../../assets/images/ui/hall_shilianchang.png';
+import hallWriting from '../../../assets/images/ui/hall_writing.png';
 import hallMijing from '../../../assets/images/ui/hall_mijing.png';
 import hallMall from '../../../assets/images/ui/hall_mall.png';
 import hallLeaderboard from '../../../assets/images/ui/hall_leaderboard.png';
+import hallReview from '../../../assets/images/ui/hall_review.png';
+import hallDemons from '../../../assets/images/ui/hall_demons.png';
+import hallAchievements from '../../../assets/images/ui/hall_achievements.png';
+import hallProfile from '../../../assets/images/ui/hall_profile.png';
 
 const router = useRouter();
 const bridge = useLegacyBridge();
-const user = useUserStore();
 const ui = useUiStore();
 
 onMounted(async () => {
@@ -49,60 +57,88 @@ function goPractice(mode = 'vocab') {
 
 const actionItems = computed(() => [
   {
-    key: 'practice-vocab',
+    key: 'practice',
     title: '练功房',
-    desc: '炼词筑基，语法淬体',
     image: hallPractice,
     onClick: () => goPractice('vocab'),
   },
   {
+    key: 'exam',
+    title: '试炼场',
+    image: hallShilianchang,
+    onClick: () => goExam(),
+  },
+  {
+    key: 'practice-grammar',
+    title: '阵法峰',
+    image: hallCangjingge,
+    onClick: () => goPractice('grammar'),
+  },
+  {
     key: 'practice-listening',
     title: '听风谷',
-    desc: '听音辨律，口诵仙诀',
     image: hallListening,
     onClick: () => goPractice('listening'),
   },
   {
-    key: 'practice-writing',
-    title: '符箓台',
-    desc: '以笔画符，书写乾坤',
-    image: hallWriting,
-    onClick: () => goPractice('writing'),
+    key: 'practice-speaking',
+    title: '诵咒峰',
+    image: hallSpeaking,
+    onClick: () => goPractice('speaking'),
   },
   {
     key: 'reading',
     title: '藏经阁',
-    desc: '阅外域残卷，寻无上机缘',
     image: hallReading,
     onClick: () => goReading(),
   },
   {
-    key: 'exam',
-    title: '试炼场',
-    desc: '答题渡劫，宗门考核',
-    image: hallExam,
-    onClick: () => goExam(),
+    key: 'practice-writing',
+    title: '符箓台',
+    image: hallWriting,
+    onClick: () => goPractice('writing'),
   },
   {
     key: 'mijing',
     title: '秘境',
-    desc: '限时历练，夺取真意',
     image: hallMijing,
     onClick: () => goMijing(),
   },
   {
     key: 'mall',
-    title: '仙坊',
-    desc: '灵石交易，法宝补给',
+    title: '坊市',
     image: hallMall,
     onClick: () => goMall(),
   },
   {
     key: 'leaderboard',
-    title: '天榜',
-    desc: '诸天万界，群仙斗法',
+    title: '宗门榜',
     image: hallLeaderboard,
     onClick: () => goLeaderboard(),
+  },
+  {
+    key: 'review',
+    title: '温故复盘',
+    image: hallReview,
+    onClick: () => openReview(),
+  },
+  {
+    key: 'demons',
+    title: '心魔录',
+    image: hallDemons,
+    onClick: () => openDemons(),
+  },
+  {
+    key: 'achievements',
+    title: '成就碑',
+    image: hallAchievements,
+    onClick: () => openAchievements(),
+  },
+  {
+    key: 'profile',
+    title: '我的洞府',
+    image: hallProfile,
+    onClick: () => openProfile(),
   },
 ]);
 
@@ -124,5 +160,32 @@ function goMall() {
 
 function goLeaderboard() {
   router.push('/leaderboard');
+}
+
+async function openReview() {
+  await openLegacyPanel(() => bridge.openReview(), '开启温故复盘...', '温故复盘加载失败');
+}
+
+async function openDemons() {
+  await openLegacyPanel(() => bridge.openDemons(), '开启心魔录...', '心魔录加载失败');
+}
+
+async function openAchievements() {
+  await openLegacyPanel(() => bridge.openAchievements(), '开启成就碑...', '成就碑加载失败');
+}
+
+async function openProfile() {
+  await openLegacyPanel(() => bridge.openProfilePanel(), '开启我的洞府...', '洞府面板加载失败');
+}
+
+async function openLegacyPanel(task: () => Promise<unknown>, loadingText: string, failText: string) {
+  ui.showLoading(loadingText);
+  try {
+    await task();
+  } catch {
+    ElMessage.error(failText);
+  } finally {
+    ui.hideLoading();
+  }
 }
 </script>

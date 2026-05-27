@@ -317,7 +317,8 @@
     }
 
     .btn { padding: 10px; font-size: 14px; }
-    .btn.btn-art {
+    .btn.btn-art,
+    .el-button.btn-art {
         --btn-art-scale: 0.56;
         width: min(100%, calc(var(--btn-art-max-width, 335px) * var(--btn-art-scale)));
         min-height: 0;

@@ -15,6 +15,19 @@
       </div>
 
       <template v-if="stage === 'list'">
+        <el-alert
+          v-if="resumeCandidate"
+          type="warning"
+          :closable="false"
+          show-icon
+          title="检测到上次藏经阁进度"
+          description="请选择继续上次进度，或重新开始当前层章节。"
+          style="margin-bottom: 10px;"
+        />
+        <div v-if="resumeCandidate" class="module-actions" style="margin-bottom: 12px;">
+          <el-button type="primary" @click="continueReadingProgress">继续上次进度</el-button>
+          <el-button type="danger" @click="restartReadingProgress">重新开始</el-button>
+        </div>
         <div class="chapter-grid">
           <button
             v-for="chapter in chapters"
@@ -186,6 +199,7 @@ const demonTrialQuestions = ref<Array<Record<string, any>>>([]);
 const answers = reactive<Record<string, string>>({});
 const demonAnswers = reactive<Record<string, string>>({});
 const sessionRestoring = ref(false);
+const resumeCandidate = ref<ReadingSession | null>(null);
 
 const chapterTaskCount = computed(() => Array.isArray(chapterDetail.value?.tasks) ? chapterDetail.value.tasks.length : 0);
 const answeredTaskCount = computed(() => {
@@ -203,9 +217,10 @@ onMounted(async () => {
     await bridge.closeLegacyPanels();
     const restored = loadSession();
     const initialLevel = restored?.level || level.value;
-    await loadChapters(initialLevel, !restored);
+    await loadChapters(initialLevel, true);
     if (restored) {
-      restoreSession(restored);
+      resumeCandidate.value = restored;
+      ElMessage.info('检测到上次藏经阁进度，请选择继续或重开');
     }
   } catch {
     ElMessage.error('藏经阁加载失败');
@@ -345,10 +360,12 @@ async function switchLevel(nextLevel: number) {
     ElMessage.warning('该层尚未解锁');
     return;
   }
+  resumeCandidate.value = null;
   await loadChapters(nextLevel);
 }
 
 async function openChapter(chapterId: string) {
+  resumeCandidate.value = null;
   ui.showLoading('读取章节内容...');
   try {
     const res = await api.get(`/reading/chapters/${chapterId}`);
@@ -365,6 +382,18 @@ async function openChapter(chapterId: string) {
   } finally {
     ui.hideLoading();
   }
+}
+
+function continueReadingProgress() {
+  if (!resumeCandidate.value) return;
+  restoreSession(resumeCandidate.value);
+  resumeCandidate.value = null;
+}
+
+async function restartReadingProgress() {
+  clearSession();
+  resumeCandidate.value = null;
+  await loadChapters(level.value, true);
 }
 
 async function confirmStart() {

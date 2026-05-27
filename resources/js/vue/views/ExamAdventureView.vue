@@ -14,6 +14,15 @@
 
       <template v-if="stage === 'info'">
         <el-alert
+          v-if="resumeCandidate"
+          type="warning"
+          :closable="false"
+          show-icon
+          title="检测到上次渡劫进度"
+          description="请选择继续上次渡劫，或重新开始本轮试炼。"
+          style="margin-bottom: 10px;"
+        />
+        <el-alert
           type="info"
           :closable="false"
           show-icon
@@ -34,7 +43,12 @@
           </div>
         </div>
 
-        <div class="module-actions">
+        <div v-if="resumeCandidate" class="module-actions">
+          <el-button type="primary" @click="continueExam">继续上次进度</el-button>
+          <el-button type="danger" @click="restartExam">重新开始渡劫</el-button>
+          <el-button @click="loadCurrent">刷新状态</el-button>
+        </div>
+        <div v-else class="module-actions">
           <el-button type="primary" :disabled="!canBreakthrough" @click="manualBreakthrough">手动突破</el-button>
           <el-button type="danger" :disabled="!canTakeExam" @click="startExam">开始渡劫</el-button>
           <el-button @click="loadCurrent">刷新状态</el-button>
@@ -121,6 +135,7 @@ const timeLimit = ref(600);
 const timeLeft = ref(600);
 const timer = ref<number | null>(null);
 const resultData = ref<Record<string, any> | null>(null);
+const resumeCandidate = ref<ExamSession | null>(null);
 
 const canBreakthrough = computed(() => Boolean(examInfo.value?.breakthrough_status?.can_breakthrough));
 const canTakeExam = computed(() => Boolean(examInfo.value?.can_take));
@@ -148,12 +163,11 @@ onMounted(async () => {
   try {
     await bridge.switchToExamScene();
     await bridge.closeLegacyPanels();
+    await loadCurrent();
     const restored = loadSession();
     if (restored) {
-      restoreSession(restored);
-      await loadCurrent();
-    } else {
-      await loadCurrent();
+      resumeCandidate.value = restored;
+      ElMessage.info('检测到上次渡劫进度，请选择继续或重开');
     }
   } catch {
     ElMessage.error('试炼场加载失败');
@@ -258,6 +272,7 @@ async function manualBreakthrough() {
 }
 
 async function startExam() {
+  resumeCandidate.value = null;
   ui.showLoading('天道感应中...');
   try {
     const res = await api.post('/exam/start');
@@ -280,6 +295,18 @@ async function startExam() {
   } finally {
     ui.hideLoading();
   }
+}
+
+function continueExam() {
+  if (!resumeCandidate.value) return;
+  restoreSession(resumeCandidate.value);
+  resumeCandidate.value = null;
+}
+
+async function restartExam() {
+  clearSession();
+  resumeCandidate.value = null;
+  await startExam();
 }
 
 function startTimer() {
@@ -385,7 +412,7 @@ async function openLegacy() {
 
 function backHall() {
   stopTimer();
-  clearSession();
+  persistSession();
   void bridge.closeLegacyPanels();
   router.push('/hall');
 }
