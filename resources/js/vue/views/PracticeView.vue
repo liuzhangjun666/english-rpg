@@ -122,8 +122,8 @@
             <div ref="zfQuestionRef" class="zf-question-text">{{ currentQuestionText }}</div>
           </div>
 
-          <div class="zf-bridge-wrap" :style="{ visibility: grammarFeedbackType !== 'idle' ? 'visible' : 'hidden' }">
-            <img class="zf-bridge" :src="grammarBridgeImage" alt="机关桥" />
+          <div class="zf-bridge-wrap" :class="{ 'is-bridge-active': grammarBridgeVisible }">
+            <img v-if="grammarBridgeVisible" class="zf-bridge" :src="grammarBridgeImage" alt="机关桥" />
           </div>
 
           <div class="zf-options">
@@ -332,9 +332,11 @@ const grammarFeedbackType = ref<'idle' | 'success' | 'error'>('idle');
 const grammarAutoAdvanceTimer = ref<number | null>(null);
 const zfQuestionRef = ref<HTMLElement | null>(null);
 const grammarOptionTextRefs = reactive<Record<string, HTMLElement | null>>({});
+const grammarBridgeVisible = computed(() => grammarFeedbackType.value !== 'idle');
 const grammarBridgeImage = computed(() => {
+  if (grammarFeedbackType.value === 'success') return zfBridgeCorrect;
   if (grammarFeedbackType.value === 'error') return zfBridgeError;
-  return zfBridgeCorrect;
+  return '';
 });
 
 const moduleLabel = computed(() => modules.find((m) => m.type === currentType.value)?.label || '练功');
@@ -990,7 +992,7 @@ function applyArenaTextFit() {
       fitTextToBounds(zfQuestionRef.value, 20, 58);
     }
     const optionMin = window.innerWidth <= 900 ? 10 : 12;
-    const optionMax = window.innerWidth <= 900 ? 34 : 52;
+    const optionMax = window.innerWidth <= 900 ? 30 : 44;
     grammarOptions.value.forEach((it) => {
       const key = String(it.key || '').toUpperCase();
       const el = grammarOptionTextRefs[key];
@@ -1516,6 +1518,8 @@ function backHall() {
   overflow: hidden;
   border-radius: 0;
   color: #e9f4ff;
+  --zf-bridge-top: 58%;
+  --zf-bridge-width: min(58vw, 760px);
 }
 
 .zf-bg {
@@ -1675,19 +1679,39 @@ function backHall() {
 }
 
 .zf-bridge-wrap {
-  width: min(70%, 650px);
-  margin: -4px auto 0;
+  position: absolute;
+  left: 50%;
+  top: var(--zf-bridge-top);
+  width: var(--zf-bridge-width);
+  margin: 0;
+  transform: translate(-50%, -50%) scale(0.96);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  filter: drop-shadow(0 6px 16px rgba(255, 69, 69, 0.35));
+}
+
+.zf-bridge-wrap.is-bridge-active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
 }
 
 .zf-bridge {
   width: 100%;
   height: auto;
   object-fit: contain;
+  display: block;
 }
 
 .zf-options {
+  position: absolute;
+  left: 50%;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 3;
   width: min(98%, 1280px);
-  margin: -10px auto 0;
+  margin: 0;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: clamp(6px, 1vw, 16px);
@@ -1725,7 +1749,7 @@ function backHall() {
 .zf-option-text {
   position: absolute;
   left: 50%;
-  top: 26%;
+  top: 25%;
   transform: translate(-50%, -50%);
   width: 58%;
   height: 22%;
@@ -1734,7 +1758,7 @@ function backHall() {
   justify-content: center;
   text-align: center;
   color: #121212;
-  font-size: 40px;
+  font-size: 34px;
   line-height: 1.05;
   font-weight: 700;
   white-space: normal;
@@ -1942,21 +1966,22 @@ function backHall() {
   }
 
   .zf-bridge-wrap {
-    width: min(80%, 420px);
-    margin-top: 0;
+    --zf-bridge-top: 60%;
+    --zf-bridge-width: min(86vw, 520px);
   }
 
   .zf-options {
     width: 99%;
-    margin-top: -10px;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    margin: 0;
     gap: 4px;
   }
 
   .zf-option-text {
     width: 62%;
-    top: 27%;
+    top: 26%;
     height: 24%;
-    font-size: 20px;
+    font-size: 18px;
   }
 
 

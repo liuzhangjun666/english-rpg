@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\HeartDemon;
 use App\Models\Question;
+use App\Models\User;
 
 class HeartDemonService
 {
@@ -103,10 +104,7 @@ class HeartDemonService
 
     public function getInjectedQuestions(int $userId, string $type, string $realm, string $stage, int $normalCount): array
     {
-        $normalQuestions = Question::where('type', $type)
-            ->where('realm', $realm)
-            ->where('stage', $stage)
-            ->get()
+        $normalQuestions = $this->pickNormalQuestions($userId, $type, $realm, $stage)
             ->keyBy('question_id')
             ->toArray();
 
@@ -139,6 +137,205 @@ class HeartDemonService
         shuffle($all);
 
         return $all;
+    }
+
+    private function pickNormalQuestions(int $userId, string $type, string $realm, string $stage)
+    {
+        $baseQuery = Question::query()->where('type', $type);
+        $user = User::query()->select(['id', 'school_grade'])->find($userId);
+        $gradeLabels = $this->targetGradeLabels($user?->school_grade, $realm);
+
+        // New rule: same module first, but match by "student grade + realm breakthrough progression".
+        if (!empty($gradeLabels)) {
+            $gradeMatched = (clone $baseQuery)
+                ->whereIn('grade_level', $gradeLabels)
+                ->get();
+            if ($gradeMatched->isNotEmpty()) {
+                return $gradeMatched;
+            }
+        }
+
+        // Compatibility fallback: old realm+stage bucket.
+        $legacyMatched = (clone $baseQuery)
+            ->where('realm', $realm)
+            ->where('stage', $stage)
+            ->get();
+        if ($legacyMatched->isNotEmpty()) {
+            return $legacyMatched;
+        }
+
+        // Final fallback: same module only.
+        return $baseQuery->get();
+    }
+
+    private function targetGradeLabels(?string $schoolGrade, string $realm): array
+    {
+        $mapped = $this->realmMappedGradeLabels($realm);
+        if (!empty($mapped)) {
+            return $mapped;
+        }
+
+        $base = $this->parseGradeNumber($schoolGrade);
+        if ($base === null) {
+            return [];
+        }
+
+        // Fallback only: when realm is unknown, keep linear progression by current grade.
+        $target = max(1, min(16, $base + ($this->realmLayer($realm) - 1)));
+        return $this->gradeNumberToLabels($target);
+    }
+
+    private function parseGradeNumber(?string $schoolGrade): ?int
+    {
+        $value = trim((string) $schoolGrade);
+        if ($value === '') {
+            return null;
+        }
+
+        if (preg_match('/^grade_(\d{1,2})$/', $value, $m)) {
+            return max(1, min(16, (int) $m[1]));
+        }
+
+        if (preg_match('/^(\d{1,2})年级$/u', $value, $m)) {
+            return max(1, min(16, (int) $m[1]));
+        }
+
+        $cnMap = ['一' => 1, '二' => 2, '三' => 3, '四' => 4, '五' => 5, '六' => 6, '七' => 7, '八' => 8, '九' => 9];
+        if (preg_match('/^([一二三四五六七八九])年级$/u', $value, $m)) {
+            return $cnMap[$m[1]] ?? null;
+        }
+
+        return match ($value) {
+            '高一' => 10,
+            '高二' => 11,
+            '高三' => 12,
+            '大一' => 13,
+            '大二' => 14,
+            '大三' => 15,
+            '大四' => 16,
+            default => null,
+        };
+    }
+
+    private function realmLayer(string $realm): int
+    {
+        if (preg_match('/(\d+)$/', strtoupper(trim($realm)), $m)) {
+            return max(1, min(9, (int) $m[1]));
+        }
+        return 1;
+    }
+
+    private function gradeNumberToLabels(int $gradeNo): array
+    {
+        $cn = [1 => '一', 2 => '二', 3 => '三', 4 => '四', 5 => '五', 6 => '六', 7 => '七', 8 => '八', 9 => '九'];
+        $labels = [];
+
+        if ($gradeNo >= 1 && $gradeNo <= 9) {
+            $labels[] = $gradeNo . '年级';
+            if (isset($cn[$gradeNo])) {
+                $labels[] = $cn[$gradeNo] . '年级';
+            }
+        } elseif ($gradeNo === 10) {
+            $labels[] = '高一';
+            $labels[] = '10年级';
+        } elseif ($gradeNo === 11) {
+            $labels[] = '高二';
+            $labels[] = '11年级';
+        } elseif ($gradeNo === 12) {
+            $labels[] = '高三';
+            $labels[] = '12年级';
+        } elseif ($gradeNo === 13) {
+            $labels[] = '大一';
+        } elseif ($gradeNo === 14) {
+            $labels[] = '大二';
+        } elseif ($gradeNo === 15) {
+            $labels[] = '大三';
+        } elseif ($gradeNo >= 16) {
+            $labels[] = '大四';
+        }
+
+        return array_values(array_unique(array_filter($labels)));
+    }
+
+    private function realmMappedGradeLabels(string $realm): array
+    {
+        $prefix = strtoupper(substr(trim($realm), 0, 1));
+        $layer = $this->realmLayer($realm);
+
+        $gradeKey = match ($prefix) {
+            // 练气一层~练气三层 => 1~2年级
+            'L' => match (true) {
+                $layer <= 2 => 'g1',
+                $layer === 3 => 'g2',
+                // 练气四层~练气六层 => 3~4年级
+                $layer <= 5 => 'g3',
+                $layer === 6 => 'g4',
+                // 练气七层~练气九层 => 5~6年级
+                $layer <= 8 => 'g5',
+                default => 'g6',
+            },
+            // 筑基一层~筑基九层 => 7~9年级
+            'Z' => match (true) {
+                $layer <= 3 => 'g7',
+                $layer <= 6 => 'g8',
+                default => 'g9',
+            },
+            // 金丹一层~金丹九层 => 高一~高三
+            'J' => match (true) {
+                $layer <= 3 => 's1',
+                $layer <= 6 => 's2',
+                default => 's3',
+            },
+            // 元婴一层~元婴四层 => 大一~大二 / CET4
+            // 元婴五层~元婴九层 => 大三~大四 / CET6
+            'Y' => match (true) {
+                $layer <= 2 => 'u1_cet4',
+                $layer <= 4 => 'u2_cet4',
+                $layer <= 7 => 'u3_cet6',
+                default => 'u4_cet6',
+            },
+            // 化神一层~化神三层 => 研一
+            // 化神四层~化神六层 => 研二
+            // 化神七层~化神九层 => 研三及以上
+            'H' => match (true) {
+                $layer <= 3 => 'm1',
+                $layer <= 6 => 'm2',
+                default => 'm3plus',
+            },
+            default => null,
+        };
+
+        if ($gradeKey === null) {
+            return [];
+        }
+
+        return $this->gradeAliasesByKey($gradeKey);
+    }
+
+    private function gradeAliasesByKey(string $gradeKey): array
+    {
+        return match ($gradeKey) {
+            'g1' => ['1年级', '一年级'],
+            'g2' => ['2年级', '二年级'],
+            'g3' => ['3年级', '三年级'],
+            'g4' => ['4年级', '四年级'],
+            'g5' => ['5年级', '五年级'],
+            'g6' => ['6年级', '六年级'],
+            'g7' => ['7年级', '七年级', '初一'],
+            'g8' => ['8年级', '八年级', '初二'],
+            'g9' => ['9年级', '九年级', '初三'],
+            's1' => ['高一', '10年级'],
+            's2' => ['高二', '11年级'],
+            's3' => ['高三', '12年级'],
+            'u1_cet4' => ['大一', 'CET4'],
+            'u2_cet4' => ['大二', 'CET4'],
+            'u3_cet6' => ['大三', 'CET6'],
+            'u4_cet6' => ['大四', 'CET6'],
+            'm1' => ['研一'],
+            'm2' => ['研二'],
+            'm3plus' => ['研三', '研三及以上'],
+            default => [],
+        };
     }
 
     public function getPreExamReview(int $userId, string $realm, int $limit = 5): array

@@ -11,6 +11,10 @@ class Question extends Model
     protected $fillable = [
         'question_id',
         'type',
+        'play_mode',
+        'scene',
+        'education_stage',
+        'grade_level',
         'realm',
         'stage',
         'listening_text',

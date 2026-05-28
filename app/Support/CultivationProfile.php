@@ -117,6 +117,44 @@ class CultivationProfile
         };
     }
 
+    public static function initialRealmBySchoolGrade(?string $schoolGrade): array
+    {
+        return match (trim((string) $schoolGrade)) {
+            // 小学低段：练气一层~练气三层
+            'grade_1' => ['realm' => 'L1', 'realm_stage' => 1],
+            'grade_2' => ['realm' => 'L1', 'realm_stage' => 3],
+
+            // 小学中段：练气四层~练气六层
+            'grade_3' => ['realm' => 'L1', 'realm_stage' => 4],
+            'grade_4' => ['realm' => 'L1', 'realm_stage' => 6],
+
+            // 小学高段：练气七层~练气九层
+            'grade_5' => ['realm' => 'L1', 'realm_stage' => 7],
+            'grade_6' => ['realm' => 'L1', 'realm_stage' => 9],
+
+            // 初中：筑基一层~筑基九层
+            'grade_7' => ['realm' => 'Z1', 'realm_stage' => 1],
+            'grade_8' => ['realm' => 'Z1', 'realm_stage' => 5],
+            'grade_9' => ['realm' => 'Z1', 'realm_stage' => 9],
+
+            // 高中：金丹一层~金丹九层
+            'grade_10' => ['realm' => 'J1', 'realm_stage' => 1],
+            'grade_11' => ['realm' => 'J1', 'realm_stage' => 5],
+            'grade_12' => ['realm' => 'J1', 'realm_stage' => 9],
+
+            // 大学基础：元婴一层~元婴四层（CET4）
+            'college' => ['realm' => 'Y1', 'realm_stage' => 1],
+            // 大学进阶：元婴五层~元婴九层（CET6）
+            'exam' => ['realm' => 'Y1', 'realm_stage' => 5],
+
+            // 研究生分层：化神
+            'graduate' => ['realm' => 'H1', 'realm_stage' => 1],
+            'advanced' => ['realm' => 'H1', 'realm_stage' => 7],
+
+            default => ['realm' => 'L1', 'realm_stage' => 1],
+        };
+    }
+
     public static function schoolGradeLabel(?string $schoolGrade): string
     {
         $value = trim((string) $schoolGrade);
