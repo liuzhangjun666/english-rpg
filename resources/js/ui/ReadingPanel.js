@@ -40,6 +40,7 @@ const COMPREHENSION_DISTRACTORS = {
     宗门课堂: ['因为抄错题目', '因为忘记时间', '因为同伴离开'],
 };
 
+// [DEPRECATED] 该原生面板已废弃，请使用 Vue 3 组件 ReadingView.vue 代替
 export class ReadingPanel {
     constructor(game) {
         this.game = game;
