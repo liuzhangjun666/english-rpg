@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use App\Models\Question;
+use App\Models\User;
+use App\Services\RealmService;
+use App\Support\CultivationProfile;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -73,3 +76,51 @@ Artisan::command('vocab:import-json {file=database/data/elementary_vocab_questio
     $this->line("Total processed: " . ($created + $updated));
     return 0;
 })->purpose('Import elementary vocabulary questions from generated JSON file');
+
+Artisan::command('users:sync-grade-realm {--dry-run : 仅预览，不落库}', function () {
+    $dryRun = (bool) $this->option('dry-run');
+    /** @var RealmService $realmService */
+    $realmService = app(RealmService::class);
+
+    $scanned = 0;
+    $changed = 0;
+
+    User::query()
+        ->whereNotNull('school_grade')
+        ->where('school_grade', '<>', '')
+        ->orderBy('id')
+        ->chunkById(200, function ($users) use (&$scanned, &$changed, $dryRun, $realmService) {
+            foreach ($users as $user) {
+                $scanned++;
+                $target = CultivationProfile::initialRealmBySchoolGrade((string) $user->school_grade);
+                $targetRealm = (string) ($target['realm'] ?? 'L1');
+                $targetStage = max(1, (int) ($target['realm_stage'] ?? 1));
+                $targetCurrentRealm = $realmService->composeCurrentRealm($targetRealm, $targetStage);
+
+                $realmChanged = (string) ($user->realm ?? '') !== $targetRealm;
+                $stageChanged = (int) ($user->realm_stage ?? 0) !== $targetStage;
+                $currentRealmChanged = (string) ($user->current_realm ?? '') !== $targetCurrentRealm;
+
+                if (!$realmChanged && !$stageChanged && !$currentRealmChanged) {
+                    continue;
+                }
+
+                $changed++;
+                if ($dryRun) {
+                    $this->line("User#{$user->id} {$user->school_grade}: {$user->realm}{$user->realm_stage} -> {$targetRealm}{$targetStage}");
+                    continue;
+                }
+
+                $user->update([
+                    'realm' => $targetRealm,
+                    'realm_stage' => $targetStage,
+                    'current_realm' => $targetCurrentRealm,
+                ]);
+            }
+        });
+
+    $this->info("扫描用户: {$scanned}");
+    $this->info($dryRun ? "可同步用户: {$changed}" : "已同步用户: {$changed}");
+
+    return 0;
+})->purpose('按当前年级批量同步用户境界');

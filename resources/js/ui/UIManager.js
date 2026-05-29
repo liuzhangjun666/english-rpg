@@ -264,7 +264,7 @@ export class UIManager {
             <div class="input-group"><label>手机号</label><input type="tel" id="reg-phone" maxlength="11" placeholder="请输入手机号"></div>
             <div class="input-group"><label>验证码</label><div class="code-row"><input type="text" id="reg-code" maxlength="6" placeholder="输入6位验证码"><button class="code-btn" id="reg-get-code">获取</button></div></div>
             <div class="input-group"><label>道号（选填）</label><input type="text" id="reg-nickname" maxlength="50" placeholder="不填则自动生成"></div>
-            <div class="input-group"><label>当前年级 / 学习阶段</label><select id="reg-school-grade"><option value="">-- 请选择 --</option>${this.generateSchoolGradeOptions()}</select></div>
+            <div class="input-group"><label>当前年级 / 学习阶段（必填）</label><select id="reg-school-grade"><option value="">-- 请选择 --</option>${this.generateSchoolGradeOptions()}</select></div>
             <div class="input-group"><label>出生年份（选填）</label><select id="reg-birth-year"><option value="">-- 选择年份 --</option>${this.generateYearOptions()}</select></div>
             <div class="input-group"><label>邀请码（选填）</label><input type="text" id="reg-invite" maxlength="20" placeholder="朋友的邀请码"></div>
             <button class="btn btn-primary" id="register-btn">注 册</button>
@@ -319,13 +319,14 @@ export class UIManager {
         const inviteCode = document.getElementById('reg-invite').value.trim();
         if (!phone || phone.length !== 11) { this.showError('register-error', '请输入正确的手机号'); return; }
         if (!code || code.length !== 6) { this.showError('register-error', '请输入6位验证码'); return; }
+        if (!schoolGrade) { this.showError('register-error', '请选择当前年级'); return; }
         this.hideError('register-error');
         this.showLoading('正在注册...');
         const payload = {
             phone,
             code,
             nickname: nickname || undefined,
-            school_grade: schoolGrade || undefined,
+            school_grade: schoolGrade,
             birth_year: birthYear ? parseInt(birthYear) : undefined,
         };
         if (inviteCode) payload.invite_code = inviteCode;

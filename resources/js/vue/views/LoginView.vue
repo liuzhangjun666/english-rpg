@@ -39,6 +39,18 @@
             <el-form-item label="道号（选填）">
               <el-input v-model="registerForm.nickname" maxlength="50" placeholder="不填则自动生成" />
             </el-form-item>
+            <el-form-item label="当前年级（必填）">
+              <select v-model="registerForm.school_grade" class="grade-select">
+                <option value="" disabled>请选择当前年级</option>
+                <option
+                  v-for="option in schoolGradeOptions"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ option.label }}
+                </option>
+              </select>
+            </el-form-item>
             <el-form-item label="出生年份（选填）">
               <el-input v-model="registerForm.birth_year" maxlength="4" placeholder="如 2002" />
             </el-form-item>
@@ -83,8 +95,28 @@ const registerForm = reactive({
   phone: '',
   code: '',
   nickname: '',
+  school_grade: '',
   birth_year: '',
 });
+
+const schoolGradeOptions = [
+  { value: 'grade_1', label: '1年级' },
+  { value: 'grade_2', label: '2年级' },
+  { value: 'grade_3', label: '3年级' },
+  { value: 'grade_4', label: '4年级' },
+  { value: 'grade_5', label: '5年级' },
+  { value: 'grade_6', label: '6年级' },
+  { value: 'grade_7', label: '初一' },
+  { value: 'grade_8', label: '初二' },
+  { value: 'grade_9', label: '初三' },
+  { value: 'grade_10', label: '高一' },
+  { value: 'grade_11', label: '高二' },
+  { value: 'grade_12', label: '高三' },
+  { value: 'college', label: '大一~大二（本科）' },
+  { value: 'exam', label: '大三~大四 / 考研英专' },
+  { value: 'graduate', label: '硕士 / 博士' },
+  { value: 'advanced', label: '留学 / 考试 / 发表' },
+];
 
 function startCountdown(target: 'login' | 'register', seconds = 60) {
   const refTarget = target === 'login' ? loginCountdown : registerCountdown;
@@ -161,12 +193,17 @@ async function doRegister() {
     ElMessage.error('请填写正确的手机号和验证码');
     return;
   }
+  if (!registerForm.school_grade.trim()) {
+    ElMessage.error('请选择当前年级');
+    return;
+  }
 
   ui.showLoading('正在注册...');
   try {
     const payload: Record<string, any> = {
       phone: registerForm.phone.trim(),
       code: registerForm.code.trim(),
+      school_grade: registerForm.school_grade.trim(),
     };
     if (registerForm.nickname.trim()) payload.nickname = registerForm.nickname.trim();
     if (registerForm.birth_year.trim()) payload.birth_year = Number(registerForm.birth_year.trim());
@@ -186,3 +223,30 @@ async function doRegister() {
   }
 }
 </script>
+
+<style scoped>
+.grade-select {
+  width: 100%;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(201, 162, 69, 0.6);
+  background: rgba(6, 13, 38, 0.88);
+  color: #f5e8ba;
+  padding: 0 12px;
+  outline: none;
+  font-size: 15px;
+}
+
+.grade-select:focus {
+  border-color: rgba(238, 204, 118, 0.95);
+}
+
+.grade-select option {
+  background: #1c2647;
+  color: #f6e8b8;
+}
+
+.grade-select option[value=''] {
+  color: #a7b0d2;
+}
+</style>
