@@ -3,6 +3,10 @@ import sceneCangjingge from '../../assets/images/scene_cangjingge.png';
 import sceneMijing from '../../assets/images/scene_mijing.png';
 import sceneShilian from '../../assets/images/scene_shilian.png';
 import sceneInitiation from '../../assets/images/scene_initiation2.png';
+import cangjinggeBg from '../../assets/images/ui/cangjingge/background.png';
+import cangjinggeBack from '../../assets/images/ui/cangjingge/back.png';
+import cangjinggeQuestion from '../../assets/images/ui/cangjingge/question.png';
+import cangjinggeOptions from '../../assets/images/ui/cangjingge/options.png';
 
 const SCENE_BACKGROUNDS = {
     宗门院落: bgHall,
@@ -50,6 +54,9 @@ export class ReadingPanel {
         this.taskOptionCache = {};
         this.taskFeedback = {};
         this.repairedTaskSet = new Set();
+        this.judgeStateCache = {};
+        this.judgeChoiceCache = {};
+        this.remainingHints = 3;
         this.isOpeningChapter = false;
     }
 
@@ -261,6 +268,9 @@ export class ReadingPanel {
             this.taskOptionCache = {};
             this.taskFeedback = {};
             this.repairedTaskSet = new Set();
+            this.judgeStateCache = {};
+            this.judgeChoiceCache = {};
+            this.remainingHints = 3;
             this.persistSession();
             this.renderChapter();
         });
@@ -282,7 +292,7 @@ export class ReadingPanel {
         const panel = document.createElement('div');
         panel.className = 'panel';
         panel.id = 'reading-task-panel';
-        panel.classList.add('reading-immersive-panel');
+        panel.classList.add('cangjingge-reading-panel');
         panel.style.overflowY = 'auto';
 
         const displayTasks = (chapter.tasks || []).map((task) => {
@@ -290,47 +300,70 @@ export class ReadingPanel {
         });
 
         const activeTask = displayTasks[this.currentTaskIndex];
+        const activeJudgeState = activeTask ? this.getJudgeState(activeTask, chapter.scene, chapter.text) : null;
         const activeFeedback = activeTask ? this.taskFeedback[activeTask.id] : null;
+        const solvedCount = this.repairedTaskSet.size;
+        const totalTasks = displayTasks.length;
+        const lockPercent = totalTasks > 0 ? Math.round((solvedCount / totalTasks) * 100) : 0;
         panel.innerHTML = `
-            <div class="reading-immersive-bg" style="${this.getSceneCoverStyle(chapter.scene)}"></div>
-            <div class="reading-immersive-mask"></div>
-            <div class="reading-immersive-content">
-                <div class="panel-title"><span class="reading-emblem">${this.getSceneEmblem(chapter.scene)}</span>藏经阁</div>
-                <div class="reading-chapter-subtitle">${this.escapeHtml(chapter.title)}</div>
-                <div class="reading-scene-hero-text-only"><span class="reading-emblem">${this.getSceneEmblem(chapter.scene)}</span>${this.escapeHtml(chapter.scene)}</div>
-                <div class="reading-ambience">${this.escapeHtml(this.getSceneAmbience(chapter.scene))}</div>
-                <div class="reading-meta">
-                    <span>章节：${this.escapeHtml(chapter.id)}</span>
-                    <span>场景：${this.escapeHtml(chapter.scene)}</span>
-                    <span>难度：${this.renderDifficulty(chapter.difficulty)}</span>
-                    <span>残卷修复：${this.repairedTaskSet.size}/${displayTasks.length}</span>
+            <div class="cangjingge-reading-bg" style="background-image:url('${cangjinggeBg}')"></div>
+            <div class="cangjingge-reading-mask"></div>
+            <div class="cangjingge-reading-content">
+                <button class="cangjingge-back-btn" id="reading-task-back" title="返回章节列表">
+                    <img src="${cangjinggeBack}" alt="返回">
+                </button>
+                <div class="cangjingge-header">
+                    <div class="cangjingge-title">藏经阁·经文机关</div>
+                    <div class="cangjingge-floor">筑基${this.escapeHtml(chapter.level)}层</div>
                 </div>
-                <div class="reading-stage">
-                    <div class="reading-stage-story">
-                        <div class="reading-story-title">古籍残卷</div>
-                        <div class="reading-scroll-frame reading-scroll-remnant">
-                            <div class="reading-scroll-head">残卷原文</div>
-                            <div class="reading-story-lines">
-                                ${this.renderStoryLines(chapter.text)}
-                            </div>
-                        </div>
-                        <div class="reading-vocabulary">线索词：${(chapter.vocabulary || []).map((v) => `<span class="reading-vocab-item">${this.escapeHtml(v)}</span>`).join('')}</div>
-                    </div>
-                    <div class="reading-stage-mission">
-                        <div class="reading-mission-flavor" id="reading-pick-note">${this.escapeHtml(this.getTaskPrompt(activeTask, chapter.scene))}</div>
-                        <div class="reading-task-feedback ${activeFeedback ? (activeFeedback.isCorrect ? 'reading-task-feedback-correct' : 'reading-task-feedback-wrong') : ''}" id="reading-task-feedback">
-                            ${activeFeedback ? this.escapeHtml(activeFeedback.message) : ''}
-                        </div>
-                        ${this.renderTask(activeTask, this.currentTaskIndex + 1, displayTasks.length, chapter.scene, chapter.text)}
+                <div class="cangjingge-lock-box">
+                    <div class="cangjingge-lock-title">机关锁 ${solvedCount}/${totalTasks}</div>
+                    <div class="cangjingge-lock-track">
+                        <div class="cangjingge-lock-fill" id="cangjingge-lock-fill" style="width:${lockPercent}%"></div>
                     </div>
                 </div>
-                <div class="reading-actions">
-                    <button class="btn btn-secondary" id="reading-task-back">返回章节列表</button>
+                <div class="cangjingge-scroll-box">
+                    <div class="cangjingge-scroll-title">${this.escapeHtml(chapter.title)} · ${this.escapeHtml(chapter.scene)}</div>
+                    <div class="cangjingge-scroll-text">${this.renderStoryLines(chapter.text)}</div>
+                    <div class="cangjingge-vocab-row">线索词：${(chapter.vocabulary || []).map((v) => `<span class="reading-vocab-item">${this.escapeHtml(v)}</span>`).join('')}</div>
+                </div>
+                <div class="cangjingge-question-wrap" style="background-image:url('${cangjinggeQuestion}')">
+                    <div class="cangjingge-question-head">真伪灵签 ${this.currentTaskIndex + 1}/${totalTasks}</div>
+                    <div class="cangjingge-question-stem">${this.escapeHtml(activeTask?.question || '')}</div>
+                    <div class="cangjingge-question-claim">${this.escapeHtml(activeJudgeState?.claimText || '')}</div>
+                    <div class="reading-task-feedback ${activeFeedback ? (activeFeedback.isCorrect ? 'reading-task-feedback-correct' : 'reading-task-feedback-wrong') : ''}" id="reading-task-feedback">
+                        ${activeFeedback ? this.escapeHtml(activeFeedback.message) : ''}
+                    </div>
+                    <div class="cangjingge-judge-actions">
+                        <button class="cangjingge-judge-btn cangjingge-judge-true" data-task-id="${this.escapeHtml(activeTask?.id || '')}" data-judge="true" style="background-image:url('${cangjinggeOptions}')">T 正确</button>
+                        <button class="cangjingge-judge-btn cangjingge-judge-false" data-task-id="${this.escapeHtml(activeTask?.id || '')}" data-judge="false" style="background-image:url('${cangjinggeOptions}')">F 错误</button>
+                    </div>
+                    <div class="reading-mission-flavor" id="reading-pick-note">${this.escapeHtml(this.getTaskPrompt(activeTask, chapter.scene))}</div>
+                    <div class="cangjingge-aux-actions">
+                        <button class="btn btn-secondary" id="cangjingge-hint-btn" ${this.remainingHints <= 0 ? 'disabled' : ''}>提示（${this.remainingHints}）</button>
+                        <span id="cangjingge-repaired-count">残卷修复：${solvedCount}/${totalTasks}</span>
+                    </div>
+                </div>
+                <div class="cangjingge-nav-row">
+                    <button class="cangjingge-nav-arrow" id="reading-task-prev" ${this.currentTaskIndex === 0 ? 'disabled' : ''}>上一题</button>
+                    <div class="cangjingge-nav-list">
+                        ${displayTasks.map((task, idx) => {
+                            const state = this.taskFeedback[task.id];
+                            const doneClass = state?.isCorrect ? 'done' : '';
+                            const activeClass = idx === this.currentTaskIndex ? 'active' : '';
+                            return `<button class="cangjingge-nav-btn ${doneClass} ${activeClass}" data-index="${idx}">${idx + 1}</button>`;
+                        }).join('')}
+                    </div>
+                    <button class="cangjingge-nav-arrow" id="reading-task-next" ${this.currentTaskIndex >= displayTasks.length - 1 ? 'disabled' : ''}>下一题</button>
+                </div>
+                <div class="reading-actions cangjingge-bottom-actions">
                     <button class="btn btn-primary" id="reading-task-submit">提交阅读任务</button>
-                    <div class="reading-action-right">
-                        <button class="btn btn-secondary" id="reading-task-prev" ${this.currentTaskIndex === 0 ? 'disabled' : ''}>上一个事件</button>
-                        <button class="btn btn-secondary" id="reading-task-next" ${this.currentTaskIndex >= displayTasks.length - 1 ? 'disabled' : ''}>下一个事件</button>
-                    </div>
+                    <button class="btn btn-secondary" id="reading-task-exit">返回宗门</button>
+                </div>
+                <div class="cangjingge-meta">
+                    <span>章节：${this.escapeHtml(chapter.id)}</span>
+                    <span>难度：${this.renderDifficulty(chapter.difficulty)}</span>
+                    <span>机关解锁：${lockPercent}%</span>
                 </div>
             </div>
         `;
@@ -338,42 +371,68 @@ export class ReadingPanel {
         this.restoreSelectionUI(panel, activeTask);
 
         const taskMap = new Map(displayTasks.map((task) => [String(task.id), task]));
-        panel.querySelectorAll('.reading-option').forEach((el) => {
+        panel.querySelectorAll('.cangjingge-judge-btn').forEach((el) => {
             el.addEventListener('click', () => {
                 const taskId = el.dataset.taskId;
-                const value = el.dataset.value || '';
                 if (!taskId) return;
-                this.answers[taskId] = value;
+                const task = taskMap.get(String(taskId));
+                if (!task) return;
+                const chooseTrue = (el.dataset.judge || '') === 'true';
+                const judgeState = this.getJudgeState(task, chapter.scene, chapter.text);
+                const { answerValue, isCorrect } = this.getJudgeAnswerMapping(task, judgeState, chooseTrue, chapter.scene);
 
-                panel.querySelectorAll(`.reading-option[data-task-id="${taskId}"]`).forEach((node) => node.classList.remove('selected'));
+                this.answers[taskId] = answerValue;
+                this.judgeChoiceCache[taskId] = chooseTrue ? 'true' : 'false';
+
+                panel.querySelectorAll(`.cangjingge-judge-btn[data-task-id="${taskId}"]`).forEach((node) => node.classList.remove('selected'));
                 el.classList.add('selected');
 
-                const slot = panel.querySelector(`.reading-slot[data-task-id="${taskId}"]`);
-                if (slot) {
-                    slot.textContent = value;
-                    slot.classList.add('filled');
-                }
-
-                const task = taskMap.get(String(taskId));
-                const isCorrect = this.isTaskAnswerCorrect(task, value);
                 const feedbackMessage = this.getTaskFeedbackMessage(isCorrect);
                 this.taskFeedback[taskId] = {
                     isCorrect: Boolean(isCorrect),
                     message: feedbackMessage,
                 };
+
                 if (isCorrect) this.repairedTaskSet.add(taskId);
                 else this.repairedTaskSet.delete(taskId);
+
                 this.updateTaskFeedbackUI(panel, taskId);
 
                 const note = panel.querySelector('#reading-pick-note');
-                if (note) {
-                    note.textContent = feedbackMessage;
+                if (note) note.textContent = feedbackMessage;
+                const repairedCount = panel.querySelector('#cangjingge-repaired-count');
+                if (repairedCount) repairedCount.textContent = `残卷修复：${this.repairedTaskSet.size}/${totalTasks}`;
+                const lockFill = panel.querySelector('#cangjingge-lock-fill');
+                if (lockFill) {
+                    const pct = totalTasks > 0 ? Math.round((this.repairedTaskSet.size / totalTasks) * 100) : 0;
+                    lockFill.style.width = `${pct}%`;
                 }
                 this.persistSession();
             });
         });
 
+        panel.querySelectorAll('.cangjingge-nav-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const idx = Number(btn.dataset.index || 0);
+                this.currentTaskIndex = Math.max(0, Math.min(displayTasks.length - 1, idx));
+                this.persistSession();
+                this.renderChapter();
+            });
+        });
+
+        document.getElementById('cangjingge-hint-btn')?.addEventListener('click', () => {
+            if (this.remainingHints <= 0) {
+                this.game.ui.showHermesBubble('提示次数已用完');
+                return;
+            }
+            this.remainingHints = Math.max(0, this.remainingHints - 1);
+            this.game.ui.showHermesBubble(this.getTaskHint(activeTask, activeJudgeState));
+            this.persistSession();
+            this.renderChapter();
+        });
+
         document.getElementById('reading-task-back')?.addEventListener('click', () => this.showChapterList(chapter.level, false));
+        document.getElementById('reading-task-exit')?.addEventListener('click', () => this.game.enterHall());
         document.getElementById('reading-task-prev')?.addEventListener('click', () => {
             this.currentTaskIndex = Math.max(0, this.currentTaskIndex - 1);
             this.persistSession();
@@ -819,9 +878,9 @@ export class ReadingPanel {
     getTaskPrompt(task, scene) {
         if (!task) return `你已进入${scene}，准备破解机关问题。`;
         const mode = this.getTaskMode(task);
-        if (mode === 'cloze') return `在${scene}中收集线索，把关键词填回古籍残卷。`;
-        if (mode === 'sentence_restore') return `残卷出现缺口，从候选句中选择正确句子修复古籍。`;
-        return `请根据原文线索，在${scene}中解开当前机关问题。`;
+        if (mode === 'cloze') return `在${scene}中判断命题真伪，修复残卷关键词。`;
+        if (mode === 'sentence_restore') return `观察缺口上下文，判断候选句命题是否成立。`;
+        return `请根据原文线索，在${scene}中判断当前命题真伪。`;
     }
 
     pickNextChapter(chapters) {
@@ -845,6 +904,9 @@ export class ReadingPanel {
             taskOptionCache: this.taskOptionCache,
             taskFeedback: this.taskFeedback,
             repairedTaskIds: Array.from(this.repairedTaskSet),
+            judgeStateCache: this.judgeStateCache,
+            judgeChoiceCache: this.judgeChoiceCache,
+            remainingHints: this.remainingHints,
             ts: Date.now(),
         };
         localStorage.setItem(this.getSessionKey(), JSON.stringify(payload));
@@ -873,12 +935,18 @@ export class ReadingPanel {
         this.taskOptionCache = data.taskOptionCache || {};
         this.taskFeedback = data.taskFeedback || {};
         this.repairedTaskSet = new Set(data.repairedTaskIds || []);
+        this.judgeStateCache = data.judgeStateCache || {};
+        this.judgeChoiceCache = data.judgeChoiceCache || {};
+        this.remainingHints = Number.isFinite(Number(data.remainingHints)) ? Number(data.remainingHints) : 3;
         this.renderChapter();
         return true;
     }
 
     clearSession() {
         localStorage.removeItem(this.getSessionKey());
+        this.judgeStateCache = {};
+        this.judgeChoiceCache = {};
+        this.remainingHints = 3;
     }
 
     getTaskOptions(task, scene) {
@@ -902,11 +970,109 @@ export class ReadingPanel {
         return options;
     }
 
+    getJudgeState(task, scene, chapterText = '') {
+        if (!task?.id) {
+            return {
+                candidate: '',
+                isTrue: false,
+                wrongValue: '__wrong__',
+                claimText: '',
+            };
+        }
+        const cacheKey = task.id;
+        if (this.judgeStateCache[cacheKey]) {
+            return this.judgeStateCache[cacheKey];
+        }
+
+        const canonical = this.getCanonicalAnswer(task.answer);
+        const options = this.getTaskOptions(task, scene);
+        const normalizedCanonical = this.normalize(canonical);
+        const candidatePool = Array.isArray(options) && options.length
+            ? options.map((item) => String(item ?? '')).filter(Boolean)
+            : [canonical];
+        if (!candidatePool.some((item) => this.normalize(item) === normalizedCanonical)) {
+            candidatePool.unshift(canonical);
+        }
+        const candidate = candidatePool[Math.floor(Math.random() * candidatePool.length)] || canonical;
+        const isTrue = this.isTaskAnswerCorrect(task, candidate);
+        const wrongValue = candidatePool.find((item) => this.normalize(item) !== normalizedCanonical) || `__wrong__${cacheKey}`;
+        const claimText = this.buildJudgeClaimText(task, candidate, chapterText);
+
+        const state = {
+            candidate,
+            isTrue,
+            wrongValue,
+            claimText,
+        };
+        this.judgeStateCache[cacheKey] = state;
+        return state;
+    }
+
+    buildJudgeClaimText(task, candidate, chapterText = '') {
+        const mode = this.getTaskMode(task);
+        if (mode === 'cloze') {
+            return `判断：残卷空缺词应为「${candidate}」。`;
+        }
+        if (mode === 'sentence_restore') {
+            const passage = this.getSentenceRestorePassage(task, chapterText);
+            return `判断：缺口可填入「${candidate}」。原句：${passage}`;
+        }
+        return `判断：针对本题，最合理答案是「${candidate}」。`;
+    }
+
+    getJudgeAnswerMapping(task, judgeState, chooseTrue) {
+        const canonical = this.getCanonicalAnswer(task?.answer);
+        const wrongValue = judgeState?.wrongValue || `__wrong__${task?.id || 'task'}`;
+        const claimIsTrue = Boolean(judgeState?.isTrue);
+        const answerValue = chooseTrue
+            ? (claimIsTrue ? canonical : (judgeState?.candidate || wrongValue))
+            : (claimIsTrue ? wrongValue : canonical);
+        return {
+            answerValue,
+            isCorrect: chooseTrue === claimIsTrue,
+        };
+    }
+
+    getTaskHint(task, judgeState) {
+        if (!task) return '提示：先读完残卷，再判断真伪。';
+        const mode = this.getTaskMode(task);
+        const canonical = this.getCanonicalAnswer(task.answer);
+        if (mode === 'cloze') {
+            const first = canonical ? canonical[0] : '?';
+            return `提示：关键词首字母是 "${first}"。`;
+        }
+        if (mode === 'sentence_restore') {
+            return '提示：注意时态和主语一致性，再看缺口前后衔接。';
+        }
+        if (judgeState?.isTrue) {
+            return '提示：本条命题与原文线索一致。';
+        }
+        return `提示：可回看线索词，正确答案接近「${canonical}」。`;
+    }
+
     restoreSelectionUI(panel, activeTask) {
         if (!panel || !activeTask?.id) return;
-        const selectedValue = this.answers[activeTask.id];
         this.updateTaskFeedbackUI(panel, activeTask.id);
+        const selectedJudge = this.judgeChoiceCache[activeTask.id];
+        if (selectedJudge) {
+            const judgeBtn = panel.querySelector(`.cangjingge-judge-btn[data-task-id="${activeTask.id}"][data-judge="${selectedJudge}"]`);
+            if (judgeBtn) judgeBtn.classList.add('selected');
+            return;
+        }
+
+        const selectedValue = this.answers[activeTask.id];
         if (!selectedValue) return;
+
+        const judgeButtons = panel.querySelectorAll(`.cangjingge-judge-btn[data-task-id="${activeTask.id}"]`);
+        if (judgeButtons.length > 0) {
+            const judgeState = this.getJudgeState(activeTask, this.currentChapter?.scene, this.currentChapter?.text);
+            const isAnswerCorrect = this.isTaskAnswerCorrect(activeTask, selectedValue);
+            const inferred = isAnswerCorrect === Boolean(judgeState?.isTrue) ? 'true' : 'false';
+            this.judgeChoiceCache[activeTask.id] = inferred;
+            const btn = panel.querySelector(`.cangjingge-judge-btn[data-task-id="${activeTask.id}"][data-judge="${inferred}"]`);
+            if (btn) btn.classList.add('selected');
+            return;
+        }
 
         const option = Array.from(panel.querySelectorAll(`.reading-option[data-task-id="${activeTask.id}"]`))
             .find((el) => (el.dataset.value || '') === String(selectedValue));
