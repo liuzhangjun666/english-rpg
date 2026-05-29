@@ -81,7 +81,7 @@ function applyVueButtonSkins(root?: ParentNode) {
 }
 
 const app = createApp(App);
-const pinia = createPinia();
+export const pinia = createPinia();
 app.use(pinia);
 app.use(router);
 installElementPlus(app);

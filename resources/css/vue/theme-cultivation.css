@@ -1,0 +1,158 @@
+/* =========================================================================
+   LevelUp 英语修仙 - 局部主题覆写 (Element Plus)
+========================================================================= */
+.cultivation-theme, 
+.cultivation-dialog-class {
+  --el-color-primary: #d4a843;
+  --el-text-color-primary: #f4d98a;
+  --el-text-color-regular: #c8b685;
+  --el-text-color-placeholder: rgba(200, 182, 133, 0.45);
+  --el-border-color: rgba(212, 168, 67, 0.3);
+  --el-border-color-hover: rgba(212, 168, 67, 0.8);
+  --el-border-radius-base: 8px;
+  --el-bg-color: #0f1426;
+  --el-bg-color-overlay: rgba(8, 12, 24, 0.7);
+  font-family: 'STKaiti', 'KaiTi', sans-serif;
+}
+
+/* 卡片定制 */
+.cultivation-theme .el-card.login-card {
+  width: min(440px, 92%);
+  margin: 0 auto;
+  background: rgba(15, 20, 38, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(212, 168, 67, 0.45);
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(212, 168, 67, 0.1);
+  overflow: hidden;
+}
+
+.cultivation-theme .el-card.login-card .el-card__header {
+  border-bottom: 1px solid rgba(212, 168, 67, 0.25);
+  background: linear-gradient(180deg, rgba(212, 168, 67, 0.1) 0%, transparent 100%);
+  padding: 16px 20px;
+}
+
+.cultivation-theme .el-card.login-card .card-header {
+  color: var(--el-text-color-primary);
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(244, 217, 138, 0.4);
+}
+
+/* Tabs 定制 */
+.cultivation-theme .el-tabs__nav-wrap::after {
+  background-color: rgba(212, 168, 67, 0.15);
+}
+.cultivation-theme .el-tabs__active-bar {
+  background: linear-gradient(90deg, #d4a843 0%, #f4d98a 100%);
+  height: 2px;
+  box-shadow: 0 0 8px rgba(244, 217, 138, 0.8);
+}
+.cultivation-theme .el-tabs__item {
+  font-size: 17px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.cultivation-theme .el-tabs__item.is-active,
+.cultivation-theme .el-tabs__item:hover {
+  color: var(--el-text-color-primary);
+  text-shadow: 0 0 6px rgba(244, 217, 138, 0.5);
+  font-weight: bold;
+}
+
+/* 表单定制 */
+.cultivation-theme .el-form-item__label {
+  font-size: 13px;
+  padding-bottom: 4px;
+}
+.cultivation-theme .el-input__wrapper {
+  box-shadow: none;
+  padding: 4px 12px;
+  transition: all 0.25s ease;
+}
+.cultivation-theme .el-input__wrapper.is-focus,
+.cultivation-theme .el-input__wrapper:hover {
+  box-shadow: 0 0 10px rgba(212, 168, 67, 0.25);
+}
+.cultivation-theme .el-input__inner {
+  font-size: 14px;
+  color: #f7f3e8;
+}
+
+/* 按钮定制 */
+.cultivation-theme .el-button {
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+.cultivation-theme .el-button:not(.el-button--primary) {
+  background: rgba(212, 168, 67, 0.08);
+  border: 1px solid var(--el-border-color);
+  color: var(--el-text-color-primary);
+}
+.cultivation-theme .el-button:not(.el-button--primary):hover:not(.is-disabled) {
+  background: rgba(212, 168, 67, 0.15);
+  border-color: var(--el-border-color-hover);
+  box-shadow: 0 0 10px rgba(212, 168, 67, 0.25);
+}
+.cultivation-theme .el-button:not(.el-button--primary).is-disabled {
+  color: rgba(200, 182, 133, 0.4);
+  border-color: rgba(212, 168, 67, 0.15);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* 渐变大按钮 */
+.cultivation-theme .el-button.full-btn {
+  width: 100%;
+  height: 40px;
+  margin-top: 10px;
+  background: linear-gradient(135deg, #d4a843 0%, #a17816 100%);
+  border: 1px solid rgba(255, 236, 184, 0.3);
+  color: #0c1222;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  box-shadow: 0 4px 15px rgba(161, 120, 22, 0.2);
+}
+.cultivation-theme .el-button.full-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(212, 168, 67, 0.5);
+  color: #ffffff;
+}
+.cultivation-theme .el-button.full-btn:active {
+  transform: translateY(1px);
+}
+
+/* 特殊布局 */
+.cultivation-theme .code-row {
+  display: grid;
+  grid-template-columns: 1fr 100px;
+  gap: 8px;
+  width: 100%;
+}
+.cultivation-theme .code-row .el-button {
+  height: 34px;
+  margin-left: 0;
+}
+
+/* 弹窗特权类 */
+.cultivation-dialog-class .el-dialog {
+  background: rgba(15, 20, 38, 0.95);
+  border: 1px solid rgba(212, 168, 67, 0.45);
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(212, 168, 67, 0.1);
+}
+.cultivation-dialog-class .el-dialog__header {
+  border-bottom: 1px solid rgba(212, 168, 67, 0.25);
+  background: linear-gradient(180deg, rgba(212, 168, 67, 0.1) 0%, transparent 100%);
+  margin-right: 0;
+}
+.cultivation-dialog-class .el-dialog__title {
+  color: #f4d98a;
+  font-family: 'STKaiti', 'KaiTi', sans-serif;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(244, 217, 138, 0.4);
+}

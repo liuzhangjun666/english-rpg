@@ -1,5 +1,5 @@
 <template>
-  <div class="login-page">
+  <div class="login-page cultivation-theme">
     <el-card class="login-card" shadow="always">
       <template #header>
         <div class="card-header">登入宗门</div>

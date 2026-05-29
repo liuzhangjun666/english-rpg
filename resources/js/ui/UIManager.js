@@ -934,6 +934,7 @@ export class UIManager {
 
     // ========== 个人面板（P1+P2 完整版） ==========
     async showProfilePanel() {
+        console.warn('[DEPRECATED] showProfilePanel 已被废弃，请使用 Vue 3 组件 ProfilePanel.vue 代替。');
         const existing = document.getElementById('profile-panel');
         if (existing) {
             existing.classList.add('fade-out');
