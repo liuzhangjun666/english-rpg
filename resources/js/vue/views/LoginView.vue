@@ -65,7 +65,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { useApiClient } from '../services/api';
 import { useAuthStore } from '../stores/auth';
 import { useUserStore } from '../stores/user';
@@ -118,6 +118,28 @@ const schoolGradeOptions = [
   { value: 'advanced', label: '留学 / 考试 / 发表' },
 ];
 
+function switchToLoginForRegisteredPhone(phone: string) {
+  const normalizedPhone = String(phone || '').trim();
+  activeTab.value = 'login';
+  loginForm.phone = normalizedPhone;
+  loginForm.code = '';
+}
+
+function promptRegisteredPhoneAndGoLogin(phone: string) {
+  const normalizedPhone = String(phone || '').trim();
+  ElMessageBox.alert('该手机号已被注册，请返回登录页面进行登录', '提示', {
+    confirmButtonText: '去登录',
+    type: 'warning',
+    customClass: 'registered-phone-msgbox',
+    confirmButtonClass: 'registered-phone-msgbox__confirm',
+    closeOnClickModal: false,
+  })
+    .then(() => {
+      switchToLoginForRegisteredPhone(normalizedPhone);
+    })
+    .catch(() => {});
+}
+
 function startCountdown(target: 'login' | 'register', seconds = 60) {
   const refTarget = target === 'login' ? loginCountdown : registerCountdown;
   refTarget.value = seconds;
@@ -134,6 +156,10 @@ async function sendCode(action: 'login' | 'register') {
     return;
   }
   const res = await api.post('/sms/send', { phone, action });
+  if (!res?.success && res?.code === 'PHONE_ALREADY_REGISTERED' && action === 'register') {
+    promptRegisteredPhoneAndGoLogin(phone);
+    return;
+  }
   if (!res?.success) {
     ElMessage.error(res?.message || '发送失败');
     return;
@@ -209,6 +235,11 @@ async function doRegister() {
     if (registerForm.birth_year.trim()) payload.birth_year = Number(registerForm.birth_year.trim());
 
     const res = await api.post('/auth/register', payload);
+    if (!res?.success && res?.code === 'PHONE_ALREADY_REGISTERED') {
+      promptRegisteredPhoneAndGoLogin(registerForm.phone);
+      return;
+    }
+
     if (!res?.success || !res?.data?.token) {
       ElMessage.error(res?.message || '注册失败');
       return;

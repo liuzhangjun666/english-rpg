@@ -46,8 +46,8 @@ class SmsController extends Controller
                 'success' => false,
                 'code' => 'PHONE_ALREADY_REGISTERED',
                 'next_action' => 'login',
-                'message' => '该手机号已注册，请直接登录',
-            ], 422);
+                'message' => '该手机号已被注册，请返回登录页面进行登录',
+            ]);
         }
 
         $result = $this->smsService->send($request->phone, $action);

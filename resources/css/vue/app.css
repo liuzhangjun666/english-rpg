@@ -1254,3 +1254,43 @@
 #vue-app .login-card .full-btn:active {
   transform: translateY(1px) !important;
 }
+
+/* 已注册手机号提示弹窗（MessageBox 挂载到 body，需要全局样式） */
+.el-overlay.is-message-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.el-message-box.registered-phone-msgbox {
+  margin: 0 !important;
+  width: min(420px, calc(100vw - 32px));
+  border-radius: 14px;
+  border: 1px solid rgba(212, 168, 67, 0.4);
+  background: linear-gradient(180deg, rgba(14, 20, 38, 0.98) 0%, rgba(10, 14, 30, 0.98) 100%);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+.el-message-box.registered-phone-msgbox .el-message-box__header {
+  padding-bottom: 6px;
+}
+
+.el-message-box.registered-phone-msgbox .el-message-box__title {
+  color: #f4d98a;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.el-message-box.registered-phone-msgbox .el-message-box__content {
+  color: #f7f3e8;
+  line-height: 1.7;
+}
+
+.el-message-box.registered-phone-msgbox .el-message-box__btns {
+  padding-top: 2px;
+}
+
+.el-button.registered-phone-msgbox__confirm {
+  min-width: 96px;
+}

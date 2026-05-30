@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\SkillPracticeController;
 use App\Http\Controllers\Api\SmsController;
 use App\Http\Controllers\Api\StoryController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\VocabAssessmentController;
 use App\Http\Controllers\Api\VocabController;
 use Illuminate\Support\Facades\Route;
 
@@ -58,6 +59,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('vocab')->group(function () {
         Route::get('/questions', [VocabController::class, 'questions']);
         Route::post('/submit-batch', [VocabController::class, 'submitBatch']);
+    });
+
+    Route::prefix('vocab-assessment')->group(function () {
+        Route::get('/status', [VocabAssessmentController::class, 'status']);
+        Route::post('/start', [VocabAssessmentController::class, 'start']);
+        Route::get('/next-question', [VocabAssessmentController::class, 'nextQuestion']);
+        Route::post('/submit-answer', [VocabAssessmentController::class, 'submitAnswer']);
+        Route::post('/finish', [VocabAssessmentController::class, 'finish']);
     });
 
     Route::prefix('grammar')->group(function () {

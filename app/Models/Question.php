@@ -15,6 +15,9 @@ class Question extends Model
         'scene',
         'education_stage',
         'grade_level',
+        'assessment_level',
+        'is_assessment',
+        'expected_time',
         'realm',
         'stage',
         'listening_text',
@@ -29,6 +32,9 @@ class Question extends Model
     {
         return [
             'options' => 'array',
+            'assessment_level' => 'integer',
+            'is_assessment' => 'integer',
+            'expected_time' => 'integer',
         ];
     }
 }

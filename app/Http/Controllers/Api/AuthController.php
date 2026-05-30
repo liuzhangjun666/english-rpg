@@ -26,7 +26,6 @@ class AuthController extends Controller
     private const CHINESE_MESSAGES = [
         'phone.required' => '请输入手机号',
         'phone.size' => '请输入11位手机号',
-        'phone.unique' => '该手机号已注册',
         'code.required' => '请输入验证码',
         'code.size' => '验证码为6位数字',
         'nickname.max' => '道号最长50个字符',
@@ -49,7 +48,7 @@ class AuthController extends Controller
     public function register(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'phone' => 'required|string|size:11|unique:levelup_users,phone',
+            'phone' => 'required|string|size:11',
             'code'  => 'required|string|size:6',
             'nickname' => 'nullable|string|max:50',
             'school_grade' => 'required|string|max:32',
@@ -63,6 +62,17 @@ class AuthController extends Controller
                 'code' => 'VALIDATION_ERROR',
                 'message' => $validator->errors()->first(),
             ], 422);
+        }
+
+        if (User::where('phone', $request->phone)->exists()) {
+            return response()->json([
+                'success' => false,
+                'code' => 'PHONE_ALREADY_REGISTERED',
+                'message' => '该手机号已被注册，请返回登录页面进行登录',
+                'data' => [
+                    'next_action' => 'login',
+                ],
+            ]);
         }
 
         // 验证短信验证码
