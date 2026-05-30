@@ -44,28 +44,31 @@
               </div>
             </div>
 
-            <div class="scroll-panel">
-              <div class="scroll-title">经文探秘</div>
-              <div class="scroll-text">{{ passageText }}</div>
+            <div class="scroll-panel" :style="{ backgroundImage: `url(${questionIcon})` }">
+              <div class="scroll-inner">
+                <div class="scroll-title">经文探秘</div>
+                <div class="scroll-text">{{ passageText }}</div>
+                <div class="scroll-question-block">
+                  <div class="scroll-question-head">真伪灵签 {{ currentQuestionIndex + 1 }}/{{ totalCount }}</div>
+                  <div class="scroll-question-stem">{{ currentQuestionStem }}</div>
+                  <div class="scroll-question-claim">命题：{{ currentClaimText }}</div>
+                </div>
+              </div>
             </div>
 
-            <div class="question-panel" :style="{ backgroundImage: `url(${questionIcon})` }">
-              <div class="question-head">真伪灵签 {{ currentQuestionIndex + 1 }}/{{ totalCount }}</div>
-              <div class="question-stem">{{ currentQuestionStem }}</div>
-              <div class="question-claim">命题：{{ currentClaimText }}</div>
-            </div>
-
-            <div class="judge-panel" :style="{ backgroundImage: `url(${optionIcon})` }">
+            <div class="judge-panel">
               <button
                 class="judge-btn judge-true"
                 :class="{ selected: currentChoice === 'T' }"
                 type="button"
+                :style="{ backgroundImage: `url(${optionIcon})` }"
                 @click="selectJudge('T')"
               >T 正确</button>
               <button
                 class="judge-btn judge-false"
                 :class="{ selected: currentChoice === 'F' }"
                 type="button"
+                :style="{ backgroundImage: `url(${optionIcon})` }"
                 @click="selectJudge('F')"
               >F 错误</button>
             </div>
@@ -770,79 +773,84 @@ function backHall() {
 }
 
 .scroll-panel {
-  border: 1px solid rgba(160, 118, 56, 0.55);
-  border-radius: 12px;
-  padding: 12px;
-  background: linear-gradient(180deg, rgba(244, 226, 188, 0.95), rgba(218, 185, 126, 0.92));
+  border: none;
+  border-radius: 14px;
+  padding: 20px 18px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
   color: #2f2212;
+  min-height: 460px;
+}
+
+.scroll-inner {
+  width: 70%;
+  min-height: 100%;
+  padding: 28px 12px 18px 22px;
 }
 
 .scroll-title {
-  font-size: 14px;
+  font-size: 18px;
   color: #674720;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   font-weight: 700;
 }
 
 .scroll-text {
-  font-size: 28px;
-  line-height: 1.55;
-  max-height: 210px;
+  font-size: 22px;
+  line-height: 1.56;
+  max-height: 240px;
   overflow-y: auto;
+  color: #2f2515;
 }
 
-.question-panel {
-  border: 1px solid rgba(212, 168, 67, 0.35);
-  border-radius: 12px;
-  padding: 10px;
-  background-color: rgba(8, 13, 28, 0.68);
-  background-repeat: no-repeat;
-  background-size: 138px 138px;
-  background-position: right 10px top 10px;
+.scroll-question-block {
+  margin-top: 10px;
+  border-top: 1px dashed rgba(121, 79, 27, 0.35);
+  padding-top: 10px;
 }
 
-.question-head {
-  color: #f6d98f;
-  font-size: 26px;
+.scroll-question-head {
+  color: #694722;
+  font-size: 22px;
   font-family: var(--font-title);
 }
 
-.question-stem {
-  margin-top: 8px;
-  color: #ffe7b3;
-  font-size: 20px;
-  line-height: 1.6;
+.scroll-question-stem {
+  margin-top: 6px;
+  color: #2d2113;
+  font-size: 21px;
+  line-height: 1.55;
 }
 
-.question-claim {
+.scroll-question-claim {
   margin-top: 8px;
-  color: #d6f1ff;
-  font-size: 20px;
-  line-height: 1.6;
+  color: #4b2d16;
+  font-size: 19px;
+  line-height: 1.55;
 }
 
 .judge-panel {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  padding: 8px;
-  border-radius: 12px;
-  border: 1px solid rgba(212, 168, 67, 0.3);
-  background-color: rgba(9, 16, 30, 0.62);
-  background-repeat: no-repeat;
-  background-size: cover;
+  gap: 12px;
+  padding: 2px;
 }
 
 .judge-btn {
   border: none;
   border-radius: 10px;
-  min-height: 68px;
+  min-height: 110px;
+  padding: 0 18px;
   color: #f8e9c5;
-  font-size: 28px;
+  font-size: 34px;
   font-family: var(--font-title);
   cursor: pointer;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
-  background: rgba(10, 18, 34, 0.65);
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
 }
 
 .judge-btn.selected {
@@ -968,23 +976,33 @@ function backHall() {
     font-size: 22px;
   }
 
+  .scroll-panel {
+    min-height: 360px;
+    padding: 12px;
+  }
+
+  .scroll-inner {
+    width: 76%;
+    padding: 14px 8px 10px 14px;
+  }
+
   .scroll-text {
-    font-size: 20px;
-    max-height: 160px;
+    font-size: 17px;
+    max-height: 150px;
   }
 
-  .question-head {
-    font-size: 20px;
+  .scroll-question-head {
+    font-size: 18px;
   }
 
-  .question-stem,
-  .question-claim {
+  .scroll-question-stem,
+  .scroll-question-claim {
     font-size: 16px;
   }
 
   .judge-btn {
-    min-height: 54px;
-    font-size: 20px;
+    min-height: 78px;
+    font-size: 22px;
   }
 
   .nav-panel {

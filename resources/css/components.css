@@ -2345,96 +2345,145 @@
     transition: width 0.25s ease;
 }
 
-.cangjingge-scroll-box {
-    background: linear-gradient(180deg, rgba(245, 227, 187, 0.95), rgba(214, 184, 132, 0.92));
-    border: 1px solid rgba(157, 117, 61, 0.5);
-    border-radius: 14px;
-    padding: 12px 14px;
-    color: #2d1f10;
-    min-height: 180px;
-}
-
 .cangjingge-scroll-title {
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    color: #5c3b1f;
 }
 
 .cangjingge-scroll-text {
-    max-height: 28vh;
+    max-height: 18vh;
     overflow-y: auto;
-    padding-right: 4px;
+    padding-right: 6px;
 }
 
 .cangjingge-scroll-text .reading-story-line {
     color: #2f2515;
-    background: rgba(255, 248, 233, 0.66);
-    border: 1px solid rgba(133, 97, 45, 0.3);
-    font-size: 20px;
-    line-height: 1.55;
+    background: rgba(255, 248, 233, 0.4);
+    border: 1px solid rgba(133, 97, 45, 0.22);
+    font-size: 18px;
+    line-height: 1.5;
     max-width: 100%;
 }
 
 .cangjingge-vocab-row {
-    margin-top: 8px;
+    margin-top: 6px;
     color: #3b2a17;
     font-size: 13px;
 }
 
 .cangjingge-question-wrap {
-    border: 1px solid rgba(212, 168, 67, 0.32);
-    border-radius: 14px;
-    background-color: rgba(8, 14, 30, 0.76);
-    background-position: right 14px top 14px;
-    background-repeat: no-repeat;
-    background-size: 140px 140px;
-    padding: 12px;
+    position: relative;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    min-height: 360px;
+    overflow: hidden;
+    max-width: 1182px;
+    margin: 0 auto;
+}
+
+.cangjingge-question-wrap::before {
+    content: '';
+    position: absolute;
+    left: 9%;
+    right: 9%;
+    top: 11%;
+    bottom: 10%;
+    background: #d8bf95;
+    border-radius: 8px;
+    z-index: 0;
+}
+
+.cangjingge-question-art {
+    width: 100%;
+    height: auto;
+    display: block;
+    user-select: none;
+    pointer-events: none;
+    position: relative;
+    z-index: 1;
+}
+
+.cangjingge-question-content {
+    position: absolute;
+    inset: 11% 11% 10% 12%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    color: #2f2214;
+    z-index: 2;
 }
 
 .cangjingge-question-head {
-    color: #f6d98f;
-    font-size: 28px;
+    color: #5f3a1b;
+    font-size: 24px;
     font-family: var(--font-title);
+    margin-top: 8px;
 }
 
 .cangjingge-question-stem {
-    margin-top: 8px;
-    color: #ffe9bc;
-    font-size: 21px;
+    margin-top: 6px;
+    color: #2f2214;
+    font-size: 25px;
     line-height: 1.5;
 }
 
 .cangjingge-question-claim {
-    margin-top: 10px;
-    color: #dff2ff;
-    font-size: 20px;
-    line-height: 1.6;
-    border-left: 3px solid rgba(92, 207, 255, 0.65);
-    padding-left: 8px;
+    margin-top: 7px;
+    color: #3b2614;
+    font-size: 23px;
+    line-height: 1.5;
+    border-left: 3px solid rgba(143, 99, 43, 0.35);
+    padding-left: 10px;
+}
+
+.cangjingge-question-interact {
+    margin-top: -2px;
 }
 
 .cangjingge-judge-actions {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
-    margin: 12px 0 6px;
+    margin: 14px 0 6px;
 }
 
 .cangjingge-judge-btn {
+    position: relative;
     border: none;
     cursor: pointer;
-    min-height: 72px;
+    min-height: 88px;
     border-radius: 12px;
-    background-color: rgba(10, 18, 34, 0.62);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    color: #f7e7ba;
-    font-size: 28px;
+    background-color: transparent;
+    color: #f6edd2;
+    font-size: 50px;
     font-family: var(--font-title);
     letter-spacing: 1px;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+    padding: 0;
     transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cangjingge-option-art {
+    width: 100%;
+    height: auto;
+    display: block;
+    user-select: none;
+    pointer-events: none;
+    position: relative;
+    z-index: 1;
+}
+
+.cangjingge-judge-btn > span {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 3px;
+    z-index: 2;
 }
 
 .cangjingge-judge-btn:hover {

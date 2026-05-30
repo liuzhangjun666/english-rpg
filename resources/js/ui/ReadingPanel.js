@@ -322,21 +322,31 @@ export class ReadingPanel {
                         <div class="cangjingge-lock-fill" id="cangjingge-lock-fill" style="width:${lockPercent}%"></div>
                     </div>
                 </div>
-                <div class="cangjingge-scroll-box">
-                    <div class="cangjingge-scroll-title">${this.escapeHtml(chapter.title)} · ${this.escapeHtml(chapter.scene)}</div>
-                    <div class="cangjingge-scroll-text">${this.renderStoryLines(chapter.text)}</div>
-                    <div class="cangjingge-vocab-row">线索词：${(chapter.vocabulary || []).map((v) => `<span class="reading-vocab-item">${this.escapeHtml(v)}</span>`).join('')}</div>
+                <div class="cangjingge-question-wrap" style="max-width:1182px;margin:0 auto;position:relative;overflow:hidden;min-height:360px;">
+                    <div style="position:absolute;left:9%;right:9%;top:11%;bottom:10%;background:#d8bf95;border-radius:8px;z-index:0;"></div>
+                    <img class="cangjingge-question-art" src="${cangjinggeQuestion}" alt="经文卷轴" style="position:relative;z-index:1;width:100%;height:auto;display:block;">
+                    <div class="cangjingge-question-content" style="position:absolute;inset:11% 11% 10% 12%;z-index:2;display:flex;flex-direction:column;justify-content:flex-start;">
+                        <div class="cangjingge-scroll-title">${this.escapeHtml(chapter.title)} · ${this.escapeHtml(chapter.scene)}</div>
+                        <div class="cangjingge-scroll-text">${this.renderStoryLines(chapter.text)}</div>
+                        <div class="cangjingge-vocab-row">线索词：${(chapter.vocabulary || []).map((v) => `<span class="reading-vocab-item">${this.escapeHtml(v)}</span>`).join('')}</div>
+                        <div class="cangjingge-question-head">真伪灵签 ${this.currentTaskIndex + 1}/${totalTasks}</div>
+                        <div class="cangjingge-question-stem">${this.escapeHtml(activeTask?.question || '')}</div>
+                        <div class="cangjingge-question-claim">${this.escapeHtml(activeJudgeState?.claimText || '')}</div>
+                    </div>
                 </div>
-                <div class="cangjingge-question-wrap" style="background-image:url('${cangjinggeQuestion}')">
-                    <div class="cangjingge-question-head">真伪灵签 ${this.currentTaskIndex + 1}/${totalTasks}</div>
-                    <div class="cangjingge-question-stem">${this.escapeHtml(activeTask?.question || '')}</div>
-                    <div class="cangjingge-question-claim">${this.escapeHtml(activeJudgeState?.claimText || '')}</div>
+                <div class="cangjingge-question-interact">
                     <div class="reading-task-feedback ${activeFeedback ? (activeFeedback.isCorrect ? 'reading-task-feedback-correct' : 'reading-task-feedback-wrong') : ''}" id="reading-task-feedback">
                         ${activeFeedback ? this.escapeHtml(activeFeedback.message) : ''}
                     </div>
                     <div class="cangjingge-judge-actions">
-                        <button class="cangjingge-judge-btn cangjingge-judge-true" data-task-id="${this.escapeHtml(activeTask?.id || '')}" data-judge="true" style="background-image:url('${cangjinggeOptions}')">T 正确</button>
-                        <button class="cangjingge-judge-btn cangjingge-judge-false" data-task-id="${this.escapeHtml(activeTask?.id || '')}" data-judge="false" style="background-image:url('${cangjinggeOptions}')">F 错误</button>
+                        <button class="cangjingge-judge-btn cangjingge-judge-true" data-task-id="${this.escapeHtml(activeTask?.id || '')}" data-judge="true">
+                            <img class="cangjingge-option-art" src="${cangjinggeOptions}" alt="选项卷轴" style="position:relative;z-index:1;width:100%;height:auto;display:block;">
+                            <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;">T 正确</span>
+                        </button>
+                        <button class="cangjingge-judge-btn cangjingge-judge-false" data-task-id="${this.escapeHtml(activeTask?.id || '')}" data-judge="false">
+                            <img class="cangjingge-option-art" src="${cangjinggeOptions}" alt="选项卷轴" style="position:relative;z-index:1;width:100%;height:auto;display:block;">
+                            <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;">F 错误</span>
+                        </button>
                     </div>
                     <div class="reading-mission-flavor" id="reading-pick-note">${this.escapeHtml(this.getTaskPrompt(activeTask, chapter.scene))}</div>
                     <div class="cangjingge-aux-actions">

@@ -515,27 +515,26 @@
         font-size: 15px;
     }
 
-    .cangjingge-scroll-box {
-        padding: 10px;
-        min-height: 132px;
-    }
-
     .cangjingge-scroll-text {
-        max-height: 22vh;
+        max-height: 12vh;
     }
 
     .cangjingge-scroll-text .reading-story-line {
-        font-size: 16px;
-        padding: 8px 10px;
+        font-size: 14px;
+        padding: 6px 8px;
     }
 
     .cangjingge-question-wrap {
-        background-size: 92px 92px;
-        padding: 10px;
+        min-height: 260px;
+        max-width: 100%;
+    }
+
+    .cangjingge-question-content {
+        inset: 12% 10% 9% 11%;
     }
 
     .cangjingge-question-head {
-        font-size: 20px;
+        font-size: 16px;
     }
 
     .cangjingge-question-stem,
@@ -544,8 +543,8 @@
     }
 
     .cangjingge-judge-btn {
-        min-height: 54px;
-        font-size: 20px;
+        min-height: 72px;
+        font-size: 34px;
     }
 
     .cangjingge-aux-actions {
