@@ -55,8 +55,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { useApiClient } from '../../services/api';
-import { useUserStore } from '../../stores/user';
+import { useApiClient } from '../services/api';
+import { useUserStore } from '../stores/user';
 
 const props = defineProps<{
   visible: boolean;
