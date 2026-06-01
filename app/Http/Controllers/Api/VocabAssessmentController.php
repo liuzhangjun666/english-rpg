@@ -42,7 +42,7 @@ class VocabAssessmentController extends Controller
     {
         $data = $request->validate([
             'user_id' => 'sometimes|integer|min:1',
-            'school_stage' => 'required|string|max:30',
+            'school_stage' => 'nullable|string|max:30',
             'learning_goal' => 'nullable|string|max:30',
         ]);
 
@@ -55,10 +55,19 @@ class VocabAssessmentController extends Controller
             ], 403);
         }
 
+        $schoolStage = trim((string) ($data['school_stage'] ?? ''));
+        $learningGoal = isset($data['learning_goal']) ? trim((string) $data['learning_goal']) : '';
+        if ($schoolStage === '') {
+            [$schoolStage, $defaultGoal] = $this->resolveAssessmentBootstrapBySchoolGrade((string) ($user->school_grade ?? ''));
+            if ($learningGoal === '') {
+                $learningGoal = $defaultGoal;
+            }
+        }
+
         $assessment = $this->service->startAssessment(
             $user,
-            (string) $data['school_stage'],
-            isset($data['learning_goal']) ? (string) $data['learning_goal'] : null
+            $schoolStage,
+            $learningGoal !== '' ? $learningGoal : null
         );
 
         return response()->json([
@@ -66,6 +75,8 @@ class VocabAssessmentController extends Controller
             'data' => [
                 'assessment_id' => (int) $assessment->id,
                 'current_level' => (int) $assessment->current_level,
+                'vocab_current_level' => (int) ($assessment->vocab_current_level ?? $assessment->current_level),
+                'grammar_current_level' => (int) ($assessment->grammar_current_level ?? $assessment->current_level),
                 'total_questions' => (int) $assessment->total_questions,
             ],
         ]);
@@ -106,6 +117,8 @@ class VocabAssessmentController extends Controller
                         'current' => (int) $assessment->answered_count,
                         'total' => (int) $assessment->total_questions,
                         'current_level' => (int) $assessment->current_level,
+                        'vocab_current_level' => (int) ($assessment->vocab_current_level ?? $assessment->current_level),
+                        'grammar_current_level' => (int) ($assessment->grammar_current_level ?? $assessment->current_level),
                     ],
                 ],
             ]);
@@ -126,7 +139,9 @@ class VocabAssessmentController extends Controller
                 'progress' => [
                     'current' => min((int) $assessment->answered_count + 1, (int) $assessment->total_questions),
                     'total' => (int) $assessment->total_questions,
-                    'current_level' => (int) $assessment->current_level,
+                    'current_level' => (int) ($picked['current_level'] ?? $assessment->current_level),
+                    'vocab_current_level' => (int) ($assessment->vocab_current_level ?? $assessment->current_level),
+                    'grammar_current_level' => (int) ($assessment->grammar_current_level ?? $assessment->current_level),
                 ],
             ],
         ]);
@@ -181,7 +196,7 @@ class VocabAssessmentController extends Controller
 
         $question = Question::query()
             ->where('question_id', (string) $data['question_id'])
-            ->where('type', 'vocab')
+            ->whereIn('type', ['vocabulary', 'vocab', 'grammar'])
             ->where('is_assessment', 1)
             ->first();
 
@@ -208,10 +223,12 @@ class VocabAssessmentController extends Controller
 
         $timeSpent = (int) ($data['time_spent'] ?? 0);
         $expectedTime = max(1, (int) ($question->expected_time ?? 5));
+        $dimensionType = $this->service->normalizeQuestionType((string) $question->type);
 
         $checked = $this->service->checkVocabularyAnswer($question, (string) $data['user_answer']);
         $adjusted = $this->service->adjustAssessmentLevel(
             $assessment,
+            $dimensionType,
             (bool) $checked['is_correct'],
             $timeSpent,
             $expectedTime
@@ -219,11 +236,12 @@ class VocabAssessmentController extends Controller
 
         $isCorrect = (bool) $checked['is_correct'];
 
-        DB::transaction(function () use ($assessment, $user, $question, $checked, $adjusted, $timeSpent, $expectedTime, $isCorrect) {
+        DB::transaction(function () use ($assessment, $user, $question, $checked, $adjusted, $timeSpent, $expectedTime, $isCorrect, $dimensionType) {
             VocabularyAssessmentRecord::query()->create([
                 'assessment_id' => (int) $assessment->id,
                 'user_id' => (int) $user->id,
                 'question_id' => (string) $question->question_id,
+                'question_type' => $dimensionType,
                 'assessment_level' => (int) ($question->assessment_level ?? $adjusted['level_before']),
                 'play_mode' => (string) ($question->play_mode ?? ''),
                 'user_answer' => (string) $checked['normalized_answer'],
@@ -243,6 +261,11 @@ class VocabAssessmentController extends Controller
             $assessment->correct_count = $nextCorrect;
             $assessment->accuracy = $accuracy;
             $assessment->current_level = (int) $adjusted['level_after'];
+            if ($dimensionType === VocabAssessmentService::DIMENSION_GRAMMAR) {
+                $assessment->grammar_current_level = (int) $adjusted['level_after'];
+            } else {
+                $assessment->vocab_current_level = (int) $adjusted['level_after'];
+            }
             $assessment->save();
         });
 
@@ -255,8 +278,11 @@ class VocabAssessmentController extends Controller
                 'is_correct' => $isCorrect,
                 'correct_answer' => (string) $checked['correct_answer'],
                 'explanation' => (string) $checked['explanation'],
+                'question_type' => $dimensionType,
                 'level_before' => (int) $adjusted['level_before'],
                 'level_after' => (int) $adjusted['level_after'],
+                'vocab_current_level' => (int) ($assessment->vocab_current_level ?? $assessment->current_level),
+                'grammar_current_level' => (int) ($assessment->grammar_current_level ?? $assessment->current_level),
                 'finished' => $finished,
             ],
         ]);
@@ -292,6 +318,8 @@ class VocabAssessmentController extends Controller
 
         DB::transaction(function () use ($assessment, $result) {
             $assessment->final_level = (int) $result['final_level'];
+            $assessment->vocab_final_level = (int) $result['vocab_final_level'];
+            $assessment->grammar_final_level = (int) $result['grammar_final_level'];
             $assessment->final_realm = (string) $result['final_realm'];
             $assessment->final_stage = (string) $result['final_stage'];
             $assessment->level_result_json = $result['level_results'];
@@ -311,10 +339,26 @@ class VocabAssessmentController extends Controller
             'success' => true,
             'data' => [
                 'final_level' => (int) $result['final_level'],
+                'vocab_final_level' => (int) $result['vocab_final_level'],
+                'grammar_final_level' => (int) $result['grammar_final_level'],
                 'final_realm' => (string) $result['final_realm'],
                 'level_results' => $result['level_results'],
+                'dimension_results' => $result['dimension_results'],
                 'suggestions' => $result['suggestions'],
             ],
         ]);
+    }
+
+    private function resolveAssessmentBootstrapBySchoolGrade(string $schoolGrade): array
+    {
+        return match (trim($schoolGrade)) {
+            'grade_1', 'grade_2', 'grade_3', 'grade_4', 'grade_5', 'grade_6' => ['小学', ''],
+            'grade_7', 'grade_8', 'grade_9' => ['初中', ''],
+            'grade_10', 'grade_11', 'grade_12' => ['高中', ''],
+            'college' => ['大学', ''],
+            'exam' => ['大学', '考研'],
+            'graduate', 'advanced' => ['研究生', '学术英语'],
+            default => ['小学', ''],
+        };
     }
 }

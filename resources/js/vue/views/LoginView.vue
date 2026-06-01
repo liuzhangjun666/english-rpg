@@ -248,7 +248,7 @@ async function doRegister() {
     api.setToken(res.data.token);
     await applyProfile(res.data.user);
     ElMessage.success('注册成功');
-    router.replace('/hall');
+    router.replace('/vocab-assessment/intro');
   } finally {
     ui.hideLoading();
   }

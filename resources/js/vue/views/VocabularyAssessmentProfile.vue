@@ -2,31 +2,11 @@
   <div class="assessment-page">
     <el-card class="assessment-card" shadow="hover">
       <template #header>
-        <div class="title">词汇灵根测试 · 基础信息</div>
+        <div class="title">词汇灵根测试 · 准备开始</div>
       </template>
 
-      <el-form label-position="top">
-        <el-form-item label="选择当前学习阶段">
-          <el-select v-model="schoolStage" placeholder="请选择阶段" style="width: 100%">
-            <el-option label="小学" value="小学" />
-            <el-option label="初中" value="初中" />
-            <el-option label="高中" value="高中" />
-            <el-option label="大学" value="大学" />
-            <el-option label="研究生" value="研究生" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="学习目标（选填）">
-          <el-select v-model="learningGoal" clearable placeholder="可选" style="width: 100%">
-            <el-option
-              v-for="item in goalOptions"
-              :key="item"
-              :label="item"
-              :value="item"
-            />
-          </el-select>
-        </el-form-item>
-      </el-form>
+      <p class="desc">学习阶段将根据你注册时填写的年级自动匹配。</p>
+      <p class="desc">无需再选择学习目标，点击下方按钮即可开始灵根测试。</p>
 
       <div class="actions">
         <el-button data-btn-skin="back" @click="goBack">返回</el-button>
@@ -44,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
 import { useApiClient } from '../services/api';
@@ -52,36 +32,16 @@ import { useApiClient } from '../services/api';
 const router = useRouter();
 const api = useApiClient();
 
-const schoolStage = ref('');
-const learningGoal = ref('');
 const starting = ref(false);
-
-const goalMap: Record<string, string[]> = {
-  小学: ['校内同步', '词汇打底'],
-  初中: ['中考', '校内同步'],
-  高中: ['高考', '词汇强化'],
-  大学: ['四级', '六级', '考研'],
-  研究生: ['学术英语', '论文阅读', '综合提升'],
-};
-
-const goalOptions = computed(() => goalMap[schoolStage.value] || []);
 
 function goBack() {
   router.push('/vocab-assessment/intro');
 }
 
 async function startAssessment() {
-  if (!schoolStage.value) {
-    ElMessage.warning('请先选择学习阶段');
-    return;
-  }
-
   starting.value = true;
   try {
-    const res = await api.post('/vocab-assessment/start', {
-      school_stage: schoolStage.value,
-      learning_goal: learningGoal.value || undefined,
-    });
+    const res = await api.post('/vocab-assessment/start', {});
 
     if (!res?.success || !res?.data?.assessment_id) {
       ElMessage.error(res?.message || '开启测试失败');
@@ -129,33 +89,10 @@ async function startAssessment() {
   padding: 20px;
 }
 
-:deep(.assessment-card .el-form-item__label) {
-  color: #d8c997;
-  font-weight: 600;
-}
-
-:deep(.assessment-card .el-select__wrapper) {
-  background-color: rgba(9, 14, 30, 0.75);
-  border: 1px solid rgba(212, 168, 67, 0.3);
-  box-shadow: none;
-  border-radius: 10px;
-  min-height: 42px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-:deep(.assessment-card .el-select__wrapper.is-focused),
-:deep(.assessment-card .el-select__wrapper:hover) {
-  border-color: rgba(238, 205, 124, 0.75);
-  box-shadow: 0 0 0 2px rgba(212, 168, 67, 0.2);
-}
-
-:deep(.assessment-card .el-select__placeholder) {
-  color: rgba(226, 212, 170, 0.62);
-}
-
-:deep(.assessment-card .el-select__selected-item),
-:deep(.assessment-card .el-select__caret) {
-  color: #f2e6c5;
+.desc {
+  margin: 8px 0;
+  line-height: 1.7;
+  color: #f4ecd0;
 }
 
 .actions {

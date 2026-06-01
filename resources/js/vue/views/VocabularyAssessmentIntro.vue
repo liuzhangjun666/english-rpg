@@ -5,20 +5,22 @@
         <div class="title">词汇灵根测试</div>
       </template>
 
-      <p>系统将通过 25 道词汇题判断你的初始英语境界。</p>
+      <p>系统将通过 25 道题判断你的初始英语境界（词汇 15 题 + 语法 10 题）。</p>
+      <p>学习阶段会根据你注册时填写的年级自动匹配。</p>
       <p>连续答对，试炼升阶。</p>
       <p>答错或耗时过长，试炼降阶。</p>
-      <p>本测试主要判断词汇能力，后续会根据语法、阅读、听力等继续校准。</p>
+      <p>本测试主要判断词汇与语法能力，后续会根据阅读、听力等继续校准。</p>
 
       <div class="actions">
-        <el-button type="primary" @click="goProfile">开始测试</el-button>
+        <el-button type="primary" :loading="starting" @click="startAssessment">开始测试</el-button>
       </div>
     </el-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
+import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
 import { useApiClient } from '../services/api';
 import { useUserStore } from '../stores/user';
@@ -26,9 +28,20 @@ import { useUserStore } from '../stores/user';
 const router = useRouter();
 const api = useApiClient();
 const user = useUserStore();
+const starting = ref(false);
 
-function goProfile() {
-  router.push('/vocab-assessment/profile');
+async function startAssessment() {
+  starting.value = true;
+  try {
+    const res = await api.post('/vocab-assessment/start', {});
+    if (!res?.success || !res?.data?.assessment_id) {
+      ElMessage.error(res?.message || '开启测试失败');
+      return;
+    }
+    router.replace(`/vocab-assessment/question/${res.data.assessment_id}`);
+  } finally {
+    starting.value = false;
+  }
 }
 
 onMounted(async () => {

@@ -5,7 +5,7 @@
     </div>
 
     <template v-else>
-    <header v-if="auth.bootstrapped && auth.isAuthenticated" class="shell-header">
+    <header v-if="showGlobalHeader" class="shell-header">
       <!-- 左侧：修仙者信息看板 -->
       <div class="cultivator-board">
         <!-- 灵力头像（带聚灵法阵） -->
@@ -126,7 +126,9 @@ const bridge = useLegacyBridge();
 const api = useApiClient();
 
 const isLoginRoute = computed(() => route.path === '/login');
-const showHallBackButton = computed(() => auth.isAuthenticated && route.path !== '/hall' && route.path !== '/login');
+const isAssessmentRoute = computed(() => route.path.startsWith('/vocab-assessment'));
+const showGlobalHeader = computed(() => auth.bootstrapped && auth.isAuthenticated && !isAssessmentRoute.value);
+const showHallBackButton = computed(() => auth.isAuthenticated && route.path !== '/hall' && route.path !== '/login' && !isAssessmentRoute.value);
 function goHall() {
   router.push('/hall');
 }

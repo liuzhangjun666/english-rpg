@@ -12,12 +12,16 @@ use Illuminate\Support\Facades\DB;
 class VocabAssessmentService
 {
     public const TOTAL_QUESTIONS = 25;
+    public const VOCAB_QUESTIONS = 15;
+    public const GRAMMAR_QUESTIONS = 10;
+
+    public const DIMENSION_VOCAB = 'vocabulary';
+    public const DIMENSION_GRAMMAR = 'grammar';
 
     private const MIN_LEVEL = 1;
     private const MAX_LEVEL = 7;
 
-    private const CORRECT_STREAK_TO_UP = 3;
-    private const WRONG_STREAK_TO_DOWN = 3;
+    private const CORRECT_STREAK_TO_UP = 2;
 
     private const MAJOR_REALM_BY_LEVEL = [
         1 => '练气',
@@ -39,6 +43,11 @@ class VocabAssessmentService
         7 => 'H1',
     ];
 
+    private const QUESTION_TYPES_BY_DIMENSION = [
+        self::DIMENSION_VOCAB => ['vocabulary', 'vocab'],
+        self::DIMENSION_GRAMMAR => ['grammar'],
+    ];
+
     public function getAssessmentStatusForUser(User $user): array
     {
         $profile = UserLearningProfile::query()->where('user_id', $user->id)->first();
@@ -57,6 +66,15 @@ class VocabAssessmentService
             ->where('id', $assessmentId)
             ->where('user_id', $userId)
             ->first();
+    }
+
+    public function normalizeQuestionType(?string $type): string
+    {
+        $value = strtolower(trim((string) $type));
+        if ($value === 'grammar') {
+            return self::DIMENSION_GRAMMAR;
+        }
+        return self::DIMENSION_VOCAB;
     }
 
     public function getStartLevelByStage(string $schoolStage, ?string $learningGoal = null): int
@@ -108,6 +126,8 @@ class VocabAssessmentService
                 'learning_goal' => $learningGoal,
                 'start_level' => $startLevel,
                 'current_level' => $startLevel,
+                'vocab_current_level' => $startLevel,
+                'grammar_current_level' => $startLevel,
                 'total_questions' => self::TOTAL_QUESTIONS,
                 'status' => 'running',
             ]);
@@ -143,32 +163,34 @@ class VocabAssessmentService
             ->pluck('question_id')
             ->all();
 
-        $currentLevel = max(self::MIN_LEVEL, min(self::MAX_LEVEL, (int) $assessment->current_level));
-
-        $question = $this->pickQuestionByLevels([$currentLevel], $usedQuestionIds, $currentLevel);
-
-        if (!$question) {
-            $neighbors = array_values(array_unique(array_filter([
-                $currentLevel - 1,
-                $currentLevel + 1,
-            ], fn (int $value) => $value >= self::MIN_LEVEL && $value <= self::MAX_LEVEL)));
-
-            $question = $this->pickQuestionByLevels($neighbors, $usedQuestionIds, $currentLevel);
+        $dimensionProgress = $this->getDimensionProgress($assessmentId);
+        $nextDimension = $this->decideNextDimension($dimensionProgress);
+        if ($nextDimension === null) {
+            return ['question' => null, 'finished' => true, 'reason' => 'ASSESSMENT_DIMENSION_COMPLETED'];
         }
 
-        if (!$question) {
-            $allLevels = range(self::MIN_LEVEL, self::MAX_LEVEL);
-            $question = $this->pickQuestionByLevels($allLevels, $usedQuestionIds, $currentLevel);
+        $dimensionCandidates = [$nextDimension];
+        $other = $nextDimension === self::DIMENSION_VOCAB ? self::DIMENSION_GRAMMAR : self::DIMENSION_VOCAB;
+        if ($this->remainingForDimension($other, $dimensionProgress) > 0) {
+            $dimensionCandidates[] = $other;
         }
 
-        if (!$question) {
-            return ['question' => null, 'reason' => 'NO_QUESTIONS_FOR_ASSESSMENT'];
+        foreach ($dimensionCandidates as $dimension) {
+            $currentLevel = $this->getDimensionCurrentLevel($assessment, $dimension);
+            $question = $this->pickQuestionForDimension($dimension, $currentLevel, $usedQuestionIds);
+            if (!$question) {
+                continue;
+            }
+
+            return [
+                'question' => $this->serializeQuestionForClient($question, $dimension),
+                'dimension' => $dimension,
+                'current_level' => $currentLevel,
+                'reason' => null,
+            ];
         }
 
-        return [
-            'question' => $this->serializeQuestionForClient($question),
-            'reason' => null,
-        ];
+        return ['question' => null, 'reason' => 'NO_QUESTIONS_FOR_ASSESSMENT'];
     }
 
     public function checkVocabularyAnswer(Question $question, string $userAnswer): array
@@ -184,20 +206,32 @@ class VocabAssessmentService
         ];
     }
 
-    public function adjustAssessmentLevel(VocabularyAssessment $assessment, bool $isCorrect, int $timeSpent, int $expectedTime): array
-    {
-        $levelBefore = max(self::MIN_LEVEL, min(self::MAX_LEVEL, (int) $assessment->current_level));
+    public function adjustAssessmentLevel(
+        VocabularyAssessment $assessment,
+        string $dimension,
+        bool $isCorrect,
+        int $timeSpent,
+        int $expectedTime
+    ): array {
+        $levelBefore = $this->getDimensionCurrentLevel($assessment, $dimension);
         $levelAfter = $levelBefore;
 
-        $recentCorrectStreak = $this->countRecentConsecutive($assessment->id, true);
-        $recentWrongStreak = $this->countRecentConsecutive($assessment->id, false);
-
-        $currentCorrectStreak = $isCorrect ? ($recentCorrectStreak + 1) : 0;
-        $currentWrongStreak = $isCorrect ? 0 : ($recentWrongStreak + 1);
-
-        if ($currentWrongStreak >= self::WRONG_STREAK_TO_DOWN) {
+        if (!$isCorrect) {
             $levelAfter = max(self::MIN_LEVEL, $levelBefore - 1);
-        } elseif ($isCorrect && $timeSpent <= max(1, $expectedTime) * 2 && $currentCorrectStreak >= self::CORRECT_STREAK_TO_UP) {
+            return [
+                'level_before' => $levelBefore,
+                'level_after' => $levelAfter,
+                'correct_streak' => 0,
+                'dimension' => $dimension,
+            ];
+        }
+
+        $recentCorrectStreak = $this->countRecentConsecutive($assessment->id, $dimension, true);
+        $currentCorrectStreak = $recentCorrectStreak + 1;
+        $canPromote = $timeSpent <= max(1, $expectedTime) * 2
+            && $currentCorrectStreak >= self::CORRECT_STREAK_TO_UP;
+
+        if ($canPromote) {
             $levelAfter = min(self::MAX_LEVEL, $levelBefore + 1);
         }
 
@@ -205,7 +239,7 @@ class VocabAssessmentService
             'level_before' => $levelBefore,
             'level_after' => $levelAfter,
             'correct_streak' => $currentCorrectStreak,
-            'wrong_streak' => $currentWrongStreak,
+            'dimension' => $dimension,
         ];
     }
 
@@ -218,95 +252,47 @@ class VocabAssessmentService
             ->orderBy('id')
             ->get();
 
-        $levelResults = [];
-        for ($level = self::MIN_LEVEL; $level <= self::MAX_LEVEL; $level++) {
-            $levelResults[$level] = [
-                'total' => 0,
-                'correct' => 0,
-                'accuracy' => 0,
-            ];
-        }
+        $dimensionResults = $this->buildDimensionLevelResults($records);
+        $overallLevelResults = $this->buildOverallLevelResults($records);
 
-        foreach ($records as $record) {
-            $level = max(self::MIN_LEVEL, min(self::MAX_LEVEL, (int) $record->assessment_level));
-            $levelResults[$level]['total']++;
-            if ((int) $record->is_correct === 1) {
-                $levelResults[$level]['correct']++;
-            }
-        }
+        $vocabFinalLevel = $this->resolveFinalLevelByDimension(
+            $records->all(),
+            self::DIMENSION_VOCAB,
+            $assessment->vocab_current_level ?? $assessment->start_level ?? 1
+        );
+        $grammarFinalLevel = $this->resolveFinalLevelByDimension(
+            $records->all(),
+            self::DIMENSION_GRAMMAR,
+            $assessment->grammar_current_level ?? $assessment->start_level ?? 1
+        );
 
-        foreach ($levelResults as $level => $result) {
-            $accuracy = $result['total'] > 0
-                ? round(($result['correct'] / $result['total']) * 100, 2)
-                : 0;
-
-            $levelResults[$level]['accuracy'] = $accuracy;
-        }
-
-        $attemptedLevels = array_values(array_filter(
-            array_keys($levelResults),
-            fn (int $level) => $levelResults[$level]['total'] > 0
-        ));
-
-        $stableLevels = array_values(array_filter(
-            $attemptedLevels,
-            fn (int $level) => $levelResults[$level]['accuracy'] >= 70
-        ));
-
-        if (!empty($stableLevels)) {
-            $finalLevel = max($stableLevels);
-        } elseif (!empty($attemptedLevels)) {
-            usort($attemptedLevels, function (int $a, int $b) use ($levelResults) {
-                $aScore = ($levelResults[$a]['total'] * 1000) + ($levelResults[$a]['accuracy'] * 10);
-                $bScore = ($levelResults[$b]['total'] * 1000) + ($levelResults[$b]['accuracy'] * 10);
-
-                if ($aScore === $bScore) {
-                    return $a <=> $b;
-                }
-
-                return $bScore <=> $aScore;
-            });
-
-            $candidate = $attemptedLevels[0];
-            $candidateAccuracy = (float) $levelResults[$candidate]['accuracy'];
-            $finalLevel = $candidateAccuracy < 60 && $candidate > self::MIN_LEVEL
-                ? ($candidate - 1)
-                : $candidate;
-        } else {
-            $finalLevel = (int) $assessment->start_level;
-        }
-
+        $rawLevel = (int) round(($vocabFinalLevel * 0.55) + ($grammarFinalLevel * 0.45));
+        $rawLevel = max(self::MIN_LEVEL, min(self::MAX_LEVEL, $rawLevel));
+        $finalLevel = min($rawLevel, $grammarFinalLevel + 1);
         $finalLevel = max(self::MIN_LEVEL, min(self::MAX_LEVEL, $finalLevel));
-        $finalLevelAccuracy = (float) ($levelResults[$finalLevel]['accuracy'] ?? 0);
 
-        $mappedRealm = $this->mapLevelToRealm($finalLevel, $finalLevelAccuracy);
-
-        $nextLevel = min(self::MAX_LEVEL, $finalLevel + 1);
-        $nearBreakthrough = $nextLevel > $finalLevel
-            && ($levelResults[$nextLevel]['total'] ?? 0) > 0
-            && ($levelResults[$nextLevel]['accuracy'] ?? 0) >= 50;
+        $mappedRealm = $this->mapLevelToRealm($finalLevel, (float) ($assessment->accuracy ?? 0));
 
         $suggestions = [
-            sprintf('你的稳定词汇水平在 L%d。', $finalLevel),
-            sprintf('建议从%s词库开始修炼。', $mappedRealm['major_realm']),
+            sprintf('词汇维度：L%d；语法维度：L%d。', $vocabFinalLevel, $grammarFinalLevel),
+            sprintf('综合判定等级：L%d（语法上限约束已生效）。', $finalLevel),
+            sprintf('建议从%s词库与语法关卡同步修炼。', $mappedRealm['major_realm']),
         ];
-
-        if ($nearBreakthrough) {
-            $suggestions[] = sprintf('你在 L%d 已接近突破，可少量挑战更高等级词汇。', $nextLevel);
-        }
-
-        $suggestions[] = '本次测试主要基于词汇能力，后续会通过语法、阅读、听力等继续校准。';
 
         return [
             'assessment_id' => $assessmentId,
+            'vocab_final_level' => $vocabFinalLevel,
+            'grammar_final_level' => $grammarFinalLevel,
+            'raw_level' => $rawLevel,
             'final_level' => $finalLevel,
             'final_realm' => $mappedRealm['realm_label'],
             'final_stage' => $mappedRealm['stage'],
             'realm_code' => $mappedRealm['realm_code'],
             'realm_stage' => $mappedRealm['realm_stage'],
             'major_realm' => $mappedRealm['major_realm'],
-            'level_results' => $levelResults,
-            'near_breakthrough' => $nearBreakthrough,
+            'level_results' => $overallLevelResults,
+            'dimension_results' => $dimensionResults,
+            'near_breakthrough' => false,
             'suggestions' => $suggestions,
         ];
     }
@@ -341,7 +327,8 @@ class VocabAssessmentService
                 'current_realm' => (string) $result['final_realm'],
                 'current_stage' => (string) $result['final_stage'],
                 'vocabulary_realm' => (string) $result['final_realm'],
-                'vocabulary_level' => (int) $result['final_level'],
+                'vocabulary_level' => (int) $result['vocab_final_level'],
+                'grammar_level' => (int) $result['grammar_final_level'],
             ]
         );
 
@@ -354,14 +341,41 @@ class VocabAssessmentService
         return $profile;
     }
 
-    private function pickQuestionByLevels(array $levels, array $usedQuestionIds, int $currentLevel): ?Question
+    private function pickQuestionForDimension(string $dimension, int $currentLevel, array $usedQuestionIds): ?Question
     {
-        if (empty($levels)) {
+        $types = self::QUESTION_TYPES_BY_DIMENSION[$dimension] ?? [];
+        if (empty($types)) {
+            return null;
+        }
+
+        $levels = [$currentLevel];
+        $question = $this->pickQuestionByTypesAndLevels($types, $levels, $usedQuestionIds, $currentLevel);
+        if ($question) {
+            return $question;
+        }
+
+        $neighbors = array_values(array_unique(array_filter([
+            $currentLevel - 1,
+            $currentLevel + 1,
+        ], fn (int $value) => $value >= self::MIN_LEVEL && $value <= self::MAX_LEVEL)));
+        if (!empty($neighbors)) {
+            $question = $this->pickQuestionByTypesAndLevels($types, $neighbors, $usedQuestionIds, $currentLevel);
+            if ($question) {
+                return $question;
+            }
+        }
+
+        return $this->pickQuestionByTypesAndLevels($types, range(self::MIN_LEVEL, self::MAX_LEVEL), $usedQuestionIds, $currentLevel);
+    }
+
+    private function pickQuestionByTypesAndLevels(array $types, array $levels, array $usedQuestionIds, int $currentLevel): ?Question
+    {
+        if (empty($types) || empty($levels)) {
             return null;
         }
 
         $query = Question::query()
-            ->where('type', 'vocab')
+            ->whereIn('type', $types)
             ->where('is_assessment', 1)
             ->whereIn('assessment_level', $levels);
 
@@ -374,17 +388,18 @@ class VocabAssessmentService
         }
 
         return $query
-            ->orderByRaw('ABS(assessment_level - ?)', [$currentLevel])
+            ->orderByRaw('ABS(CAST(assessment_level AS SIGNED) - ?)', [$currentLevel])
             ->inRandomOrder()
             ->first();
     }
 
-    private function serializeQuestionForClient(Question $question): array
+    private function serializeQuestionForClient(Question $question, string $dimension): array
     {
         return [
             'id' => $question->id,
             'question_id' => $question->question_id,
-            'type' => $question->type,
+            'type' => $dimension,
+            'raw_type' => (string) $question->type,
             'play_mode' => $question->play_mode,
             'assessment_level' => (int) ($question->assessment_level ?? 1),
             'question' => $question->question,
@@ -394,10 +409,75 @@ class VocabAssessmentService
         ];
     }
 
-    private function countRecentConsecutive(int $assessmentId, bool $isCorrect): int
+    private function getDimensionCurrentLevel(VocabularyAssessment $assessment, string $dimension): int
+    {
+        $value = $dimension === self::DIMENSION_GRAMMAR
+            ? (int) ($assessment->grammar_current_level ?? $assessment->current_level ?? $assessment->start_level ?? 1)
+            : (int) ($assessment->vocab_current_level ?? $assessment->current_level ?? $assessment->start_level ?? 1);
+
+        return max(self::MIN_LEVEL, min(self::MAX_LEVEL, $value));
+    }
+
+    private function getDimensionProgress(int $assessmentId): array
+    {
+        $result = [
+            self::DIMENSION_VOCAB => 0,
+            self::DIMENSION_GRAMMAR => 0,
+        ];
+
+        $rows = VocabularyAssessmentRecord::query()
+            ->selectRaw('question_type, COUNT(*) as total_count')
+            ->where('assessment_id', $assessmentId)
+            ->groupBy('question_type')
+            ->get();
+
+        foreach ($rows as $row) {
+            $dimension = $this->normalizeQuestionType((string) ($row->question_type ?? ''));
+            $result[$dimension] += (int) ($row->total_count ?? 0);
+        }
+
+        return $result;
+    }
+
+    private function decideNextDimension(array $dimensionProgress): ?string
+    {
+        $vocabRemaining = $this->remainingForDimension(self::DIMENSION_VOCAB, $dimensionProgress);
+        $grammarRemaining = $this->remainingForDimension(self::DIMENSION_GRAMMAR, $dimensionProgress);
+
+        if ($vocabRemaining <= 0 && $grammarRemaining <= 0) {
+            return null;
+        }
+        if ($vocabRemaining <= 0) {
+            return self::DIMENSION_GRAMMAR;
+        }
+        if ($grammarRemaining <= 0) {
+            return self::DIMENSION_VOCAB;
+        }
+
+        $vocabDone = (int) ($dimensionProgress[self::DIMENSION_VOCAB] ?? 0);
+        $grammarDone = (int) ($dimensionProgress[self::DIMENSION_GRAMMAR] ?? 0);
+        $vocabRatio = $vocabDone / max(1, self::VOCAB_QUESTIONS);
+        $grammarRatio = $grammarDone / max(1, self::GRAMMAR_QUESTIONS);
+
+        if (abs($vocabRatio - $grammarRatio) < 0.0001) {
+            return $vocabRemaining >= $grammarRemaining ? self::DIMENSION_VOCAB : self::DIMENSION_GRAMMAR;
+        }
+
+        return $vocabRatio < $grammarRatio ? self::DIMENSION_VOCAB : self::DIMENSION_GRAMMAR;
+    }
+
+    private function remainingForDimension(string $dimension, array $progress): int
+    {
+        $target = $dimension === self::DIMENSION_GRAMMAR ? self::GRAMMAR_QUESTIONS : self::VOCAB_QUESTIONS;
+        $done = (int) ($progress[$dimension] ?? 0);
+        return max(0, $target - $done);
+    }
+
+    private function countRecentConsecutive(int $assessmentId, string $dimension, bool $isCorrect): int
     {
         $records = VocabularyAssessmentRecord::query()
             ->where('assessment_id', $assessmentId)
+            ->where('question_type', $dimension)
             ->orderByDesc('id')
             ->limit(15)
             ->get(['is_correct']);
@@ -412,6 +492,84 @@ class VocabAssessmentService
         }
 
         return $count;
+    }
+
+    /**
+     * @param array<int, VocabularyAssessmentRecord> $records
+     */
+    private function resolveFinalLevelByDimension(array $records, string $dimension, int $fallbackLevel): int
+    {
+        $target = max(self::MIN_LEVEL, min(self::MAX_LEVEL, $fallbackLevel));
+        for ($i = count($records) - 1; $i >= 0; $i--) {
+            $record = $records[$i];
+            if ($this->normalizeQuestionType((string) $record->question_type) !== $dimension) {
+                continue;
+            }
+
+            $target = max(self::MIN_LEVEL, min(self::MAX_LEVEL, (int) ($record->level_after ?? $fallbackLevel)));
+            break;
+        }
+
+        return $target;
+    }
+
+    private function buildDimensionLevelResults($records): array
+    {
+        $build = function () {
+            $rows = [];
+            for ($level = self::MIN_LEVEL; $level <= self::MAX_LEVEL; $level++) {
+                $rows[$level] = ['total' => 0, 'correct' => 0, 'accuracy' => 0];
+            }
+            return $rows;
+        };
+
+        $result = [
+            self::DIMENSION_VOCAB => $build(),
+            self::DIMENSION_GRAMMAR => $build(),
+        ];
+
+        foreach ($records as $record) {
+            $dimension = $this->normalizeQuestionType((string) ($record->question_type ?? ''));
+            $level = max(self::MIN_LEVEL, min(self::MAX_LEVEL, (int) $record->assessment_level));
+            $result[$dimension][$level]['total']++;
+            if ((int) $record->is_correct === 1) {
+                $result[$dimension][$level]['correct']++;
+            }
+        }
+
+        foreach ($result as $dimension => $levels) {
+            foreach ($levels as $level => $row) {
+                $result[$dimension][$level]['accuracy'] = $row['total'] > 0
+                    ? round(($row['correct'] / $row['total']) * 100, 2)
+                    : 0;
+            }
+        }
+
+        return $result;
+    }
+
+    private function buildOverallLevelResults($records): array
+    {
+        $rows = [];
+        for ($level = self::MIN_LEVEL; $level <= self::MAX_LEVEL; $level++) {
+            $rows[$level] = ['total' => 0, 'correct' => 0, 'accuracy' => 0];
+        }
+
+        foreach ($records as $record) {
+            $level = max(self::MIN_LEVEL, min(self::MAX_LEVEL, (int) $record->assessment_level));
+            $rows[$level]['total']++;
+            if ((int) $record->is_correct === 1) {
+                $rows[$level]['correct']++;
+            }
+        }
+
+        foreach ($rows as $level => $row) {
+            $rows[$level]['accuracy'] = $row['total'] > 0
+                ? round(($row['correct'] / $row['total']) * 100, 2)
+                : 0;
+        }
+
+        return $rows;
     }
 
     private function containsAny(string $value, array $needles): bool

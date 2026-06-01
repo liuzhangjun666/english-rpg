@@ -14,6 +14,7 @@ class VocabularyAssessmentRecord extends Model
         'assessment_id',
         'user_id',
         'question_id',
+        'question_type',
         'assessment_level',
         'play_mode',
         'user_answer',

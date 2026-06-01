@@ -92,7 +92,8 @@ class AuthController extends Controller
         }
 
         $today = date('Y-m-d');
-        $initialRealm = CultivationProfile::initialRealmBySchoolGrade((string) $request->school_grade);
+        // 注册时先使用统一默认境界，最终初始境界由词汇灵根测试结果确定
+        $initialRealm = CultivationProfile::defaultInitialRealm();
         $currentRealmName = $this->realmService->composeCurrentRealm($initialRealm['realm'], $initialRealm['realm_stage']);
 
         $user = User::create([

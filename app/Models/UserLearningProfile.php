@@ -20,6 +20,7 @@ class UserLearningProfile extends Model
         'current_stage',
         'vocabulary_realm',
         'vocabulary_level',
+        'grammar_level',
     ];
 
     protected function casts(): array
@@ -29,6 +30,7 @@ class UserLearningProfile extends Model
             'initial_level' => 'integer',
             'current_level' => 'integer',
             'vocabulary_level' => 'integer',
+            'grammar_level' => 'integer',
         ];
     }
 }

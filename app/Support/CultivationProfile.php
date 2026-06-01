@@ -117,6 +117,11 @@ class CultivationProfile
         };
     }
 
+    public static function defaultInitialRealm(): array
+    {
+        return ['realm' => 'L1', 'realm_stage' => 1];
+    }
+
     public static function initialRealmBySchoolGrade(?string $schoolGrade): array
     {
         return match (trim((string) $schoolGrade)) {
@@ -151,7 +156,7 @@ class CultivationProfile
             'graduate' => ['realm' => 'H1', 'realm_stage' => 1],
             'advanced' => ['realm' => 'H1', 'realm_stage' => 7],
 
-            default => ['realm' => 'L1', 'realm_stage' => 1],
+            default => self::defaultInitialRealm(),
         };
     }
 

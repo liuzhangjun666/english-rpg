@@ -110,14 +110,12 @@ class UserController extends Controller
 
         $user = $request->user();
         $updates = [];
-        $schoolGradeChanged = false;
 
         if ($request->filled('nickname')) {
             $updates['nickname'] = $request->nickname;
         }
         if ($request->filled('school_grade')) {
             $updates['school_grade'] = $request->school_grade;
-            $schoolGradeChanged = (string) $request->school_grade !== (string) ($user->school_grade ?? '');
         }
         if ($request->filled('avatar_url')) {
             $updates['avatar_url'] = $request->avatar_url;
@@ -140,17 +138,6 @@ class UserController extends Controller
             $targetRealm = (string) ($updates['realm'] ?? $user->realm ?? 'L1');
             $targetStage = max(1, (int) ($updates['realm_stage'] ?? $user->realm_stage ?? 1));
             $updates['current_realm'] = $this->realmService->composeCurrentRealm($targetRealm, $targetStage);
-        }
-
-        if ($schoolGradeChanged
-            && !array_key_exists('realm', $updates)
-            && !array_key_exists('realm_stage', $updates)
-            && !array_key_exists('current_realm', $updates)
-        ) {
-            $gradeRealm = CultivationProfile::initialRealmBySchoolGrade((string) $updates['school_grade']);
-            $updates['realm'] = (string) ($gradeRealm['realm'] ?? 'L1');
-            $updates['realm_stage'] = max(1, (int) ($gradeRealm['realm_stage'] ?? 1));
-            $updates['current_realm'] = $this->realmService->composeCurrentRealm($updates['realm'], $updates['realm_stage']);
         }
 
         if (!empty($updates)) {
