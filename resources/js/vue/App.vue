@@ -145,7 +145,24 @@ async function logout() {
   }
 }
 
+import { onMounted, onUnmounted } from 'vue';
+
 function openProfile() {
   bridge.openProfilePanel();
 }
+
+const handleProfileUpdate = (e: Event) => {
+  const customEvent = e as CustomEvent;
+  if (customEvent.detail) {
+    user.updateProfile(customEvent.detail);
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('profile-updated', handleProfileUpdate);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('profile-updated', handleProfileUpdate);
+});
 </script>

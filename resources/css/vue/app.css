@@ -209,6 +209,7 @@ html, body, #app {
 #vue-app .hall-dock {
   display: flex;
   justify-content: center;
+  align-items: flex-end; /* 使大小不同的图标在底部对齐 */
   gap: 20px;
   background: linear-gradient(to top, rgba(15, 20, 38, 0.95) 0%, rgba(15, 20, 38, 0.4) 100%);
   padding: 20px 30px 10px;
@@ -218,6 +219,11 @@ html, body, #app {
   left: 0;
   width: 100%;
   z-index: 10;
+}
+
+#vue-app .dock-spacer {
+  width: 110px; /* 必须与 dock-icon 的宽度完全一致 */
+  pointer-events: none;
 }
 
 #vue-app .action-card-icon-only {
@@ -240,7 +246,7 @@ html, body, #app {
 }
 
 #vue-app .core-icon {
-  width: 160px;
+  width: 200px;
 }
 
 #vue-app .arc-icon {
@@ -249,7 +255,7 @@ html, body, #app {
 }
 
 #vue-app .dock-icon {
-  width: 80px;
+  width: 110px;
 }
 
 #vue-app .core-icon:hover {

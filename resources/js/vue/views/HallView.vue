@@ -2,38 +2,29 @@
   <div class="hall-page">
     <div class="game-stage" ref="stageRef" :style="stageStyle">
       <div class="hall-scene">
-        
-        <!-- 核心中央图标 -->
-        <div class="core-container" v-if="centerItem">
-          <button type="button" class="action-card-icon-only core-icon" @click="centerItem.onClick" :title="centerItem.title">
-            <img :src="centerItem.image" :alt="centerItem.title" class="action-thumb-icon" />
-          </button>
-        </div>
+        <!-- 背景场景容器，不再包含散落的图标 -->
+      </div>
 
-        <!-- 3D 半环形透视排列的周围图标 -->
-        <div class="arc-container">
-          <button
-            v-for="(item, index) in arcItems"
-            :key="item.key"
-            type="button"
-            class="action-card-icon-only arc-icon"
-            :style="getArcStyle(index, arcItems.length)"
-            @click="item.onClick"
+      <!-- 底部导航 Dock (全部图标集中于此) -->
+      <div class="hall-dock">
+        <template v-for="item in dockItems" :key="item.key">
+          <div v-if="item.isSpacer" class="dock-spacer"></div>
+          <button 
+            v-else
+            type="button" 
+            :class="['action-card-icon-only', item.key === 'practice' ? 'core-icon' : 'dock-icon']" 
+            @click="item.onClick" 
             :title="item.title"
           >
             <img :src="item.image" :alt="item.title" class="action-thumb-icon" />
           </button>
-        </div>
-
-      </div>
-
-      <!-- 底部导航 Dock -->
-      <div class="hall-dock">
-        <button v-for="item in dockItems" :key="item.key" type="button" class="action-card-icon-only dock-icon" @click="item.onClick" :title="item.title">
-          <img :src="item.image" :alt="item.title" class="action-thumb-icon" />
-        </button>
+        </template>
       </div>
     </div>
+    
+    <!-- 弹窗组件 -->
+    <MallView v-model:visible="showMall" />
+    <LeaderboardView v-model:visible="showLeaderboard" />
   </div>
 </template>
 
@@ -61,23 +52,33 @@ const router = useRouter();
 const bridge = useLegacyBridge();
 const ui = useUiStore();
 
-// --- 动态等比例缩放视口 (Safe Wrapper) ---
 const stageRef = ref<HTMLElement | null>(null);
 const scale = ref(1);
+const isPortraitMode = ref(false);
 const DESIGN_WIDTH = 1920;
 const DESIGN_HEIGHT = 1080;
 
 const stageStyle = computed(() => ({
   width: `${DESIGN_WIDTH}px`,
   height: `${DESIGN_HEIGHT}px`,
-  transform: `translate(-50%, -50%) scale(${scale.value})`,
+  // 如果是竖屏，则顺时针旋转 90 度，并应用计算出的缩放
+  transform: `translate(-50%, -50%) rotate(${isPortraitMode.value ? '90deg' : '0deg'}) scale(${scale.value})`,
 }));
 
 const updateScale = () => {
   const windowWidth = window.innerWidth;
   const windowHeight = window.innerHeight;
-  // 保持宽高比完全容纳在窗口内 (类似 object-fit: contain)
-  scale.value = Math.min(windowWidth / DESIGN_WIDTH, windowHeight / DESIGN_HEIGHT);
+  
+  // 判定是否为竖屏
+  isPortraitMode.value = windowHeight > windowWidth;
+  
+  if (isPortraitMode.value) {
+    // 竖屏下，屏幕的高对应设计稿的宽，屏幕的宽对应设计稿的高
+    scale.value = Math.min(windowHeight / DESIGN_WIDTH, windowWidth / DESIGN_HEIGHT);
+  } else {
+    // 横屏正常逻辑
+    scale.value = Math.min(windowWidth / DESIGN_WIDTH, windowHeight / DESIGN_HEIGHT);
+  }
 };
 
 onMounted(async () => {
@@ -189,67 +190,34 @@ const actionItems = computed(() => [
   },
 ]);
 
-// 核心中心玩法 (练功房为主位)
-const centerItem = computed(() => actionItems.value.find(i => i.key === 'practice'));
-
-// 环绕在主位周围的系统玩法 (7个)
-const arcItems = computed(() => {
-  return actionItems.value.filter(i => 
-    ['exam', 'mijing', 'practice-grammar', 'practice-listening', 'practice-speaking', 'reading', 'practice-writing'].includes(i.key)
-  );
-});
-
-// 底部系统功能
+// 重新组织底部 Dock 的顺序，以“练功房”为核心绝对居中
+// 共 14 个图标。为了让 practice 绝对居中，我们在左侧加入一个占位符(spacer)，使得左右两边都是 7 个等宽元素。
 const dockItems = computed(() => {
-  return actionItems.value.filter(i => 
-    ['mall', 'leaderboard', 'review', 'demons', 'achievements', 'profile'].includes(i.key)
-  );
+  const allItems = actionItems.value;
+  
+  const leftKeys = ['exam', 'mijing', 'practice-grammar', 'practice-listening', 'practice-speaking', 'reading'];
+  const rightKeys = ['practice-writing', 'mall', 'leaderboard', 'review', 'demons', 'achievements', 'profile'];
+  
+  const items = [];
+  
+  // 补齐左侧 7 个元素，插入一个透明占位符
+  items.push({ key: 'spacer', isSpacer: true });
+  leftKeys.forEach(k => items.push(allItems.find(i => i.key === k)));
+  
+  // 核心居中
+  items.push(allItems.find(i => i.key === 'practice'));
+  
+  // 右侧 7 个元素
+  rightKeys.forEach(k => items.push(allItems.find(i => i.key === k)));
+  
+  return items;
 });
 
-/**
- * 计算 3D 环形布局样式 (近大远小)
- * @param {number} index 当前图标的索引
- * @param {number} total 环形图标的总数
- */
-function getArcStyle(index: number, total: number) {
-  // 定义起始和结束角度（弧度制）。
-  // Math.PI = 180度（左侧），0 = 0度（右侧）
-  // 加上一点偏移量让圆弧不要完全平展开，形成约 165度 到 15度 的优美弧线
-  const startAngle = Math.PI - 0.25; 
-  const endAngle = 0.25; 
-  
-  // 根据索引计算当前图标的进度占比 (0 到 1)
-  const progress = total > 1 ? index / (total - 1) : 0.5;
-  // 当前图标对应的角度
-  const angle = startAngle + progress * (endAngle - startAngle);
-  
-  // 椭圆长短半轴：基于 1920x1080 视口的百分比
-  const rx = 36; // 长半轴 (占用约 72%)
-  const ry = 22; // 短半轴 (占用约 44%)
-  
-  // 极坐标转笛卡尔坐标
-  const x = Math.cos(angle) * rx; 
-  const y = Math.sin(angle) * ry; 
-  
-  // Z轴深度计算：sin(angle) 在顶端（最远处）接近1，在两端接近0
-  const depth = Math.sin(angle); 
-  
-  // 透视缩放：远处的缩小至 0.6，近处的保持 1.0
-  const scale = 1 - (depth * 0.4); 
-  // 透明度衰减：远处的稍微透明，增加空气透视感
-  const opacity = 1 - (depth * 0.25); 
-  // Z-index：离屏幕越近（depth 越小）层级越高
-  const zIndex = Math.round(100 - depth * 50);
-  
-  return {
-    position: 'absolute',
-    left: `calc(50% + ${x}%)`,
-    top: `calc(50% - ${y}%)`,
-    transform: `translate(-50%, -50%) scale(${scale})`,
-    opacity,
-    zIndex
-  };
-}
+import MallView from './MallView.vue';
+import LeaderboardView from './LeaderboardView.vue';
+
+const showMall = ref(false);
+const showLeaderboard = ref(false);
 
 function goReading() {
   router.push('/reading');
@@ -264,11 +232,11 @@ function goMijing() {
 }
 
 function goMall() {
-  router.push('/mall');
+  showMall.value = true;
 }
 
 function goLeaderboard() {
-  router.push('/leaderboard');
+  showLeaderboard.value = true;
 }
 
 async function openReview() {

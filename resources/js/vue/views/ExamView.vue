@@ -161,8 +161,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onUnmounted } from 'vue';
-import { useApiClient } from '../../services/api';
-import { useUserStore } from '../../stores/user';
+import { useApiClient } from '../services/api';
+import { useUserStore } from '../stores/user';
 import { getRealmDisplayName } from '../../utils/cultivation';
 import { ElMessage } from 'element-plus';
 

@@ -232,8 +232,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { useApiClient } from '../../../services/api';
-import { useUserStore } from '../../../stores/user';
+import { useApiClient } from '../../services/api';
+import { useUserStore } from '../../stores/user';
 import { ElMessage } from 'element-plus';
 
 // 图片资源导入

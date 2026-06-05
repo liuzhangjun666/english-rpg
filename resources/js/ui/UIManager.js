@@ -695,11 +695,27 @@ export class UIManager {
         return realmLianqiIcon;
     }
 
+    getRealmThemeClass(realmLabel) {
+        const text = String(realmLabel || '').trim();
+        if (!text) return 'theme-lianqi';
+        if (text.includes('练气') || text.includes('炼气')) return 'theme-lianqi';
+        if (text.includes('筑基')) return 'theme-zhuji';
+        if (text.includes('金丹')) return 'theme-jindan';
+        if (text.includes('元婴')) return 'theme-yuanying';
+        if (text.includes('化神')) return 'theme-huashen';
+        if (text.includes('炼虚')) return 'theme-lianxu';
+        if (text.includes('合体')) return 'theme-heti';
+        if (text.includes('大乘')) return 'theme-dacheng';
+        if (text.includes('渡劫')) return 'theme-dujie';
+        return 'theme-lianqi';
+    }
+
     renderRealmBadge(realmLabel) {
         const safeLabel = this.escapeHtml(String(realmLabel || '练气一层'));
         const majorText = this.escapeHtml(this.getMajorRealmText(realmLabel));
+        const themeClass = this.escapeHtml(this.getRealmThemeClass(realmLabel));
         return `
-            <span class="realm-chip realm-chip-badges">
+            <span class="realm-chip realm-chip-badges ${themeClass}">
                 <span class="realm-major-wrap">
                     <img class="realm-major-badge" src="${realmMajorBadgeIcon}" alt="">
                     <span class="realm-major-text">${majorText}</span>
@@ -1112,6 +1128,7 @@ export class UIManager {
                         user.nickname = r.data.nickname;
                         displaySpan.textContent = r.data.nickname;
                         this.showHermesBubble('道号已更新。');
+                        window.dispatchEvent(new CustomEvent('profile-updated', { detail: r.data }));
                     } else {
                         inputEl.value = user.nickname || '';
                         this.showError('更新失败');

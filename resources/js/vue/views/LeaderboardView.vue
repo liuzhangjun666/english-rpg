@@ -59,7 +59,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
-import { useApiClient } from '../../services/api';
+import { useApiClient } from '../services/api';
+import { vLoading } from 'element-plus';
 
 const props = defineProps<{
   visible: boolean;
