@@ -1,222 +1,347 @@
+// 宗门大厅 3D 场景（云海凌霄）
 import * as THREE from 'three';
-import bgHall from '../../assets/images/bg_hall.png';
-import clickRingGold from '../../assets/images/custom/click_ring_gold.png';
-import { isLowPowerDevice, sceneFxProfiles } from './sceneConfig.js';
 import { buildHallStoryGuide } from '../core/StoryState.js';
 
 export class HallScene {
+    constructor() {
+        this.group = new THREE.Group();
+        this.buildingMarkers = [];
+        this.swords = [];
+        this.lastSwordCount = 0;
+        this.particles = [];
+        this.clouds = [];
+        this.time = 0;
+        
+        // 环境光照 (清晨/凌霄金光)
+        this.ambientLight = new THREE.AmbientLight(0xfff0dd, 0.8);
+        this.group.add(this.ambientLight);
+
+        this.dirLight = new THREE.DirectionalLight(0xffeedd, 1.5);
+        this.dirLight.position.set(10, 20, 15);
+        this.group.add(this.dirLight);
+
+        // 中心法阵与剑阵组
+        this.centerGroup = new THREE.Group();
+        this.group.add(this.centerGroup);
+        
+        this.swordGroup = new THREE.Group();
+        this.swordGroup.position.set(0, 2.5, 0); // 剑阵悬浮于中心
+        this.centerGroup.add(this.swordGroup);
+
+        this._lastGuideUpdate = 0;
+        this.currentRecommendModule = 'reading';
+    }
+
     build(scene, camera, renderer) {
         this.sceneRef = scene;
         this.cameraRef = camera;
-        this.rendererRef = renderer;
+        
+        // 1. 无尽虚空与云海雾效 (白昼/晨曦风格)
+        scene.background = new THREE.Color(0xd8e8ff);
+        scene.fog = new THREE.FogExp2(0xd8e8ff, 0.02);
 
-        const loader = new THREE.TextureLoader();
-        const effectTexture = loader.load(clickRingGold);
-        effectTexture.colorSpace = THREE.SRGBColorSpace;
+        // 2. 构建白玉悬空广场
+        this.createJadePlaza();
 
-        loader.load(bgHall, (tex) => {
-            if (!this.sceneRef) return;
-            tex.colorSpace = THREE.SRGBColorSpace;
-            this.bgTexture = tex;
-            this.sceneRef.background = tex;
-            this.updateBackgroundTextureFit();
+        // 3. 构建翻滚的云海粒子
+        this.createCloudSea();
+
+        // 4. 构建中心太极法阵
+        this.createCenterArray();
+
+        // 5. 构建四周的四大模块入口 (水晶传送阵)
+        this.createModulePortals();
+
+        // 6. 空气中飘散的金辉微尘
+        this.createDustParticles();
+
+        // 初始化飞剑 (读取 store 或者默认 5 把)
+        this.rebuildSwordArray(5);
+
+        scene.add(this.group);
+    }
+
+    createJadePlaza() {
+        // 白玉广场主体
+        const geo = new THREE.CylinderGeometry(18, 16, 1.5, 64);
+        const mat = new THREE.MeshStandardMaterial({
+            color: 0xf5f7fa, // 纯净的汉白玉色
+            roughness: 0.15, // 比较光滑，有倒影
+            metalness: 0.1
+        });
+        const plaza = new THREE.Mesh(geo, mat);
+        plaza.position.y = -0.75;
+        this.group.add(plaza);
+
+        // 广场边缘的金色镶边
+        const edgeGeo = new THREE.TorusGeometry(18, 0.15, 16, 100);
+        const edgeMat = new THREE.MeshStandardMaterial({
+            color: 0xffd700,
+            roughness: 0.2,
+            metalness: 0.8
+        });
+        const edge = new THREE.Mesh(edgeGeo, edgeMat);
+        edge.rotation.x = -Math.PI / 2;
+        this.group.add(edge);
+    }
+
+    createCloudSea() {
+        // 使用非常大的粒子模拟云海，位于广场下方
+        const cloudGeo = new THREE.BufferGeometry();
+        const numClouds = 600;
+        const pos = new Float32Array(numClouds * 3);
+        const sizes = new Float32Array(numClouds);
+        
+        for (let i = 0; i < numClouds; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 10 + Math.random() * 80;
+            pos[i*3] = Math.cos(angle) * radius;
+            pos[i*3+1] = -5 - Math.random() * 10; // 云海在脚底翻腾
+            pos[i*3+2] = Math.sin(angle) * radius;
+            sizes[i] = Math.random();
+        }
+        cloudGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        cloudGeo.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+
+        // 简易的纯代码云朵 (白色软发光)
+        const cloudMat = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 8,
+            transparent: true,
+            opacity: 0.6,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
         });
 
-        const ambient = new THREE.AmbientLight(0x4466aa, 0.55);
-        scene.add(ambient);
-        const dirLight = new THREE.DirectionalLight(0xffeedd, 1.3);
-        dirLight.position.set(8, 15, 10);
-        scene.add(dirLight);
-        const centerGlow = new THREE.PointLight(0xc9a846, 0.9, 20);
-        centerGlow.position.set(0, 3, 0);
-        scene.add(centerGlow);
+        this.cloudPoints = new THREE.Points(cloudGeo, cloudMat);
+        this.group.add(this.cloudPoints);
+    }
 
-        const lowPower = isLowPowerDevice();
-        this.fxBudget = lowPower ? sceneFxProfiles.hall.low : sceneFxProfiles.hall.normal;
+    createCenterArray() {
+        const outerGeo = new THREE.RingGeometry(6, 6.5, 64);
+        const innerGeo = new THREE.RingGeometry(4.5, 4.8, 64);
+        
+        const mat = new THREE.MeshBasicMaterial({ 
+            color: 0xffd700, 
+            transparent: true, 
+            opacity: 0.8, 
+            side: THREE.DoubleSide,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
 
-        const starCount = this.fxBudget.starCount;
-        const starGeo = new THREE.BufferGeometry();
-        const pos = new Float32Array(starCount * 3);
-        const col = new Float32Array(starCount * 3);
-        for (let i = 0; i < starCount; i++) {
-            const theta = Math.random() * Math.PI * 2;
-            const phi = Math.acos(2 * Math.random() - 1);
-            const r = 30 + Math.random() * 50;
-            pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-            pos[i * 3 + 1] = Math.abs(r * Math.cos(phi));
-            pos[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
-            const gold = Math.random() > 0.7;
-            col[i * 3] = gold ? 0.85 : 0.3 + Math.random() * 0.3;
-            col[i * 3 + 1] = gold ? 0.65 : 0.3 + Math.random() * 0.2;
-            col[i * 3 + 2] = gold ? 0.35 : 0.4 + Math.random() * 0.3;
-        }
-        starGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        starGeo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-        const stars = new THREE.Points(
-            starGeo,
-            new THREE.PointsMaterial({
-                size: lowPower ? 0.14 : 0.18,
-                vertexColors: true,
-                transparent: true,
-                opacity: 0.8,
-                blending: THREE.AdditiveBlending,
-                sizeAttenuation: true,
-            })
-        );
-        scene.add(stars);
-        this.stars = stars;
+        this.outerRing = new THREE.Mesh(outerGeo, mat);
+        this.outerRing.rotation.x = -Math.PI / 2;
+        this.outerRing.position.y = 0.02;
 
-        for (let layer = 0; layer < this.fxBudget.ringLayers; layer++) {
-            const ringR = 5.8 + layer * 0.5;
-            const ring = new THREE.Mesh(
-                new THREE.PlaneGeometry((ringR + 0.15) * 2, (ringR + 0.15) * 2),
-                new THREE.MeshBasicMaterial({
-                    map: effectTexture,
-                    color: layer === 0 ? 0xffe4a8 : 0xffd892,
-                    transparent: true,
-                    opacity: lowPower ? 0.2 : 0.2 + layer * 0.06,
-                    blending: THREE.AdditiveBlending,
-                    depthWrite: false,
-                    side: THREE.DoubleSide,
-                })
-            );
-            ring.rotation.x = -Math.PI / 2;
-            ring.position.y = 0.06 + layer * 0.02;
-            ring.userData.spinSpeed = 0.001 + layer * 0.001;
-            scene.add(ring);
-        }
+        this.innerRing = new THREE.Mesh(innerGeo, mat);
+        this.innerRing.rotation.x = -Math.PI / 2;
+        this.innerRing.position.y = 0.02;
 
-        const pillarPositions = [
-            [-4, 0, -3.5],
-            [4, 0, -3.5],
-            [-4, 0, 3.5],
-            [4, 0, 3.5],
+        this.centerGroup.add(this.outerRing);
+        this.centerGroup.add(this.innerRing);
+    }
+
+    createModulePortals() {
+        // 四大模块的位置
+        const portalConfigs = [
+            { id: 'reading', label: '藏经阁', pos: [-8, 0, -6], color: 0x00e5ff },
+            { id: 'practice', label: '练功房', pos: [8, 0, -6], color: 0x39ff14 },
+            { id: 'shilianchang', label: '试炼场', pos: [-8, 0, 6], color: 0xff4757 },
+            { id: 'mijing', label: '秘  境', pos: [8, 0, 6], color: 0xa29bfe }
         ];
-        const colors = [0xffd486, 0xffe3a1, 0xffc56f, 0xffeec9];
-        this.pillarGems = [];
-        pillarPositions.slice(0, this.fxBudget.pillarGemCount).forEach(([x, _, z], i) => {
-            const gem = new THREE.Sprite(
-                new THREE.SpriteMaterial({
-                    map: effectTexture,
-                    color: colors[i],
-                    transparent: true,
-                    opacity: this.fxBudget.baseOpacity,
-                    blending: THREE.AdditiveBlending,
-                    depthWrite: false,
-                })
-            );
-            gem.position.set(x, 3.8, z);
-            gem.scale.set(0.95, 0.95, 1);
-            gem.userData = { floatSpeed: 0.8 + i * 0.2, floatOffset: i * 1.5 };
-            scene.add(gem);
-            this.pillarGems.push(gem);
-        });
 
-        // --- 核心：创建代表四大模块的 3D 建筑物高亮 Mesh ---
-        this.buildingMarkers = [];
-        const buildingModules = ['reading', 'practice', 'shilianchang', 'mijing'];
-        // 沿用 pillarPositions 作为各大模块在 3D 场景中的轴向节点基础坐标
-        pillarPositions.forEach(([x, y, z], i) => {
-            const moduleId = buildingModules[i];
-            const markerGeo = new THREE.SphereGeometry(1.5, 32, 32);
-            const markerMat = new THREE.MeshStandardMaterial({
-                color: 0xffd486,
-                emissive: new THREE.Color(0xc9a846),
-                emissiveIntensity: 0,
+        portalConfigs.forEach(cfg => {
+            const portalGroup = new THREE.Group();
+            portalGroup.position.set(cfg.pos[0], 2.5, cfg.pos[2]);
+
+            // 1. 水晶方碑
+            const crystalGeo = new THREE.OctahedronGeometry(1.2, 0);
+            crystalGeo.scale(1, 2.5, 1);
+            const crystalMat = new THREE.MeshStandardMaterial({
+                color: 0xffffff,
+                emissive: cfg.color,
+                emissiveIntensity: 0.5,
+                roughness: 0.1,
+                metalness: 0.8,
                 transparent: true,
-                opacity: 0,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false,
+                opacity: 0.85
             });
-            const marker = new THREE.Mesh(markerGeo, markerMat);
-            marker.position.set(x, 3.8, z); // 包裹在 pillarGem 附近
-            marker.userData = { id: moduleId, baseY: 3.8 };
-            marker.visible = false;
-            scene.add(marker);
-            this.buildingMarkers.push(marker);
-        });
-        this._lastGuideUpdate = 0;
-        this.currentRecommendModule = 'reading';
+            const crystal = new THREE.Mesh(crystalGeo, crystalMat);
+            
+            // 为水晶添加发光轮廓
+            const edgesGeo = new THREE.EdgesGeometry(crystalGeo);
+            const lineMat = new THREE.LineBasicMaterial({ 
+                color: cfg.color,
+                blending: THREE.AdditiveBlending,
+                transparent: true,
+                opacity: 0.9
+            });
+            crystal.add(new THREE.LineSegments(edgesGeo, lineMat));
+            portalGroup.add(crystal);
 
-        this.orbs = [];
-        this.orbGlows = [];
-        const orbColors = [0xffd68c, 0xffe6b5, 0xffc977, 0xffdb9f, 0xfff0d0, 0xffbf62];
-        for (let i = 0; i < this.fxBudget.orbCount; i++) {
-            const orb = new THREE.Sprite(
-                new THREE.SpriteMaterial({
-                    map: effectTexture,
-                    color: orbColors[i],
-                    transparent: true,
-                    opacity: this.fxBudget.baseOpacity,
-                    blending: THREE.AdditiveBlending,
-                    depthWrite: false,
-                })
-            );
-            const angle = (i / this.fxBudget.orbCount) * Math.PI * 2;
-            const radius = 3.2 + Math.random() * 0.8;
-            orb.position.set(Math.cos(angle) * radius, 1.5 + Math.random(), Math.sin(angle) * radius);
-            orb.scale.set(1.05, 1.05, 1);
-            orb.userData = {
-                angle,
-                radius,
-                baseY: orb.position.y,
-                speed: 0.25 + Math.random() * 0.15,
-                floatSpeed: 1.2 + Math.random() * 0.5,
-                floatOffset: Math.random() * 100,
+            // 2. 底部法阵
+            const baseGeo = new THREE.RingGeometry(1.5, 2.0, 32);
+            const baseMat = new THREE.MeshBasicMaterial({
+                color: cfg.color,
+                transparent: true,
+                opacity: 0.4,
+                side: THREE.DoubleSide,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const baseRing = new THREE.Mesh(baseGeo, baseMat);
+            baseRing.rotation.x = -Math.PI / 2;
+            baseRing.position.y = -2.48; // 贴近地面
+            portalGroup.add(baseRing);
+
+            // 3. 悬浮的 3D 中文招牌文字
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            ctx.font = 'bold 64px "Microsoft YaHei", sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = '#' + cfg.color.toString(16).padStart(6, '0');
+            ctx.shadowBlur = 15;
+            ctx.fillText(cfg.label, 128, 64);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.colorSpace = THREE.SRGBColorSpace;
+            const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false });
+            const labelSprite = new THREE.Sprite(spriteMat);
+            labelSprite.scale.set(4, 2, 1);
+            labelSprite.position.y = 4.0; // 悬浮在水晶上方
+            portalGroup.add(labelSprite);
+
+            // 记录到 buildingMarkers 供动画调度使用
+            portalGroup.userData = { 
+                id: cfg.id, 
+                baseY: 2.5,
+                crystal: crystal,
+                baseRing: baseRing,
+                defaultEmissive: cfg.color
             };
-            scene.add(orb);
-            this.orbs.push(orb);
+            this.group.add(portalGroup);
+            this.buildingMarkers.push(portalGroup);
+        });
+    }
 
-            const glow = new THREE.Sprite(
-                new THREE.SpriteMaterial({
-                    map: effectTexture,
-                    color: orbColors[i],
-                    transparent: true,
-                    opacity: lowPower ? 0.12 : 0.18,
-                    blending: THREE.AdditiveBlending,
-                    depthWrite: false,
-                })
-            );
-            glow.position.copy(orb.position);
-            glow.scale.set(this.fxBudget.glowScale, this.fxBudget.glowScale, 1);
-            scene.add(glow);
-            this.orbGlows.push(glow);
+    createDustParticles() {
+        const geo = new THREE.BufferGeometry();
+        const numParticles = 400;
+        const pos = new Float32Array(numParticles * 3);
+        
+        for (let i = 0; i < numParticles; i++) {
+            pos[i*3] = (Math.random() - 0.5) * 40;
+            pos[i*3+1] = Math.random() * 20; // 广场上方
+            pos[i*3+2] = (Math.random() - 0.5) * 40;
+        }
+        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        
+        const mat = new THREE.PointsMaterial({
+            color: 0xffeab5, // 晨星金光
+            size: 0.15,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        
+        this.dustPoints = new THREE.Points(geo, mat);
+        this.group.add(this.dustPoints);
+    }
+
+    rebuildSwordArray(count) {
+        while(this.swordGroup.children.length > 0){ 
+            const child = this.swordGroup.children[0];
+            this.swordGroup.remove(child);
+            child.geometry.dispose();
+            if (Array.isArray(child.material)) {
+                child.material.forEach(m => m.dispose());
+            } else {
+                child.material.dispose();
+            }
+        }
+        this.swords = [];
+
+        // 重新构建精致的飞剑环绕阵
+        const radius = 3.5;
+        for (let i = 0; i < count; i++) {
+            const angle = (i / count) * Math.PI * 2;
+            
+            const swordGeo = new THREE.ConeGeometry(0.15, 2.0, 4);
+            const swordMat = new THREE.MeshBasicMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.9,
+            });
+            const sword = new THREE.Mesh(swordGeo, swordMat);
+            
+            // 剑气外发光
+            const edgesGeo = new THREE.EdgesGeometry(swordGeo);
+            const lineMat = new THREE.LineBasicMaterial({ color: 0xffd700, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+            sword.add(new THREE.LineSegments(edgesGeo, lineMat));
+
+            sword.position.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
+            sword.rotation.x = Math.PI; // 剑尖朝下
+            sword.rotation.z = Math.PI / 12; // 微微向外倾斜
+            sword.rotation.y = -angle;
+
+            // 每把剑自带上下浮动相位
+            sword.userData = { phaseOffset: i * 0.5 };
+
+            this.swordGroup.add(sword);
+            this.swords.push(sword);
         }
     }
 
     animate(time) {
-        if (this.stars) {
-            this.stars.rotation.y += 0.0003;
-            this.stars.rotation.x += 0.00012;
+        this.time = time;
+
+        // 云海翻腾
+        if (this.cloudPoints) {
+            this.cloudPoints.rotation.y = time * 0.02;
+            const pos = this.cloudPoints.geometry.attributes.position;
+            for (let i = 0; i < pos.count; i++) {
+                let y = pos.getY(i);
+                // 简单的波浪扰动
+                y += Math.sin(time + pos.getX(i)) * 0.01;
+                pos.setY(i, y);
+            }
+            pos.needsUpdate = true;
         }
 
-        if (this.orbs) {
-            this.orbs.forEach((orb, index) => {
-                const d = orb.userData;
-                const a = d.angle + time * d.speed;
-                orb.position.x = Math.cos(a) * d.radius;
-                orb.position.z = Math.sin(a) * d.radius;
-                orb.position.y = d.baseY + Math.sin(time * d.floatSpeed + d.floatOffset) * 0.4;
-                const s = 1 + Math.sin(time * 2.5) * 0.12;
-                orb.scale.set(s, s, s);
-                const glow = this.orbGlows?.[index];
-                if (glow) {
-                    glow.position.copy(orb.position);
-                    const gs = s * this.fxBudget.glowScale;
-                    glow.scale.set(gs, gs, 1);
-                }
+        // 金色微尘缓缓飘落/上升
+        if (this.dustPoints) {
+            this.dustPoints.rotation.y = time * 0.05;
+            const pos = this.dustPoints.geometry.attributes.position;
+            for (let i = 0; i < pos.count; i++) {
+                let y = pos.getY(i);
+                y += Math.sin(time + i) * 0.01;
+                pos.setY(i, y);
+            }
+            pos.needsUpdate = true;
+        }
+
+        // 中心法阵旋转
+        if (this.outerRing && this.innerRing) {
+            this.outerRing.rotation.z = time * 0.2;
+            this.innerRing.rotation.z = -time * 0.3;
+        }
+
+        // 剑阵公转与自转浮动
+        if (this.swordGroup) {
+            this.swordGroup.rotation.y = time * 0.3;
+            this.swords.forEach(sword => {
+                sword.position.y = Math.sin(time * 2.0 + sword.userData.phaseOffset) * 0.3;
             });
         }
 
-        if (this.pillarGems) {
-            this.pillarGems.forEach((gem) => {
-                const d = gem.userData;
-                gem.position.y = 3.8 + Math.sin(time * d.floatSpeed + d.floatOffset) * 0.2;
-            });
-        }
-
-        // 动态获取当前推荐场景模块并应用视觉高亮联动
-        if (time - this._lastGuideUpdate > 1.0) { // 每秒更新一次，避免性能浪费
+        // 定期检测推荐模块更新（同步剧情任务）
+        if (time - this._lastGuideUpdate > 1.0) {
             this._lastGuideUpdate = time;
             if (window.game?.store) {
                 const storeState = window.game.store.getState();
@@ -224,65 +349,57 @@ export class HallScene {
                 const progressCurrency = storeState.story?.currencies || {};
                 const guide = buildHallStoryGuide(storyProgress, progressCurrency);
                 this.currentRecommendModule = guide.recommendedModule || 'reading';
+                
+                // 同步剑阵数量
+                const user = window.game?.store?.getState()?.user || {};
+                let vocab = user.vocabulary || user.profile?.vocabulary || 0;
+                let stage = user.realm_stage || user.profile?.realm_stage || 1;
+                let targetSwordCount = Math.min(18, Math.max(5, Math.floor(vocab / 20)));
+                if (vocab === 0) targetSwordCount = Math.max(5, stage);
+
+                if (this.lastSwordCount !== targetSwordCount && targetSwordCount > 0) {
+                    this.lastSwordCount = targetSwordCount;
+                    this.rebuildSwordArray(targetSwordCount);
+                }
             }
         }
 
-        if (this.buildingMarkers) {
-            this.buildingMarkers.forEach((marker) => {
-                if (marker.userData.id === this.currentRecommendModule) {
-                    marker.visible = true;
-                    // 呼吸灯高亮光晕效果：材质的 emissive / emissiveIntensity 随时间做正弦波动
-                    // 也可以使用 marker.material.emissive.setScalar(Math.sin(time * 2) * 0.5 + 0.5) 
-                    const intensity = Math.sin(time * 2.5) * 0.5 + 0.5;
-                    marker.material.emissiveIntensity = intensity * 1.5;
-                    marker.material.opacity = 0.2 + intensity * 0.6;
-                    
-                    // 增加轻微浮动
-                    marker.position.y = marker.userData.baseY + Math.sin(time * 1.5) * 0.3;
-                    
-                    // 让内部包含的几何体微微缩放呼吸
-                    const scale = 1 + intensity * 0.15;
-                    marker.scale.set(scale, scale, scale);
-                } else {
-                    marker.visible = false;
-                }
-            });
-        }
-    }
+        // 水晶传送阵呼吸效果
+        this.buildingMarkers.forEach(portal => {
+            const isRecommended = portal.userData.id === this.currentRecommendModule;
+            const crystal = portal.userData.crystal;
+            const baseRing = portal.userData.baseRing;
+            
+            // 水晶自身旋转与浮动
+            crystal.rotation.y = time * 0.5;
+            portal.position.y = portal.userData.baseY + Math.sin(time * 2 + portal.userData.id.length) * 0.2;
+            
+            // 底部光环自转
+            baseRing.rotation.z = time * 0.8;
 
-    updateBackgroundTextureFit() {
-        if (!this.sceneRef || !this.cameraRef) return;
-        const tex = this.sceneRef.background;
-        if (!tex?.isTexture) return;
-        const image = tex.image;
-        if (!image) return;
-        const iw = image.videoWidth || image.naturalWidth || image.width || 1;
-        const ih = image.videoHeight || image.naturalHeight || image.height || 1;
-        if (!iw || !ih) return;
-
-        const canvasAspect = this.cameraRef.aspect || (window.innerWidth / window.innerHeight);
-        const imageAspect = iw / ih;
-        const aspect = imageAspect / canvasAspect;
-
-        tex.offset.x = aspect > 1 ? (1 - 1 / aspect) / 2 : 0;
-        tex.repeat.x = aspect > 1 ? 1 / aspect : 1;
-        tex.offset.y = aspect > 1 ? 0 : (1 - aspect) / 2;
-        tex.repeat.y = aspect > 1 ? 1 : aspect;
-        tex.needsUpdate = true;
-    }
-
-    onResize() {
-        this.updateBackgroundTextureFit();
+            if (isRecommended) {
+                // 推荐状态：剧烈呼吸，材质增亮，环变大
+                const intensity = Math.sin(time * 4) * 0.5 + 0.5;
+                crystal.material.emissiveIntensity = 1.0 + intensity;
+                crystal.scale.set(1.2, 1.2, 1.2);
+                baseRing.scale.set(1.5, 1.5, 1);
+                baseRing.material.opacity = 0.8;
+            } else {
+                // 待机状态：平静
+                crystal.material.emissiveIntensity = 0.5;
+                crystal.scale.set(1.0, 1.0, 1.0);
+                baseRing.scale.set(1.0, 1.0, 1);
+                baseRing.material.opacity = 0.4;
+            }
+        });
     }
 
     destroy() {
-        if (this.bgTexture) {
-            this.bgTexture.dispose();
-            this.bgTexture = null;
+        if (this.sceneRef) {
+            this.sceneRef.background = null;
+            this.sceneRef.fog = null;
         }
-        if (this.sceneRef) this.sceneRef.background = null;
         this.sceneRef = null;
         this.cameraRef = null;
-        this.rendererRef = null;
     }
 }

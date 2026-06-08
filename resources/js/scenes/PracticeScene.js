@@ -1,221 +1,405 @@
-// LevelUp 英语修仙 - 练功房 3D 场景（发光灵草药园特效升级版）
+// 练功房 3D 场景（聚灵竹海 / 瑶池灵泉）
 import * as THREE from 'three';
-import vocabBg from '../../assets/images/scene_practice_vocab.png';
-import dangeBg from '../../assets/images/scene_practice_dange.png';
-import listeningBg from '../../assets/images/scene_listening.png';
-import speakingBg from '../../assets/images/scene_speaking.png';
-import writingBg from '../../assets/images/scene_writing.png';
 
 export class PracticeScene {
     constructor() {
         this.group = new THREE.Group();
-        this.herbs = [];
-        this.fireflies = null;
-        this.initialFireflyPositions = []; // 【新增】用于修复萤火虫无限漂移的基准记录
+        this.bamboos = [];
+        this.spiritParticles = [];
+        this.optionsGroup = new THREE.Group();
+        this.group.add(this.optionsGroup);
+        
+        // 场景光照
+        this.ambientLight = new THREE.AmbientLight(0x05221a, 1.2);
+        this.group.add(this.ambientLight);
+
+        // 莲花中心光源
+        this.lotusLight = new THREE.PointLight(0x00ffcc, 1.5, 20);
+        this.lotusLight.position.set(0, 1.5, 0);
+        this.group.add(this.lotusLight);
+        
+        this.burstRings = [];
+        this.time = 0;
     }
 
     build(scene, camera, blocker, options = {}) {
-        const mode = options?.mode || 'vocab';
-        const bgMap = {
-            vocab: vocabBg,
-            dange: dangeBg,
-            listening: listeningBg,
-            speaking: speakingBg,
-            writing: writingBg,
-        };
+        this.sceneRef = scene;
 
-        const loader = new THREE.TextureLoader();
-        loader.load(bgMap[mode] || vocabBg, (tex) => {
-            tex.colorSpace = THREE.SRGBColorSpace;
-            scene.background = tex;
+        // 1. 宁静幽绿的环境与体积雾
+        scene.background = new THREE.Color(0x02100a);
+        scene.fog = new THREE.FogExp2(0x02100a, 0.035);
+
+        // 2. 瑶池灵泉 (水面镜面倒影)
+        this.createSpiritSpring();
+
+        // 3. 中心发光白莲阵眼
+        this.createCenterLotus();
+
+        // 4. 四周的聚灵竹阵
+        this.createBambooSea();
+
+        // 5. 灵气微粒
+        this.createSpiritParticles();
+
+        scene.add(this.group);
+    }
+
+    createSpiritSpring() {
+        const geo = new THREE.PlaneGeometry(150, 150);
+        // 使用高反光、暗绿色的材质模拟深邃平静的水面
+        const mat = new THREE.MeshStandardMaterial({
+            color: 0x011a12,
+            roughness: 0.05,
+            metalness: 0.95,
+            transparent: true,
+            opacity: 0.9
+        });
+        const spring = new THREE.Mesh(geo, mat);
+        spring.rotation.x = -Math.PI / 2;
+        spring.position.y = -2.0;
+        this.group.add(spring);
+        
+        // 水面涟漪辅助光环
+        const ringGeo = new THREE.RingGeometry(2, 8, 64);
+        const ringMat = new THREE.MeshBasicMaterial({
+            color: 0x00ffaa,
+            transparent: true,
+            opacity: 0.05,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            side: THREE.DoubleSide
+        });
+        const ripple = new THREE.Mesh(ringGeo, ringMat);
+        ripple.rotation.x = -Math.PI / 2;
+        ripple.position.y = -1.98;
+        this.group.add(ripple);
+    }
+
+    createCenterLotus() {
+        this.lotusGroup = new THREE.Group();
+        this.lotusGroup.position.set(0, -2.0, 0);
+        
+        // 使用多个微调的花瓣构建一朵程序化发光莲花
+        const petalGeo = new THREE.SphereGeometry(1.2, 16, 16);
+        // 将球体压扁并拉长变成花瓣状
+        petalGeo.scale(0.4, 1.5, 0.1);
+        // 将几何体原点移到花瓣底部
+        petalGeo.translate(0, 1.5, 0);
+
+        const layers = [
+            { count: 12, angleOffset: 0.3, scale: 1.0, color: 0xe6ffff, emissive: 0x00ffcc },
+            { count: 8, angleOffset: 0.6, scale: 0.7, color: 0xffffff, emissive: 0x00e6b8 }
+        ];
+
+        layers.forEach(layer => {
+            const mat = new THREE.MeshStandardMaterial({
+                color: layer.color,
+                emissive: layer.emissive,
+                emissiveIntensity: 0.8,
+                roughness: 0.2,
+                metalness: 0.1,
+                transparent: true,
+                opacity: 0.9
+            });
+
+            for (let i = 0; i < layer.count; i++) {
+                const petal = new THREE.Mesh(petalGeo, mat);
+                const angle = (i / layer.count) * Math.PI * 2;
+                
+                petal.rotation.y = angle;
+                // 向外绽放的角度
+                petal.rotation.x = layer.angleOffset;
+                petal.scale.setScalar(layer.scale);
+                
+                this.lotusGroup.add(petal);
+            }
         });
 
-        // 💡【核心视觉优化】全线升级为 Three.js 纯原生 WebGL Shader 演算
-        // 彻底抛弃一切外部图片和 Canvas 贴图生成，享受最纯粹的 GPU 数学渲染魅力！
+        // 莲花底座 (莲台)
+        const baseGeo = new THREE.CylinderGeometry(1.5, 1.0, 0.4, 32);
+        const baseMat = new THREE.MeshStandardMaterial({
+            color: 0x004d26,
+            emissive: 0x00331a,
+            roughness: 0.8
+        });
+        const base = new THREE.Mesh(baseGeo, baseMat);
+        base.position.y = 0.2;
+        this.lotusGroup.add(base);
 
-        // 地坪（降低不透明度，让云海底图隐约透出来，层次感拉满）
-        const ground = new THREE.Mesh(
-            new THREE.PlaneGeometry(20, 20),
-            new THREE.MeshBasicMaterial({ color: 0x051122, transparent: true, opacity: 0.5, side: THREE.DoubleSide })
-        );
-        ground.rotation.x = -Math.PI / 2;
-        ground.position.y = -2;
-        this.group.add(ground);
+        this.group.add(this.lotusGroup);
+    }
 
-        // 发光地环（聚灵阵：纯几何不透明度控制）
-        const glow = new THREE.Mesh(
-            new THREE.RingGeometry(1.6, 3.2, 32),
-            new THREE.MeshBasicMaterial({
-                color: 0x4ec07a,
-                transparent: true,
-                opacity: 0.15,
-                side: THREE.DoubleSide,
-                depthWrite: false,
-                blending: THREE.AdditiveBlending
-            })
-        );
-        glow.position.set(0, -1.95, 0);
-        glow.rotation.x = -Math.PI / 2;
-        glow.userData = { pulse: true };
-        this.group.add(glow);
+    createBambooSea() {
+        const numBamboos = 45;
+        for (let i = 0; i < numBamboos; i++) {
+            // 在水池周围随机生成，避开中心莲花
+            let angle = Math.random() * Math.PI * 2;
+            let radius = 8 + Math.random() * 25;
+            let x = Math.cos(angle) * radius;
+            let z = Math.sin(angle) * radius;
 
-        // 灵草系统纯原生 3D 华丽升级：
-        // 采用 3D 贝塞尔曲线生成自然弯曲枝干 + 纯原生 Shader 编写的发光果实
-        const colors = [0x4ec07a, 0x7bed9f, 0x70a1ff, 0xffa502, 0xff4757];
-        for (let i = 0; i < 35; i++) {
-            const herb = new THREE.Group();
-            const h = 0.4 + Math.random() * 0.5;
+            const bamboo = this.createSingleBamboo();
+            bamboo.position.set(x, -2.5, z);
+            
+            // 细微的倾斜和缩放
+            bamboo.rotation.x = (Math.random() - 0.5) * 0.1;
+            bamboo.rotation.z = (Math.random() - 0.5) * 0.1;
+            bamboo.rotation.y = Math.random() * Math.PI * 2;
+            const scale = 0.8 + Math.random() * 0.6;
+            bamboo.scale.set(scale, scale, scale);
 
-            // 枝干：贝塞尔曲线原生管道 (告别死板圆柱，迎风婀娜)
-            const curve = new THREE.QuadraticBezierCurve3(
-                new THREE.Vector3(0, 0, 0),
-                new THREE.Vector3((Math.random() - 0.5) * 0.2, h * 0.5, (Math.random() - 0.5) * 0.2),
-                new THREE.Vector3((Math.random() - 0.5) * 0.4, h, (Math.random() - 0.5) * 0.4)
-            );
-            const stem = new THREE.Mesh(
-                new THREE.TubeGeometry(curve, 8, 0.012, 5, false),
-                new THREE.MeshBasicMaterial({ color: 0x1a5c32 })
-            );
-            herb.add(stem);
-
-            // 灵草发光果实：纯 WebGL Shader 原生发光体，不依赖图片！
-            const glowShader = {
-                uniforms: {
-                    uColor: { value: new THREE.Color(colors[i % colors.length]) }
-                },
-                vertexShader: `
-                    varying vec2 vUv;
-                    void main() {
-                        vUv = uv;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                    }
-                `,
-                fragmentShader: `
-                    uniform vec3 uColor;
-                    varying vec2 vUv;
-                    void main() {
-                        float dist = distance(vUv, vec2(0.5));
-                        float alpha = smoothstep(0.5, 0.0, dist);
-                        float core = smoothstep(0.15, 0.0, dist);
-                        vec3 finalColor = mix(uColor, vec3(1.0), core);
-                        gl_FragColor = vec4(finalColor, alpha * 0.9);
-                    }
-                `,
-                transparent: true,
-                depthWrite: false,
-                blending: THREE.AdditiveBlending
+            bamboo.userData = {
+                phase: Math.random() * Math.PI * 2,
+                swaySpeed: 0.5 + Math.random() * 0.5
             };
-            const leafSprite = new THREE.Sprite(new THREE.ShaderMaterial(glowShader));
-            leafSprite.position.copy(curve.getPoint(1)); // 精准依附在弯曲的枝干顶端
 
-            const size = 0.25 + Math.random() * 0.2;
-            leafSprite.scale.set(size, size, 1);
-            herb.add(leafSprite);
+            this.group.add(bamboo);
+            this.bamboos.push(bamboo);
+        }
+    }
 
+    createSingleBamboo() {
+        const bambooGroup = new THREE.Group();
+        const segments = 8 + Math.floor(Math.random() * 4); // 8-11 节竹子
+        const segmentHeight = 2.0;
+        
+        const darkGreenMat = new THREE.MeshStandardMaterial({
+            color: 0x082e18,
+            roughness: 0.6,
+            metalness: 0.1
+        });
+
+        const glowingJointMat = new THREE.MeshBasicMaterial({
+            color: 0x00ffaa,
+            transparent: true,
+            opacity: 0.7,
+            blending: THREE.AdditiveBlending
+        });
+
+        let currentY = 0;
+        for (let i = 0; i < segments; i++) {
+            // 竹节主体
+            const stemGeo = new THREE.CylinderGeometry(0.18, 0.2, segmentHeight, 16);
+            const stem = new THREE.Mesh(stemGeo, darkGreenMat);
+            stem.position.y = currentY + segmentHeight / 2;
+            bambooGroup.add(stem);
+
+            // 发光竹节连接处 (聚灵节点)
+            const jointGeo = new THREE.TorusGeometry(0.22, 0.04, 8, 16);
+            const joint = new THREE.Mesh(jointGeo, glowingJointMat);
+            joint.position.y = currentY + segmentHeight;
+            joint.rotation.x = Math.PI / 2;
+            bambooGroup.add(joint);
+
+            currentY += segmentHeight;
+        }
+
+        return bambooGroup;
+    }
+
+    createSpiritParticles() {
+        const geo = new THREE.BufferGeometry();
+        const numParticles = 600;
+        const pos = new Float32Array(numParticles * 3);
+        const sizes = new Float32Array(numParticles);
+        this.particleData = [];
+
+        for (let i = 0; i < numParticles; i++) {
             const angle = Math.random() * Math.PI * 2;
-            const radius = 1.2 + Math.random() * 3.3;
-            const basePos = new THREE.Vector3(Math.cos(angle) * radius, -2, Math.sin(angle) * radius);
-            herb.position.copy(basePos);
+            const radius = 2 + Math.random() * 30;
+            const x = Math.cos(angle) * radius;
+            const y = -1.5 + Math.random() * 10;
+            const z = Math.sin(angle) * radius;
 
-            herb.userData = {
-                baseY: -2,
-                floatSpeed: 1.5 + Math.random() * 1.5,
-                floatOffset: Math.random() * Math.PI * 2,
-                amplitude: 0.04 + Math.random() * 0.04
-            };
+            pos[i*3] = x;
+            pos[i*3+1] = y;
+            pos[i*3+2] = z;
+            sizes[i] = Math.random();
 
-            this.group.add(herb);
-            this.herbs.push(herb);
+            this.particleData.push({
+                angle: angle,
+                radius: radius,
+                baseY: y,
+                speed: 0.1 + Math.random() * 0.2,
+                orbitSpeed: (Math.random() > 0.5 ? 1 : -1) * (0.05 + Math.random() * 0.1)
+            });
         }
 
-        // 梦幻荧光精灵：纯原生 WebGL Shader 点阵系统
-        const ffCount = 90;
-        const ffGeometry = new THREE.BufferGeometry();
-        const fp = new Float32Array(ffCount * 3);
-        const sizes = new Float32Array(ffCount);
-        this.initialFireflyPositions = [];
+        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        geo.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
 
-        for (let i = 0; i < ffCount; i++) {
-            const x = (Math.random() - 0.5) * 12;
-            const y = -1.5 + Math.random() * 4;
-            const z = (Math.random() - 0.5) * 10 - 1;
-
-            fp[i * 3] = x;
-            fp[i * 3 + 1] = y;
-            fp[i * 3 + 2] = z;
-            sizes[i] = 15.0 + Math.random() * 20.0; // 控制每个粒子的绝对像素大小
-
-            this.initialFireflyPositions.push({ x, y, z, speed: 0.6 + Math.random() * 0.8, offset: Math.random() * 50 });
-        }
-
-        ffGeometry.setAttribute('position', new THREE.BufferAttribute(fp, 3));
-        ffGeometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
-
-        const ffShader = {
+        // 纯代码圆形发光粒子 Shader
+        const shader = {
             uniforms: {
-                uColor: { value: new THREE.Color(0xfff3cc) }
+                color: { value: new THREE.Color(0x00ffaa) }
             },
             vertexShader: `
                 attribute float aSize;
                 void main() {
                     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                    gl_PointSize = aSize * (10.0 / -mvPosition.z); // 近大远小透视缩放
+                    gl_PointSize = aSize * (15.0 / -mvPosition.z);
                     gl_Position = projectionMatrix * mvPosition;
                 }
             `,
             fragmentShader: `
-                uniform vec3 uColor;
+                uniform vec3 color;
                 void main() {
                     float dist = distance(gl_PointCoord, vec2(0.5));
-                    float alpha = smoothstep(0.5, 0.05, dist); // 点精灵内置坐标系进行平滑圆角切割
-                    gl_FragColor = vec4(uColor, alpha * 0.85);
+                    float alpha = smoothstep(0.5, 0.1, dist);
+                    gl_FragColor = vec4(color, alpha * 0.8);
                 }
             `,
             transparent: true,
-            depthWrite: false,
-            blending: THREE.AdditiveBlending
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
         };
 
-        this.fireflies = new THREE.Points(ffGeometry, new THREE.ShaderMaterial(ffShader));
-        this.group.add(this.fireflies);
-
-        // 🛠️【致命Bug修复】必须将组整体作为节点添加到当前大场景中，否则前端没有任何 Three.js 物体显示！
-        scene.add(this.group);
+        this.spiritPoints = new THREE.Points(geo, new THREE.ShaderMaterial(shader));
+        this.group.add(this.spiritPoints);
     }
 
-    // 🔮 已完全剥离 Canvas Texture 依赖，特效运算由纯着色器在 GPU 中并行完成
+    createTextSprite(text) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        
+        ctx.fillStyle = 'rgba(2, 16, 10, 0.7)';
+        ctx.fill();
+        ctx.strokeStyle = '#00ffaa';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(0, 0, 512, 128);
+        
+        ctx.font = 'bold 42px "Microsoft YaHei", sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = '#00ffaa';
+        ctx.shadowBlur = 10;
+        ctx.fillText(text, 256, 64);
+        
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false });
+        const sprite = new THREE.Sprite(mat);
+        sprite.scale.set(4, 1, 1);
+        return sprite;
+    }
 
-    /**
-     * ⏳ 帧循环驱动：抛弃 += 累加漂移算法，采用绝对正弦差值赋值，确保动画万年不卡且永不漂移
-     */
+    spawnOptions(options) {
+        while(this.optionsGroup.children.length > 0) {
+            const child = this.optionsGroup.children[0];
+            this.optionsGroup.remove(child);
+            if (child.material.map) child.material.map.dispose();
+            child.material.dispose();
+        }
+
+        const radius = 3.5;
+        options.forEach((opt, i) => {
+            const angle = (i / options.length) * Math.PI * 2;
+            const text = typeof opt === 'string' ? opt : (opt.text || opt.label);
+            const value = typeof opt === 'string' ? opt : (opt.value || opt.id);
+            
+            const sprite = this.createTextSprite(text);
+            sprite.position.set(Math.cos(angle) * radius, 1.5, Math.sin(angle) * radius);
+            
+            sprite.userData = { 
+                interactable: true, 
+                action: 'answer_option', 
+                value: value,
+                baseY: 1.5,
+                offset: i * Math.PI * 0.5
+            };
+            this.optionsGroup.add(sprite);
+        });
+    }
+
+    triggerCorrectEffect() {
+        // 答对时，中心莲花爆发出强烈的灵气涟漪
+        const ringGeo = new THREE.RingGeometry(1.5, 2.0, 64);
+        const ringMat = new THREE.MeshBasicMaterial({ 
+            color: 0x00ffcc, 
+            transparent: true, 
+            opacity: 1.0, 
+            side: THREE.DoubleSide, 
+            blending: THREE.AdditiveBlending, 
+            depthWrite: false 
+        });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.position.set(0, -1.9, 0);
+        ring.rotation.x = -Math.PI / 2;
+        ring.userData = { scale: 1, opacity: 1.0 };
+        this.group.add(ring);
+        this.burstRings.push(ring);
+
+        // 莲花中心光芒闪烁
+        this.lotusLight.intensity = 5.0;
+    }
+
     animate(time) {
-        // 1. 聚灵地环周期呼吸微动
-        this.group.children.forEach(c => {
-            if (c.userData?.pulse) {
-                c.scale.setScalar(1 + Math.sin(time * 1.6) * 0.05);
+        this.time = time;
+
+        // 莲花微微呼吸
+        if (this.lotusGroup) {
+            this.lotusGroup.position.y = -2.0 + Math.sin(time * 1.5) * 0.1;
+            this.lotusLight.position.y = this.lotusGroup.position.y + 1.5;
+            
+            // 光源强度缓缓恢复正常
+            if (this.lotusLight.intensity > 1.5) {
+                this.lotusLight.intensity -= 0.1;
+            } else {
+                this.lotusLight.intensity = 1.5 + Math.sin(time * 2.0) * 0.3;
             }
+        }
+
+        // 竹海微风摇曳
+        this.bamboos.forEach(bamboo => {
+            const u = bamboo.userData;
+            // 通过旋转顶端来实现迎风摆动
+            bamboo.rotation.x += Math.sin(time * u.swaySpeed + u.phase) * 0.001;
+            bamboo.rotation.z += Math.cos(time * u.swaySpeed + u.phase) * 0.001;
         });
 
-        // 2. 灵草在舒适区间内进行平滑悬浮浮动，并伴随微风吹拂的倾斜感（修复 += 漂移）
-        this.herbs.forEach((h) => {
-            const u = h.userData;
-            // 通过 = 绝对坐标运算，彻底锁死在 base Y 的上下波动范围内
-            h.position.y = u.baseY + Math.sin(time * u.floatSpeed + u.floatOffset) * u.amplitude;
-            // 植物随微风极其轻微的左右摆动（更逼真）
-            h.rotation.z = Math.sin(time * 0.7 + u.floatOffset) * 0.025;
+        // 灵气粒子汇聚盘旋
+        if (this.spiritPoints) {
+            const pos = this.spiritPoints.geometry.attributes.position;
+            for (let i = 0; i < pos.count; i++) {
+                const data = this.particleData[i];
+                // 轨道旋转
+                data.angle += data.orbitSpeed * 0.05;
+                // 上下浮动
+                let y = data.baseY + Math.sin(time * data.speed + i) * 0.5;
+                
+                pos.setXYZ(i, Math.cos(data.angle) * data.radius, y, Math.sin(data.angle) * data.radius);
+            }
+            pos.needsUpdate = true;
+        }
+
+        // 悬浮选项浮动
+        this.optionsGroup.children.forEach(child => {
+            child.position.y = child.userData.baseY + Math.sin(time * 2 + child.userData.offset) * 0.2;
         });
 
-        // 3. 梦幻萤火虫粒子在 3D 空间进行无规则轻盈游走（修复漂移飞升）
-        if (this.fireflies) {
-            const p = this.fireflies.geometry.attributes.position;
-            for (let i = 0; i < p.count; i++) {
-                const init = this.initialFireflyPositions[i];
-                // X, Y, Z 三轴各自执行带有相位差的简谐运动，运动轨迹如群蜂漫步，丝滑自然
-                p.array[i * 3] = init.x + Math.sin(time * init.speed + init.offset) * 0.25;
-                p.array[i * 3 + 1] = init.y + Math.cos(time * (init.speed * 0.9) + init.offset) * 0.35;
-                p.array[i * 3 + 2] = init.z + Math.sin(time * (init.speed * 1.3) + init.offset) * 0.15;
+        // 爆点涟漪动画
+        for (let i = this.burstRings.length - 1; i >= 0; i--) {
+            const r = this.burstRings[i];
+            r.userData.scale += 0.3;
+            r.userData.opacity -= 0.03;
+            r.scale.setScalar(r.userData.scale);
+            r.material.opacity = Math.max(0, r.userData.opacity);
+            if (r.userData.opacity <= 0) {
+                this.group.remove(r);
+                r.geometry.dispose();
+                r.material.dispose();
+                this.burstRings.splice(i, 1);
             }
-            p.needsUpdate = true;
+        }
+    }
+
+    destroy() {
+        if (this.sceneRef) {
+            this.sceneRef.background = null;
+            this.sceneRef.fog = null;
         }
     }
 }

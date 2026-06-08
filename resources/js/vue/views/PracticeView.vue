@@ -83,7 +83,7 @@
             <img v-if="vocabFeedbackType === 'success'" class="ws-hit-fx" :src="wsFxHit" alt="击中" />
           </div>
 
-          <div class="ws-options">
+          <div class="ws-options" style="display: none !important;">
             <button
               v-for="(option, idx) in woodStakeOptions"
               :key="option.key"
@@ -312,15 +312,27 @@ const resultSubtitle = computed(() => {
   return `正确率 ${resultAccuracy.value}% ｜ 灵气 +${resultExp.value} ｜ 灵石 +${resultStones.value}`;
 });
 
+const onSceneInteract = (e: Event) => {
+  const customEvent = e as CustomEvent;
+  if (customEvent.detail?.action === 'answer_option') {
+    const clickedValue = customEvent.detail.object?.userData?.value;
+    if (clickedValue) {
+      selectVocabOption(clickedValue);
+    }
+  }
+};
+
 onMounted(async () => {
   window.addEventListener('legacy:enterHall', onLegacyEnterHall);
   window.addEventListener('resize', fitArenaTexts);
+  window.addEventListener('scene:interact', onSceneInteract);
   await bootstrapModuleFromRoute();
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener('legacy:enterHall', onLegacyEnterHall);
   window.removeEventListener('resize', fitArenaTexts);
+  window.removeEventListener('scene:interact', onSceneInteract);
   clearAutoAdvanceTimer();
   persistPracticeSession();
   void bridge.closeLegacyPanels();
@@ -351,6 +363,18 @@ watch(
       fitArenaTexts();
     }
   }
+);
+
+watch(
+  () => woodStakeOptions.value,
+  (newVal) => {
+    if (sessionState.value === 'answering' && isVocabModule.value && newVal.length > 0) {
+      if ((window as any).game?.scene?.currentSceneObj?.spawnOptions) {
+        (window as any).game.scene.currentSceneObj.spawnOptions(newVal);
+      }
+    }
+  },
+  { deep: true, immediate: true }
 );
 
 function levelSequence(): Array<Omit<LevelInfo, 'index' | 'total'>> {
@@ -921,6 +945,10 @@ function selectVocabOption(optionKey: string) {
     vocabCombo.value += 1;
     vocabFeedbackType.value = 'success';
     vocabFeedbackText.value = `采集成功，灵气 +${vocabRewardHint.value}`;
+    
+    if ((window as any).game?.scene?.currentSceneObj?.triggerCorrectEffect) {
+       (window as any).game.scene.currentSceneObj.triggerCorrectEffect();
+    }
   } else {
     vocabCombo.value = 0;
     vocabFeedbackType.value = 'error';
