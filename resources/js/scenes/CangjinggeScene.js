@@ -108,6 +108,18 @@ export class CangjinggeScene {
             opacity: 0.2
         });
 
+        // 复用书本的几何体和材质
+        const sharedBookGeo = new THREE.PlaneGeometry(0.8, 0.2);
+        const bookMats = [];
+        for (let m = 0; m < 6; m++) {
+            bookMats.push(new THREE.MeshBasicMaterial({
+                color: m % 2 === 0 ? 0xd4af37 : 0x8a2be2,
+                transparent: true,
+                opacity: 0.6 + Math.random() * 0.4,
+                blending: THREE.AdditiveBlending
+            }));
+        }
+
         for (let i = 0; i < numPillars; i++) {
             const angle = (i / numPillars) * Math.PI * 2;
             const x = Math.cos(angle) * radius;
@@ -125,14 +137,8 @@ export class CangjinggeScene {
 
             // 在柱子上添加一些随机发光亮点模拟“藏书”
             for(let j=0; j<20; j++) {
-                const bookGeo = new THREE.PlaneGeometry(0.8, 0.2);
-                const bookMat = new THREE.MeshBasicMaterial({
-                    color: Math.random() > 0.5 ? 0xd4af37 : 0x8a2be2,
-                    transparent: true,
-                    opacity: 0.6 + Math.random() * 0.4,
-                    blending: THREE.AdditiveBlending
-                });
-                const book = new THREE.Mesh(bookGeo, bookMat);
+                const bookMat = bookMats[Math.floor(Math.random() * bookMats.length)];
+                const book = new THREE.Mesh(sharedBookGeo, bookMat);
                 book.position.set(
                     (Math.random() - 0.5) * 1.8,
                     (Math.random() - 0.5) * 38,
@@ -205,17 +211,18 @@ export class CangjinggeScene {
         }
 
         // 环绕飞舞的金色经卷 (替代原来的 floatRunes)
+        const sharedScrollGeo = new THREE.PlaneGeometry(0.4, 0.8);
+        const sharedScrollMat = new THREE.MeshBasicMaterial({
+            color: 0xffd700,
+            transparent: true,
+            opacity: 0.5,
+            side: THREE.DoubleSide,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
         for (let i = 0; i < 24; i++) {
-            const scrollGeo = new THREE.PlaneGeometry(0.4, 0.8);
-            const scrollMat = new THREE.MeshBasicMaterial({
-                color: 0xffd700,
-                transparent: true,
-                opacity: 0.5,
-                side: THREE.DoubleSide,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false
-            });
-            const scroll = new THREE.Mesh(scrollGeo, scrollMat);
+            const scroll = new THREE.Mesh(sharedScrollGeo, sharedScrollMat);
             
             scroll.userData = {
                 radius: 4 + Math.random() * 4,
@@ -335,17 +342,17 @@ export class CangjinggeScene {
         const burstGroup = new THREE.Group();
         burstGroup.position.copy(this.coreGroup.position);
         
+        const sharedBurstPageGeo = new THREE.PlaneGeometry(0.3, 0.6);
+        const sharedBurstPageMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.9,
+            side: THREE.DoubleSide,
+            blending: THREE.AdditiveBlending
+        });
+
         for (let i = 0; i < 15; i++) {
-            const page = new THREE.Mesh(
-                new THREE.PlaneGeometry(0.3, 0.6),
-                new THREE.MeshBasicMaterial({
-                    color: 0xffffff,
-                    transparent: true,
-                    opacity: 0.9,
-                    side: THREE.DoubleSide,
-                    blending: THREE.AdditiveBlending
-                })
-            );
+            const page = new THREE.Mesh(sharedBurstPageGeo, sharedBurstPageMat);
             
             page.userData = {
                 angle: Math.random() * Math.PI * 2,

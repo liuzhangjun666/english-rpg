@@ -141,7 +141,8 @@ window.addEventListener('auth:logout', async () => {
 bootstrapSession().finally(async () => {
   await router.isReady();
   if (auth.isAuthenticated && router.currentRoute.value.path === '/login') {
-    router.replace('/hall');
+    const isNewUser = user.profile && (user.profile as any).tutorial_step === 0;
+    router.replace(isNewUser ? '/onboarding' : '/hall');
   }
   if (!auth.isAuthenticated && router.currentRoute.value.path !== '/login') {
     router.replace('/login');

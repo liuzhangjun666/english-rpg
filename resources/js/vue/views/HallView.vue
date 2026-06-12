@@ -5,6 +5,12 @@
         <!-- 背景场景容器，不再包含散落的图标 -->
       </div>
 
+      <!-- 每日任务悬浮提醒 -->
+      <button class="daily-quest-fab" @click="showDailyQuest = true" title="今日修炼任务">
+        <span class="daily-quest-icon">📅</span>
+        <span class="daily-quest-label">每日修炼</span>
+      </button>
+
       <!-- 底部导航 Dock (全部图标集中于此) -->
       <div class="hall-dock">
         <template v-for="item in dockItems" :key="item.key">
@@ -25,6 +31,11 @@
     <!-- 弹窗组件 -->
     <MallView v-model:visible="showMall" />
     <LeaderboardView v-model:visible="showLeaderboard" />
+    <ReviewModal v-model:visible="showReview" />
+    <DemonsModal v-model:visible="showDemons" />
+    <AchievementsModal v-model:visible="showAchievements" />
+    <ProfilePanel v-model:visible="showProfile" />
+    <DailyQuestPanel v-model:visible="showDailyQuest" />
   </div>
 </template>
 
@@ -34,6 +45,7 @@ import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUiStore } from '../stores/ui';
+
 import hallPractice from '../../../assets/images/ui/hall_practice.png';
 import hallShilianchang from '../../../assets/images/ui/hall_shilianchang.png';
 import hallCangjingge from '../../../assets/images/ui/hall_cangjingge.png';
@@ -215,9 +227,19 @@ const dockItems = computed(() => {
 
 import MallView from './MallView.vue';
 import LeaderboardView from './LeaderboardView.vue';
+import ReviewModal from './ReviewModal.vue';
+import DemonsModal from './DemonsModal.vue';
+import AchievementsModal from './AchievementsModal.vue';
+import ProfilePanel from '../components/profile/ProfilePanel.vue';
+import DailyQuestPanel from './DailyQuestPanel.vue';
 
 const showMall = ref(false);
 const showLeaderboard = ref(false);
+const showReview = ref(false);
+const showDemons = ref(false);
+const showAchievements = ref(false);
+const showProfile = ref(false);
+const showDailyQuest = ref(false);
 
 function goReading() {
   router.push('/reading');
@@ -239,30 +261,53 @@ function goLeaderboard() {
   showLeaderboard.value = true;
 }
 
-async function openReview() {
-  await openLegacyPanel(() => bridge.openReview(), '开启温故复盘...', '温故复盘加载失败');
+function openReview() {
+  showReview.value = true;
 }
 
-async function openDemons() {
-  await openLegacyPanel(() => bridge.openDemons(), '开启心魔录...', '心魔录加载失败');
+function openDemons() {
+  showDemons.value = true;
 }
 
-async function openAchievements() {
-  await openLegacyPanel(() => bridge.openAchievements(), '开启成就碑...', '成就碑加载失败');
+function openAchievements() {
+  showAchievements.value = true;
 }
 
-async function openProfile() {
-  await openLegacyPanel(() => bridge.openProfilePanel(), '开启我的洞府...', '洞府面板加载失败');
-}
-
-async function openLegacyPanel(task: () => Promise<unknown>, loadingText: string, failText: string) {
-  ui.showLoading(loadingText);
-  try {
-    await task();
-  } catch {
-    ElMessage.error(failText);
-  } finally {
-    ui.hideLoading();
-  }
+function openProfile() {
+  showProfile.value = true;
 }
 </script>
+
+<style scoped>
+.daily-quest-fab {
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(20, 30, 60, 0.85);
+  border: 1px solid rgba(212, 168, 67, 0.5);
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  z-index: 100;
+  transition: transform 0.15s, box-shadow 0.15s;
+  animation: fab-pulse 3s ease-in-out infinite;
+}
+
+.daily-quest-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(212, 168, 67, 0.4);
+  animation: none;
+}
+
+@keyframes fab-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 168, 67, 0.3); }
+  50%       { box-shadow: 0 0 0 8px rgba(212, 168, 67, 0); }
+}
+
+.daily-quest-icon { font-size: 22px; }
+.daily-quest-label { font-size: 11px; color: #d4a843; white-space: nowrap; }
+</style>

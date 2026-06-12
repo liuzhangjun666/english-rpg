@@ -169,28 +169,34 @@ export class ShilianchangScene {
 
     createSpiritOrbs() {
         const colors = [0xd4af37, 0x4a90d9, 0x4ec07a, 0x9b59b6];
+        const sharedOrbGeo = new THREE.SphereGeometry(1.0, 16, 16);
+        const sharedGlowGeo = new THREE.SphereGeometry(1.0, 16, 16);
+        
+        const orbMats = colors.map(c => new THREE.MeshBasicMaterial({
+            color: c,
+            transparent: true, 
+            opacity: 0.8
+        }));
+        
+        const glowMats = colors.map(c => new THREE.MeshBasicMaterial({
+            color: c,
+            transparent: true, 
+            opacity: 0.3,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        }));
+
         for (let i = 0; i < 12; i++) {
+            const radius = 0.2 + Math.random()*0.1;
+            
             // 核心发光体
-            const orb = new THREE.Mesh(
-                new THREE.SphereGeometry(0.2 + Math.random()*0.1, 16, 16),
-                new THREE.MeshBasicMaterial({
-                    color: colors[i % 4],
-                    transparent: true, 
-                    opacity: 0.8
-                })
-            );
+            const orb = new THREE.Mesh(sharedOrbGeo, orbMats[i % 4]);
+            orb.scale.setScalar(radius);
 
             // 外围光晕
-            const glow = new THREE.Mesh(
-                new THREE.SphereGeometry(0.35, 16, 16),
-                new THREE.MeshBasicMaterial({
-                    color: colors[i % 4],
-                    transparent: true, 
-                    opacity: 0.3,
-                    blending: THREE.AdditiveBlending,
-                    depthWrite: false
-                })
-            );
+            const glow = new THREE.Mesh(sharedGlowGeo, glowMats[i % 4]);
+            const glowScale = 0.35 / radius;
+            glow.scale.setScalar(glowScale);
             orb.add(glow);
 
             const angle = (i/12) * Math.PI * 2 + Math.random() * 0.3;

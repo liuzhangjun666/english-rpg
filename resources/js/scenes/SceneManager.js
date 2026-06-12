@@ -26,6 +26,9 @@ export class SceneManager {
             cangjingge: () => import('./CangjinggeScene.js').then((m) => m.CangjinggeScene),
             initiation: () => import('./InitiationScene.js').then((m) => m.InitiationScene),
             breakthrough: () => import('./BreakthroughScene.js').then((m) => m.BreakthroughScene),
+            listening: () => import('./ListeningScene.js').then((m) => m.ListeningScene),
+            speaking: () => import('./SpeakingScene.js').then((m) => m.SpeakingScene),
+            writing: () => import('./WritingScene.js').then((m) => m.WritingScene),
         };
     }
 
@@ -38,7 +41,8 @@ export class SceneManager {
 
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        this.camera.position.set(0, 0, 12);
+        this.camera.position.set(0, 8, 16);
+        this.camera.lookAt(0, 0, 0);
 
         const lowPower =
             (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||

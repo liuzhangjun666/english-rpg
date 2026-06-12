@@ -119,6 +119,39 @@ export class MijingScene {
 
     createSwordGraveyard() {
         const numSwords = 35;
+        
+        // --- 提前声明并复用剑阵几何体与材质 ---
+        const darkMetal = new THREE.MeshStandardMaterial({
+            color: 0x111122,
+            roughness: 0.3,
+            metalness: 0.8
+        });
+        const lineMat = new THREE.LineBasicMaterial({ 
+            color: 0x00e5ff,
+            transparent: true,
+            opacity: 0.7,
+            blending: THREE.AdditiveBlending
+        });
+
+        const bladeGeo = new THREE.BoxGeometry(0.8, 5, 0.15);
+        const bladeEdgesGeo = new THREE.EdgesGeometry(bladeGeo);
+        
+        const guardGeo = new THREE.BoxGeometry(2.0, 0.4, 0.4);
+        const guardEdgesGeo = new THREE.EdgesGeometry(guardGeo);
+        
+        const handleGeo = new THREE.CylinderGeometry(0.15, 0.15, 1.5, 8);
+        const handleEdgesGeo = new THREE.EdgesGeometry(handleGeo);
+        
+        const pommelGeo = new THREE.OctahedronGeometry(0.3);
+        const pommelEdgesGeo = new THREE.EdgesGeometry(pommelGeo);
+        
+        const parts = [
+            { geo: bladeGeo, edgesGeo: bladeEdgesGeo, posY: 2.5 },
+            { geo: guardGeo, edgesGeo: guardEdgesGeo, posY: 5.2 },
+            { geo: handleGeo, edgesGeo: handleEdgesGeo, posY: 6.15 },
+            { geo: pommelGeo, edgesGeo: pommelEdgesGeo, posY: 7.0 }
+        ];
+        
         for (let i = 0; i < numSwords; i++) {
             let x = (Math.random() - 0.5) * 100;
             let z = (Math.random() - 0.5) * 80 - 15;
@@ -128,7 +161,7 @@ export class MijingScene {
                 z += (z > 0 ? 15 : -15);
             }
 
-            const sword = this.createSingleStylizedSword();
+            const sword = this.createSingleStylizedSword(parts, darkMetal, lineMat);
             
             const scale = 0.8 + Math.random() * 1.5;
             sword.scale.set(scale, scale, scale);
@@ -144,44 +177,18 @@ export class MijingScene {
         }
     }
 
-    createSingleStylizedSword() {
+    createSingleStylizedSword(parts, darkMetal, lineMat) {
         const swordGroup = new THREE.Group();
         
-        // 剑的实体材质（暗色金属）
-        const darkMetal = new THREE.MeshStandardMaterial({
-            color: 0x111122,
-            roughness: 0.3,
-            metalness: 0.8
-        });
-
-        // 发光线条材质
-        const lineMat = new THREE.LineBasicMaterial({ 
-            color: 0x00e5ff, // 幽蓝/青色剑气
-            transparent: true,
-            opacity: 0.7,
-            blending: THREE.AdditiveBlending
-        });
-
-        const addMeshWithOutline = (geo, posY) => {
-            const mesh = new THREE.Mesh(geo, darkMetal);
-            mesh.position.y = posY;
+        parts.forEach(part => {
+            const mesh = new THREE.Mesh(part.geo, darkMetal);
+            mesh.position.y = part.posY;
             
-            // 为每一个几何体添加发光轮廓边
-            const edgesGeo = new THREE.EdgesGeometry(geo);
-            const line = new THREE.LineSegments(edgesGeo, lineMat);
-            mesh.add(line); // 绑定在mesh内，继承缩放与旋转
+            const line = new THREE.LineSegments(part.edgesGeo, lineMat);
+            mesh.add(line);
             
             swordGroup.add(mesh);
-        };
-
-        // 剑刃
-        addMeshWithOutline(new THREE.BoxGeometry(0.8, 5, 0.15), 2.5);
-        // 剑格 (护手)
-        addMeshWithOutline(new THREE.BoxGeometry(2.0, 0.4, 0.4), 5.2);
-        // 剑柄
-        addMeshWithOutline(new THREE.CylinderGeometry(0.15, 0.15, 1.5, 8), 6.15);
-        // 剑首
-        addMeshWithOutline(new THREE.OctahedronGeometry(0.3), 7.0);
+        });
 
         return swordGroup;
     }

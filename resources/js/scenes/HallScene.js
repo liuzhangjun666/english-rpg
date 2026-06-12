@@ -64,13 +64,32 @@ export class HallScene {
     createJadePlaza() {
         // 白玉广场主体
         const geo = new THREE.CylinderGeometry(18, 16, 1.5, 64);
-        const mat = new THREE.MeshStandardMaterial({
+        
+        // 加载太极八卦贴图
+        const textureLoader = new THREE.TextureLoader();
+        const topTexture = textureLoader.load('/images/textures/bagua_base.png');
+        topTexture.colorSpace = THREE.SRGBColorSpace;
+        
+        const sideMat = new THREE.MeshStandardMaterial({
             color: 0xf5f7fa, // 纯净的汉白玉色
             roughness: 0.15, // 比较光滑，有倒影
             metalness: 0.1
         });
-        const plaza = new THREE.Mesh(geo, mat);
+        
+        const topMat = new THREE.MeshStandardMaterial({
+            map: topTexture,
+            color: 0xffffff,
+            roughness: 0.3,
+            metalness: 0.1,
+            transparent: true
+        });
+        
+        // CylinderGeometry 材质顺序: [侧面, 顶面, 底面]
+        const materials = [sideMat, topMat, sideMat];
+
+        const plaza = new THREE.Mesh(geo, materials);
         plaza.position.y = -0.75;
+        plaza.rotation.y = Math.PI / 2; // 微调方向让八卦图正对镜头
         this.group.add(plaza);
 
         // 广场边缘的金色镶边
@@ -144,12 +163,7 @@ export class HallScene {
 
     createModulePortals() {
         // 四大模块的位置
-        const portalConfigs = [
-            { id: 'reading', label: '藏经阁', pos: [-8, 0, -6], color: 0x00e5ff },
-            { id: 'practice', label: '练功房', pos: [8, 0, -6], color: 0x39ff14 },
-            { id: 'shilianchang', label: '试炼场', pos: [-8, 0, 6], color: 0xff4757 },
-            { id: 'mijing', label: '秘  境', pos: [8, 0, 6], color: 0xa29bfe }
-        ];
+        const portalConfigs = [];
 
         portalConfigs.forEach(cfg => {
             const portalGroup = new THREE.Group();
@@ -254,41 +268,93 @@ export class HallScene {
         this.group.add(this.dustPoints);
     }
 
+    createProceduralSword() {
+        const group = new THREE.Group();
+        
+        // 剑身 (发光冷色调冰蓝剑刃)
+        const bladeGeo = new THREE.ConeGeometry(0.15, 2.5, 4);
+        const bladeMat = new THREE.MeshStandardMaterial({
+            color: 0xe0f7fa,
+            metalness: 0.8,
+            roughness: 0.2,
+            emissive: 0x0088ff,
+            emissiveIntensity: 0.3,
+            transparent: true,
+            opacity: 0.95
+        });
+        const blade = new THREE.Mesh(bladeGeo, bladeMat);
+        blade.scale.set(1, 1, 0.15); // 将 4 棱锥压扁变成剑刃
+        blade.position.y = 1.25;
+
+        // 剑刃的外发光线框
+        const edgesGeo = new THREE.EdgesGeometry(bladeGeo);
+        const lineMat = new THREE.LineBasicMaterial({ 
+            color: 0x00e5ff, 
+            transparent: true, 
+            opacity: 0.8, 
+            blending: THREE.AdditiveBlending 
+        });
+        const bladeOutline = new THREE.LineSegments(edgesGeo, lineMat);
+        blade.add(bladeOutline);
+
+        // 剑格 (金色的护手 Guard)
+        const guardGeo = new THREE.BoxGeometry(0.8, 0.15, 0.2);
+        const guardMat = new THREE.MeshStandardMaterial({ 
+            color: 0xffd700, 
+            metalness: 0.9, 
+            roughness: 0.3 
+        });
+        const guard = new THREE.Mesh(guardGeo, guardMat);
+        guard.position.y = 0;
+
+        // 剑柄 (深色 Hilt)
+        const hiltGeo = new THREE.CylinderGeometry(0.06, 0.05, 0.6, 8);
+        const hiltMat = new THREE.MeshStandardMaterial({ 
+            color: 0x2c3e50, 
+            metalness: 0.3, 
+            roughness: 0.7 
+        });
+        const hilt = new THREE.Mesh(hiltGeo, hiltMat);
+        hilt.position.y = -0.3;
+
+        // 剑首 (金色的底部圆球 Pommel)
+        const pommelGeo = new THREE.SphereGeometry(0.12, 16, 16);
+        const pommel = new THREE.Mesh(pommelGeo, guardMat);
+        pommel.position.y = -0.65;
+
+        group.add(blade);
+        group.add(guard);
+        group.add(hilt);
+        group.add(pommel);
+
+        return group;
+    }
+
     rebuildSwordArray(count) {
         while(this.swordGroup.children.length > 0){ 
             const child = this.swordGroup.children[0];
             this.swordGroup.remove(child);
-            child.geometry.dispose();
-            if (Array.isArray(child.material)) {
-                child.material.forEach(m => m.dispose());
-            } else {
-                child.material.dispose();
-            }
+            // 只有当材质和几何体没有复用时才销毁
+            // 这里修改为外部共享，所以不再在此处 dispose geometry 和 material，
+            // 或者我们可以判断是否是共享的。简单起见，既然改为共享了，旧的逻辑可能会报错，
+            // 但因为每次调用 rebuildSwordArray 前我们都是清空重建，
+            // 我们可以直接让 SceneManager 在 clearScene 时统一清理。
+            // 为了安全起见，这里不再手动 dispose child.geometry，因为它们是共享的。
         }
         this.swords = [];
 
         // 重新构建精致的飞剑环绕阵
         const radius = 3.5;
+
         for (let i = 0; i < count; i++) {
             const angle = (i / count) * Math.PI * 2;
             
-            const swordGeo = new THREE.ConeGeometry(0.15, 2.0, 4);
-            const swordMat = new THREE.MeshBasicMaterial({
-                color: 0xffffff,
-                transparent: true,
-                opacity: 0.9,
-            });
-            const sword = new THREE.Mesh(swordGeo, swordMat);
-            
-            // 剑气外发光
-            const edgesGeo = new THREE.EdgesGeometry(swordGeo);
-            const lineMat = new THREE.LineBasicMaterial({ color: 0xffd700, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
-            sword.add(new THREE.LineSegments(edgesGeo, lineMat));
+            const sword = this.createProceduralSword();
 
-            sword.position.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
+            sword.position.set(Math.cos(angle) * radius, 1.5, Math.sin(angle) * radius);
             sword.rotation.x = Math.PI; // 剑尖朝下
             sword.rotation.z = Math.PI / 12; // 微微向外倾斜
-            sword.rotation.y = -angle;
+            sword.rotation.y = -angle; // 剑刃的宽面正对圆心
 
             // 每把剑自带上下浮动相位
             sword.userData = { phaseOffset: i * 0.5 };
@@ -348,7 +414,7 @@ export class HallScene {
                 const storyProgress = storeState.story?.progress || {};
                 const progressCurrency = storeState.story?.currencies || {};
                 const guide = buildHallStoryGuide(storyProgress, progressCurrency);
-                this.currentRecommendModule = guide.recommendedModule || 'reading';
+                this.currentRecommendModule = guide.recommendedModule || 'shilianchang';
                 
                 // 同步剑阵数量
                 const user = window.game?.store?.getState()?.user || {};
