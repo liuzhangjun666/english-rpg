@@ -5,8 +5,8 @@
         <div class="title">词汇灵根测试 · 准备开始</div>
       </template>
 
-      <p class="desc">学习阶段将根据你注册时填写的年级自动匹配。</p>
-      <p class="desc">无需再选择学习目标，点击下方按钮即可开始灵根测试。</p>
+      <p class="desc">注册时选择的学段将匹配试炼起点，<strong>初始境界由灵根测试结果决定</strong>。</p>
+      <p class="desc">点击下方按钮即可开始灵根测试。</p>
 
       <div class="actions">
         <el-button data-btn-skin="back" @click="goBack">返回</el-button>

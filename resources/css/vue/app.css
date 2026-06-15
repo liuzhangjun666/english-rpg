@@ -1,3 +1,7 @@
+@import "tailwindcss";
+@source "../../js/vue/**/*.vue";
+@source "../../js/vue/**/*.ts";
+
 #vue-app {
   position: fixed;
   inset: 0;
@@ -33,6 +37,17 @@
   flex: 1;
   padding: 16px;
   overflow: auto;
+}
+
+#vue-app .vue-shell.is-login .shell-main {
+  padding: 0;
+  overflow: hidden;
+}
+
+#vue-app .vue-shell.is-assessment .shell-main {
+  padding: 0;
+  overflow: auto;
+  background: #080c1c;
 }
 
 #vue-app .boot-splash {

@@ -1,3 +1,5 @@
+import { useApiClient } from '../services/api';
+
 function modeFromPracticeType(type: string): string {
   if (type === 'listening') return 'listening';
   if (type === 'speaking') return 'speaking';
@@ -12,9 +14,12 @@ class LegacyBridge {
   private pendingProfile: Record<string, any> | null = null;
 
   private applySessionToGame(game: any, profile: Record<string, any> | null) {
-    const token = game.api.getStoredToken();
+    const api = useApiClient();
+    const token = api.getStoredToken();
     if (token) {
+      api.setToken(token);
       game.api.setToken(token);
+      game.isLoggedIn = true;
     }
 
     if (!profile) return;
@@ -66,7 +71,10 @@ class LegacyBridge {
 
   async clearSession() {
     this.pendingProfile = null;
+    useApiClient().clearToken();
+
     if (!this.game) return;
+
     const game = await this.getGame();
     game.isLoggedIn = false;
     game.store.setUser(null);
@@ -170,6 +178,12 @@ class LegacyBridge {
   async closeLegacyPanels() {
     const game = await this.getGame();
     game.ui.hideAllPanels();
+  }
+
+  async openProfilePanel() {
+    const game = await this.getGame();
+    this.applySessionToGame(game, this.pendingProfile);
+    game.ui.openProfileCenter();
   }
 }
 

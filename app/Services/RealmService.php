@@ -79,21 +79,72 @@ class RealmService
 
     public function resolveCurrentRealm(User $user): string
     {
-        $currentRealm = (string) ($user->current_realm ?? '');
+        $currentRealm = trim((string) ($user->current_realm ?? ''));
         $derivedRealm = $this->buildCurrentRealmName(
             (string) ($user->realm ?? 'L1'),
             max(1, min(9, (int) ($user->realm_stage ?? 1)))
         );
+
+        $currentIndex = $this->getCultivationRealmIndex($currentRealm);
         $derivedIndex = $this->getCultivationRealmIndex($derivedRealm);
 
-        if ($this->getCultivationRealmIndex($currentRealm) >= 0) {
-            if ($derivedIndex >= 0 && $currentRealm !== $derivedRealm) {
-                return $derivedRealm;
-            }
+        if ($currentIndex >= 0 && $derivedIndex >= 0) {
+            return $currentIndex >= $derivedIndex ? $currentRealm : $derivedRealm;
+        }
+
+        if ($currentIndex >= 0) {
             return $currentRealm;
         }
 
         return $derivedRealm;
+    }
+
+    /**
+     * 将「练气五层」类展示名解析为 realm 代码与层数。
+     *
+     * @return array{realm: string, realm_stage: int, current_realm: string}|null
+     */
+    public function decomposeRealmLabel(string $realmLabel): ?array
+    {
+        $realmLabel = trim($realmLabel);
+        if (!preg_match('/^(练气|筑基|金丹|元婴|化神|炼虚|合体|大乘|渡劫)([一二三四五六七八九]|[1-9])层$/u', $realmLabel, $matched)) {
+            return null;
+        }
+
+        $group = (string) ($matched[1] ?? '');
+        $groupIndex = array_search($group, self::CULTIVATION_REALM_GROUPS, true);
+        if ($groupIndex === false) {
+            return null;
+        }
+
+        $layer = $this->parseLayerToken((string) ($matched[2] ?? ''));
+        if ($layer < 1) {
+            return null;
+        }
+
+        $realmCode = (self::REALM_CODE_PREFIXES[$groupIndex] ?? 'L') . '1';
+        $currentRealm = $group . (self::CHINESE_LAYER_MAP[$layer] ?? ($layer . '层'));
+
+        return [
+            'realm' => $realmCode,
+            'realm_stage' => $layer,
+            'current_realm' => $currentRealm,
+        ];
+    }
+
+    public function applyRealmLabelToUser(User $user, string $realmLabel): User
+    {
+        $parts = $this->decomposeRealmLabel($realmLabel);
+        if (!$parts) {
+            return $user;
+        }
+
+        $user->realm = $parts['realm'];
+        $user->realm_stage = $parts['realm_stage'];
+        $user->current_realm = $parts['current_realm'];
+        $user->save();
+
+        return $user->refresh();
     }
 
     private function getRealmRequirements(string $realmName): array

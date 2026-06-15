@@ -16,7 +16,7 @@
       <div v-else-if="loadError" class="status-box">
         <el-alert type="warning" :closable="false" :title="loadError" />
         <div class="actions">
-          <el-button @click="goHall">返回大厅</el-button>
+          <el-button @click="goIntro">返回引导页</el-button>
         </div>
       </div>
 
@@ -75,7 +75,7 @@
         />
 
         <div class="actions">
-          <el-button data-btn-skin="back" @click="goHall">退出测试</el-button>
+          <el-button data-btn-skin="back" @click="goIntro">暂停 · 返回引导</el-button>
         </div>
       </div>
     </el-card>
@@ -93,6 +93,16 @@ const router = useRouter();
 const api = useApiClient();
 
 const assessmentId = Number(route.params.assessmentId || 0);
+
+function resultLocation() {
+  const query: Record<string, string> = {};
+  const redirect = String(route.query.redirect || '').trim();
+  if (redirect) query.redirect = redirect;
+  return {
+    path: `/vocab-assessment/result/${assessmentId}`,
+    query,
+  };
+}
 
 const loading = ref(false);
 const submitting = ref(false);
@@ -187,7 +197,7 @@ async function nextQuestion() {
 
     if (res?.data?.finished) {
       stopTimer();
-      router.replace(`/vocab-assessment/result/${assessmentId}`);
+      router.replace(resultLocation());
       return;
     }
 
@@ -227,7 +237,7 @@ async function submitAnswer() {
     autoNextTimer = window.setTimeout(() => {
       autoNextTimer = null;
       if (res.data.finished) {
-        router.replace(`/vocab-assessment/result/${assessmentId}`);
+        router.replace(resultLocation());
         return;
       }
       void nextQuestion();
@@ -243,10 +253,13 @@ function onAnswerChange(value: string | number | boolean) {
   void submitAnswer();
 }
 
-function goHall() {
+function goIntro() {
   stopTimer();
   clearAutoNextTimer();
-  router.replace('/hall');
+  const query: Record<string, string> = {};
+  const redirect = String(route.query.redirect || '').trim();
+  if (redirect) query.redirect = redirect;
+  router.replace({ path: '/vocab-assessment/intro', query });
 }
 
 onMounted(async () => {

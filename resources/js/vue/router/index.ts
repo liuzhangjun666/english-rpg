@@ -2,6 +2,49 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { useApiClient } from '../services/api';
 import { useUserStore } from '../stores/user';
+import { restoreSessionFromStorage } from '../services/session';
+
+const LEGACY_HASH_MAP: Record<string, string> = {
+  '#hall': '/hall',
+  '#practice': '/practice',
+  '#grammar': '/grammar',
+  '#login': '/login',
+  '#vocab': '/practice',
+  '#listening': '/practice',
+  '#speaking': '/practice',
+  '#writing': '/practice',
+  '#reading': '/reading',
+  '#cangjingge': '/reading',
+  '#shilianchang': '/exam',
+  '#mijing': '/mijing',
+  '#mall': '/mall',
+  '#leaderboard': '/leaderboard',
+  '#vocab-assessment-intro': '/vocab-assessment/intro',
+  '#initiation': '/onboarding',
+};
+
+const LEGACY_HASH_MODE: Record<string, string> = {
+  '#vocab': 'vocab',
+  '#listening': 'listening',
+  '#speaking': 'speaking',
+  '#writing': 'writing',
+};
+
+/** Must run before createRouter so history mode reads the migrated path. */
+export function normalizeLegacyHashRoute() {
+  const raw = window.location.hash || '';
+  if (!raw) return;
+
+  const hashBase = raw.split('?')[0];
+  const mapped = LEGACY_HASH_MAP[hashBase];
+  if (!mapped) return;
+
+  const mode = LEGACY_HASH_MODE[hashBase];
+  const url = mode ? `${mapped}?mode=${mode}` : mapped;
+  window.history.replaceState({}, '', url);
+}
+
+normalizeLegacyHashRoute();
 
 const routes = [
   {
@@ -64,8 +107,32 @@ const routes = [
     component: () => import('../views/OnboardingView.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/vocab-assessment/intro',
+    name: 'vocab-assessment-intro',
+    component: () => import('../views/VocabularyAssessmentIntro.vue'),
+    meta: { requiresAuth: true, assessmentFlow: true },
+  },
+  {
+    path: '/vocab-assessment/profile',
+    name: 'vocab-assessment-profile',
+    component: () => import('../views/VocabularyAssessmentProfile.vue'),
+    meta: { requiresAuth: true, assessmentFlow: true },
+  },
+  {
+    path: '/vocab-assessment/question/:assessmentId',
+    name: 'vocab-assessment-question',
+    component: () => import('../views/VocabularyAssessmentQuestion.vue'),
+    meta: { requiresAuth: true, assessmentFlow: true },
+  },
+  {
+    path: '/vocab-assessment/result/:assessmentId',
+    name: 'vocab-assessment-result',
+    component: () => import('../views/VocabularyAssessmentResult.vue'),
+    meta: { requiresAuth: true, assessmentFlow: true },
+  },
   { path: '/', redirect: '/hall' },
-  { path: '/:pathMatch(.*)*', redirect: '/hall' },
+  { path: '/:pathMatch(.*)*', name: 'not-found', redirect: '/hall' },
 ];
 
 export const router = createRouter({
@@ -73,71 +140,92 @@ export const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to) => {
-  const auth = useAuthStore();
+let bootstrapReady: Promise<void> | null = null;
+
+export function setBootstrapWaiter(promise: Promise<void>) {
+  bootstrapReady = promise;
+}
+
+function waitForBootstrap() {
+  return bootstrapReady ?? Promise.resolve();
+}
+
+export async function resolveAssessmentDone(): Promise<boolean> {
   const user = useUserStore();
-  if (!auth.bootstrapped) return true;
+  let done = Number(user.profile?.initial_assessment_done ?? 0) === 1;
+  if (done) return true;
+
+  const api = useApiClient();
+  try {
+    const res = await api.get('/vocab-assessment/status', { skipAuthLogout: true });
+    if (res?.success) {
+      done = !!res.data?.done;
+      if (user.profile) {
+        const patch: Record<string, any> = {
+          initial_assessment_done: done ? 1 : 0,
+        };
+        if (res.data?.current_realm) {
+          patch.current_realm = res.data.current_realm;
+        }
+        user.updateProfile(patch);
+      }
+    }
+  } catch {
+    // 状态接口不可用时，沿用本地缓存判断。
+  }
+
+  return done;
+}
+
+function pickRedirectQuery(source: Record<string, unknown>, fallback = '/hall') {
+  const redirect = String(source.redirect || '').trim();
+  if (redirect && redirect.startsWith('/')) {
+    return redirect;
+  }
+  return fallback;
+}
+
+function buildAssessmentIntroLocation(redirect?: string, extra: Record<string, string> = {}) {
+  const query: Record<string, string> = { ...extra };
+  if (redirect && redirect !== '/hall') {
+    query.redirect = redirect;
+  }
+  return { path: '/vocab-assessment/intro', query };
+}
+
+router.beforeEach(async (to) => {
+  await waitForBootstrap();
+
+  const auth = useAuthStore();
+  restoreSessionFromStorage();
 
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
     return { path: '/login', query: { redirect: to.fullPath } };
   }
 
   if (to.meta.guestOnly && auth.isAuthenticated) {
-    return { path: '/hall' };
+    const done = await resolveAssessmentDone();
+    const redirect = pickRedirectQuery(to.query as Record<string, unknown>);
+    if (done) {
+      return redirect;
+    }
+    const query: Record<string, string> = {};
+    if (redirect !== '/hall') query.redirect = redirect;
+    return buildAssessmentIntroLocation(undefined, query);
   }
 
   if (auth.isAuthenticated) {
-    const isAssessmentRoute = to.path.startsWith('/vocab-assessment');
+    const isAssessmentRoute = to.meta.assessmentFlow === true;
     if (!isAssessmentRoute) {
-      let done = Number(user.profile?.initial_assessment_done ?? -1) === 1;
-
+      const done = await resolveAssessmentDone();
       if (!done) {
-        const api = useApiClient();
-        try {
-          const res = await api.get('/vocab-assessment/status');
-          if (res?.success) {
-            done = !!res.data?.done;
-            if (user.profile) {
-              user.updateProfile({
-                initial_assessment_done: done ? 1 : 0,
-                current_realm: res.data?.current_realm ?? user.profile.current_realm,
-              });
-            }
-          }
-        } catch {
-          // Fallback to current route when status api is unavailable.
-        }
-      }
-
-      if (!done) {
-        return { path: '/vocab-assessment/intro', query: { redirect: to.fullPath } };
+        const redirect = to.fullPath !== '/hall' ? to.fullPath : '';
+        const query: Record<string, string> = {};
+        if (redirect) query.redirect = redirect;
+        return buildAssessmentIntroLocation(undefined, query);
       }
     }
   }
 
   return true;
 });
-
-export function normalizeLegacyHashRoute() {
-  const hash = window.location.hash || '';
-  const mapping: Record<string, string> = {
-    '#hall': '/hall',
-    '#practice': '/practice',
-    '#grammar': '/grammar',
-    '#login': '/login',
-    '#vocab': '/practice',
-    '#listening': '/practice',
-    '#speaking': '/practice',
-    '#writing': '/practice',
-    '#reading': '/reading',
-    '#shilianchang': '/exam',
-    '#mijing': '/mijing',
-    '#mall': '/mall',
-    '#leaderboard': '/leaderboard',
-    '#vocab-assessment-intro': '/vocab-assessment/intro',
-  };
-  const mapped = mapping[hash];
-  if (mapped) {
-    window.history.replaceState({}, '', mapped);
-  }
-}

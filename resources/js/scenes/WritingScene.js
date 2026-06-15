@@ -157,6 +157,47 @@ export class WritingScene {
 
         this.inkParticles = new THREE.Points(particleGeo, new THREE.ShaderMaterial(shader));
         this.group.add(this.inkParticles);
+
+        this.inkLevel = 0;
+        this.forgeFlash = 0;
+        this.particleSpeed = 0.08;
+    }
+
+    setInkLevel(ratio = 0) {
+        this.inkLevel = Math.max(0, Math.min(1.2, Number(ratio) || 0));
+        if (this.inkPool?.material) {
+            const level = Math.min(1, this.inkLevel);
+            this.inkPool.material.emissive.setHex(0x4a3200);
+            this.inkPool.material.emissiveIntensity = 0.3 + level * 0.9;
+            this.inkPool.material.opacity = 0.65 + level * 0.3;
+        }
+        this.particleSpeed = 0.06 + Math.min(1, this.inkLevel) * 0.12;
+    }
+
+    triggerForgeEffect(type = 'success') {
+        this.forgeFlash = 1.0;
+        const gradeColors = {
+            heaven: 0xffd700,
+            success: 0x7bed9f,
+            partial: 0xf0c040,
+            fail: 0xff6b6b,
+        };
+        const color = gradeColors[type] || gradeColors.success;
+        if (this.inkPool?.material?.emissive) {
+            this.inkPool.material.emissive.setHex(color);
+        }
+        this.talismans.forEach((talisman, idx) => {
+            if (type === 'heaven') {
+                talisman.material.emissive.setHex(0x4a3200);
+                talisman.material.emissiveIntensity = 0.6 + (idx % 3) * 0.1;
+            } else if (type === 'fail') {
+                talisman.material.emissive.setHex(0x330000);
+                talisman.material.emissiveIntensity = 0.3;
+            } else {
+                talisman.material.emissive.setHex(0x110a00);
+                talisman.material.emissiveIntensity = 0.15;
+            }
+        });
     }
 
     animate(time) {
@@ -167,7 +208,15 @@ export class WritingScene {
             this.altarGroup.rotation.y = time * 0.1;
         }
         if (this.inkPool) {
-            this.inkPool.material.emissiveIntensity = 0.5 + Math.sin(time * 1.5) * 0.5;
+            const breathe = 0.5 + Math.sin(time * 1.5) * 0.5;
+            const base = 0.3 + Math.min(1, this.inkLevel || 0) * 0.9;
+            this.inkPool.material.emissiveIntensity = base + breathe * 0.15;
+            if (this.forgeFlash > 0) {
+                this.forgeFlash -= 0.02;
+                if (this.forgeFlash <= 0) {
+                    this.setInkLevel(this.inkLevel);
+                }
+            }
         }
 
         // 巨大符纸绕场飞舞并弯曲
@@ -199,7 +248,7 @@ export class WritingScene {
             const p = this.inkParticles.geometry.attributes.position;
             for (let i = 0; i < p.count; i++) {
                 let y = p.getY(i);
-                y += 0.08 + Math.random() * 0.02; // 墨滴升腾
+                y += (this.particleSpeed || 0.08) + Math.random() * 0.02;
                 if (y > 18) y = -2;
                 p.setY(i, y);
             }

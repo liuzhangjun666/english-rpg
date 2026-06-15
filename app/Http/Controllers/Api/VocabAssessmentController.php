@@ -7,6 +7,7 @@ use App\Models\Question;
 use App\Models\VocabularyAssessment;
 use App\Models\VocabularyAssessmentRecord;
 use App\Services\VocabAssessmentService;
+use App\Support\CultivationProfile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -58,7 +59,7 @@ class VocabAssessmentController extends Controller
         $schoolStage = trim((string) ($data['school_stage'] ?? ''));
         $learningGoal = isset($data['learning_goal']) ? trim((string) $data['learning_goal']) : '';
         if ($schoolStage === '') {
-            [$schoolStage, $defaultGoal] = $this->resolveAssessmentBootstrapBySchoolGrade((string) ($user->school_grade ?? ''));
+            [$schoolStage, $defaultGoal] = CultivationProfile::assessmentBootstrapBySchoolGrade((string) ($user->school_grade ?? ''));
             if ($learningGoal === '') {
                 $learningGoal = $defaultGoal;
             }
@@ -342,23 +343,17 @@ class VocabAssessmentController extends Controller
                 'vocab_final_level' => (int) $result['vocab_final_level'],
                 'grammar_final_level' => (int) $result['grammar_final_level'],
                 'final_realm' => (string) $result['final_realm'],
+                'realm_code' => (string) ($result['realm_code'] ?? ''),
+                'realm_stage' => (int) ($result['realm_stage'] ?? 1),
+                'school_stage' => (string) ($result['school_stage'] ?? ''),
+                'proven_level' => (int) ($result['proven_level'] ?? 0),
+                'peak_question_level' => (int) ($result['peak_question_level'] ?? 0),
+                'max_level_by_school' => (int) ($result['max_level_by_school'] ?? 0),
+                'realm_explanation' => (string) ($result['realm_explanation'] ?? ''),
                 'level_results' => $result['level_results'],
                 'dimension_results' => $result['dimension_results'],
                 'suggestions' => $result['suggestions'],
             ],
         ]);
-    }
-
-    private function resolveAssessmentBootstrapBySchoolGrade(string $schoolGrade): array
-    {
-        return match (trim($schoolGrade)) {
-            'grade_1', 'grade_2', 'grade_3', 'grade_4', 'grade_5', 'grade_6' => ['小学', ''],
-            'grade_7', 'grade_8', 'grade_9' => ['初中', ''],
-            'grade_10', 'grade_11', 'grade_12' => ['高中', ''],
-            'college' => ['大学', ''],
-            'exam' => ['大学', '考研'],
-            'graduate', 'advanced' => ['研究生', '学术英语'],
-            default => ['小学', ''],
-        };
     }
 }

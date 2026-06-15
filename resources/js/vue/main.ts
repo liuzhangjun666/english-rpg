@@ -1,12 +1,14 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import App from './App.vue';
-import { router, normalizeLegacyHashRoute } from './router';
+import { router, resolveAssessmentDone, setBootstrapWaiter } from './router';
 import { useApiClient } from './services/api';
 import { useAuthStore } from './stores/auth';
 import { useUserStore } from './stores/user';
 import { useStoryStore } from './stores/story';
 import { useLegacyBridge } from './composables/useLegacyBridge';
+import { signOut, restoreSessionFromStorage } from './services/session';
+import { refreshUserProfileFromApi } from './services/profile';
 import { installElementPlus } from './plugins/element';
 import '../../css/vue/app.css';
 import btnEnterIcon from '../../assets/images/ui/btn_enter.png';
@@ -16,8 +18,6 @@ import btnConfirmIcon from '../../assets/images/ui/btn_confirm.png';
 import btnBackIcon from '../../assets/images/ui/btn_back.png';
 import btnContinueIcon from '../../assets/images/ui/btn_continue.png';
 import btnRestartIcon from '../../assets/images/ui/btn_restart.png';
-
-normalizeLegacyHashRoute();
 
 const BUTTON_SKIN_CLASSES = [
   'btn-art-enter',
@@ -83,7 +83,6 @@ function applyVueButtonSkins(root?: ParentNode) {
 const app = createApp(App);
 export const pinia = createPinia();
 app.use(pinia);
-app.use(router);
 installElementPlus(app);
 
 const api = useApiClient();
@@ -92,60 +91,58 @@ const auth = useAuthStore();
 const user = useUserStore();
 const story = useStoryStore();
 
+(window as any).__VUE_API_CLIENT__ = api;
+
+restoreSessionFromStorage();
+
 async function bootstrapSession() {
-  const token = api.getStoredToken();
-  if (!token) {
-    auth.clearToken();
+  const hasToken = restoreSessionFromStorage();
+  if (!hasToken) {
     auth.markBootstrapped();
     return;
   }
 
-  auth.setToken(token);
-  api.setToken(token);
-
   try {
-    const res = await api.get('/user/profile');
-    if (!res?.success || !res?.data) {
-      auth.clearToken();
-      api.clearToken();
-      return;
+    let profile = await refreshUserProfileFromApi({ skipAuthLogout: true });
+    if (!profile) {
+      const refreshed = await api.post('/auth/refresh', null, { skipAuthLogout: true });
+      if (refreshed?.success && refreshed?.data?.token) {
+        const nextToken = String(refreshed.data.token);
+        api.setToken(nextToken);
+        auth.setToken(nextToken);
+        profile = await refreshUserProfileFromApi({ skipAuthLogout: true });
+      }
     }
-
-    user.setProfile(res.data);
-    story.setSnapshot({
-      current_chapter: res.data.current_chapter,
-      current_node: res.data.current_node,
-      dao_heart: res.data.dao_heart,
-      story_keys: res.data.story_keys,
-      unlocked_nodes: res.data.unlocked_nodes,
-      story_progress: res.data.story_progress,
-      progress_currency: res.data.progress_currency,
-    });
-    await bridge.applySessionFromProfile(res.data);
   } catch {
-    auth.clearToken();
-    api.clearToken();
+    // 网络异常时保留本地 token，允许用户继续使用。
   } finally {
     auth.markBootstrapped();
   }
 }
 
 window.addEventListener('auth:logout', async () => {
-  await bridge.clearSession();
-  auth.clearToken();
-  user.clearProfile();
-  story.setSnapshot(null);
-  router.replace('/login');
+  await signOut();
+  window.location.replace('/login');
 });
 
-bootstrapSession().finally(async () => {
+const bootstrapDone = bootstrapSession();
+setBootstrapWaiter(bootstrapDone);
+
+app.use(router);
+
+bootstrapDone.finally(async () => {
   await router.isReady();
-  if (auth.isAuthenticated && router.currentRoute.value.path === '/login') {
-    const isNewUser = user.profile && (user.profile as any).tutorial_step === 0;
-    router.replace(isNewUser ? '/onboarding' : '/hall');
-  }
-  if (!auth.isAuthenticated && router.currentRoute.value.path !== '/login') {
-    router.replace('/login');
+  const current = router.currentRoute.value;
+  if (auth.isAuthenticated && current.path === '/login') {
+    const done = await resolveAssessmentDone();
+    const redirect = String(current.query.redirect || '/hall');
+    if (done) {
+      router.replace(redirect);
+    } else {
+      const query: Record<string, string> = {};
+      if (redirect && redirect !== '/hall') query.redirect = redirect;
+      router.replace({ path: '/vocab-assessment/intro', query });
+    }
   }
   requestAnimationFrame(() => applyVueButtonSkins(document.body));
 });

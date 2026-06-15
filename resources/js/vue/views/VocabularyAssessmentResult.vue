@@ -11,28 +11,39 @@
         <div class="result-hero">
           <div class="hero-emblem">成</div>
           <div class="hero-title">{{ result.final_realm }}</div>
-          <div class="hero-subtitle">综合境界（词汇55% + 语法45%，受语法上限约束）</div>
+          <div class="hero-subtitle">{{ result.realm_explanation || '境界由学段上限、实测题难度与正确率共同决定' }}</div>
+        </div>
+
+        <div v-if="result.school_stage" class="stage-banner">
+          <span class="stage-label">注册学段</span>
+          <span class="stage-value">{{ result.school_stage }}</span>
+          <span class="stage-hint">本学段最高试炼等级 L{{ result.max_level_by_school }}（{{ majorRealmLabel }}境）</span>
         </div>
 
         <div class="stat-grid">
           <div class="stat-card">
-            <div class="stat-label">稳定水平</div>
-            <div class="stat-value">L{{ stableLevel || result.final_level }}</div>
+            <div class="stat-label">稳定掌握</div>
+            <div class="stat-value">L{{ result.proven_level || stableLevel || result.final_level }}</div>
+            <div class="stat-hint">按实际做题难度统计</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">词汇等级</div>
-            <div class="stat-value">L{{ result.vocab_final_level }}</div>
+            <div class="stat-label">实测最高难度</div>
+            <div class="stat-value">L{{ result.peak_question_level || '-' }}</div>
+            <div class="stat-hint">本场出现过的最难题目</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">语法等级</div>
-            <div class="stat-value">L{{ result.grammar_final_level }}</div>
+            <div class="stat-label">综合等级</div>
+            <div class="stat-value">L{{ result.final_level }}</div>
+            <div class="stat-hint">词汇 L{{ result.vocab_final_level }} · 语法 L{{ result.grammar_final_level }}</div>
           </div>
         </div>
 
-        <div class="challenge-tip" v-if="challengeLevel">可挑战等级：L{{ challengeLevel }}</div>
+        <div class="challenge-tip" v-if="challengeLevel && challengeLevel <= (result.max_level_by_school || 7)">
+          在本学段范围内，可挑战等级：L{{ challengeLevel }}
+        </div>
 
         <el-table :data="levelRows" size="small" class="level-table">
-          <el-table-column prop="level" label="Level" width="90" />
+          <el-table-column prop="level" label="题目难度" width="100" />
           <el-table-column prop="total" label="总题数" width="110" />
           <el-table-column prop="correct" label="正确数" width="110" />
           <el-table-column prop="accuracy" label="正确率(%)" />
@@ -49,10 +60,10 @@
           </template>
         </el-alert>
 
-        <div class="note">本次测试主要基于词汇与语法能力，后续会通过阅读、听力等继续校准。</div>
+        <div class="note">境界已按你的学段与实测表现测定，修炼内容将匹配{{ majorRealmLabel }}词库与关卡。</div>
 
         <div class="actions">
-          <el-button type="primary" data-btn-skin="enter" @click="goHall">进入首页</el-button>
+          <el-button type="primary" data-btn-skin="enter" @click="goHall">开启修仙之旅</el-button>
         </div>
       </div>
     </el-card>
@@ -108,6 +119,8 @@ const stableLevel = computed(() => {
 const challengeLevel = computed(() => {
   if (!stableLevel.value) return 0;
   const next = stableLevel.value + 1;
+  const maxSchool = Number(result.value?.max_level_by_school || 7);
+  if (next > maxSchool) return 0;
   const row = levelRows.value.find((item) => Number(String(item.level).replace('L', '')) === next);
   if (row && row.accuracy >= 50) {
     return next;
@@ -115,8 +128,15 @@ const challengeLevel = computed(() => {
   return 0;
 });
 
+const majorRealmLabel = computed(() => {
+  const realm = String(result.value?.final_realm || '');
+  const match = realm.match(/^(练气|筑基|金丹|元婴|化神|炼虚|合体|大乘|渡劫)/);
+  return match?.[1] || '对应';
+});
+
 function goHall() {
-  router.replace('/hall');
+  const redirect = String(route.query.redirect || '/hall');
+  router.replace(redirect);
 }
 
 onMounted(async () => {
@@ -142,6 +162,8 @@ onMounted(async () => {
       user.updateProfile({
         initial_assessment_done: 1,
         current_realm: res.data.final_realm || user.profile.current_realm,
+        realm: res.data.realm_code || user.profile.realm,
+        realm_stage: res.data.realm_stage ?? user.profile.realm_stage,
       });
     }
   } finally {
@@ -264,6 +286,41 @@ onMounted(async () => {
   font-size: 24px;
   font-weight: 800;
   color: #fef0c8;
+}
+
+.stat-hint {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #7f95bf;
+  line-height: 1.4;
+}
+
+.stage-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(234, 179, 8, 0.28);
+  background: rgba(234, 179, 8, 0.08);
+}
+
+.stage-label {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.stage-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fde68a;
+}
+
+.stage-hint {
+  font-size: 12px;
+  color: #b8ad92;
 }
 
 .challenge-tip {

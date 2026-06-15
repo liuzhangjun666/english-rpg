@@ -1,5 +1,5 @@
 <template>
-  <div class="vue-shell" :class="{ 'is-login': isLoginRoute }">
+  <div class="vue-shell" :class="{ 'is-login': isLoginRoute, 'is-assessment': isAssessmentRoute }">
     <div v-if="!auth.bootstrapped" class="boot-splash">
       <div class="boot-text">正在恢复会话...</div>
     </div>
@@ -24,11 +24,11 @@
             <span class="realm-chip-mini">
               <span class="realm-major-wrap">
                 <img class="realm-major-badge" :src="realmMajorBadge" alt="">
-                <span class="realm-major-text">{{ getMajorRealmText(user.profile?.current_realm) }}</span>
+                <span class="realm-major-text">{{ getMajorRealmText(displayRealm) }}</span>
               </span>
               <span class="realm-minor-wrap">
                 <img class="realm-minor-badge" :src="realmMinorBadge" alt="">
-                <span class="realm-minor-text">{{ user.profile?.current_realm || '初入仙途' }}</span>
+                <span class="realm-minor-text">{{ displayRealm || '初入仙途' }}</span>
               </span>
             </span>
           </div>
@@ -88,20 +88,20 @@
     >
       <div class="loading-content">{{ ui.loadingText }}</div>
     </el-dialog>
-
-    <ProfilePanel v-model:visible="showProfile" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useApiClient } from './services/api';
 import { useAuthStore } from './stores/auth';
 import { useUserStore } from './stores/user';
 import { useUiStore } from './stores/ui';
-import { useStoryStore } from './stores/story';
+import { signOut } from './services/session';
+import { resolveProfileRealm } from '../utils/cultivation.js';
 import { useLegacyBridge } from './composables/useLegacyBridge';
+import { useCountUp } from './composables/useCountUp';
 import realmMajorBadge from '../../assets/images/ui/realm_major_badge.png';
 import realmMinorBadge from '../../assets/images/ui/realm_minor_badge.png';
 import spiritPowerIcon from '../../assets/images/ui/hud_stat_spirit_new.png';
@@ -127,12 +127,13 @@ const route = useRoute();
 const auth = useAuthStore();
 const user = useUserStore();
 const ui = useUiStore();
-const story = useStoryStore();
-const bridge = useLegacyBridge();
 const api = useApiClient();
+const bridge = useLegacyBridge();
+
+const displayRealm = computed(() => resolveProfileRealm(user.profile));
 
 const isLoginRoute = computed(() => route.path === '/login');
-const isAssessmentRoute = computed(() => route.path.startsWith('/vocab-assessment'));
+const isAssessmentRoute = computed(() => route.meta.assessmentFlow === true);
 const showGlobalHeader = computed(() => auth.bootstrapped && auth.isAuthenticated && !isAssessmentRoute.value);
 const showHallBackButton = computed(() => auth.isAuthenticated && route.path !== '/hall' && route.path !== '/login' && !isAssessmentRoute.value);
 function goHall() {
@@ -142,29 +143,21 @@ function goHall() {
 async function logout() {
   ui.showLoading('正在退出...');
   try {
-    await api.post('/auth/logout');
-  } finally {
-    await bridge.clearSession();
-    auth.clearToken();
-    user.clearProfile();
-    story.setSnapshot(null);
-    ui.hideLoading();
-    router.replace('/login');
+    await api.post('/auth/logout', null, { skipAuthLogout: true });
+  } catch {
+    // Network errors should not block local sign-out.
   }
+  await signOut();
+  ui.hideLoading();
+  window.location.replace('/login');
 }
-
-import { onMounted, onUnmounted, ref } from 'vue';
-import ProfilePanel from './components/profile/ProfilePanel.vue';
-import { useCountUp } from './composables/useCountUp';
-
-const showProfile = ref(false);
 
 const animatedExp = useCountUp(() => user.profile?.exp ?? 0);
 const animatedSpiritPower = useCountUp(() => user.profile?.spirit_power ?? 0);
 const animatedSpiritStone = useCountUp(() => user.profile?.spirit_stone ?? 0);
 
-function openProfile() {
-  showProfile.value = true;
+async function openProfile() {
+  await bridge.openProfilePanel();
 }
 
 const handleProfileUpdate = (e: Event) => {

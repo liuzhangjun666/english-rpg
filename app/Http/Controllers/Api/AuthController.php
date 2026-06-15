@@ -29,7 +29,7 @@ class AuthController extends Controller
         'code.required' => '请输入验证码',
         'code.size' => '验证码为6位数字',
         'nickname.max' => '道号最长50个字符',
-        'school_grade.required' => '请选择当前年级',
+        'school_grade.required' => '请选择学段',
         'school_grade.max' => '年级信息过长',
         'birth_year.integer' => '出生年份格式错误',
         'birth_year.min' => '出生年份不早于1950年',
@@ -92,7 +92,7 @@ class AuthController extends Controller
         }
 
         $today = date('Y-m-d');
-        // 注册时先使用统一默认境界，最终初始境界由词汇灵根测试结果确定
+        // 注册时仅写入占位境界（练气一层），真实初始境界在灵根测试完成后写入
         $initialRealm = CultivationProfile::defaultInitialRealm();
         $currentRealmName = $this->realmService->composeCurrentRealm($initialRealm['realm'], $initialRealm['realm_stage']);
 
@@ -145,12 +145,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'phone' => 'required|string|size:11',
             'code'  => 'required|string|size:6',
-        ], [
-            'phone.required' => '请输入手机号',
-            'phone.size' => '请输入11位手机号',
-            'code.required' => '请输入验证码',
-            'code.size' => '验证码为6位数字',
-        ]);
+        ], self::CHINESE_MESSAGES);
 
         if ($validator->fails()) {
             return response()->json([
@@ -160,7 +155,6 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // 验证短信验证码
         if (!$this->verifyCode($request, 'login')) {
             return response()->json([
                 'success' => false,

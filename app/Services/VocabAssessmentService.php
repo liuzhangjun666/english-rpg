@@ -43,6 +43,32 @@ class VocabAssessmentService
         7 => 'H1',
     ];
 
+    /** 学段对应的自适应等级上限（L1–L7） */
+    private const MAX_LEVEL_BY_SCHOOL_STAGE = [
+        '小学' => 2,
+        '初中' => 3,
+        '高中' => 4,
+        '大学' => 6,
+        '研究生' => 7,
+    ];
+
+    /** 学段对应的大境界（与注册学段一致，不随连对升阶越界） */
+    private const REALM_CODE_BY_SCHOOL_STAGE = [
+        '小学' => 'L1',
+        '初中' => 'Z1',
+        '高中' => 'J1',
+        '大学' => 'Y1',
+        '研究生' => 'H1',
+    ];
+
+    private const MAJOR_REALM_BY_CODE = [
+        'L1' => '练气',
+        'Z1' => '筑基',
+        'J1' => '金丹',
+        'Y1' => '元婴',
+        'H1' => '化神',
+    ];
+
     private const QUESTION_TYPES_BY_DIMENSION = [
         self::DIMENSION_VOCAB => ['vocabulary', 'vocab'],
         self::DIMENSION_GRAMMAR => ['grammar'],
@@ -108,6 +134,13 @@ class VocabAssessmentService
         }
 
         return 1;
+    }
+
+    public function getMaxLevelBySchoolStage(?string $schoolStage): int
+    {
+        $stage = trim((string) $schoolStage);
+
+        return self::MAX_LEVEL_BY_SCHOOL_STAGE[$stage] ?? self::MAX_LEVEL;
     }
 
     public function startAssessment(User $user, string $schoolStage, ?string $learningGoal = null): VocabularyAssessment
@@ -176,8 +209,9 @@ class VocabAssessmentService
         }
 
         foreach ($dimensionCandidates as $dimension) {
-            $currentLevel = $this->getDimensionCurrentLevel($assessment, $dimension);
-            $question = $this->pickQuestionForDimension($dimension, $currentLevel, $usedQuestionIds);
+            $maxLevel = $this->getMaxLevelBySchoolStage($assessment->school_stage ?? '');
+            $currentLevel = min($this->getDimensionCurrentLevel($assessment, $dimension), $maxLevel);
+            $question = $this->pickQuestionForDimension($dimension, $currentLevel, $usedQuestionIds, $maxLevel);
             if (!$question) {
                 continue;
             }
@@ -213,7 +247,8 @@ class VocabAssessmentService
         int $timeSpent,
         int $expectedTime
     ): array {
-        $levelBefore = $this->getDimensionCurrentLevel($assessment, $dimension);
+        $maxLevel = $this->getMaxLevelBySchoolStage($assessment->school_stage ?? '');
+        $levelBefore = min($this->getDimensionCurrentLevel($assessment, $dimension), $maxLevel);
         $levelAfter = $levelBefore;
 
         if (!$isCorrect) {
@@ -232,7 +267,7 @@ class VocabAssessmentService
             && $currentCorrectStreak >= self::CORRECT_STREAK_TO_UP;
 
         if ($canPromote) {
-            $levelAfter = min(self::MAX_LEVEL, $levelBefore + 1);
+            $levelAfter = min($maxLevel, $levelBefore + 1);
         }
 
         return [
@@ -255,6 +290,12 @@ class VocabAssessmentService
         $dimensionResults = $this->buildDimensionLevelResults($records);
         $overallLevelResults = $this->buildOverallLevelResults($records);
 
+        $schoolStage = trim((string) ($assessment->school_stage ?? ''));
+        $maxBySchool = $this->getMaxLevelBySchoolStage($schoolStage);
+        $provenLevel = $this->resolveProvenLevelFromRecords($records);
+        $peakQuestionLevel = $this->resolvePeakQuestionLevel($records);
+        $ceilingFromQuestions = min($provenLevel + 1, $maxBySchool, self::MAX_LEVEL);
+
         $vocabFinalLevel = $this->resolveFinalLevelByDimension(
             $records->all(),
             self::DIMENSION_VOCAB,
@@ -266,21 +307,34 @@ class VocabAssessmentService
             $assessment->grammar_current_level ?? $assessment->start_level ?? 1
         );
 
+        $vocabFinalLevel = min($vocabFinalLevel, $ceilingFromQuestions);
+        $grammarFinalLevel = min($grammarFinalLevel, $ceilingFromQuestions);
+
         $rawLevel = (int) round(($vocabFinalLevel * 0.55) + ($grammarFinalLevel * 0.45));
         $rawLevel = max(self::MIN_LEVEL, min(self::MAX_LEVEL, $rawLevel));
-        $finalLevel = min($rawLevel, $grammarFinalLevel + 1);
+        $finalLevel = min($rawLevel, $grammarFinalLevel + 1, $ceilingFromQuestions);
         $finalLevel = max(self::MIN_LEVEL, min(self::MAX_LEVEL, $finalLevel));
 
-        $mappedRealm = $this->mapLevelToRealm($finalLevel, (float) ($assessment->accuracy ?? 0));
+        $accuracy = (float) ($assessment->accuracy ?? 0);
+        $mappedRealm = $this->mapLevelToRealm($finalLevel, $accuracy, $schoolStage);
 
-        $suggestions = [
-            sprintf('词汇维度：L%d；语法维度：L%d。', $vocabFinalLevel, $grammarFinalLevel),
-            sprintf('综合判定等级：L%d（语法上限约束已生效）。', $finalLevel),
-            sprintf('建议从%s词库与语法关卡同步修炼。', $mappedRealm['major_realm']),
-        ];
+        $suggestions = $this->buildResultSuggestions(
+            $schoolStage,
+            $mappedRealm,
+            $provenLevel,
+            $peakQuestionLevel,
+            $vocabFinalLevel,
+            $grammarFinalLevel,
+            $finalLevel,
+            $accuracy
+        );
 
         return [
             'assessment_id' => $assessmentId,
+            'school_stage' => $schoolStage,
+            'proven_level' => $provenLevel,
+            'peak_question_level' => $peakQuestionLevel,
+            'max_level_by_school' => $maxBySchool,
             'vocab_final_level' => $vocabFinalLevel,
             'grammar_final_level' => $grammarFinalLevel,
             'raw_level' => $rawLevel,
@@ -290,6 +344,7 @@ class VocabAssessmentService
             'realm_code' => $mappedRealm['realm_code'],
             'realm_stage' => $mappedRealm['realm_stage'],
             'major_realm' => $mappedRealm['major_realm'],
+            'realm_explanation' => $mappedRealm['explanation'],
             'level_results' => $overallLevelResults,
             'dimension_results' => $dimensionResults,
             'near_breakthrough' => false,
@@ -297,20 +352,113 @@ class VocabAssessmentService
         ];
     }
 
-    public function mapLevelToRealm(int $level, float $accuracy): array
+    public function mapLevelToRealm(int $level, float $accuracy, ?string $schoolStage = null): array
     {
         $normalizedLevel = max(self::MIN_LEVEL, min(self::MAX_LEVEL, $level));
-        $majorRealm = self::MAJOR_REALM_BY_LEVEL[$normalizedLevel] ?? '练气';
-
         $stage = $this->mapAccuracyToStage($accuracy);
+        $schoolStage = trim((string) $schoolStage);
+
+        if ($schoolStage !== '' && isset(self::REALM_CODE_BY_SCHOOL_STAGE[$schoolStage])) {
+            $realmCode = self::REALM_CODE_BY_SCHOOL_STAGE[$schoolStage];
+            $majorRealm = self::MAJOR_REALM_BY_CODE[$realmCode] ?? '练气';
+            $explanation = sprintf(
+                '按注册学段「%s」评定，大境界为%s；「%s」中的层数由本场正确率（%.0f%%）决定。',
+                $schoolStage,
+                $majorRealm,
+                $majorRealm . $this->chineseLayer($stage),
+                $accuracy
+            );
+        } else {
+            $majorRealm = self::MAJOR_REALM_BY_LEVEL[$normalizedLevel] ?? '练气';
+            $realmCode = self::REALM_CODE_BY_LEVEL[$normalizedLevel] ?? 'L1';
+            $explanation = sprintf(
+                '综合试炼等级 L%d 对应%s境；层数由本场正确率（%.0f%%）决定。',
+                $normalizedLevel,
+                $majorRealm,
+                $accuracy
+            );
+        }
 
         return [
             'major_realm' => $majorRealm,
             'stage' => (string) $stage,
             'realm_label' => $majorRealm . $this->chineseLayer($stage),
-            'realm_code' => self::REALM_CODE_BY_LEVEL[$normalizedLevel] ?? 'L1',
+            'realm_code' => $realmCode,
             'realm_stage' => $stage,
+            'explanation' => $explanation,
         ];
+    }
+
+    private function buildResultSuggestions(
+        string $schoolStage,
+        array $mappedRealm,
+        int $provenLevel,
+        int $peakQuestionLevel,
+        int $vocabFinalLevel,
+        int $grammarFinalLevel,
+        int $finalLevel,
+        float $accuracy
+    ): array {
+        $lines = [];
+        if ($schoolStage !== '') {
+            $lines[] = sprintf(
+                '注册学段：%s；本学段境界上限为%s境（试炼等级不超过 L%d）。',
+                $schoolStage,
+                $mappedRealm['major_realm'],
+                $this->getMaxLevelBySchoolStage($schoolStage)
+            );
+        }
+        $lines[] = sprintf(
+            '实测题目最高难度 L%d，稳定掌握 L%d（按实际做题难度与正确率统计）。',
+            $peakQuestionLevel,
+            $provenLevel
+        );
+        $lines[] = sprintf('词汇维度 L%d，语法维度 L%d，综合等级 L%d。', $vocabFinalLevel, $grammarFinalLevel, $finalLevel);
+        $lines[] = sprintf('测定境界：%s（正确率 %.0f%%）。', $mappedRealm['realm_label'], $accuracy);
+        $lines[] = sprintf('建议从%s词库与语法关卡开始修炼。', $mappedRealm['major_realm']);
+
+        return $lines;
+    }
+
+    private function resolveProvenLevelFromRecords($records): int
+    {
+        $byLevel = [];
+        foreach ($records as $record) {
+            $level = max(self::MIN_LEVEL, min(self::MAX_LEVEL, (int) $record->assessment_level));
+            if (!isset($byLevel[$level])) {
+                $byLevel[$level] = ['total' => 0, 'correct' => 0];
+            }
+            $byLevel[$level]['total']++;
+            if ((int) $record->is_correct === 1) {
+                $byLevel[$level]['correct']++;
+            }
+        }
+
+        $proven = self::MIN_LEVEL;
+        foreach ($byLevel as $level => $stats) {
+            if ((int) $stats['total'] <= 0) {
+                continue;
+            }
+            $accuracy = ((int) $stats['correct']) / (int) $stats['total'];
+            if ($accuracy >= 0.7 && (int) $level > $proven) {
+                $proven = (int) $level;
+            }
+        }
+
+        return $proven;
+    }
+
+    private function resolvePeakQuestionLevel($records): int
+    {
+        $peak = self::MIN_LEVEL;
+        foreach ($records as $record) {
+            $level = max(self::MIN_LEVEL, min(self::MAX_LEVEL, (int) $record->assessment_level));
+            if ($level > $peak) {
+                $peak = $level;
+            }
+        }
+
+        return $peak;
     }
 
     public function updateUserLearningProfile(int $userId, array $result, ?string $schoolStage = null, ?string $learningGoal = null): UserLearningProfile
@@ -341,12 +489,15 @@ class VocabAssessmentService
         return $profile;
     }
 
-    private function pickQuestionForDimension(string $dimension, int $currentLevel, array $usedQuestionIds): ?Question
+    private function pickQuestionForDimension(string $dimension, int $currentLevel, array $usedQuestionIds, int $maxLevel = self::MAX_LEVEL): ?Question
     {
         $types = self::QUESTION_TYPES_BY_DIMENSION[$dimension] ?? [];
         if (empty($types)) {
             return null;
         }
+
+        $maxLevel = max(self::MIN_LEVEL, min(self::MAX_LEVEL, $maxLevel));
+        $currentLevel = max(self::MIN_LEVEL, min($maxLevel, $currentLevel));
 
         $levels = [$currentLevel];
         $question = $this->pickQuestionByTypesAndLevels($types, $levels, $usedQuestionIds, $currentLevel);
@@ -357,7 +508,7 @@ class VocabAssessmentService
         $neighbors = array_values(array_unique(array_filter([
             $currentLevel - 1,
             $currentLevel + 1,
-        ], fn (int $value) => $value >= self::MIN_LEVEL && $value <= self::MAX_LEVEL)));
+        ], fn (int $value) => $value >= self::MIN_LEVEL && $value <= $maxLevel)));
         if (!empty($neighbors)) {
             $question = $this->pickQuestionByTypesAndLevels($types, $neighbors, $usedQuestionIds, $currentLevel);
             if ($question) {
@@ -365,7 +516,7 @@ class VocabAssessmentService
             }
         }
 
-        return $this->pickQuestionByTypesAndLevels($types, range(self::MIN_LEVEL, self::MAX_LEVEL), $usedQuestionIds, $currentLevel);
+        return $this->pickQuestionByTypesAndLevels($types, range(self::MIN_LEVEL, $maxLevel), $usedQuestionIds, $currentLevel);
     }
 
     private function pickQuestionByTypesAndLevels(array $types, array $levels, array $usedQuestionIds, int $currentLevel): ?Question

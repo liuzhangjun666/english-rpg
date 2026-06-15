@@ -34,7 +34,6 @@
     <ReviewModal v-model:visible="showReview" />
     <DemonsModal v-model:visible="showDemons" />
     <AchievementsModal v-model:visible="showAchievements" />
-    <ProfilePanel v-model:visible="showProfile" />
     <DailyQuestPanel v-model:visible="showDailyQuest" />
   </div>
 </template>
@@ -44,7 +43,10 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
+import { refreshUserProfileFromApi } from '../services/profile';
 import { useUiStore } from '../stores/ui';
+import { useUserStore } from '../stores/user';
+import { getCultivationRealmIndex, resolveProfileRealm } from '../../utils/cultivation.js';
 
 import hallPractice from '../../../assets/images/ui/hall_practice.png';
 import hallShilianchang from '../../../assets/images/ui/hall_shilianchang.png';
@@ -63,6 +65,15 @@ import hallProfile from '../../../assets/images/ui/hall_profile.png';
 const router = useRouter();
 const bridge = useLegacyBridge();
 const ui = useUiStore();
+const user = useUserStore();
+
+const WRITING_UNLOCK_REALM_INDEX = 6; // 练气七层解锁
+
+function isWritingUnlocked() {
+  const label = resolveProfileRealm(user.profile);
+  const idx = getCultivationRealmIndex(label);
+  return idx >= WRITING_UNLOCK_REALM_INDEX;
+}
 
 const stageRef = ref<HTMLElement | null>(null);
 const scale = ref(1);
@@ -99,6 +110,7 @@ onMounted(async () => {
   
   ui.showLoading('进入大厅...');
   try {
+    await refreshUserProfileFromApi({ skipAuthLogout: true });
     await bridge.switchToHall();
   } catch (error) {
     ElMessage.error('大厅加载失败，请刷新重试');
@@ -112,6 +124,10 @@ onUnmounted(() => {
 });
 
 function goPractice(mode = 'vocab') {
+  if (String(mode) === 'writing' && !isWritingUnlocked()) {
+    ElMessage.warning('符篆台将在练气七层解锁');
+    return;
+  }
   router.push({ path: '/practice', query: { mode } });
 }
 
@@ -234,7 +250,6 @@ import LeaderboardView from './LeaderboardView.vue';
 import ReviewModal from './ReviewModal.vue';
 import DemonsModal from './DemonsModal.vue';
 import AchievementsModal from './AchievementsModal.vue';
-import ProfilePanel from '../components/profile/ProfilePanel.vue';
 import DailyQuestPanel from './DailyQuestPanel.vue';
 
 const showMall = ref(false);
@@ -242,7 +257,6 @@ const showLeaderboard = ref(false);
 const showReview = ref(false);
 const showDemons = ref(false);
 const showAchievements = ref(false);
-const showProfile = ref(false);
 const showDailyQuest = ref(false);
 
 function goReading() {
@@ -277,8 +291,8 @@ function openAchievements() {
   showAchievements.value = true;
 }
 
-function openProfile() {
-  showProfile.value = true;
+async function openProfile() {
+  await bridge.openProfilePanel();
 }
 </script>
 

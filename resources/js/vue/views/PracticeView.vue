@@ -1,8 +1,8 @@
 <template>
-  <div class="practice-page" :class="{ 'practice-page-arena': sessionState === 'answering' && (isVocabModule || isGrammarModule) }">
-    <el-card shadow="hover" class="practice-shell" :class="{ 'practice-shell-arena': sessionState === 'answering' && (isVocabModule || isGrammarModule) }">
-      <template v-if="!(sessionState === 'answering' && (isVocabModule || isGrammarModule))" #header>
-        <div class="card-header">{{ sceneLabel }} · {{ moduleLabel }}</div>
+  <div class="practice-page" :class="{ 'practice-page-arena': sessionState === 'answering' && (isVocabModule || isGrammarModule || isWritingModule) }">
+    <el-card shadow="hover" class="practice-shell" :class="{ 'practice-shell-arena': sessionState === 'answering' && (isVocabModule || isGrammarModule || isWritingModule) }">
+      <template v-if="!(sessionState === 'answering' && (isVocabModule || isGrammarModule || isWritingModule))" #header>
+        <div class="card-header">{{ venueTitle }}</div>
       </template>
 
       <template v-if="sessionState === 'idle'">
@@ -83,7 +83,7 @@
             <img v-if="vocabFeedbackType === 'success'" class="ws-hit-fx" :src="wsFxHit" alt="击中" />
           </div>
 
-          <div class="ws-options" style="display: none !important;">
+          <div class="ws-options">
             <button
               v-for="(option, idx) in woodStakeOptions"
               :key="option.key"
@@ -172,42 +172,35 @@
       </template>
 
       <template v-else-if="sessionState === 'answering' && isWritingModule">
-        <div class="question-head">
-          <el-tag type="success">写作题 {{ currentIndex + 1 }} / {{ questions.length }}</el-tag>
-          <span class="question-level">{{ currentLevel.levelId }}</span>
-        </div>
+        <div class="writing-arena">
+          <div class="fz-mask"></div>
 
-        <div class="writing-meta">
-          <h3>{{ currentWritingPrompt.title || '写作任务' }}</h3>
-          <p>{{ currentWritingPrompt.topic || '请根据要求完成写作。' }}</p>
-          <el-alert
-            v-if="currentWritingPrompt.passage"
-            type="info"
-            :closable="false"
-            show-icon
-            title="原文段落"
-            :description="currentWritingPrompt.passage"
-            style="margin-top:8px"
-          />
-          <p class="writing-word-limit">
-            建议字数：{{ currentWritingPrompt.word_limit_min || 50 }} - {{ currentWritingPrompt.word_limit_max || 150 }} 词
-          </p>
-        </div>
+          <div class="fz-top">
+            <button class="fz-back-btn" type="button" @click="backHall">← 返回</button>
+            <div class="fz-title-block">
+              <div class="fz-title">符箓台 · 炼符修炼</div>
+              <div class="fz-level">{{ currentLevel.realm }} · 第{{ String(currentLevel.stageNo).padStart(2, '0') }}关</div>
+            </div>
+            <div class="fz-progress-chip">
+              <div class="fz-progress-text">{{ currentIndex + 1 }}/{{ questions.length }}</div>
+              <div class="fz-progress-track">
+                <div class="fz-progress-fill" :style="{ width: `${progressPercent}%` }"></div>
+              </div>
+            </div>
+          </div>
 
-        <el-input
-          v-model="writingContent"
-          type="textarea"
-          :rows="8"
-          maxlength="5000"
-          show-word-limit
-          placeholder="请输入英文内容"
-        />
+          <div v-if="writingCombo >= 2" class="fz-combo">连符 ×{{ writingCombo }}</div>
 
-        <div class="practice-actions">
-          <el-button @click="saveWritingDraft">暂存草稿</el-button>
-          <el-button type="primary" :loading="writingSubmitting" @click="submitWritingPrompt">
-            {{ isLastQuestion ? '提交并结算' : '提交本题' }}
-          </el-button>
+          <div class="fz-module-wrap">
+            <WritingModule
+              :key="String(currentWritingPrompt.prompt_id || currentIndex)"
+              :question="currentWritingPrompt"
+              :initial-content="writingInitialContent"
+              :submitting="writingSubmitting"
+              @submit-answer="onWritingSubmit"
+              @save-draft="onWritingSaveDraft"
+            />
+          </div>
         </div>
       </template>
 
@@ -227,6 +220,30 @@
         </el-result>
       </template>
     </el-card>
+
+    <WritingScorePanel
+      v-if="writingScorePanel.visible"
+      :score="writingScorePanel.score"
+      :feedback="writingScorePanel.feedback"
+      :details="writingScorePanel.details"
+      :validation="writingScorePanel.validation"
+      :exp-gained="writingScorePanel.expGained"
+      :stones-gained="writingScorePanel.stonesGained"
+      :combo-bonus="writingScorePanel.comboBonus"
+      :is-last="isLastQuestion"
+      @continue="onWritingScoreContinue"
+    />
+
+    <WritingFinalResult
+      v-if="sessionState === 'result' && isWritingModule"
+      :results="writingResults"
+      :exp-gained="resultExp"
+      :stones-gained="resultStones"
+      :max-combo="writingMaxCombo"
+      @retry="retryLevel"
+      @next="nextLevel"
+      @exit="backHall"
+    />
   </div>
 </template>
 
@@ -238,6 +255,7 @@ import { useApiClient } from '../services/api';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
+import { getCultivationRealmIndex, resolveProfileRealm } from '../../utils/cultivation.js';
 import wsSceneBg from '../../../assets/images/ui/wood_stake/background.png';
 import wsTopBack from '../../../assets/images/ui/wood_stake/back.png';
 import wsTopHelp from '../../../assets/images/ui/wood_stake/introduction.png';
@@ -255,6 +273,16 @@ import zfOptionStone from '../../../assets/images/ui/zhenfafeng/choose.png';
 import zfOptionStoneActive from '../../../assets/images/ui/zhenfafeng/correct_choose.png';
 import zfBridgeCorrect from '../../../assets/images/ui/zhenfafeng/correct_bridge.png';
 import zfBridgeError from '../../../assets/images/ui/zhenfafeng/error_bridge.png';
+import WritingModule from './modules/WritingModule.vue';
+import WritingScorePanel from '../components/practice/WritingScorePanel.vue';
+import WritingFinalResult from '../components/practice/WritingFinalResult.vue';
+import {
+  clearWritingDraft,
+  loadWritingDraft,
+  saveWritingDraft as persistWritingDraft,
+  triggerWritingSceneEffect,
+  type WritingValidation,
+} from '../utils/writingTalisman';
 
 type PracticeType = 'vocab' | 'grammar' | 'listening' | 'speaking' | 'reading' | 'writing';
 
@@ -282,16 +310,19 @@ type PracticeSession = {
   writingPassedCount: number;
   writingTotalScore: number;
   vocabCombo: number;
+  writingCombo: number;
+  writingMaxCombo: number;
+  writingResults: Array<Record<string, unknown>>;
 };
 
-const modules: Array<{ type: PracticeType; label: string }> = [
-  { type: 'vocab', label: '词汇' },
-  { type: 'grammar', label: '语法' },
-  { type: 'listening', label: '听力' },
-  { type: 'speaking', label: '口语' },
-  { type: 'reading', label: '阅读' },
-  { type: 'writing', label: '写作' },
-];
+const VENUE_TITLES: Record<PracticeType, string> = {
+  vocab: '练功房',
+  grammar: '阵法峰',
+  listening: '听风谷',
+  speaking: '诵咒峰',
+  reading: '藏经阁',
+  writing: '符箓台',
+};
 
 const route = useRoute();
 const router = useRouter();
@@ -299,6 +330,14 @@ const api = useApiClient();
 const bridge = useLegacyBridge();
 const ui = useUiStore();
 const user = useUserStore();
+
+const WRITING_UNLOCK_REALM_INDEX = 6; // 练气七层解锁
+
+function isWritingUnlocked() {
+  const label = resolveProfileRealm(user.profile);
+  const idx = getCultivationRealmIndex(label);
+  return idx >= WRITING_UNLOCK_REALM_INDEX;
+}
 
 const sceneType = computed<'practice' | 'grammar'>(() => (route.path === '/grammar' ? 'grammar' : 'practice'));
 
@@ -319,6 +358,19 @@ const resultPassed = ref(false);
 const writingSubmittedCount = ref(0);
 const writingPassedCount = ref(0);
 const writingTotalScore = ref(0);
+const writingCombo = ref(0);
+const writingMaxCombo = ref(0);
+const writingResults = ref<Array<{ score: number; passed?: boolean }>>([]);
+const writingScorePanel = ref({
+  visible: false,
+  score: 0,
+  feedback: '',
+  details: null as Record<string, number> | null,
+  validation: null as WritingValidation | null,
+  expGained: 0,
+  stonesGained: 0,
+  comboBonus: 0,
+});
 const resumeSession = ref<PracticeSession | null>(null);
 const vocabAnswerLocked = ref(false);
 const vocabFeedbackText = ref('');
@@ -339,8 +391,10 @@ const grammarBridgeImage = computed(() => {
   return '';
 });
 
-const moduleLabel = computed(() => modules.find((m) => m.type === currentType.value)?.label || '练功');
-const sceneLabel = computed(() => (sceneType.value === 'grammar' ? '阵法峰' : '练功房'));
+const venueTitle = computed(() => {
+  if (sceneType.value === 'grammar') return VENUE_TITLES.grammar;
+  return VENUE_TITLES[currentType.value] || '练功房';
+});
 const isVocabModule = computed(() => currentType.value === 'vocab');
 const isGrammarModule = computed(() => currentType.value === 'grammar');
 const isWritingModule = computed(() => currentType.value === 'writing');
@@ -348,6 +402,12 @@ const currentLevel = computed(() => getCurrentPlayableLevel(currentType.value));
 const isLastQuestion = computed(() => currentIndex.value >= questions.value.length - 1);
 const currentQuestion = computed(() => questions.value[currentIndex.value] || {});
 const currentWritingPrompt = computed(() => currentQuestion.value || {});
+const writingInitialContent = computed(() => {
+  const promptId = String(currentWritingPrompt.value?.prompt_id || '');
+  if (!promptId) return '';
+  const uid = user.profile?.id || 'guest';
+  return answers[promptId] || loadWritingDraft(uid, promptId) || '';
+});
 const currentQuestionText = computed(() => {
   const q = currentQuestion.value;
   return String(q.question || q.stem || q.prompt || q.topic || '请选择正确答案');
@@ -511,6 +571,10 @@ function resetQuestionState() {
   writingSubmittedCount.value = 0;
   writingPassedCount.value = 0;
   writingTotalScore.value = 0;
+  writingCombo.value = 0;
+  writingMaxCombo.value = 0;
+  writingResults.value = [];
+  writingScorePanel.value.visible = false;
   vocabCombo.value = 0;
   sessionState.value = 'idle';
   resetVocabRoundState();
@@ -584,6 +648,9 @@ function persistPracticeSession() {
     writingPassedCount: Number(writingPassedCount.value || 0),
     writingTotalScore: Number(writingTotalScore.value || 0),
     vocabCombo: Number(vocabCombo.value || 0),
+    writingCombo: Number(writingCombo.value || 0),
+    writingMaxCombo: Number(writingMaxCombo.value || 0),
+    writingResults: writingResults.value.map((r) => ({ ...r })),
   };
   localStorage.setItem(sessionKey(currentType.value), JSON.stringify(payload));
 }
@@ -605,6 +672,11 @@ function restorePracticeSession(session: PracticeSession) {
   writingPassedCount.value = Number(session.writingPassedCount || 0);
   writingTotalScore.value = Number(session.writingTotalScore || 0);
   vocabCombo.value = Number(session.vocabCombo || 0);
+  writingCombo.value = Number(session.writingCombo || 0);
+  writingMaxCombo.value = Number(session.writingMaxCombo || 0);
+  writingResults.value = Array.isArray(session.writingResults)
+    ? session.writingResults.map((r) => ({ score: Number(r.score || 0), passed: Boolean(r.passed) }))
+    : [];
   sessionState.value = session.sessionState;
   restoreAnswerForCurrentQuestion();
   if (sessionState.value === 'answering' && isVocabModule.value) {
@@ -622,13 +694,24 @@ function parseMode(raw: unknown): PracticeType {
   return supported.includes(str as PracticeType) ? (str as PracticeType) : 'vocab';
 }
 
+function sceneLoadingText(type: PracticeType): string {
+  return `切换${VENUE_TITLES[type] || '练功房'}场景...`;
+}
+
 async function bootstrapModuleFromRoute() {
   const type = parseMode(route.query.mode);
+
+  if (type === 'writing' && !isWritingUnlocked()) {
+    ElMessage.warning('符篆台将在练气七层解锁');
+    backHall();
+    return;
+  }
+
   currentType.value = type;
   resetQuestionState();
   resumeSession.value = null;
 
-  ui.showLoading(sceneType.value === 'grammar' ? '切换阵法峰场景...' : '切换练功场景...');
+  ui.showLoading(sceneType.value === 'grammar' ? sceneLoadingText('grammar') : sceneLoadingText(type));
   try {
     if (sceneType.value === 'grammar') {
       await bridge.switchToGrammarScene();
@@ -732,6 +815,9 @@ async function confirmChallenge() {
   writingContent.value = '';
   Object.keys(answers).forEach((key) => delete answers[key]);
   vocabCombo.value = 0;
+  writingCombo.value = 0;
+  writingMaxCombo.value = 0;
+  writingResults.value = [];
   resetGrammarRoundState();
   sessionState.value = 'answering';
   restoreAnswerForCurrentQuestion();
@@ -840,27 +926,48 @@ async function submitChallenge() {
   }
 }
 
-function saveWritingDraft() {
+function onWritingSaveDraft(content: string) {
   const promptId = String(currentWritingPrompt.value?.prompt_id || '');
   if (!promptId) return;
-  answers[promptId] = writingContent.value;
-  ElMessage.success('草稿已暂存');
+  const uid = user.profile?.id || 'guest';
+  answers[promptId] = content;
+  persistWritingDraft(uid, promptId, content);
+  ElMessage.success('符纸已封入袖中');
 }
 
-async function submitWritingPrompt() {
+function applyWritingCombo(validation: WritingValidation, aiPassed: boolean) {
+  if (validation.status === 'pass' && aiPassed) {
+    writingCombo.value += 1;
+    if (writingCombo.value > writingMaxCombo.value) {
+      writingMaxCombo.value = writingCombo.value;
+    }
+    return writingCombo.value;
+  }
+  writingCombo.value = 0;
+  return 0;
+}
+
+function calcComboBonus(combo: number, baseExp: number): number {
+  if (combo >= 3) return 1;
+  if (combo >= 2) return Math.round(baseExp * 0.1);
+  return 0;
+}
+
+async function onWritingSubmit(payload: { content: string; validation: WritingValidation }) {
   const prompt = currentWritingPrompt.value;
   const promptId = String(prompt?.prompt_id || '');
-  const content = String(writingContent.value || '').trim();
-  if (!promptId) return;
-  if (content.length < 10) {
-    ElMessage.warning('写作内容至少 10 个字符');
+  const content = String(payload.content || '').trim();
+  const validation = payload.validation;
+  if (!promptId || validation.status === 'fail') {
+    ElMessage.warning('符文残缺，请补全要求后再炼符');
+    triggerWritingSceneEffect('fail');
     return;
   }
   if (writingSubmitting.value) return;
 
   writingSubmitting.value = true;
   answers[promptId] = content;
-  ui.showLoading('炼符中...');
+  ui.showLoading('符箓炼制中，天劫判符...');
   try {
     const res = await api.post('/writing/submit-one', {
       prompt_id: promptId,
@@ -869,6 +976,7 @@ async function submitWritingPrompt() {
 
     if (!res?.success || !res?.data) {
       ElMessage.error(res?.message || '写作提交失败');
+      triggerWritingSceneEffect('fail');
       return;
     }
 
@@ -878,40 +986,64 @@ async function submitWritingPrompt() {
     const stones = Number(data.stones_gained || 0);
     const passed = Boolean(data.passed);
 
+    const combo = applyWritingCombo(validation, passed);
+    const comboBonus = calcComboBonus(combo, exp);
+    const bonusStones = combo >= 3 ? 1 : 0;
+
     writingSubmittedCount.value += 1;
     writingTotalScore.value += score;
     if (passed) writingPassedCount.value += 1;
+    writingResults.value.push({ score, passed });
 
     resultExp.value += exp;
-    resultStones.value += stones;
+    resultStones.value += stones + bonusStones;
 
     user.updateProfile({
       exp: Number(user.profile?.exp || 0) + exp,
-      spirit_stone: Number(user.profile?.spirit_stone || 0) + stones,
+      spirit_stone: Number(user.profile?.spirit_stone || 0) + stones + bonusStones,
       spirit_power: currentSpirit.value,
     });
 
-    ElMessage.success(`本题评分 ${score} 分：${data.feedback || '提交成功'}`);
+    const uid = user.profile?.id || 'guest';
+    clearWritingDraft(uid, promptId);
 
-    if (isLastQuestion.value) {
-      const avgScore = Math.round(writingTotalScore.value / Math.max(1, writingSubmittedCount.value));
-      resultAccuracy.value = avgScore;
-      resultPassed.value = avgScore >= 60;
-      if (resultPassed.value) {
-        unlockNextLevel(currentType.value, currentLevel.value.levelId);
-      }
-      sessionState.value = 'result';
-      clearPracticeSession();
-      return;
-    }
+    const sceneEffect = score >= 90 ? 'heaven' : passed ? (validation.status === 'pass' ? 'success' : 'partial') : 'fail';
+    triggerWritingSceneEffect(sceneEffect);
 
-    currentIndex.value += 1;
-    restoreAnswerForCurrentQuestion();
+    writingScorePanel.value = {
+      visible: true,
+      score,
+      feedback: String(data.feedback || ''),
+      details: data.details || null,
+      validation,
+      expGained: exp,
+      stonesGained: stones + bonusStones,
+      comboBonus: combo >= 2 ? combo : 0,
+    };
     persistPracticeSession();
   } finally {
     ui.hideLoading();
     writingSubmitting.value = false;
   }
+}
+
+function onWritingScoreContinue() {
+  writingScorePanel.value.visible = false;
+
+  if (isLastQuestion.value) {
+    const avgScore = Math.round(writingTotalScore.value / Math.max(1, writingSubmittedCount.value));
+    resultAccuracy.value = avgScore;
+    resultPassed.value = avgScore >= 60;
+    if (resultPassed.value) {
+      unlockNextLevel(currentType.value, currentLevel.value.levelId);
+    }
+    sessionState.value = 'result';
+    clearPracticeSession();
+    return;
+  }
+
+  currentIndex.value += 1;
+  persistPracticeSession();
 }
 
 function retryLevel() {
@@ -1220,6 +1352,101 @@ function backHall() {
 <style scoped>
 :deep(.practice-shell-arena .el-card__body) {
   padding: 0;
+}
+
+.writing-arena {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  width: 100vw;
+  min-height: 100vh;
+  overflow: auto;
+  background: radial-gradient(ellipse at 50% 80%, rgba(74, 50, 0, 0.35), rgba(10, 5, 0, 0.95) 60%);
+  color: #e8dcc8;
+}
+
+.fz-mask {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 5, 0, 0.3), rgba(10, 5, 0, 0.7));
+  pointer-events: none;
+}
+
+.fz-top,
+.fz-combo,
+.fz-module-wrap {
+  position: relative;
+  z-index: 1;
+}
+
+.fz-top {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px 8px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.fz-back-btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 168, 67, 0.4);
+  background: rgba(0, 0, 0, 0.4);
+  color: #f4d98a;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.fz-title-block { text-align: center; }
+.fz-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #f4d98a;
+  text-shadow: 0 0 12px rgba(255, 200, 80, 0.4);
+}
+.fz-level {
+  font-size: 12px;
+  color: #c9b896;
+  margin-top: 2px;
+}
+
+.fz-progress-chip { min-width: 100px; }
+.fz-progress-text {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f4d98a;
+}
+.fz-progress-track {
+  margin-top: 6px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(212, 168, 67, 0.3);
+  overflow: hidden;
+}
+.fz-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #a07820, #ffd700);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+  transition: width 0.25s ease;
+}
+
+.fz-combo {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #ff9e9e;
+  text-shadow: 0 0 10px rgba(255, 120, 80, 0.8);
+  margin-bottom: 4px;
+}
+
+.fz-module-wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
 }
 
 .vocab-arena {

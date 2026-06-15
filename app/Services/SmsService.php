@@ -12,6 +12,7 @@ class SmsService
     public const RESEND_INTERVAL = 60;
     public const CODE_TTL = 5;
     public const CODE_LENGTH = 6;
+    public const DAILY_LIMIT = 10;
 
     public function send(string $phone, string $action = 'login'): array
     {
@@ -35,16 +36,18 @@ class SmsService
             ];
         }
 
-        $todayCount = SmsCode::where('phone', $phone)
-            ->whereDate('created_at', now()->format('Y-m-d'))
-            ->count();
+        if ($this->shouldEnforceDailyLimit()) {
+            $todayCount = SmsCode::where('phone', $phone)
+                ->whereDate('created_at', now()->format('Y-m-d'))
+                ->count();
 
-        if ($todayCount >= 10) {
-            return [
-                'success' => false,
-                'code' => 'SMS_DAILY_LIMIT',
-                'message' => '今日验证码已达上限',
-            ];
+            if ($todayCount >= self::DAILY_LIMIT) {
+                return [
+                    'success' => false,
+                    'code' => 'SMS_DAILY_LIMIT',
+                    'message' => '今日验证码已达上限',
+                ];
+            }
         }
 
         $code = $this->generateCode();
@@ -104,6 +107,15 @@ class SmsService
 
         $record->update(['used_at' => now()]);
         return true;
+    }
+
+    private function shouldEnforceDailyLimit(): bool
+    {
+        if (filter_var(env('SMS_SKIP_DAILY_LIMIT', false), FILTER_VALIDATE_BOOLEAN)) {
+            return false;
+        }
+
+        return app()->environment('production');
     }
 
     private function generateCode(): string

@@ -51,7 +51,7 @@ import realmMinorBadgeIcon from '../../assets/images/ui/realm_minor_badge.png';
 import hudStatLingliIcon from '../../assets/images/ui/hud_stat_lingli.png';
 import hudStatSpiritIcon from '../../assets/images/ui/hud_stat_spirit.png';
 import hudStatJadeIcon from '../../assets/images/ui/hud_stat_jade.png';
-import { getRealmDisplayName } from '../utils/cultivation.js';
+import { getCultivationRealmIndex, getRealmDisplayName, resolveProfileRealm } from '../utils/cultivation.js';
 import {
     buildDailyDestiny,
     buildHallStoryGuide,
@@ -264,7 +264,7 @@ export class UIManager {
             <div class="input-group"><label>手机号</label><input type="tel" id="reg-phone" maxlength="11" placeholder="请输入手机号"></div>
             <div class="input-group"><label>验证码</label><div class="code-row"><input type="text" id="reg-code" maxlength="6" placeholder="输入6位验证码"><button class="code-btn" id="reg-get-code">获取</button></div></div>
             <div class="input-group"><label>道号（选填）</label><input type="text" id="reg-nickname" maxlength="50" placeholder="不填则自动生成"></div>
-            <div class="input-group"><label>当前年级 / 学习阶段（必填）</label><select id="reg-school-grade"><option value="">-- 请选择 --</option>${this.generateSchoolGradeOptions()}</select></div>
+            <div class="input-group"><label>修炼学段（必填）</label><select id="reg-school-grade"><option value="">-- 请选择学段 --</option>${this.generateSchoolGradeOptions()}</select></div>
             <div class="input-group"><label>出生年份（选填）</label><select id="reg-birth-year"><option value="">-- 选择年份 --</option>${this.generateYearOptions()}</select></div>
             <div class="input-group"><label>邀请码（选填）</label><input type="text" id="reg-invite" maxlength="20" placeholder="朋友的邀请码"></div>
             <button class="btn btn-primary" id="register-btn">注 册</button>
@@ -290,22 +290,11 @@ export class UIManager {
 
     generateSchoolGradeOptions(selectedValue = '') {
         const options = [
-            ['grade_1', '1年级'],
-            ['grade_2', '2年级'],
-            ['grade_3', '3年级'],
-            ['grade_4', '4年级'],
-            ['grade_5', '5年级'],
-            ['grade_6', '6年级'],
-            ['grade_7', '7年级'],
-            ['grade_8', '8年级'],
-            ['grade_9', '9年级'],
-            ['grade_10', '10年级'],
-            ['grade_11', '11年级'],
-            ['grade_12', '12年级'],
-            ['college', '本科阶段'],
-            ['exam', '考研 / 英专'],
-            ['graduate', '硕士 / 博士'],
-            ['advanced', '留学 / 考试 / 发表'],
+            ['primary', '小学'],
+            ['junior', '初中'],
+            ['senior', '高中'],
+            ['college', '大学'],
+            ['graduate', '研究生'],
         ];
         return options.map(([value, label]) => `<option value="${value}" ${selectedValue === value ? 'selected' : ''}>${label}</option>`).join('');
     }
@@ -319,7 +308,7 @@ export class UIManager {
         const inviteCode = document.getElementById('reg-invite').value.trim();
         if (!phone || phone.length !== 11) { this.showError('register-error', '请输入正确的手机号'); return; }
         if (!code || code.length !== 6) { this.showError('register-error', '请输入6位验证码'); return; }
-        if (!schoolGrade) { this.showError('register-error', '请选择当前年级'); return; }
+        if (!schoolGrade) { this.showError('register-error', '请选择学段'); return; }
         this.hideError('register-error');
         this.showLoading('正在注册...');
         const payload = {
@@ -420,6 +409,7 @@ export class UIManager {
             </div>
         `;
         document.body.appendChild(bar);
+        bar.querySelector('.avatar')?.addEventListener('click', () => this.openProfileCenter());
         this.applyLearningProgressToBar(bar, this._learningProgressCache);
         this.renderSpiritRecoverInBar(bar, user);
         this.startSpiritRecoverTicker(bar);
@@ -470,8 +460,8 @@ export class UIManager {
 
             const user = this.game.store.getState().user;
             if (user) {
-                this.game.store.updateUser({
-                    current_realm: data.current_realm || user.current_realm,
+                const realmUpdate = this.pickRealmUpdate(data, user);
+                const updates = {
                     cultivation_energy: Number(data.cultivation_energy ?? user.cultivation_energy ?? 0),
                     vocabulary: Number(data?.six_dimensions?.vocabulary ?? user.vocabulary ?? 0),
                     grammar: Number(data?.six_dimensions?.grammar ?? user.grammar ?? 0),
@@ -479,7 +469,9 @@ export class UIManager {
                     listening: Number(data?.six_dimensions?.listening ?? user.listening ?? 0),
                     writing: Number(data?.six_dimensions?.writing ?? user.writing ?? 0),
                     speaking: Number(data?.six_dimensions?.speaking ?? user.speaking ?? 0),
-                });
+                };
+                if (realmUpdate) updates.current_realm = realmUpdate;
+                this.game.store.updateUser(updates);
             }
         } catch (error) {
             if (!this._learningProgressCache) {
@@ -655,8 +647,24 @@ export class UIManager {
     }
 
     getCurrentRealmLabel(user) {
-        if (user?.current_realm) return user.current_realm;
-        return this.getRealmName(user?.realm, user?.realm_stage);
+        return resolveProfileRealm(user) || getRealmDisplayName(user?.realm, user?.realm_stage);
+    }
+
+    isWritingUnlocked(user) {
+        const idx = getCultivationRealmIndex(resolveProfileRealm(user));
+        return idx >= 6; // 练气七层解锁
+    }
+
+    pickRealmUpdate(data, user) {
+        const incoming = String(data?.current_realm || '').trim();
+        if (!incoming) return null;
+        const current = resolveProfileRealm(user);
+        const currentIndex = getCultivationRealmIndex(current);
+        const incomingIndex = getCultivationRealmIndex(incoming);
+        if (currentIndex >= 0 && incomingIndex >= 0 && incomingIndex < currentIndex) {
+            return null;
+        }
+        return incoming;
     }
 
     getDimensionLabelMap() {
@@ -803,7 +811,7 @@ export class UIManager {
             btn.addEventListener('click', () => {
                 const scene = btn.dataset.scene;
                 switch (scene) {
-                    case 'profile': this.showProfilePanel(); break;
+                    case 'profile': this.openProfileCenter(); break;
                     case 'review': this.sceneTransition(() => this.game.startReview()); break;
                     case 'demons': this.sceneTransition(() => { this.game.showDemons(); }); break;
                     case 'achievements': this.sceneTransition(() => { this.game.showAchievements(); }); break;
@@ -815,7 +823,13 @@ export class UIManager {
                     case 'listening': this.sceneTransition(() => this.game.startPracticeModule('listening')); break;
                     case 'speaking': this.sceneTransition(() => this.game.startPracticeModule('speaking')); break;
                     case 'reading': this.sceneTransition(() => this.game.startPracticeModule('reading')); break;
-                    case 'writing': this.sceneTransition(() => this.game.startPracticeModule('writing')); break;
+                    case 'writing':
+                        if (!this.isWritingUnlocked(this.game.store.getState().user)) {
+                            this.showHermesBubble('符篆台将在练气七层解锁。', 4500);
+                            break;
+                        }
+                        this.sceneTransition(() => this.game.startPracticeModule('writing'));
+                        break;
                     case 'mijing': this.sceneTransition(() => this.game.goToScene('mijing')); break;
                 }
             });
@@ -950,8 +964,11 @@ export class UIManager {
     }
 
     // ========== 个人面板（P1+P2 完整版） ==========
+    openProfileCenter() {
+        this.showProfilePanel();
+    }
+
     async showProfilePanel() {
-        console.warn('[DEPRECATED] showProfilePanel 已被废弃，请使用 Vue 3 组件 ProfilePanel.vue 代替。');
         const existing = document.getElementById('profile-panel');
         if (existing) {
             existing.classList.add('fade-out');
@@ -1194,8 +1211,12 @@ export class UIManager {
 
         document.getElementById('profile-logout-btn')?.addEventListener('click', async () => {
             closePanel();
+            if (window.__VUE_MIGRATION_ACTIVE__) {
+                window.dispatchEvent(new CustomEvent('auth:logout'));
+                return;
+            }
             await this.game.logout();
-            window.location.href = '/login';
+            window.location.replace('/login');
         });
 
         // 静默刷新一下用户数据
@@ -1277,7 +1298,7 @@ export class UIManager {
             data = {};
         }
         const percent = Math.max(0, Math.min(100, Number(data.realm_progress_percent ?? 0)));
-        const currentRealm = data.current_realm || user.current_realm || '练气一层';
+        const currentRealm = this.pickRealmUpdate(data, user) || resolveProfileRealm(user);
         const energy = Number(data.cultivation_energy ?? user.cultivation_energy ?? 0);
         const remain = Number(data.remaining_energy_to_next_realm ?? 0);
         const conditions = data.breakthrough_conditions || {};
@@ -1343,7 +1364,7 @@ export class UIManager {
         `;
 
         this.game.store.updateUser({
-            current_realm: currentRealm,
+            ...(this.pickRealmUpdate({ current_realm: currentRealm }, user) ? { current_realm: currentRealm } : {}),
             cultivation_energy: energy,
             vocabulary: Number(dimensions.vocabulary || 0),
             grammar: Number(dimensions.grammar || 0),

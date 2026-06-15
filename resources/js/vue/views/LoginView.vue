@@ -117,6 +117,23 @@
               </div>
 
               <div>
+                <label class="block text-sm text-gray-400 mb-2">修炼学段（必选）</label>
+                <p class="text-xs text-gray-500 mb-2">用于匹配灵根试炼起点；初始境界由测试测定，与学段无关。</p>
+                <div class="school-stage-grid">
+                  <button
+                    v-for="stage in schoolStages"
+                    :key="stage.value"
+                    type="button"
+                    class="school-stage-btn"
+                    :class="{ 'is-active': registerForm.school_grade === stage.value }"
+                    @click="registerForm.school_grade = stage.value"
+                  >
+                    {{ stage.label }}
+                  </button>
+                </div>
+              </div>
+
+              <div>
                 <label class="block text-sm text-gray-400 mb-2">道号 (选填)</label>
                 <input v-model="registerForm.nickname" type="text" maxlength="50"
                   class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-all"
@@ -175,6 +192,8 @@ import { useUserStore } from '../stores/user';
 import { useStoryStore } from '../stores/story';
 import { useUiStore } from '../stores/ui';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
+import { resolveAssessmentDone } from '../router';
+import { refreshUserProfileFromApi } from '../services/profile';
 
 const router = useRouter();
 const route = useRoute();
@@ -196,6 +215,14 @@ const loginForm = reactive({
   code: '',
 });
 
+const schoolStages = [
+  { value: 'primary', label: '小学' },
+  { value: 'junior', label: '初中' },
+  { value: 'senior', label: '高中' },
+  { value: 'college', label: '大学' },
+  { value: 'graduate', label: '研究生' },
+] as const;
+
 const registerForm = reactive({
   phone: '',
   code: '',
@@ -204,16 +231,19 @@ const registerForm = reactive({
   birth_year: '',
 });
 
+function toggleFormType() {
+  isLogin.value = !isLogin.value;
+  if (!isLogin.value) {
+    registerForm.school_grade = '';
+  }
+}
+
 const growthStages = [
   { name: '炼气期', desc: '初窥门径', words: 100 },
   { name: '筑基期', desc: '融会贯通', words: 500 },
   { name: '金丹期', desc: '过目不忘', words: 2000 },
   { name: '元婴期', desc: '出口成章', words: 5000 },
 ];
-
-function toggleFormType() {
-  isLogin.value = !isLogin.value;
-}
 
 function startCountdown(target: 'login' | 'register', seconds = 60) {
   const refTarget = target === 'login' ? loginCountdown : registerCountdown;
@@ -247,6 +277,18 @@ async function sendCode(action: 'login' | 'register') {
   ElMessage.success('验证码已发送');
 }
 
+async function syncProfileFromApi(fallback?: Record<string, any>) {
+  try {
+    const profile = await refreshUserProfileFromApi({ skipAuthLogout: true });
+    if (profile) return;
+  } catch {
+    // 回退到登录/注册接口返回的用户快照。
+  }
+  if (fallback) {
+    await applyProfile(fallback);
+  }
+}
+
 async function applyProfile(profile: Record<string, any>) {
   auth.setToken(api.getStoredToken() || '');
   user.setProfile(profile);
@@ -260,6 +302,18 @@ async function applyProfile(profile: Record<string, any>) {
     progress_currency: profile.progress_currency,
   });
   await bridge.applySessionFromProfile(profile);
+}
+
+function navigateAfterAuth(needsAssessment: boolean, options?: { fromRegister?: boolean }) {
+  const redirect = String(route.query.redirect || '/hall');
+  if (needsAssessment) {
+    const query: Record<string, string> = {};
+    if (options?.fromRegister) query.from = 'register';
+    if (redirect && redirect !== '/hall') query.redirect = redirect;
+    router.replace({ path: '/vocab-assessment/intro', query });
+    return;
+  }
+  router.replace(redirect);
 }
 
 async function doLogin() {
@@ -280,10 +334,13 @@ async function doLogin() {
       return;
     }
 
-    api.setToken(res.data.token);
-    await applyProfile(res.data.user);
+    const token = String(res.data.token || '');
+    api.setToken(token);
+    auth.setToken(token);
+    await syncProfileFromApi(res.data.user);
     ElMessage.success('登录成功');
-    router.replace(String(route.query.redirect || '/hall'));
+    const done = await resolveAssessmentDone();
+    navigateAfterAuth(!done);
   } finally {
     ui.hideLoading();
   }
@@ -295,7 +352,7 @@ async function doRegister() {
     return;
   }
   if (!registerForm.school_grade.trim()) {
-    ElMessage.error('请选择当前年级');
+    ElMessage.error('请选择修炼学段');
     return;
   }
 
@@ -320,21 +377,43 @@ async function doRegister() {
       return;
     }
 
-    api.setToken(res.data.token);
-    await applyProfile(res.data.user);
-    ElMessage.success('注册成功');
-    router.replace('/vocab-assessment/intro');
+    const token = String(res.data.token || '');
+    if (!token) {
+      ElMessage.error('注册失败：未获取到登录凭证');
+      return;
+    }
+
+    api.setToken(token);
+    auth.setToken(token);
+    await syncProfileFromApi(res.data.user);
+    ElMessage.success('仙魂凝聚成功！正在前往灵根测试...');
+    navigateAfterAuth(true, { fromRegister: true });
+    return;
   } finally {
     ui.hideLoading();
   }
 }
 
 async function guestLogin() {
-  // 模拟发送验证码并登录
   loginForm.phone = '13800138000';
   await sendCode('login');
   if (loginForm.code) {
     await doLogin();
+  }
+}
+
+async function promptRegisteredPhoneAndGoLogin(phone: string) {
+  try {
+    await ElMessageBox.confirm(
+      '该手机号已被注册，是否返回登录页面？',
+      '手机号已注册',
+      { confirmButtonText: '去登录', cancelButtonText: '取消', type: 'warning' }
+    );
+    isLogin.value = true;
+    loginForm.phone = String(phone || '').trim();
+    loginForm.code = '';
+  } catch {
+    // user cancelled
   }
 }
 </script>
@@ -384,5 +463,41 @@ async function guestLogin() {
 .fade-up-leave-to {
   opacity: 0;
   transform: translateY(40px);
+}
+
+.school-stage-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .school-stage-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.school-stage-btn {
+  padding: 10px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #d1d5db;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.school-stage-btn:hover {
+  border-color: rgba(234, 179, 8, 0.45);
+  color: #fde68a;
+}
+
+.school-stage-btn.is-active {
+  border-color: rgba(234, 179, 8, 0.75);
+  background: rgba(234, 179, 8, 0.14);
+  color: #fde68a;
+  box-shadow: 0 0 12px rgba(234, 179, 8, 0.2);
 }
 </style>

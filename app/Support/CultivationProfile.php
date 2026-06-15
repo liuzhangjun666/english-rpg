@@ -40,9 +40,12 @@ class CultivationProfile
         'grade_10' => '10年级',
         'grade_11' => '11年级',
         'grade_12' => '12年级',
-        'college' => '本科阶段',
+        'primary' => '小学',
+        'junior' => '初中',
+        'senior' => '高中',
+        'college' => '大学',
         'exam' => '考研 / 英专',
-        'graduate' => '硕士 / 博士',
+        'graduate' => '研究生',
         'advanced' => '留学 / 考试 / 发表',
     ];
 
@@ -108,10 +111,12 @@ class CultivationProfile
             'grade_1', 'grade_2', 'grade_3' => self::LEARNING_STAGE_RULES['lower_primary'],
             'grade_4', 'grade_5', 'grade_6' => self::LEARNING_STAGE_RULES['upper_primary'],
             'grade_7', 'grade_8', 'grade_9' => self::LEARNING_STAGE_RULES['junior'],
-            'grade_10', 'grade_11', 'grade_12' => self::LEARNING_STAGE_RULES['senior'],
+            'grade_10', 'grade_11', 'grade_12', 'senior' => self::LEARNING_STAGE_RULES['senior'],
             'college' => self::LEARNING_STAGE_RULES['college_non_english'],
             'exam' => self::LEARNING_STAGE_RULES['college_english'],
             'graduate' => self::LEARNING_STAGE_RULES['graduate'],
+            'primary' => self::LEARNING_STAGE_RULES['upper_primary'],
+            'junior' => self::LEARNING_STAGE_RULES['junior'],
             'advanced' => self::LEARNING_STAGE_RULES['advanced'],
             default => null,
         };
@@ -122,6 +127,27 @@ class CultivationProfile
         return ['realm' => 'L1', 'realm_stage' => 1];
     }
 
+    /**
+     * 将注册学段映射为灵根测试的学习阶段（仅影响试炼起点难度，不决定最终境界）。
+     *
+     * @return array{0: string, 1: string} [school_stage, learning_goal]
+     */
+    public static function assessmentBootstrapBySchoolGrade(?string $schoolGrade): array
+    {
+        return match (trim((string) $schoolGrade)) {
+            'grade_1', 'grade_2', 'grade_3', 'grade_4', 'grade_5', 'grade_6', 'primary' => ['小学', ''],
+            'grade_7', 'grade_8', 'grade_9', 'junior' => ['初中', ''],
+            'grade_10', 'grade_11', 'grade_12', 'senior' => ['高中', ''],
+            'college' => ['大学', ''],
+            'exam' => ['大学', '考研'],
+            'graduate', 'advanced' => ['研究生', '学术英语'],
+            default => ['小学', ''],
+        };
+    }
+
+    /**
+     * 按具体年级推算境界（仅用于历史数据迁移命令，新用户境界由灵根测试结果写入）。
+     */
     public static function initialRealmBySchoolGrade(?string $schoolGrade): array
     {
         return match (trim((string) $schoolGrade)) {
@@ -147,13 +173,11 @@ class CultivationProfile
             'grade_11' => ['realm' => 'J1', 'realm_stage' => 5],
             'grade_12' => ['realm' => 'J1', 'realm_stage' => 9],
 
-            // 大学基础：元婴一层~元婴四层（CET4）
-            'college' => ['realm' => 'Y1', 'realm_stage' => 1],
-            // 大学进阶：元婴五层~元婴九层（CET6）
-            'exam' => ['realm' => 'Y1', 'realm_stage' => 5],
+            // 学段级注册项：境界由灵根测试确定，此处仅作迁移兜底
+            'primary', 'junior', 'senior', 'college', 'graduate' => self::defaultInitialRealm(),
 
-            // 研究生分层：化神
-            'graduate' => ['realm' => 'H1', 'realm_stage' => 1],
+            // 历史细分选项（迁移用）
+            'exam' => ['realm' => 'Y1', 'realm_stage' => 5],
             'advanced' => ['realm' => 'H1', 'realm_stage' => 7],
 
             default => self::defaultInitialRealm(),
