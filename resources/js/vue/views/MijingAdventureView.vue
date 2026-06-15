@@ -2,12 +2,14 @@
   <div class="mijing-page">
     <el-card class="mijing-shell" shadow="hover">
       <template #header>
-        <div class="card-header">秘境试炼 · 限时挑战</div>
+        <div class="card-header">
+          <span>秘境试炼 · 限时挑战</span>
+          <button class="mijing-close-btn" @click="backHall" title="返回大厅">✕</button>
+        </div>
       </template>
 
-      <div class="mijing-toolbar">
+      <div class="mijing-toolbar" v-if="stage === 'entry'">
         <el-space wrap>
-          <el-button type="warning" plain @click="openLegacy">经典模式</el-button>
           <el-button @click="backHall">返回大厅</el-button>
         </el-space>
       </div>
@@ -55,38 +57,29 @@
       </template>
 
       <template v-else-if="stage === 'challenge'">
-        <div class="mijing-metrics">
-          <div class="mijing-metric">
-            <div class="mijing-metric-label">剩余时间</div>
-            <div class="mijing-metric-value">{{ remainSec }}s</div>
+        <div class="mijing-hud">
+          <div class="hud-item hud-timer" :class="{ 'hud-urgent': remainSec <= 10 }">
+            <span class="hud-icon">⏳</span>
+            <span class="hud-val">{{ remainSec }}s</span>
           </div>
-          <div class="mijing-metric">
-            <div class="mijing-metric-label">当前分数</div>
-            <div class="mijing-metric-value">{{ score }}</div>
+          <div class="hud-item hud-score">
+            <span class="hud-icon">✦</span>
+            <span class="hud-val">{{ score }}</span>
           </div>
-          <div class="mijing-metric">
-            <div class="mijing-metric-label">连对</div>
-            <div class="mijing-metric-value">{{ combo }}</div>
+          <div class="hud-item hud-combo" v-if="combo > 0">
+            <span class="hud-icon">🔥</span>
+            <span class="hud-val">×{{ combo }}</span>
           </div>
         </div>
 
-        <div class="mijing-question">{{ currentQuestion?.stem || '正在加载题目...' }}</div>
-        <el-radio-group v-model="selectedAnswer" class="mijing-option-group">
-          <el-radio
-            v-for="opt in optionEntries"
-            :key="`${currentQuestion?.question_id || 'q'}-${opt.value}`"
-            :label="opt.value"
-            border
-            class="option-item"
-            :disabled="answerSubmitting"
-          >
-            {{ opt.label }}. {{ opt.text }}
-          </el-radio>
-        </el-radio-group>
+        <div class="mijing-quest-scroll">
+          <div class="quest-ornament left">✧</div>
+          <div class="quest-text">{{ currentQuestion?.stem || '正在加载题目...' }}</div>
+          <div class="quest-ornament right">✧</div>
+        </div>
 
-        <div class="module-actions">
-          <el-button type="primary" :loading="answerSubmitting" @click="submitAnswer">提交本题</el-button>
-          <el-button @click="finishChallenge">提前结算</el-button>
+        <div class="mijing-bottom-bar">
+          <button class="mijing-settle-btn" @click="finishChallenge">提前结算</button>
         </div>
       </template>
 
@@ -109,7 +102,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useApiClient } from '../services/api';
@@ -167,7 +160,44 @@ const remainSec = computed(() => {
 
 const optionEntries = computed(() => normalizeOptions(currentQuestion.value?.options));
 
+const onSceneInteract = (e: Event) => {
+  const customEvent = e as CustomEvent;
+  if (customEvent.detail?.action === 'answer_option') {
+    const clickedValue = customEvent.detail.object?.userData?.value;
+    if (clickedValue && !answerSubmitting.value && stage.value === 'challenge') {
+      selectedAnswer.value = clickedValue;
+      void submitAnswer();
+    }
+  }
+};
+
+const sync3dOptions = () => {
+  if (stage.value === 'challenge' && optionEntries.value.length > 0) {
+    if ((window as any).__legacyGame?.scene?.currentSceneObj?.spawnOptions) {
+      try {
+        const rawOptions = JSON.parse(JSON.stringify(optionEntries.value));
+        (window as any).__legacyGame.scene.currentSceneObj.spawnOptions(rawOptions);
+      } catch (e: any) {
+        console.error('生成3D选项报错:', e);
+      }
+    }
+  } else {
+    if ((window as any).__legacyGame?.scene?.currentSceneObj?.spawnOptions) {
+      (window as any).__legacyGame.scene.currentSceneObj.spawnOptions([]);
+    }
+  }
+};
+
+watch(
+  () => optionEntries.value,
+  () => {
+    sync3dOptions();
+  },
+  { deep: true } // 去掉 immediate: true 避免场景未切换完成时执行
+);
+
 onMounted(async () => {
+  window.addEventListener('scene:interact', onSceneInteract);
   ui.showLoading('进入秘境...');
   try {
     await bridge.switchToMijingScene();
@@ -179,6 +209,8 @@ onMounted(async () => {
     } else {
       clearSession();
     }
+    // 场景加载完毕后，手动同步一次 3D 选项
+    sync3dOptions();
   } catch {
     ElMessage.error('秘境加载失败');
   } finally {
@@ -187,6 +219,7 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
+  window.removeEventListener('scene:interact', onSceneInteract);
   stopTicker();
   persistSession();
   void bridge.closeLegacyPanels();
@@ -334,8 +367,26 @@ async function submitAnswer() {
       return;
     }
 
+    const oldCombo = combo.value;
     score.value = Number(res.data.score || 0);
     combo.value = Number(res.data.combo || 0);
+    
+    // 如果 combo 增加，说明答对了，触发 3D 特效
+    if (combo.value > oldCombo) {
+      if ((window as any).__legacyGame?.scene?.currentSceneObj?.triggerCorrectEffect) {
+        const clickedMesh = (window as any).__legacyGame.scene.currentSceneObj.optionsGroup?.children?.find((c: any) => c.userData.value === answer);
+        (window as any).__legacyGame.scene.currentSceneObj.triggerCorrectEffect(clickedMesh);
+      }
+    } else {
+      if ((window as any).__legacyGame?.scene?.currentSceneObj?.triggerErrorEffect) {
+        (window as any).__legacyGame.scene.currentSceneObj.triggerErrorEffect();
+      }
+    }
+    
+    if ((window as any).__legacyGame?.scene?.currentSceneObj?.updateEnvironment) {
+      (window as any).__legacyGame.scene.currentSceneObj.updateEnvironment(combo.value, Number(res.data.remain_sec || 0));
+    }
+
     if (Number(res.data.remain_sec || 0) <= 0) {
       await finishChallenge();
       return;
@@ -355,6 +406,9 @@ function startTicker() {
       return;
     }
     persistSession();
+    if ((window as any).__legacyGame?.scene?.currentSceneObj?.updateEnvironment) {
+      (window as any).__legacyGame.scene.currentSceneObj.updateEnvironment(combo.value, remainSec.value);
+    }
   }, 500);
 }
 
@@ -443,16 +497,7 @@ function normalizeOptions(options: unknown) {
   return [];
 }
 
-async function openLegacy() {
-  ui.showLoading('切换经典秘境...');
-  try {
-    await bridge.openMijing();
-  } catch {
-    ElMessage.error('经典模式加载失败');
-  } finally {
-    ui.hideLoading();
-  }
-}
+
 
 function backHall() {
   stopTicker();
@@ -461,3 +506,134 @@ function backHall() {
   router.push('/hall');
 }
 </script>
+
+<style scoped>
+/* ===== HUD 状态栏 ===== */
+.mijing-hud {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 8px 0;
+  position: relative;
+  z-index: 10;
+}
+.hud-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 18px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(20, 10, 40, 0.85), rgba(40, 20, 60, 0.75));
+  border: 1px solid rgba(162, 155, 254, 0.4);
+  box-shadow: 0 0 12px rgba(162, 155, 254, 0.15);
+  font-family: 'Microsoft YaHei', sans-serif;
+}
+.hud-icon { font-size: 18px; }
+.hud-val {
+  font-size: 22px;
+  font-weight: 900;
+  color: #e8e4ff;
+  text-shadow: 0 0 8px rgba(162, 155, 254, 0.6);
+}
+.hud-timer .hud-val { color: #55efc4; }
+.hud-urgent .hud-val {
+  color: #ff6b6b !important;
+  animation: pulse-red 0.6s ease-in-out infinite alternate;
+}
+.hud-combo {
+  border-color: rgba(255, 165, 0, 0.5);
+  background: linear-gradient(135deg, rgba(60, 30, 0, 0.85), rgba(80, 40, 0, 0.7));
+}
+.hud-combo .hud-val { color: #ffa502; text-shadow: 0 0 10px rgba(255, 165, 0, 0.5); }
+
+@keyframes pulse-red {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0.6; transform: scale(1.1); }
+}
+
+/* ===== 题目卷轴 ===== */
+.mijing-quest-scroll {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 12px auto;
+  padding: 14px 28px;
+  max-width: 700px;
+  background: linear-gradient(135deg, rgba(15, 8, 30, 0.9), rgba(30, 15, 50, 0.85));
+  border: 1px solid rgba(162, 155, 254, 0.35);
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(162, 155, 254, 0.1), inset 0 0 30px rgba(85, 239, 196, 0.03);
+  position: relative;
+  z-index: 10;
+}
+.quest-ornament {
+  font-size: 20px;
+  color: #a29bfe;
+  text-shadow: 0 0 8px rgba(162, 155, 254, 0.6);
+  animation: ornament-glow 2s ease-in-out infinite alternate;
+}
+.quest-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: #f0ecff;
+  text-shadow: 0 0 6px rgba(200, 190, 255, 0.3);
+  text-align: center;
+  line-height: 1.4;
+}
+@keyframes ornament-glow {
+  from { opacity: 0.5; }
+  to { opacity: 1; }
+}
+
+
+/* ===== 底部操作栏 ===== */
+.mijing-bottom-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 24px;
+  position: relative;
+  z-index: 10;
+}
+.mijing-settle-btn {
+  padding: 6px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.mijing-settle-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* ===== 卡片头部 ===== */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.mijing-close-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mijing-close-btn:hover {
+  background: rgba(255, 80, 80, 0.3);
+  border-color: rgba(255, 80, 80, 0.5);
+  color: #ff6b6b;
+}
+</style>

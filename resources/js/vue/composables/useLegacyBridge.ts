@@ -91,7 +91,13 @@ class LegacyBridge {
     const game = await this.getGame();
     this.applySessionToGame(game, this.pendingProfile);
     game.ensureSceneInitialized();
-    await game.scene.switchTo('practice', { mode: modeFromPracticeType(type) });
+    const mode = modeFromPracticeType(type);
+    let sceneName = 'practice';
+    if (mode === 'listening') sceneName = 'listening';
+    else if (mode === 'speaking') sceneName = 'speaking';
+    else if (mode === 'writing') sceneName = 'writing';
+    
+    await game.scene.switchTo(sceneName, { mode });
     game.ui.hideAllPanels();
     const panel = await game.loadPanel('practice');
     panel.showLevelSelect(type);
@@ -101,7 +107,13 @@ class LegacyBridge {
     const game = await this.getGame();
     this.applySessionToGame(game, this.pendingProfile);
     game.ensureSceneInitialized();
-    await game.scene.switchTo('practice', { mode: modeFromPracticeType(type) });
+    const mode = modeFromPracticeType(type);
+    let sceneName = 'practice';
+    if (mode === 'listening') sceneName = 'listening';
+    else if (mode === 'speaking') sceneName = 'speaking';
+    else if (mode === 'writing') sceneName = 'writing';
+
+    await game.scene.switchTo(sceneName, { mode });
     game.ui.hideAllPanels();
   }
 
@@ -155,45 +167,9 @@ class LegacyBridge {
     game.ui.hideAllPanels();
   }
 
-  async openMall() {
-    const game = await this.getGame();
-    this.applySessionToGame(game, this.pendingProfile);
-    await game.showMall();
-  }
-
-  async openLeaderboard() {
-    const game = await this.getGame();
-    this.applySessionToGame(game, this.pendingProfile);
-    await game.showLeaderboard();
-  }
-
-  async openReview() {
-    const game = await this.getGame();
-    this.applySessionToGame(game, this.pendingProfile);
-    await game.startReview();
-  }
-
-  async openDemons() {
-    const game = await this.getGame();
-    this.applySessionToGame(game, this.pendingProfile);
-    await game.showDemons();
-  }
-
-  async openAchievements() {
-    const game = await this.getGame();
-    this.applySessionToGame(game, this.pendingProfile);
-    await game.showAchievements();
-  }
-
   async closeLegacyPanels() {
     const game = await this.getGame();
     game.ui.hideAllPanels();
-  }
-
-  async openProfilePanel() {
-    const game = await this.getGame();
-    this.applySessionToGame(game, this.pendingProfile);
-    game.ui.showProfilePanel();
   }
 }
 

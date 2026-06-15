@@ -1,4 +1,7 @@
 // LevelUp 英语修仙 - 本地状态管理
+import { pinia } from '../vue/main';
+import { useUserStore } from '../vue/stores/user';
+
 export class Store {
     constructor() {
         this.state = {
@@ -59,12 +62,26 @@ export class Store {
     setUser(user) {
         this.state.user = this.normalizeRealmUser(user);
         this.notify();
+        // [BRIDGE] 同步到 Pinia，供 Vue 3 组件使用
+        try {
+            const userStore = useUserStore(pinia);
+            userStore.setProfile(this.state.user);
+        } catch (e) {
+            console.error('桥接 Pinia 失败:', e);
+        }
     }
 
     updateUser(updates) {
         if (this.state.user) {
             Object.assign(this.state.user, this.normalizeRealmUser(updates));
             this.notify();
+            // [BRIDGE] 同步到 Pinia，供 Vue 3 组件使用
+            try {
+                const userStore = useUserStore(pinia);
+                userStore.updateProfile(this.normalizeRealmUser(updates));
+            } catch (e) {
+                console.error('桥接 Pinia 失败:', e);
+            }
         }
     }
 

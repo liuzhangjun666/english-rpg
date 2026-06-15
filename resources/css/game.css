@@ -585,3 +585,37 @@ html, body {
 .character-bar {
     z-index: 200 !important;
 }
+
+/* 动态境界徽章颜色 */
+.realm-chip.theme-zhuji .realm-major-badge,
+.realm-chip.theme-zhuji .realm-minor-badge {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35)) hue-rotate(-60deg);
+}
+.realm-chip.theme-jindan .realm-major-badge,
+.realm-chip.theme-jindan .realm-minor-badge {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35)) sepia(0.8) hue-rotate(10deg) saturate(2.5);
+}
+.realm-chip.theme-yuanying .realm-major-badge,
+.realm-chip.theme-yuanying .realm-minor-badge {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35)) hue-rotate(-120deg) saturate(1.2);
+}
+.realm-chip.theme-huashen .realm-major-badge,
+.realm-chip.theme-huashen .realm-minor-badge {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35)) hue-rotate(90deg) saturate(1.5);
+}
+.realm-chip.theme-lianxu .realm-major-badge,
+.realm-chip.theme-lianxu .realm-minor-badge {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35)) sepia(0.5) hue-rotate(-200deg) saturate(1.8);
+}
+.realm-chip.theme-heti .realm-major-badge,
+.realm-chip.theme-heti .realm-minor-badge {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35)) hue-rotate(-180deg) saturate(1.5);
+}
+.realm-chip.theme-dacheng .realm-major-badge,
+.realm-chip.theme-dacheng .realm-minor-badge {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35)) hue-rotate(150deg) saturate(2) brightness(0.9);
+}
+.realm-chip.theme-dujie .realm-major-badge,
+.realm-chip.theme-dujie .realm-minor-badge {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35)) grayscale(0.8) contrast(1.5) brightness(0.7);
+}

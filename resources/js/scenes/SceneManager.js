@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { BokehPass } from 'three/examples/jsm/postprocessing/BokehPass.js';
 
 export class SceneManager {
     constructor() {
@@ -19,10 +22,13 @@ export class SceneManager {
             practice: () => import('./PracticeScene.js').then((m) => m.PracticeScene),
             grammar: () => import('./GrammarScene.js').then((m) => m.GrammarScene),
             shilianchang: () => import('./ShilianchangScene.js').then((m) => m.ShilianchangScene),
-            mijing: () => import('./MijingScene.js').then((m) => m.MijingScene),
+            mijing: () => import('./MijingSceneV2.js').then((m) => m.MijingScene),
             cangjingge: () => import('./CangjinggeScene.js').then((m) => m.CangjinggeScene),
             initiation: () => import('./InitiationScene.js').then((m) => m.InitiationScene),
             breakthrough: () => import('./BreakthroughScene.js').then((m) => m.BreakthroughScene),
+            listening: () => import('./ListeningScene.js').then((m) => m.ListeningScene),
+            speaking: () => import('./SpeakingScene.js').then((m) => m.SpeakingScene),
+            writing: () => import('./WritingScene.js').then((m) => m.WritingScene),
         };
     }
 
@@ -35,7 +41,8 @@ export class SceneManager {
 
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        this.camera.position.set(0, 0, 12);
+        this.camera.position.set(0, 8, 16);
+        this.camera.lookAt(0, 0, 0);
 
         const lowPower =
             (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
@@ -52,6 +59,27 @@ export class SceneManager {
         this.renderer.toneMappingExposure = 0.9;
         container.appendChild(this.renderer.domElement);
 
+        this.composer = new EffectComposer(this.renderer);
+        const renderPass = new RenderPass(this.scene, this.camera);
+        this.composer.addPass(renderPass);
+
+        this.bokehPass = new BokehPass(this.scene, this.camera, {
+            focus: 1.0,
+            aperture: 0.025,
+            maxblur: 0.0,
+            width: window.innerWidth,
+            height: window.innerHeight
+        });
+        this.composer.addPass(this.bokehPass);
+        
+        this.targetBlur = 0.0;
+        this.currentBlur = 0.0;
+
+        this.raycaster = new THREE.Raycaster();
+        this.pointer = new THREE.Vector2(-1, -1);
+        container.addEventListener('pointerdown', (e) => this.onPointerDown(e));
+        container.addEventListener('pointermove', (e) => this.onPointerMove(e));
+
         window.addEventListener('resize', (this._onResizeBound ??= () => this.onResize()));
         document.addEventListener(
             'visibilitychange',
@@ -59,7 +87,87 @@ export class SceneManager {
                 this.isPaused = document.hidden;
             })
         );
+        
+        this._bodyClassObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'class') {
+                    const hasModal = document.body.classList.contains('el-popup-parent--hidden');
+                    this.setDepthOfField(hasModal);
+                }
+            });
+        });
+        this._bodyClassObserver.observe(document.body, { attributes: true });
+
         this.animate();
+    }
+
+    onPointerDown(event) {
+        if (!this.camera || !this.scene || this.isPaused) return;
+        
+        this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        this.raycaster.setFromCamera(this.pointer, this.camera);
+        
+        const intersects = this.raycaster.intersectObjects(this.scene.children, true);
+        
+        for (let i = 0; i < intersects.length; i++) {
+            const obj = intersects[i].object;
+            if (obj.userData && obj.userData.interactable) {
+                // 原有 eventBus
+                this.eventBus?.emit('scene:interact', {
+                    object: obj,
+                    action: obj.userData.action,
+                    point: intersects[i].point,
+                    sceneName: this.currentSceneName
+                });
+                
+                // 新增全局 window 事件抛出，让 Vue 组件可以直接无缝监听
+                window.dispatchEvent(new CustomEvent('scene:interact', {
+                    detail: {
+                        object: obj,
+                        action: obj.userData.action,
+                        point: intersects[i].point,
+                        sceneName: this.currentSceneName
+                    }
+                }));
+
+                break;
+            }
+        }
+    }
+
+    onPointerMove(event) {
+        if (!this.camera || !this.scene || this.isPaused) return;
+        
+        this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        
+        this.raycaster.setFromCamera(this.pointer, this.camera);
+        const intersects = this.raycaster.intersectObjects(this.scene.children, true);
+        
+        // 重置所有可交互对象的 hover 状态
+        this.scene.traverse((child) => {
+            if (child.userData && child.userData.interactable) {
+                child.userData.isHovered = false;
+            }
+        });
+        
+        // 设置第一个碰到的对象为 hover
+        for (let i = 0; i < intersects.length; i++) {
+            const obj = intersects[i].object;
+            if (obj.userData && obj.userData.interactable) {
+                obj.userData.isHovered = true;
+                break;
+            }
+        }
+    }
+
+    setDepthOfField(enabled, focus = 1.0) {
+        this.targetBlur = enabled ? 0.015 : 0.0;
+        if (this.bokehPass) {
+            this.bokehPass.uniforms['focus'].value = focus;
+        }
     }
 
     async switchTo(name, options = {}) {
@@ -137,7 +245,18 @@ export class SceneManager {
             // Some scene backgrounds are loaded asynchronously. Re-try fit here so mobile
             // gets correct cover-crop once the image dimensions become available.
             this.fitBackgroundToViewport();
-            this.renderer.render(this.scene, this.camera);
+            
+            if (this.bokehPass) {
+                this.currentBlur += (this.targetBlur - this.currentBlur) * 0.1;
+                this.bokehPass.uniforms['maxblur'].value = this.currentBlur;
+                if (this.currentBlur > 0.001) {
+                    this.composer.render();
+                } else {
+                    this.renderer.render(this.scene, this.camera);
+                }
+            } else {
+                this.renderer.render(this.scene, this.camera);
+            }
         }
 
         this.animationId = requestAnimationFrame(() => this.animate());
@@ -148,6 +267,9 @@ export class SceneManager {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+        if (this.composer) {
+            this.composer.setSize(window.innerWidth, window.innerHeight);
+        }
         this._backgroundFitCacheKey = '';
         this.fitBackgroundToViewport();
     }
@@ -202,6 +324,10 @@ export class SceneManager {
         if (this._onResizeBound) window.removeEventListener('resize', this._onResizeBound);
         if (this._onVisibilityChangeBound) {
             document.removeEventListener('visibilitychange', this._onVisibilityChangeBound);
+        }
+        if (this._bodyClassObserver) {
+            this._bodyClassObserver.disconnect();
+            this._bodyClassObserver = null;
         }
 
         if (this.renderer) {

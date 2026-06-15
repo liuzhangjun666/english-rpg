@@ -1,3 +1,4 @@
+// [DEPRECATED] 该原生面板已被标记为废弃，核心逻辑已拆分至 Vue 3 组件中 (PracticeViewNew.vue 及 modules/)
 // LevelUp 英语修仙 - 答题面板（即时反馈+连击版）
 import herbIcon from '../../assets/images/herb_icon.png';
 

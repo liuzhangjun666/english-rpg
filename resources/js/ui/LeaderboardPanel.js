@@ -1,3 +1,4 @@
+// [DEPRECATED] 该原生面板已废弃，请使用 Vue 3 组件 LeaderboardView.vue 代替
 export class LeaderboardPanel {
     constructor(game) {
         this.game = game;

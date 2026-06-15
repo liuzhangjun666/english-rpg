@@ -1,3 +1,4 @@
+// [DEPRECATED] 该原生面板已废弃，请使用 Vue 3 组件 ExamView.vue 代替
 // LevelUp 英语修仙 - 渡劫检测面板
 import { getRealmDisplayName } from '../utils/cultivation.js';
 

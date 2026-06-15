@@ -41,7 +41,7 @@
               <div class="exp-flow"></div>
             </div>
             <span class="exp-text">
-              修为: {{ user.profile?.exp ?? 0 }} / {{ user.profile?.next_threshold ?? 100 }}
+              修为: {{ animatedExp }} / {{ user.profile?.next_threshold ?? 100 }}
             </span>
           </div>
         </div>
@@ -53,13 +53,13 @@
         <div class="asset-item" title="每日修炼消耗灵力，随时间自动恢复">
           <span class="asset-icon-img"><img :src="spiritPowerIcon" alt="⚡" class="resource-icon-img" /></span>
           <span class="asset-label">灵力:</span>
-          <span class="asset-value">{{ user.profile?.spirit_power ?? 0 }}/{{ user.profile?.spirit_power_max ?? 100 }}</span>
+          <span class="asset-value">{{ animatedSpiritPower }}/{{ user.profile?.spirit_power_max ?? 100 }}</span>
         </div>
         <!-- 灵石/灵玉 -->
         <div class="asset-item" title="在仙坊中购买修行道具和灵药">
           <span class="asset-icon-img"><img :src="spiritStoneIcon" alt="💎" class="resource-icon-img" /></span>
           <span class="asset-label">灵石:</span>
-          <span class="asset-value">{{ user.profile?.spirit_stone ?? 0 }}</span>
+          <span class="asset-value">{{ animatedSpiritStone }}</span>
         </div>
       </div>
 
@@ -70,7 +70,11 @@
     </header>
 
     <main class="shell-main">
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <transition name="scene-fade" mode="out-in">
+          <component :is="Component" :key="$route.path" />
+        </transition>
+      </router-view>
     </main>
     </template>
 
@@ -84,6 +88,8 @@
     >
       <div class="loading-content">{{ ui.loadingText }}</div>
     </el-dialog>
+
+    <ProfilePanel v-model:visible="showProfile" />
   </div>
 </template>
 
@@ -147,7 +153,32 @@ async function logout() {
   }
 }
 
+import { onMounted, onUnmounted, ref } from 'vue';
+import ProfilePanel from './components/profile/ProfilePanel.vue';
+import { useCountUp } from './composables/useCountUp';
+
+const showProfile = ref(false);
+
+const animatedExp = useCountUp(() => user.profile?.exp ?? 0);
+const animatedSpiritPower = useCountUp(() => user.profile?.spirit_power ?? 0);
+const animatedSpiritStone = useCountUp(() => user.profile?.spirit_stone ?? 0);
+
 function openProfile() {
-  bridge.openProfilePanel();
+  showProfile.value = true;
 }
+
+const handleProfileUpdate = (e: Event) => {
+  const customEvent = e as CustomEvent;
+  if (customEvent.detail) {
+    user.updateProfile(customEvent.detail);
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('profile-updated', handleProfileUpdate);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('profile-updated', handleProfileUpdate);
+});
 </script>

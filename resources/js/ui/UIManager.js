@@ -696,11 +696,27 @@ export class UIManager {
         return realmLianqiIcon;
     }
 
+    getRealmThemeClass(realmLabel) {
+        const text = String(realmLabel || '').trim();
+        if (!text) return 'theme-lianqi';
+        if (text.includes('练气') || text.includes('炼气')) return 'theme-lianqi';
+        if (text.includes('筑基')) return 'theme-zhuji';
+        if (text.includes('金丹')) return 'theme-jindan';
+        if (text.includes('元婴')) return 'theme-yuanying';
+        if (text.includes('化神')) return 'theme-huashen';
+        if (text.includes('炼虚')) return 'theme-lianxu';
+        if (text.includes('合体')) return 'theme-heti';
+        if (text.includes('大乘')) return 'theme-dacheng';
+        if (text.includes('渡劫')) return 'theme-dujie';
+        return 'theme-lianqi';
+    }
+
     renderRealmBadge(realmLabel) {
         const safeLabel = this.escapeHtml(String(realmLabel || '练气一层'));
         const majorText = this.escapeHtml(this.getMajorRealmText(realmLabel));
+        const themeClass = this.escapeHtml(this.getRealmThemeClass(realmLabel));
         return `
-            <span class="realm-chip realm-chip-badges">
+            <span class="realm-chip realm-chip-badges ${themeClass}">
                 <span class="realm-major-wrap">
                     <img class="realm-major-badge" src="${realmMajorBadgeIcon}" alt="">
                     <span class="realm-major-text">${majorText}</span>
@@ -935,6 +951,7 @@ export class UIManager {
 
     // ========== 个人面板（P1+P2 完整版） ==========
     async showProfilePanel() {
+        console.warn('[DEPRECATED] showProfilePanel 已被废弃，请使用 Vue 3 组件 ProfilePanel.vue 代替。');
         const existing = document.getElementById('profile-panel');
         if (existing) {
             existing.classList.add('fade-out');
@@ -1112,6 +1129,7 @@ export class UIManager {
                         user.nickname = r.data.nickname;
                         displaySpan.textContent = r.data.nickname;
                         this.showHermesBubble('道号已更新。');
+                        window.dispatchEvent(new CustomEvent('profile-updated', { detail: r.data }));
                     } else {
                         inputEl.value = user.nickname || '';
                         this.showError('更新失败');
@@ -1175,16 +1193,9 @@ export class UIManager {
         document.getElementById('profile-parent-btn')?.addEventListener('click', () => { closePanel(); this.game.showParentDashboard(); });
 
         document.getElementById('profile-logout-btn')?.addEventListener('click', async () => {
-            const ok = await this.showConfirmDialog({
-                title: '退出确认',
-                message: '确定要退出宗门吗？',
-                confirmText: '退出',
-                cancelText: '取消',
-            });
-            if (ok) {
-                closePanel();
-                this.game.logout();
-            }
+            closePanel();
+            await this.game.logout();
+            window.location.href = '/login';
         });
 
         // 静默刷新一下用户数据
@@ -1420,10 +1431,16 @@ export class UIManager {
                 <div class="panel-title">${this.escapeHtml(title)}</div>
                 <div class="confirm-dialog-text">${this.escapeHtml(message)}</div>
                 <div class="confirm-dialog-actions">
-                    <button class="btn btn-secondary" data-btn-skin="back" id="confirm-dialog-cancel">${this.escapeHtml(cancelText)}</button>
-                    <button class="btn btn-primary" data-btn-skin="confirm" id="confirm-dialog-ok">${this.escapeHtml(confirmText)}</button>
+                    <button class="btn btn-secondary no-skin" style="pointer-events: auto !important; position: relative; z-index: 1000; cursor: pointer;" data-btn-skin="back" id="confirm-dialog-cancel">${this.escapeHtml(cancelText)}</button>
+                    <button class="btn btn-primary no-skin" style="pointer-events: auto !important; position: relative; z-index: 1000; cursor: pointer;" data-btn-skin="confirm" id="confirm-dialog-ok">${this.escapeHtml(confirmText)}</button>
                 </div>
             `;
+
+            window.__confirmDialogCleanup = (ok) => {
+                mask.remove();
+                panel.remove();
+                resolve(ok);
+            };
 
             const cleanup = (ok) => {
                 mask.remove();
@@ -1436,8 +1453,21 @@ export class UIManager {
             this.overlay.appendChild(panel);
             this.applyButtonSkins(panel);
 
-            panel.querySelector('#confirm-dialog-cancel')?.addEventListener('click', () => cleanup(false));
-            panel.querySelector('#confirm-dialog-ok')?.addEventListener('click', () => cleanup(true));
+            // 强制绑定事件
+            const btnCancel = panel.querySelector('#confirm-dialog-cancel');
+            const btnOk = panel.querySelector('#confirm-dialog-ok');
+            if (btnCancel) {
+                btnCancel.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    window.__confirmDialogCleanup(false);
+                });
+            }
+            if (btnOk) {
+                btnOk.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    window.__confirmDialogCleanup(true);
+                });
+            }
         });
     }
 
@@ -1495,6 +1525,7 @@ export class UIManager {
         buttons.forEach((btn) => {
             if (btn.classList.contains('code-btn')) return;
             if (btn.classList.contains('nav-portal-btn')) return;
+            if (btn.classList.contains('no-skin')) return;
             const forcedSkin = String(btn.dataset?.btnSkin || '').trim();
             const skinKey = forcedSkin || this.getButtonSkinKeyByLabel(btn.textContent);
             BUTTON_SKIN_CLASS_NAMES.forEach((cls) => btn.classList.remove(cls));
