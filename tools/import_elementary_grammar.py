@@ -13,6 +13,10 @@ STAGE_SEQUENCE = [
     ("L3", "01"), ("L3", "02"), ("L3", "03"), ("L3", "04"), ("L3", "05"), ("L3", "06"), ("L3", "07"), ("L3", "08"), ("L3", "09"),
 ]
 
+GRADE6_STAGE_SEQUENCE = [
+    ("L3", "07"), ("L3", "08"), ("L3", "09"),
+]
+
 OPTION_LINE_RE = re.compile(r"^\s*([A-D])\s*[\.．、\)]\s*(.+?)\s*$", re.IGNORECASE)
 ANSWER_RE = re.compile(r"[A-D]", re.IGNORECASE)
 
@@ -23,10 +27,11 @@ def clean_text(value: object) -> str:
     return str(value).replace("\u00a0", " ").strip()
 
 
-def stage_for_index(idx: int, total: int) -> tuple[str, str]:
-    bucket = int((idx * len(STAGE_SEQUENCE)) / max(1, total))
-    bucket = max(0, min(len(STAGE_SEQUENCE) - 1, bucket))
-    return STAGE_SEQUENCE[bucket]
+def stage_for_index(idx: int, total: int, stage_sequence: list[tuple[str, str]] | None = None) -> tuple[str, str]:
+    sequence = stage_sequence or STAGE_SEQUENCE
+    bucket = int((idx * len(sequence)) / max(1, total))
+    bucket = max(0, min(len(sequence) - 1, bucket))
+    return sequence[bucket]
 
 
 def parse_options(question_text: str) -> tuple[str, dict[str, str]]:
@@ -84,7 +89,7 @@ def fill_to_four_options(options: dict[str, str], correct: str, pool: list[str])
     return {k: result[k] for k in labels if k in result}
 
 
-def parse_workbook(xlsx_path: Path) -> list[dict]:
+def parse_workbook(xlsx_path: Path, default_grade: str = "") -> list[dict]:
     wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True)
     entries: list[dict] = []
 
@@ -94,12 +99,16 @@ def parse_workbook(xlsx_path: Path) -> list[dict]:
         headers = [clean_text(h) for h in header_row]
         header_index = {name: i for i, name in enumerate(headers)}
 
-        required = ["年级", "题目", "答案", "解析"]
+        has_grade = "年级" in header_index
+        has_serial = "题号" in header_index
+        required = ["题目", "答案", "解析"]
         if any(name not in header_index for name in required):
+            continue
+        if not has_grade and not (has_serial and default_grade):
             continue
 
         for row in ws.iter_rows(min_row=2, values_only=True):
-            grade = clean_text(row[header_index["年级"]])
+            grade = clean_text(row[header_index["年级"]]) if has_grade else default_grade
             question_raw = clean_text(row[header_index["题目"]])
             answer_raw = clean_text(row[header_index["答案"]])
             explanation = clean_text(row[header_index["解析"]])
@@ -128,13 +137,22 @@ def parse_workbook(xlsx_path: Path) -> list[dict]:
     return entries
 
 
-def build_questions(entries: list[dict], prefix: str) -> list[dict]:
+def build_questions(
+    entries: list[dict],
+    prefix: str,
+    *,
+    stage_sequence: list[tuple[str, str]] | None = None,
+    play_mode: str = "",
+    scene: str = "",
+    education_stage: str = "",
+    grade_level: str = "",
+) -> list[dict]:
     pool = build_distractor_pool(entries)
     questions: list[dict] = []
     seen = set()
     total = len(entries)
     for idx, e in enumerate(entries):
-        realm, stage = stage_for_index(idx, total)
+        realm, stage = stage_for_index(idx, total, stage_sequence)
         options = fill_to_four_options(e["options"], e["correct_answer"], pool)
         if e["correct_answer"] not in options:
             continue
@@ -152,19 +170,26 @@ def build_questions(entries: list[dict], prefix: str) -> list[dict]:
         if e["explanation"]:
             explanation = f"{e['explanation']}（{source_hint}）"
 
-        questions.append(
-            {
-                "question_id": question_id,
-                "type": "grammar",
-                "realm": realm,
-                "stage": stage,
-                "question": e["stem"],
-                "options": options,
-                "correct_answer": e["correct_answer"],
-                "explanation": explanation,
-                "word": "",
-            }
-        )
+        record = {
+            "question_id": question_id,
+            "type": "grammar",
+            "realm": realm,
+            "stage": stage,
+            "question": e["stem"],
+            "options": options,
+            "correct_answer": e["correct_answer"],
+            "explanation": explanation,
+            "word": "",
+        }
+        if play_mode:
+            record["play_mode"] = play_mode
+        if scene:
+            record["scene"] = scene
+        if education_stage:
+            record["education_stage"] = education_stage
+        if grade_level:
+            record["grade_level"] = grade_level
+        questions.append(record)
     return questions
 
 
@@ -184,6 +209,17 @@ def main() -> int:
     parser.add_argument("--xlsx", action="append", required=True, help="Path to xlsx file; repeat for multiple files")
     parser.add_argument("--output", default="database/data/elementary_grammar_questions.json", help="Output JSON path")
     parser.add_argument("--prefix", default="EG", help="Question ID prefix")
+    parser.add_argument("--default-grade", default="", help="Default grade when Excel only has 题号 column")
+    parser.add_argument("--play-mode", default="", help="玩法类型，例如 语法机关桥")
+    parser.add_argument("--scene", default="", help="场景，例如 阵法峰")
+    parser.add_argument("--education-stage", default="", help="学段，例如 小学")
+    parser.add_argument("--grade-level", default="", help="年级标签，例如 六年级")
+    parser.add_argument(
+        "--stage-set",
+        choices=["full", "grade6"],
+        default="full",
+        help="Stage distribution: full=全学段27关, grade6=仅L3-07~09",
+    )
     args = parser.parse_args()
 
     xlsx_paths = [Path(p).expanduser() for p in args.xlsx]
@@ -193,9 +229,19 @@ def main() -> int:
 
     merged_entries: list[dict] = []
     for p in xlsx_paths:
-        merged_entries.extend(parse_workbook(p))
+        merged_entries.extend(parse_workbook(p, default_grade=args.default_grade))
 
-    questions = build_questions(merged_entries, args.prefix)
+    stage_sequence = GRADE6_STAGE_SEQUENCE if args.stage_set == "grade6" else None
+    grade_level = args.grade_level or args.default_grade
+    questions = build_questions(
+        merged_entries,
+        args.prefix,
+        stage_sequence=stage_sequence,
+        play_mode=args.play_mode,
+        scene=args.scene,
+        education_stage=args.education_stage,
+        grade_level=grade_level,
+    )
     summary = summarize(questions)
 
     output_path = Path(args.output)
