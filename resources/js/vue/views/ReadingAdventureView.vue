@@ -1,189 +1,158 @@
 <template>
-  <div class="reading-page">
-    <div class="rpg-reading-container">
-      <!-- 顶部导航条 -->
-      <div class="rpg-header">
-        <div class="rpg-title">藏经阁 · 宗门秘辛</div>
-        <div class="rpg-toolbar">
-          <div class="level-tabs">
-            <button class="level-tab" :class="{ active: level === 1 }" @click="switchLevel(1)">卷一：初窥门径</button>
-            <button class="level-tab" :class="{ active: level === 2, locked: !isLevelUnlocked(2) }"
-              @click="switchLevel(2)">
-              卷二：迷雾重重
-              <span v-if="!isLevelUnlocked(2)" class="lock-icon">🔒</span>
-            </button>
-          </div>
-          <div class="header-actions">
-            <button class="rpg-btn-sub" @click="openLegacy">前人旧录(经典)</button>
-            <button class="rpg-btn-sub" @click="backHall">返回大厅</button>
+  <div class="cangjing-page" :style="{ backgroundImage: `url(${bgImage})` }">
+    <div class="cangjing-shell">
+      <template v-if="stage === 'rules'">
+        <div class="lobby-card" :style="{ backgroundImage: `url(${bgImage})` }">
+          <div class="lobby-mask"></div>
+          <div class="lobby-content">
+            <ModuleRulesIntro
+              module-key="reading"
+              :show-back="true"
+              @confirm="stage = 'lobby'"
+              @back="backHall"
+            />
           </div>
         </div>
-      </div>
+      </template>
 
-      <!-- 阶段：章节列表 (卷宗节点) -->
-      <template v-if="stage === 'list'">
-        <div class="scroll-wrapper">
-          <div v-if="resumeCandidate" class="resume-alert">
-            <div class="alert-icon">⚠️</div>
-            <div class="alert-content">
-              <div class="alert-title">神识驻留</div>
-              <div class="alert-desc">检测到上次你的神识曾在此停留，是否继续？</div>
-            </div>
-            <div class="alert-actions">
-              <button class="rpg-btn primary" @click="continueReadingProgress">继续推演</button>
-              <button class="rpg-btn danger" @click="restartReadingProgress">重新入世</button>
-            </div>
-          </div>
-
-          <div class="story-timeline">
-            <div v-for="(chapter, index) in chapters" :key="chapter.id" class="timeline-node"
-              :class="{ completed: chapter.completed }" @click="openChapter(chapter.id)">
-              <div class="node-line"></div>
-              <div class="node-dot"></div>
-              <div class="node-content">
-                <div class="node-meta">
-                  <span class="node-id">{{ chapter.id }}</span>
-                  <span class="node-type">{{ chapter.difficulty === 1 ? '主线' : chapter.difficulty === 2 ? '支线' : '突破'
-                    }}</span>
-                </div>
-                <div class="node-title">{{ chapter.title }}</div>
-                <div class="node-desc">{{ chapter.scene }} · 包含 {{ chapter.task_count }} 重推演</div>
-              </div>
+      <template v-else-if="stage === 'lobby'">
+        <div class="lobby-card" :style="{ backgroundImage: `url(${bgImage})` }">
+          <div class="lobby-mask"></div>
+          <div class="lobby-content">
+            <div class="lobby-title">准备进入经文机关</div>
+            <div class="lobby-meta">当前境界：{{ currentRealmLabel }}</div>
+            <div class="lobby-meta">当前关卡：{{ currentLevel.levelId }}（{{ currentLevel.index + 1 }}/{{ currentLevel.total }}）</div>
+            <div class="lobby-meta">本关题数：{{ totalCount }} ｜ 消耗灵力：{{ spiritCost }} ｜ 当前灵力：{{ currentSpirit }}</div>
+            <div v-if="totalCount <= 0" class="lobby-meta lobby-empty-hint">当前境界暂无阅读题目，请先修炼其他模块。</div>
+            <div class="lobby-actions">
+              <el-button type="primary" :disabled="totalCount <= 0" @click="startMechanism">进入机关</el-button>
+              <el-button @click="backHall">返回大厅</el-button>
             </div>
           </div>
         </div>
       </template>
 
-      <!-- 阶段：入阁确认 -->
-      <template v-else-if="stage === 'confirm' && chapterDetail">
-        <div class="confirm-overlay">
-          <div class="confirm-box">
-            <div class="confirm-title">即将神游太虚</div>
-            <div class="confirm-info">
-              <div class="info-item"><span>卷宗：</span><span>{{ chapterDetail.title }}</span></div>
-              <div class="info-item"><span>幻境：</span><span>{{ chapterDetail.scene }}</span></div>
-              <div class="info-item"><span>神识消耗：</span><span class="cost">{{ spiritCost }} 点灵力</span></div>
-              <div class="info-item"><span>当前灵力：</span><span>{{ currentSpirit }}</span></div>
-            </div>
-            <div class="confirm-actions">
-              <button class="rpg-btn primary large" @click="confirmStart">注入灵力，开启幻境</button>
-              <button class="rpg-btn" @click="cancelChapter">收回神识</button>
-            </div>
-          </div>
-        </div>
-      </template>
-
-      <!-- 阶段：沉浸阅读与推演 -->
-      <template v-else-if="stage === 'answer' && chapterDetail">
-        <div class="story-reader">
-          <div class="reader-header">
-            <span class="reader-id">{{ chapterDetail.id }}</span>
-            <span class="reader-title">{{ chapterDetail.title }}</span>
-            <span class="reader-progress">推演进度：{{ answeredTaskCount }}/{{ chapterTaskCount }}</span>
-          </div>
-
-          <div class="reader-content-wrap">
-            <div class="passage-text">{{ chapterDetail.text }}</div>
-
-            <div class="tasks-container" v-if="chapterDetail.tasks && chapterDetail.tasks.length > 0">
-              <div class="tasks-title">天道考验 (阅后推演)</div>
-              <div v-for="(task, idx) in chapterDetail.tasks" :key="task.id" class="task-card">
-                <div class="task-q">
-                  <span class="task-num">第{{ idx + 1 }}重：</span>{{ task.question }}
-                  <span v-if="answers[String(task.id)]" class="task-status" :class="taskStatusType(task)">
-                    {{ taskStatusText(task) }}
-                  </span>
-                </div>
-                <div class="task-options" v-if="Array.isArray(task.options) && task.options.length > 0">
-                  <label v-for="opt in task.options" :key="`${task.id}-${opt}`" class="rpg-radio">
-                    <input type="radio" :value="String(opt)" v-model="answers[task.id]" />
-                    <span class="radio-ui"></span>
-                    <span class="radio-label">{{ String(opt) }}</span>
-                  </label>
-                </div>
-                <input v-else type="text" class="rpg-input" v-model="answers[task.id]" placeholder="输入你的推演结果..." />
-              </div>
+      <template v-else-if="stage === 'answer' && currentQuestion">
+        <div class="mechanism-stage" :style="{ backgroundImage: `url(${bgImage})` }">
+          <div class="stage-mask"></div>
+          <div class="stage-content">
+            <div class="stage-top">
+              <button class="icon-btn" type="button" @click="cancelChallenge" title="返回关卡">
+                <img :src="backIcon" alt="返回" />
+              </button>
+              <div class="stage-title">藏经阁·经文机关</div>
+              <div class="stage-realm">{{ currentRealmLabel }}</div>
             </div>
 
-            <!-- 分支选项 -->
-            <div class="branch-container"
-              v-if="Array.isArray(chapterDetail.branch_options) && chapterDetail.branch_options.length > 0">
-              <div class="branch-title">命运抉择</div>
-              <div class="branch-desc">你的选择将影响天道因果，请慎重决断。</div>
-              <div class="branch-options">
-                <button v-for="branch in chapterDetail.branch_options" :key="branch.id" class="branch-btn"
-                  :class="{ selected: selectedBranchId === branch.id }" @click="selectedBranchId = branch.id">
-                  <div class="branch-label">{{ branch.label }}</div>
-                  <div class="branch-hint">{{ branch.hint }}</div>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="reader-actions">
-            <button class="rpg-btn primary large" @click="submitChapter">确认推演结果，勘破此局</button>
-            <button class="rpg-btn" @click="cancelChapter">神识退出</button>
-          </div>
-        </div>
-      </template>
-
-      <!-- 阶段：心魔试炼 -->
-      <template v-else-if="stage === 'demon' && demonTrialQuestions.length > 0">
-        <div class="demon-overlay">
-          <div class="demon-box">
-            <div class="demon-title">心魔骤起</div>
-            <div class="demon-desc">你在推演中动了无名业火，触发了问心之路。必须斩破心魔，方可继续前行。</div>
-            <div class="demon-progress">已斩破 {{ demonAnsweredCount }}/{{ demonTrialQuestions.length }}</div>
-
-            <div class="demon-tasks">
-              <div v-for="(q, idx) in demonTrialQuestions" :key="q.question_id" class="demon-task-card">
-                <div class="demon-q">{{ idx + 1 }}. {{ q.question }}</div>
-                <div class="demon-options">
-                  <label v-for="opt in normalizeDemonOptions(q.options)" :key="`${q.question_id}-${opt.value}`"
-                    class="demon-radio">
-                    <input type="radio" :value="opt.value" v-model="demonAnswers[q.question_id]" />
-                    <span class="radio-ui"></span>
-                    <span class="radio-label">{{ opt.label }}. {{ opt.text }}</span>
-                  </label>
+            <div class="lock-panel">
+              <div class="lock-title">机关锁 {{ solvedCount }}/{{ totalCount }}</div>
+              <div class="lock-track"><div class="lock-fill" :style="{ width: `${lockPercent}%` }"></div></div>
+              <div class="lantern-row">
+                <div
+                  v-for="n in 3"
+                  :key="`lamp-${n}`"
+                  class="lantern"
+                  :class="{ unlocked: n <= unlockedLampCount }"
+                >
+                  <span>{{ n <= unlockedLampCount ? '已解锁' : '待解锁' }}</span>
                 </div>
               </div>
             </div>
 
-            <div class="demon-actions">
-              <button class="rpg-btn danger large" @click="submitDemonTrial">斩除心魔</button>
-              <button class="rpg-btn" @click="skipDemonTrial">神识受挫，退回原境</button>
+            <div class="scroll-panel" :style="{ backgroundImage: `url(${questionIcon})` }">
+              <div class="scroll-inner">
+                <div class="scroll-title">经文探秘</div>
+                <div class="scroll-text">{{ passageText }}</div>
+                <div class="scroll-question-block">
+                  <div class="scroll-question-head">真伪灵签 {{ currentQuestionIndex + 1 }}/{{ totalCount }}</div>
+                  <div class="scroll-question-stem">{{ currentQuestionStem }}</div>
+                  <div class="scroll-question-claim">命题：{{ currentClaimText }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="judge-panel">
+              <button
+                class="judge-btn judge-true"
+                :class="{ selected: currentChoice === 'T' }"
+                type="button"
+                :style="{ backgroundImage: `url(${optionIcon})` }"
+                @click="selectJudge('T')"
+              >T 正确</button>
+              <button
+                class="judge-btn judge-false"
+                :class="{ selected: currentChoice === 'F' }"
+                type="button"
+                :style="{ backgroundImage: `url(${optionIcon})` }"
+                @click="selectJudge('F')"
+              >F 错误</button>
+            </div>
+
+            <div class="feedback-panel" :class="{ good: currentChoiceCorrect === true, bad: currentChoiceCorrect === false }">
+              {{ feedbackText }}
+            </div>
+
+            <div class="nav-panel">
+              <button class="nav-arrow" type="button" :disabled="currentQuestionIndex === 0" @click="prevQuestion">上一题</button>
+              <div class="index-list">
+                <button
+                  v-for="(q, idx) in questions"
+                  :key="String(q.question_id || idx)"
+                  class="index-btn"
+                  :class="{
+                    active: idx === currentQuestionIndex,
+                    done: Boolean(judgeChoices[String(q.question_id)]),
+                    solved: isQuestionSolved(String(q.question_id))
+                  }"
+                  type="button"
+                  @click="jumpTo(idx)"
+                >{{ idx + 1 }}</button>
+              </div>
+              <button class="nav-arrow" type="button" :disabled="currentQuestionIndex >= totalCount - 1" @click="nextQuestion">下一题</button>
+            </div>
+
+            <div class="reward-strip">
+              <div class="reward-item">
+                <span class="label">阅读悟性</span>
+                <span class="value">+{{ solvedCount * 4 }}</span>
+              </div>
+              <div class="reward-item">
+                <span class="label">残卷修复</span>
+                <span class="value">+{{ solvedCount }}</span>
+              </div>
+              <div class="reward-item">
+                <span class="label">已收集</span>
+                <span class="value">{{ currentLevel.index + 1 }}/{{ currentLevel.total }}</span>
+              </div>
+            </div>
+
+            <div class="bottom-actions">
+              <el-button @click="useHint" :disabled="hintCount <= 0">提示（{{ hintCount }}）</el-button>
+              <el-button type="primary" @click="submitChallenge">提交本关</el-button>
+              <el-button @click="cancelChallenge">退出机关</el-button>
             </div>
           </div>
         </div>
       </template>
 
-      <!-- 阶段：结算 -->
-      <template v-else-if="stage === 'result' && resultData">
-        <div class="result-overlay">
-          <div class="result-box" :class="resultData.passed ? 'success' : 'fail'">
-            <div class="result-title">{{ resultData.passed ? '勘破此局 · 顿悟' : '一叶障目 · 迷惘' }}</div>
-            <div class="result-stats">
-              <div class="stat-item">
-                <span class="stat-label">推演完美度</span>
-                <span class="stat-val">{{ resultData.accuracy || 0 }}%</span>
+      <template v-else-if="stage === 'result'">
+        <div class="cult-panel result-panel">
+          <div class="cult-panel-body">
+            <div class="cult-result" :class="result.passed ? 'success' : 'warning'">
+              <div class="cult-result-icon">{{ result.passed ? '✦' : '☁' }}</div>
+              <div class="cult-result-title">{{ result.passed ? '机关通关' : '机关未破' }}</div>
+              <div class="cult-result-sub">
+                正确率 {{ result.accuracy }}% ｜ 灵气 +{{ result.exp }} ｜ 灵石 +{{ result.stones }}
               </div>
-              <div class="stat-item">
-                <span class="stat-label">天道反哺(灵气)</span>
-                <span class="stat-val">+{{ resultData.xp_gained || 0 }}</span>
+              <div class="cult-actions">
+                <el-button type="primary" @click="retryLevel">再试一次</el-button>
+                <el-button v-if="result.passed" @click="nextLevel">下一关</el-button>
+                <el-button @click="backHall">返回大厅</el-button>
               </div>
-              <div class="stat-item">
-                <span class="stat-label">秘境遗珍(灵石)</span>
-                <span class="stat-val">+{{ resultData.spirit_stone_gained || 0 }}</span>
-              </div>
-            </div>
-            <div class="result-actions">
-              <button class="rpg-btn primary large" @click="reloadChapterList">继续历练</button>
-              <button class="rpg-btn" @click="backHall">回洞府歇息</button>
             </div>
           </div>
         </div>
       </template>
-
     </div>
   </div>
 </template>
@@ -353,37 +322,14 @@ function getCurrentPlayableLevel(): LevelInfo {
   };
 }
 
-async function submitChapter() {
-  if (!chapterDetail.value) return;
-  if (hasMissingAnswers()) {
-    ElMessage.warning('请完成全部考验后再提交');
-    return;
-  }
-  if (Array.isArray(chapterDetail.value.branch_options) && chapterDetail.value.branch_options.length > 0 && !selectedBranchId.value) {
-    ElMessage.warning('请先选择命运抉择（命盘分支）');
-    return;
-  }
-
-  ui.showLoading('结算中...');
-  try {
-    const res = await api.post('/reading/submit-adventure', buildBaseSubmitPayload());
-    if (!res?.success || !res?.data) {
-      ElMessage.error(res?.message || '提交失败');
-      return;
-    }
-
-    if (res.data.need_demon_trial) {
-      demonTrialQuestions.value = Array.isArray(res.data.demon_trial_questions) ? res.data.demon_trial_questions : [];
-      demonTrialQuestions.value.forEach((q) => {
-        demonAnswers[String(q.question_id)] = '';
-      });
-      stage.value = 'demon';
-      return;
-    }
-
-    applySubmitResult(res.data);
-  } finally {
-    ui.hideLoading();
+function unlockNextLevel(levelId: string) {
+  const list = levelSequence();
+  const idx = list.findIndex((it) => it.levelId === levelId);
+  if (idx < 0) return;
+  const unlocked = Number(localStorage.getItem(progressKey()) || '0');
+  const next = Math.min(list.length - 1, idx + 1);
+  if (next > unlocked) {
+    localStorage.setItem(progressKey(), String(next));
   }
 }
 
@@ -441,17 +387,17 @@ function getJudgeState(question: Record<string, any> | null): JudgeState | null 
   const correct = options.find((opt) => normalize(opt.value) === normalize(correctRaw)
     || normalize(opt.label) === normalize(correctRaw)
     || normalize(opt.text) === normalize(correctRaw)) || options[0] || {
-    label: 'A',
-    value: correctRaw || 'A',
-    text: correctRaw || 'A',
-  };
+      label: 'A',
+      value: correctRaw || 'A',
+      text: correctRaw || 'A',
+    };
 
   const wrong = options.find((opt) => normalize(opt.value) !== normalize(correct.value)
     && normalize(opt.label) !== normalize(correct.value)) || {
-    label: 'B',
-    value: fallbackWrongValue(correct.value),
-    text: '错误项',
-  };
+      label: 'B',
+      value: fallbackWrongValue(correct.value),
+      text: '错误项',
+    };
 
   const claimIsTrue = options.length > 1 ? (hashSeed(qid) % 2 === 0) : true;
   const claim = claimIsTrue ? correct : wrong;
@@ -468,30 +414,53 @@ function getJudgeState(question: Record<string, any> | null): JudgeState | null 
   return state;
 }
 
-function taskStatusText(task: Record<string, any>) {
-  const value = answers[String(task.id)];
-  if (!value) return '未推演';
-  return isTaskAnswerCorrect(task, value) ? '推演正确' : '可再推敲';
+function mapJudgeToAnswer(question: Record<string, any>, choice: JudgeChoice) {
+  const state = getJudgeState(question);
+  if (!state) return '';
+  if (choice === 'T') {
+    return state.claimValue;
+  }
+  return state.claimIsTrue ? state.wrongValue : state.correctValue;
 }
 
-async function submitDemonTrial() {
-  const missing = demonTrialQuestions.value.some((q) => !String(demonAnswers[String(q.question_id)] || '').trim());
-  if (missing) {
-    ElMessage.warning('请完成全部心魔考验后再提交');
-    return;
-  }
+function resetRoundState() {
+  Object.keys(judgeChoices).forEach((key) => delete judgeChoices[key]);
+  Object.keys(answers).forEach((key) => delete answers[key]);
+  judgeStateCache.value = {};
+  currentQuestionIndex.value = 0;
+  hintCount.value = 3;
+  feedbackText.value = '请选择 T/F，破解本题经文机关。';
+}
 
-  ui.showLoading('问心判定中...');
+function getPassageText(question: Record<string, any> | null) {
+  if (!question) return '经文尚未显现。';
+  const content = String(
+    question.reading_passage
+    || question.passage
+    || question.material
+    || question.article
+    || question.context
+    || question.question
+    || ''
+  ).trim();
+  if (!content) return '经文尚未显现。';
+  return content;
+}
+
+function isQuestionSolved(questionId: string) {
+  const choice = judgeChoices[questionId];
+  if (!choice) return false;
+  const question = questions.value.find((q) => String(q.question_id || '') === questionId);
+  const state = getJudgeState(question || null);
+  if (!state) return false;
+  return state.claimIsTrue ? choice === 'T' : choice === 'F';
+}
+
+async function reloadQuestions() {
+  const level = currentLevel.value;
+  ui.showLoading('读取关卡...');
   try {
-    const payload = {
-      ...buildBaseSubmitPayload(),
-      demon_trial_answers: demonTrialQuestions.value.map((q) => ({
-        question_id: String(q.question_id),
-        answer: String(demonAnswers[String(q.question_id)] || ''),
-      })),
-    };
-
-    const res = await api.post('/reading/submit-adventure', payload);
+    const res = await api.get(`/reading/questions?level=${level.realm}&stage=${String(level.stageNo).padStart(2, '0')}`);
     if (!res?.success || !res?.data) {
       ElMessage.error(res?.message || '读取题目失败');
       return;
@@ -651,683 +620,424 @@ function backHall() {
 </script>
 
 <style scoped>
-.reading-page {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(10, 12, 18, 0.85);
-  backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 50;
-  font-family: 'Ma Shan Zheng', 'STXingkai', 'KaiTi', serif;
-  color: #e2e8f0;
+.cangjing-page {
+  min-height: 100vh;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  padding: 10px;
 }
 
-.rpg-reading-container {
-  width: 90%;
-  max-width: 1000px;
-  height: 85%;
-  background: linear-gradient(180deg, #161b24 0%, #0d1117 100%);
-  border: 2px solid #d4a843;
-  border-radius: 12px;
-  box-shadow: 0 0 40px rgba(212, 168, 67, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.8);
-  display: flex;
-  flex-direction: column;
+.cangjing-shell {
+  min-height: calc(100vh - 20px);
+  padding: 10px;
   overflow: hidden;
+  border: 1px solid rgba(212, 168, 67, 0.4);
+  background: rgba(4, 10, 22, 0.42);
+  backdrop-filter: blur(2px);
+}
+
+.lobby-card {
   position: relative;
+  border-radius: 12px;
+  background-position: center;
+  background-size: cover;
+  min-height: 220px;
+  border: 1px solid rgba(212, 168, 67, 0.35);
 }
 
-/* 顶部栏 */
-.rpg-header {
-  padding: 16px 24px;
-  border-bottom: 1px solid rgba(212, 168, 67, 0.3);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.4);
+.lobby-mask {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(8, 14, 30, 0.72), rgba(6, 10, 24, 0.86));
 }
 
-.rpg-title {
+.lobby-content {
+  position: relative;
+  z-index: 1;
+  padding: 16px;
+}
+
+.lobby-title {
   font-size: 24px;
-  color: #fceea7;
-  font-weight: bold;
-  letter-spacing: 2px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  color: var(--gold-light);
+  font-family: var(--font-title);
+  margin-bottom: 8px;
 }
 
-.rpg-toolbar {
-  display: flex;
-  gap: 20px;
-  align-items: center;
+.lobby-meta {
+  color: var(--parchment-dark);
+  font-size: 13px;
+  line-height: 1.7;
 }
 
-.level-tabs {
+.lobby-actions {
+  margin-top: 12px;
   display: flex;
   gap: 8px;
-}
-
-.level-tab {
-  background: transparent;
-  border: 1px solid rgba(212, 168, 67, 0.5);
-  color: #a3b8cc;
-  padding: 6px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.level-tab.active {
-  background: rgba(212, 168, 67, 0.2);
-  color: #fceea7;
-  border-color: #d4a843;
-  box-shadow: 0 0 10px rgba(212, 168, 67, 0.2);
-}
-
-.level-tab.locked {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.header-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.rpg-btn-sub {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #cbd5e1;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.rpg-btn-sub:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* 通用按钮 */
-.rpg-btn {
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid #475569;
-  color: #e2e8f0;
-  padding: 8px 24px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: all 0.3s;
-  letter-spacing: 1px;
-}
-
-.rpg-btn:hover {
-  background: rgba(51, 65, 85, 0.8);
-  border-color: #64748b;
-}
-
-.rpg-btn.primary {
-  background: rgba(212, 168, 67, 0.15);
-  border-color: #d4a843;
-  color: #fceea7;
-}
-
-.rpg-btn.primary:hover {
-  background: rgba(212, 168, 67, 0.3);
-  box-shadow: 0 0 15px rgba(212, 168, 67, 0.4);
-}
-
-.rpg-btn.danger {
-  background: rgba(220, 38, 38, 0.15);
-  border-color: #ef4444;
-  color: #fca5a5;
-}
-
-.rpg-btn.danger:hover {
-  background: rgba(220, 38, 38, 0.3);
-}
-
-.rpg-btn.large {
-  padding: 12px 36px;
-  font-size: 18px;
-}
-
-/* 滚动区 */
-.scroll-wrapper {
-  flex: 1;
-  overflow-y: auto;
-  padding: 30px;
-}
-
-.scroll-wrapper::-webkit-scrollbar {
-  width: 6px;
-}
-
-.scroll-wrapper::-webkit-scrollbar-thumb {
-  background: rgba(212, 168, 67, 0.3);
-  border-radius: 3px;
-}
-
-/* 时间线列表 */
-.story-timeline {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.timeline-node {
-  position: relative;
-  padding: 20px 0 20px 40px;
-  cursor: pointer;
-  transition: transform 0.3s;
-}
-
-.timeline-node:hover {
-  transform: translateX(10px);
-}
-
-.node-line {
-  position: absolute;
-  left: 10px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: rgba(212, 168, 67, 0.2);
-}
-
-.timeline-node:first-child .node-line {
-  top: 20px;
-}
-
-.timeline-node:last-child .node-line {
-  bottom: auto;
-  height: 20px;
-}
-
-.node-dot {
-  position: absolute;
-  left: 6px;
-  top: 30px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #1e293b;
-  border: 2px solid #d4a843;
-  box-shadow: 0 0 8px rgba(212, 168, 67, 0.5);
-}
-
-.timeline-node.completed .node-dot {
-  background: #d4a843;
-}
-
-.node-content {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  padding: 16px 20px;
-  transition: all 0.3s;
-}
-
-.timeline-node:hover .node-content {
-  background: rgba(212, 168, 67, 0.05);
-  border-color: rgba(212, 168, 67, 0.3);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-}
-
-.node-meta {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 8px;
-  font-size: 14px;
-}
-
-.node-id {
-  color: #d4a843;
-}
-
-.node-type {
-  color: #94a3b8;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-}
-
-.node-title {
-  font-size: 20px;
-  color: #f8fafc;
-  margin-bottom: 8px;
-  font-weight: bold;
-}
-
-.node-desc {
-  font-size: 14px;
-  color: #cbd5e1;
-}
-
-/* 弹窗覆层 (确认 / 心魔 / 结算) */
-.confirm-overlay,
-.demon-overlay,
-.result-overlay {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-.confirm-box,
-.demon-box,
-.result-box {
-  background: rgba(15, 20, 30, 0.95);
-  border: 1px solid #d4a843;
-  padding: 40px;
-  border-radius: 12px;
-  text-align: center;
-  max-width: 500px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-}
-
-.confirm-title,
-.demon-title,
-.result-title {
-  font-size: 28px;
-  color: #fceea7;
-  margin-bottom: 24px;
-  font-weight: bold;
-}
-
-.confirm-info {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 30px;
-  text-align: left;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 20px;
-  border-radius: 8px;
-}
-
-.info-item {
-  display: flex;
-  justify-content: space-between;
-  font-size: 16px;
-}
-
-.info-item .cost {
-  color: #ef4444;
-  font-weight: bold;
-}
-
-.confirm-actions,
-.demon-actions,
-.result-actions {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-}
-
-/* 沉浸阅读区 */
-.story-reader {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.reader-header {
-  padding: 12px 24px;
-  background: rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  border-bottom: 1px dashed rgba(212, 168, 67, 0.3);
-}
-
-.reader-id {
-  color: #d4a843;
-  font-weight: bold;
-}
-
-.reader-title {
-  font-size: 18px;
-  color: #f8fafc;
-  flex: 1;
-}
-
-.reader-progress {
-  color: #94a3b8;
-  font-size: 14px;
-}
-
-.reader-content-wrap {
-  flex: 1;
-  overflow-y: auto;
-  padding: 40px;
-}
-
-.reader-content-wrap::-webkit-scrollbar {
-  width: 6px;
-}
-
-.reader-content-wrap::-webkit-scrollbar-thumb {
-  background: rgba(212, 168, 67, 0.3);
-  border-radius: 3px;
-}
-
-.passage-text {
-  font-size: 20px;
-  line-height: 2;
-  color: #e2e8f0;
-  text-indent: 2em;
-  margin-bottom: 40px;
-  font-family: 'STSong', 'SimSun', serif;
-}
-
-/* 天道考验区 */
-.tasks-container {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  padding: 30px;
-  margin-bottom: 40px;
-}
-
-.tasks-title {
-  text-align: center;
-  font-size: 22px;
-  color: #d4a843;
-  margin-bottom: 24px;
-  position: relative;
-}
-
-.tasks-title::before,
-.tasks-title::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  width: 30%;
-  height: 1px;
-  background: rgba(212, 168, 67, 0.3);
-}
-
-.tasks-title::before {
-  left: 0;
-}
-
-.tasks-title::after {
-  right: 0;
-}
-
-.task-card {
-  margin-bottom: 24px;
-  padding-bottom: 24px;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-}
-
-.task-card:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
-.task-q {
-  font-size: 18px;
-  margin-bottom: 16px;
-  color: #f8fafc;
-}
-
-.task-num {
-  color: #94a3b8;
-}
-
-.task-status {
-  margin-left: 10px;
-  font-size: 14px;
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-
-.task-status.success {
-  background: rgba(34, 197, 94, 0.2);
-  color: #4ade80;
-}
-
-.task-status.danger {
-  background: rgba(239, 68, 68, 0.2);
-  color: #f87171;
-}
-
-.task-status.info {
-  background: rgba(148, 163, 184, 0.2);
-  color: #94a3b8;
-}
-
-.rpg-radio {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  padding: 10px 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid transparent;
-  border-radius: 6px;
-  transition: all 0.2s;
-}
-
-.rpg-radio:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.rpg-radio input {
-  display: none;
-}
-
-.rpg-radio .radio-ui {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 2px solid #64748b;
-  position: relative;
-}
-
-.rpg-radio input:checked+.radio-ui {
-  border-color: #d4a843;
-}
-
-.rpg-radio input:checked+.radio-ui::after {
-  content: '';
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  right: 3px;
-  bottom: 3px;
-  background: #d4a843;
-  border-radius: 50%;
-}
-
-.rpg-radio input:checked~.radio-label {
-  color: #fceea7;
-}
-
-.radio-label {
-  font-size: 16px;
-  color: #cbd5e1;
-}
-
-.rpg-input {
-  width: 100%;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid #475569;
-  color: #f8fafc;
-  padding: 12px 16px;
-  font-size: 16px;
-  border-radius: 6px;
-  outline: none;
-}
-
-.rpg-input:focus {
-  border-color: #d4a843;
-  box-shadow: 0 0 10px rgba(212, 168, 67, 0.2);
-}
-
-/* 分支抉择 */
-.branch-container {
-  text-align: center;
-  margin-top: 40px;
-  padding-top: 40px;
-  border-top: 1px solid rgba(212, 168, 67, 0.3);
-}
-
-.branch-title {
-  font-size: 28px;
-  color: #fceea7;
-  margin-bottom: 8px;
-  font-weight: bold;
-}
-
-.branch-desc {
-  color: #94a3b8;
-  margin-bottom: 30px;
-}
-
-.branch-options {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
   flex-wrap: wrap;
 }
 
-.branch-btn {
-  background: rgba(15, 23, 42, 0.8);
-  border: 2px solid #334155;
-  padding: 20px 40px;
-  border-radius: 8px;
+.mechanism-stage {
+  position: relative;
+  border-radius: 12px;
+  background-position: center;
+  background-size: cover;
+  min-height: 760px;
+  border: 1px solid rgba(212, 168, 67, 0.35);
+}
+
+.stage-mask {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(5, 10, 20, 0.52), rgba(4, 8, 18, 0.75));
+}
+
+.stage-content {
+  position: relative;
+  z-index: 1;
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.stage-top {
+  display: grid;
+  grid-template-columns: 54px 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-btn {
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border: none;
+  background: transparent;
   cursor: pointer;
-  min-width: 250px;
-  transition: all 0.3s;
 }
 
-.branch-btn:hover {
-  background: rgba(30, 41, 59, 0.9);
-  border-color: #64748b;
-  transform: translateY(-5px);
+.icon-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-.branch-btn.selected {
-  background: rgba(212, 168, 67, 0.1);
-  border-color: #d4a843;
-  box-shadow: 0 0 20px rgba(212, 168, 67, 0.3);
+.stage-title {
+  text-align: center;
+  color: #f7dc9d;
+  font-size: 30px;
+  letter-spacing: 2px;
+  font-family: var(--font-title);
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
 }
 
-.branch-label {
+.stage-realm {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(121, 174, 245, 0.55);
+  color: #bcdfff;
+  font-size: 12px;
+  white-space: nowrap;
+  background: rgba(7, 18, 38, 0.62);
+}
+
+.lock-panel {
+  border: 1px solid rgba(212, 168, 67, 0.35);
+  border-radius: 12px;
+  padding: 10px;
+  background: rgba(7, 14, 30, 0.62);
+}
+
+.lock-title {
+  color: #f7dc9d;
   font-size: 20px;
-  color: #f8fafc;
-  font-weight: bold;
   margin-bottom: 8px;
 }
 
-.branch-hint {
-  font-size: 14px;
-  color: #cbd5e1;
+.lock-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
 }
 
-.reader-actions {
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  border-top: 1px solid rgba(212, 168, 67, 0.3);
+.lock-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2be6ff, #ffe59a);
+  box-shadow: 0 0 12px rgba(43, 230, 255, 0.35);
+  transition: width 0.2s ease;
 }
 
-/* 心魔区 */
-.demon-box {
-  border-color: #ef4444;
-  box-shadow: 0 10px 40px rgba(239, 68, 68, 0.3);
+.lantern-row {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 }
 
-.demon-title {
-  color: #fca5a5;
+.lantern {
+  border: 1px solid rgba(125, 140, 170, 0.52);
+  border-radius: 10px;
+  text-align: center;
+  padding: 8px 4px;
+  color: #bcc7df;
+  font-size: 12px;
+  background: rgba(6, 12, 24, 0.66);
 }
 
-.demon-desc {
-  color: #cbd5e1;
-  margin-bottom: 20px;
+.lantern.unlocked {
+  border-color: rgba(247, 220, 157, 0.7);
+  color: #ffecba;
+  background: rgba(85, 64, 20, 0.38);
+  box-shadow: 0 0 12px rgba(255, 220, 120, 0.26);
 }
 
-.demon-progress {
-  color: #ef4444;
-  margin-bottom: 20px;
-  font-weight: bold;
+.scroll-panel {
+  border: none;
+  border-radius: 14px;
+  padding: 20px 18px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
+  color: #2f2212;
+  min-height: 460px;
 }
 
-.demon-tasks {
-  text-align: left;
-  max-height: 400px;
+.scroll-inner {
+  width: 70%;
+  min-height: 100%;
+  padding: 28px 12px 18px 22px;
+}
+
+.scroll-title {
+  font-size: 18px;
+  color: #674720;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.scroll-text {
+  font-size: 22px;
+  line-height: 1.56;
+  max-height: 240px;
   overflow-y: auto;
-  padding-right: 10px;
-  margin-bottom: 30px;
+  color: #2f2515;
 }
 
-.demon-q {
-  font-size: 18px;
-  color: #f8fafc;
-  margin-bottom: 12px;
+.scroll-question-block {
+  margin-top: 10px;
+  border-top: 1px dashed rgba(121, 79, 27, 0.35);
+  padding-top: 10px;
 }
 
-.demon-radio input:checked+.radio-ui {
-  border-color: #ef4444;
+.scroll-question-head {
+  color: #694722;
+  font-size: 22px;
+  font-family: var(--font-title);
 }
 
-.demon-radio input:checked+.radio-ui::after {
-  background: #ef4444;
+.scroll-question-stem {
+  margin-top: 6px;
+  color: #2d2113;
+  font-size: 21px;
+  line-height: 1.55;
 }
 
-.demon-radio input:checked~.radio-label {
-  color: #fca5a5;
+.scroll-question-claim {
+  margin-top: 8px;
+  color: #4b2d16;
+  font-size: 19px;
+  line-height: 1.55;
 }
 
-/* 结算区 */
-.result-box.success {
-  border-color: #4ade80;
-  box-shadow: 0 10px 40px rgba(34, 197, 94, 0.2);
+.judge-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 2px;
 }
 
-.result-box.fail {
-  border-color: #f87171;
-  box-shadow: 0 10px 40px rgba(239, 68, 68, 0.2);
+.judge-btn {
+  border: none;
+  border-radius: 10px;
+  min-height: 110px;
+  padding: 0 18px;
+  color: #f8e9c5;
+  font-size: 34px;
+  font-family: var(--font-title);
+  cursor: pointer;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
 }
 
-.result-stats {
+.judge-btn.selected {
+  box-shadow: 0 0 0 2px rgba(255, 235, 179, 0.72), 0 0 18px rgba(255, 234, 170, 0.48);
+}
+
+.judge-true.selected {
+  box-shadow: 0 0 0 2px rgba(140, 255, 184, 0.75), 0 0 16px rgba(101, 255, 164, 0.45);
+}
+
+.judge-false.selected {
+  box-shadow: 0 0 0 2px rgba(255, 167, 167, 0.75), 0 0 16px rgba(255, 120, 120, 0.42);
+}
+
+.feedback-panel {
+  min-height: 22px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 168, 67, 0.25);
+  padding: 8px 10px;
+  color: var(--parchment-dark);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 13px;
+}
+
+.feedback-panel.good {
+  color: #b6f2cd;
+  border-color: rgba(78, 192, 122, 0.45);
+  background: rgba(78, 192, 122, 0.12);
+}
+
+.feedback-panel.bad {
+  color: #ffd6d2;
+  border-color: rgba(231, 76, 60, 0.45);
+  background: rgba(231, 76, 60, 0.12);
+}
+
+.nav-panel {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.nav-arrow {
+  border: 1px solid rgba(212, 168, 67, 0.4);
+  border-radius: 999px;
+  color: #ffe5a8;
+  background: rgba(9, 18, 36, 0.82);
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.nav-arrow:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.index-list {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 30px;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 20px;
-  border-radius: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
 }
 
-.stat-item {
+.index-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(240, 214, 138, 0.45);
+  background: rgba(7, 14, 29, 0.78);
+  color: #f6e9c5;
+  cursor: pointer;
+}
+
+.index-btn.done {
+  border-color: rgba(121, 174, 245, 0.7);
+  color: #cde6ff;
+}
+
+.index-btn.solved {
+  border-color: rgba(140, 255, 184, 0.8);
+  color: #9effbf;
+}
+
+.index-btn.active {
+  box-shadow: 0 0 0 2px rgba(255, 225, 154, 0.6), 0 0 14px rgba(255, 225, 154, 0.4);
+}
+
+.reward-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.reward-item {
+  border: 1px solid rgba(212, 168, 67, 0.25);
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+  background: rgba(8, 14, 28, 0.66);
+}
+
+.reward-item .label {
+  display: block;
+  color: var(--parchment-dark);
+  font-size: 12px;
+}
+
+.reward-item .value {
+  color: #7bf1ac;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.bottom-actions {
   display: flex;
-  justify-content: space-between;
-  font-size: 18px;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.stat-label {
-  color: #94a3b8;
-}
+@media (max-width: 900px) {
+  .stage-title {
+    font-size: 22px;
+  }
 
-.stat-val {
-  color: #fceea7;
-  font-weight: bold;
-  font-family: monospace;
-  font-size: 20px;
+  .scroll-panel {
+    min-height: 360px;
+    padding: 12px;
+  }
+
+  .scroll-inner {
+    width: 76%;
+    padding: 14px 8px 10px 14px;
+  }
+
+  .scroll-text {
+    font-size: 17px;
+    max-height: 150px;
+  }
+
+  .scroll-question-head {
+    font-size: 18px;
+  }
+
+  .scroll-question-stem,
+  .scroll-question-claim {
+    font-size: 16px;
+  }
+
+  .judge-btn {
+    min-height: 78px;
+    font-size: 22px;
+  }
+
+  .nav-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-arrow {
+    width: 100%;
+  }
+
+  .reward-strip {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
