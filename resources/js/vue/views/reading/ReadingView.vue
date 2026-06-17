@@ -1,7 +1,7 @@
 <template>
-  <Teleport to="body">
+  <Teleport v-if="!isRoutePage" to="body">
     <transition name="fade">
-      <div v-if="visible" class="profile-overlay cultivation-theme" @click.self="handleOverlayClick">
+      <div v-if="visible" class="profile-overlay cultivation-theme" :class="{ 'route-fullpage': isRoutePage }" @click.self="handleOverlayClick">
         
         <!-- 容器宽度视状态而定 -->
         <div class="profile-container" :class="{ 'immersive-mode': step === 'reading' }" :style="{ maxWidth: containerWidth }">
@@ -228,20 +228,175 @@
       </div>
     </transition>
   </Teleport>
+  <div v-else-if="visible" class="profile-overlay cultivation-theme route-fullpage">
+    <div class="profile-container" :class="{ 'immersive-mode': step === 'reading', 'route-fullpage-container': isRoutePage }" :style="{ maxWidth: containerWidth }">
+      <div class="profile-header" v-if="step !== 'reading'">
+        <div class="card-header" style="font-size: 20px; text-align: center; width: 100%;">
+          {{ headerTitle }}
+        </div>
+        <button class="profile-close-btn" @click="closePanel" v-if="['list', 'result'].includes(step)">返回宗门</button>
+      </div>
+
+      <div class="profile-body" style="flex-direction: column; position: relative;" :style="{ padding: step === 'reading' ? '0' : '20px' }" v-loading="loading" element-loading-background="rgba(10, 10, 26, 0.8)">
+        <div v-if="step === 'list'" class="reading-section">
+          <div class="reading-scene-row" style="display:flex; justify-content:space-between; margin-bottom:16px;">
+            <span class="reading-scene-tag" style="background:rgba(212,168,67,0.2); color:#d4a843; padding:4px 8px; border-radius:4px; font-size:12px;">古籍试炼</span>
+            <span class="reading-scene-tag" style="color:#c8b685; font-size:13px;">当前：{{ nextChapter?.scene || '未知' }}</span>
+          </div>
+          <div class="reading-list" style="max-height: 400px; overflow-y: auto;">
+            <div v-for="chapter in chapters" :key="chapter.id" class="reading-chapter-card" :class="{ 'completed': chapter.completed }" @click="openEntryConfirm(chapter)">
+              <div class="reading-chapter-head" style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:12px; color:#c8b685;">
+                <span>{{ chapter.id }}</span>
+                <span style="color:#d4a843;">{{ renderDifficulty(chapter.difficulty) }}</span>
+              </div>
+              <div class="reading-chapter-title" style="font-size:15px; color:#f7f3e8; font-weight:bold; margin-bottom:12px;">{{ chapter.title }}</div>
+              <div class="reading-chapter-foot" style="display:flex; justify-content:space-between; font-size:12px; color:#8a8a8a;">
+                <span>{{ chapter.task_count }} 任务</span>
+                <span :style="{ color: chapter.completed ? '#4ec07a' : '#d4a843' }">{{ chapter.completed ? '复习本关' : '开始本关' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="step === 'entry_confirm'" class="reading-section" style="text-align: center;">
+          <div style="color:#c8b685; font-size:14px; line-height:2; margin:12px 0;">
+            <div>章节：<span style="color:#f7f3e8">{{ currentChapter?.id }}</span></div>
+            <div>场景：<span style="color:#f7f3e8">{{ currentChapter?.scene }}</span></div>
+            <div>任务数：<span style="color:#f7f3e8">{{ (currentChapter?.tasks || []).length }} 题</span></div>
+            <div style="margin-top:12px; font-size: 16px;">消耗灵力：<span style="color:#4a90d9; font-weight:bold;">💧 {{ Number(currentChapter?.spirit_cost || 5) }}</span></div>
+            <div style="margin-top:8px; font-size:12px;">当前灵力：💧 {{ currentSpirit }}</div>
+          </div>
+          <button class="el-button full-btn" style="margin-top:16px;" @click="startChapter">开始阅读</button>
+          <button class="el-button full-btn" style="margin-top:8px; background:rgba(255,255,255,0.05); border-color:transparent;" @click="step = 'list'">返回</button>
+        </div>
+
+        <div v-if="step === 'reading'" class="reading-immersive-panel" style="position:relative; width:100%; min-height:500px; display:flex; flex-direction:column; overflow:hidden;">
+          <div class="reading-immersive-bg" :style="getSceneCoverStyle(currentChapter?.scene)"></div>
+          <div class="reading-immersive-mask" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(10,15,35,0.85); z-index:1;"></div>
+          <div class="reading-immersive-content" style="position:relative; z-index:2; padding:20px; display:flex; flex-direction:column; flex:1; height:100%; overflow-y:auto;">
+            <div class="panel-title" style="margin-bottom:8px;"><span class="reading-emblem">{{ getSceneEmblem(currentChapter?.scene) }}</span> 藏经阁</div>
+            <div class="reading-chapter-subtitle" style="font-size:18px; color:#f7f3e8; font-weight:bold; margin-bottom:8px;">{{ currentChapter?.title }}</div>
+            <div class="reading-scene-hero-text-only" style="color:#c8b685; font-size:13px; margin-bottom:4px;"><span class="reading-emblem">{{ getSceneEmblem(currentChapter?.scene) }}</span> {{ currentChapter?.scene }}</div>
+            <div class="reading-ambience" style="font-style:italic; color:#8a8a8a; font-size:12px; margin-bottom:16px;">{{ getSceneAmbience(currentChapter?.scene) }}</div>
+            <div class="reading-meta" style="display:flex; flex-wrap:wrap; gap:12px; font-size:12px; color:#d4a843; margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid rgba(212,168,67,0.2);">
+              <span>章节：{{ currentChapter?.id }}</span>
+              <span>难度：{{ renderDifficulty(currentChapter?.difficulty) }}</span>
+              <span>残卷修复：{{ repairedTaskSet.size }}/{{ displayTasks.length }}</span>
+            </div>
+            <div class="reading-stage" style="display:flex; flex-direction:column; gap:20px;">
+              <div class="reading-stage-story">
+                <div class="reading-story-title" style="color:#d4a843; font-weight:bold; margin-bottom:8px;">古籍残卷</div>
+                <div class="reading-scroll-frame reading-scroll-remnant" style="background:rgba(255,255,255,0.03); border:1px solid rgba(212,168,67,0.3); border-radius:8px; padding:16px;">
+                  <div class="reading-story-lines" style="line-height:1.8; color:#f7f3e8; font-size:15px;">
+                    <div v-for="(line, idx) in storyLines" :key="idx" class="reading-story-line" :class="idx % 2 ? 'npc' : 'player'" style="margin-bottom:8px;">{{ line }}.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="reading-stage-mission" v-if="activeTask">
+                <div class="reading-mission-flavor" style="color:#c8b685; font-size:13px; margin-bottom:8px;">{{ getTaskPrompt(activeTask, currentChapter?.scene) }}</div>
+                <div class="reading-task-feedback" :class="activeTaskFeedbackClass" style="font-size:13px; min-height:20px; margin-bottom:12px; font-weight:bold;">{{ activeTaskFeedbackMsg }}</div>
+                <div class="reading-task-card" style="background:rgba(0,0,0,0.3); border:1px solid rgba(212,168,67,0.4); border-radius:12px; padding:16px;">
+                  <div class="reading-task-progress" style="font-size:12px; color:#d4a843; margin-bottom:4px;">机关 {{ currentTaskIndex + 1 }}/{{ displayTasks.length }}</div>
+                  <div class="reading-task-title" style="font-size:15px; font-weight:bold; color:#f7f3e8; margin-bottom:12px;">机关问题{{ currentTaskIndex + 1 }} · {{ getTaskTitle(activeTask) }}</div>
+                  <div class="reading-task-question" style="font-size:14px; margin-bottom:16px;">{{ activeTask.question || '请补全缺失句子' }}</div>
+                  <div v-if="getTaskMode(activeTask) === 'cloze'" class="reading-slot-wrap" style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+                    <span class="reading-slot-label" style="font-size:12px; color:#c8b685;">残卷填槽</span>
+                    <div class="reading-slot" :class="{ 'filled': !!answers[activeTask.id] }" style="padding:4px 12px; background:rgba(212,168,67,0.1); border-bottom:2px solid #d4a843; min-width:60px; text-align:center;">{{ answers[activeTask.id] || '____' }}</div>
+                  </div>
+                  <div v-if="getTaskMode(activeTask) === 'sentence_restore'" style="margin-bottom:16px;">
+                    <div style="font-size:13px; color:#c8b685; line-height:1.6; margin-bottom:8px;">{{ getSentenceRestorePassage(activeTask) }}</div>
+                    <div style="font-size:12px; color:#d4a843;">修复位置：<span style="border-bottom:1px dashed #d4a843;">{{ activeTask.blank_hint || '【___】' }}</span></div>
+                  </div>
+                  <div class="reading-options" :class="getTaskMode(activeTask) === 'cloze' ? 'reading-options--chips' : 'reading-options--choices'" style="display:flex; flex-wrap:wrap; gap:10px;">
+                    <button v-for="(op, idx) in activeTask._displayOptions" :key="idx" class="reading-option" :class="{ 'selected': answers[activeTask.id] === op }" :style="getOptionStyle(getTaskMode(activeTask), answers[activeTask.id] === op)" @click="selectTaskAnswer(activeTask, op)">
+                      <span v-if="getTaskMode(activeTask) === 'cloze'" style="margin-right:4px;">✦</span>
+                      <span v-else style="background:rgba(255,255,255,0.1); border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; margin-right:8px; font-size:11px;">{{ String.fromCharCode(65 + idx) }}</span>
+                      <span>{{ op }}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="reading-actions" style="margin-top:24px; display:flex; justify-content:space-between; align-items:center; padding-top:16px; border-top:1px solid rgba(255,255,255,0.1);">
+              <button class="el-button" style="background:transparent; border:1px solid #c8b685; color:#c8b685;" @click="step = 'list'">返回列表</button>
+              <div style="display:flex; gap:8px;">
+                <button class="el-button" style="background:rgba(255,255,255,0.1); color:#fff; border:none;" :disabled="currentTaskIndex === 0" @click="currentTaskIndex--">上一处</button>
+                <button class="el-button" style="background:rgba(255,255,255,0.1); color:#fff; border:none;" :disabled="currentTaskIndex >= displayTasks.length - 1" @click="currentTaskIndex++">下一处</button>
+              </div>
+              <button class="el-button btn-danger" style="background:#d4a843; border:none; color:#1a1a2e; font-weight:bold;" @click="submitChapter">提交阅读</button>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="step === 'branch'" class="reading-section">
+          <div class="panel-title fate-panel-title" style="color:#d4a843; text-align:center; font-size:20px; margin-bottom:12px;">命运岔路口</div>
+          <div class="fate-panel-intro" style="color:#c8b685; font-size:14px; text-align:center; margin-bottom:24px;">你在残卷中发现了隐藏的英文符文，你的选择将决定未来的修行路线。</div>
+          <div class="branch-options-container" style="display:flex; flex-direction:column; gap:12px;">
+            <div v-for="opt in currentChapter?.branch_options" :key="opt.id" class="branch-option-card" style="background:rgba(255,255,255,0.05); border:1px solid rgba(212,168,67,0.4); border-radius:8px; padding:16px; cursor:pointer;" @click="selectBranch(opt.id)">
+              <div class="branch-card-label" style="font-size:16px; font-weight:bold; color:#f7f3e8; margin-bottom:4px;">{{ opt.label }}</div>
+              <div class="branch-card-hint" style="font-size:13px; color:#c8b685; margin-bottom:8px;">{{ opt.hint }}</div>
+              <div class="branch-card-reward" style="font-size:12px; color:#d4a843;">奖励预测：灵气+{{ opt.reward_delta?.lingqi || 0 }} 剧情钥匙+{{ opt.reward_delta?.story_keys || 0 }} 道心+{{ opt.reward_delta?.daoxin || 0 }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="step === 'demon_trial'" class="reading-section">
+          <div class="panel-title" style="color:#e74c3c; text-align:center; font-size:20px; margin-bottom:12px;">问心试炼 · 心魔破除</div>
+          <div class="reading-demon-trial-tip" style="color:#c8b685; font-size:14px; text-align:center; margin-bottom:24px;">问心路线已触发。请完成 {{ demonTrialQuestions.length }} 道近期错题，全部答对才可破除心魔并解锁隐藏命盘。</div>
+          <div class="reading-demon-question-list" style="display:flex; flex-direction:column; gap:20px; max-height:400px; overflow-y:auto; padding-right:8px;">
+            <div v-for="(q, index) in demonTrialQuestions" :key="q.question_id" class="reading-demon-card" style="background:rgba(231,76,60,0.05); border:1px solid rgba(231,76,60,0.3); border-radius:8px; padding:16px;">
+              <div class="reading-demon-card-index" style="font-size:12px; color:#e74c3c; margin-bottom:8px;">第 {{ index + 1 }} 题</div>
+              <div class="reading-demon-card-question" style="font-size:14px; color:#f7f3e8; margin-bottom:12px;">{{ q.question }}</div>
+              <div class="reading-demon-option-group" style="display:flex; flex-direction:column; gap:8px;">
+                <button v-for="opt in normalizeDemonOptions(q.options)" :key="opt.value" class="reading-option" :style="demonAnswers[q.question_id] === opt.value ? 'background:rgba(231,76,60,0.2); border-color:#e74c3c; color:#f7f3e8;' : 'background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.2); color:#c8b685;'" style="padding:10px 12px; border-radius:6px; text-align:left; cursor:pointer;" @click="demonAnswers[q.question_id] = opt.value">
+                  <span style="display:inline-block; width:20px; font-weight:bold; color:#e74c3c;">{{ opt.label }}</span>
+                  <span>{{ opt.text }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="reading-actions" style="margin-top:24px; display:flex; gap:12px;">
+            <button class="el-button full-btn" style="background:transparent; border:1px solid #c8b685; color:#c8b685;" @click="submitDemonTrial(true)">取消问心（回常规节点）</button>
+            <button class="el-button full-btn btn-danger" style="background:#e74c3c; border:none; color:#fff;" @click="submitDemonTrial(false)">提交心魔试炼</button>
+          </div>
+        </div>
+
+        <div v-if="step === 'result' && readingResult" class="reading-section" style="text-align: center;">
+          <div style="font-size:60px; margin-bottom:10px;">{{ readingResult.passed ? '📜' : '🔁' }}</div>
+          <div style="font-size: 24px; font-weight: bold; margin-bottom: 5px; color:#d4a843;">{{ readingResult.passed ? '阅读通关' : '继续修炼' }}</div>
+          <div style="font-size:14px; color:#c8b685; margin-bottom:20px;">本层藏经阁试炼完成</div>
+          <div class="reward-details" style="background:rgba(255,255,255,0.05); padding:16px; border-radius:12px; margin-bottom:20px; text-align:left; font-size:14px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>正确率</span><span :style="{color: readingResult.accuracy >= 60 ? '#d4a843' : '#e74c3c'}">{{ readingResult.accuracy }}%</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>修为奖励</span><span style="color:#d4a843;">+{{ readingResult.xp_gained || 0 }}</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>灵石奖励</span><span style="color:#d4a843;">+{{ readingResult.spirit_stone_gained || 0 }}</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>掉落道具</span><span style="color:#4a90d9;">{{ readingResult.item_reward || '无' }}</span></div>
+            <div v-if="readingResult.demon_trial" style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span>问心试炼</span>
+              <span :style="{color: readingResult.demon_trial.passed ? '#d4a843' : '#e74c3c'}">{{ readingResult.demon_trial.passed ? '心魔破除' : '退回常规节点' }}</span>
+            </div>
+            <div v-if="readingResult.selected_branch_id" style="display:flex; justify-content:space-between;"><span>命盘变动</span><span style="color:#d4a843;">隐藏分支已记录</span></div>
+          </div>
+          <button class="el-button full-btn" style="margin-bottom:10px;" @click="fetchChapters(currentLevel)">继续修行</button>
+          <button class="el-button full-btn" style="background:rgba(255,255,255,0.05); border-color:transparent;" @click="closePanel">返回宗门</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, withDefaults } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useApiClient } from '../../services/api';
 import { useUserStore } from '../../stores/user';
 import { ElMessage } from 'element-plus';
 
-// 图片资源导入
-import bgHall from '../../../assets/images/bg_hall.png';
-import sceneCangjingge from '../../../assets/images/scene_cangjingge.png';
-import sceneMijing from '../../../assets/images/scene_mijing.png';
-import sceneShilian from '../../../assets/images/scene_shilian.png';
-import sceneInitiation from '../../../assets/images/scene_initiation2.png';
+// 图片资源导入（统一使用当前项目内可用的新版藏经阁底图）
+import bgHall from '../../../../assets/images/ui/cangjingge/background.png';
+import sceneCangjingge from '../../../../assets/images/ui/cangjingge/background.png';
+import sceneMijing from '../../../../assets/images/ui/cangjingge/background.png';
+import sceneShilian from '../../../../assets/images/ui/cangjingge/background.png';
+import sceneInitiation from '../../../../assets/images/ui/cangjingge/background.png';
 
 const SCENE_BACKGROUNDS: Record<string, string> = {
     '宗门院落': bgHall,
@@ -274,8 +429,14 @@ const COMPREHENSION_DISTRACTORS: Record<string, string[]> = {
     '宗门课堂': ['因为抄错题目', '因为忘记时间', '因为同伴离开'],
 };
 
-const props = defineProps<{ visible: boolean }>();
+const props = withDefaults(defineProps<{ visible?: boolean; fullPage?: boolean }>(), {
+    visible: true,
+    fullPage: false,
+});
 const emit = defineEmits<{ (e: 'update:visible', value: boolean): void }>();
+const route = useRoute();
+const router = useRouter();
+const isRoutePage = computed(() => props.fullPage || route.path === '/reading');
 
 const api = useApiClient();
 const userStore = useUserStore();
@@ -284,7 +445,10 @@ type Step = 'list' | 'entry_confirm' | 'reading' | 'branch' | 'demon_trial' | 'r
 const step = ref<Step>('list');
 const loading = ref(false);
 
-const containerWidth = computed(() => step.value === 'reading' ? '900px' : '460px');
+const containerWidth = computed(() => {
+    if (isRoutePage.value) return '100vw';
+    return step.value === 'reading' ? '900px' : '460px';
+});
 const headerTitle = computed(() => {
     switch(step.value) {
         case 'entry_confirm': return '准备入阁';
@@ -592,6 +756,10 @@ const handleOverlayClick = () => {
 };
 
 const closePanel = () => {
+    if (isRoutePage.value) {
+        router.replace('/hall');
+        return;
+    }
     emit('update:visible', false);
 };
 </script>
@@ -602,10 +770,29 @@ const closePanel = () => {
   background: rgba(10, 10, 26, 0.85); display: flex; align-items: center; justify-content: center;
   z-index: 2000; backdrop-filter: blur(5px);
 }
+.profile-overlay.route-fullpage {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  backdrop-filter: none;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+}
 .profile-container {
   background: #1a1a2e; border: 2px solid var(--gold, #d4a843); border-radius: 12px;
   display: flex; flex-direction: column; overflow: hidden;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: max-width 0.3s ease; width: 90%;
+}
+.route-fullpage .profile-container,
+.profile-container.route-fullpage-container {
+  width: 100vw;
+  max-width: 100vw !important;
+  height: calc(100vh - 68px);
+  margin-top: 68px;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
 }
 .profile-container.immersive-mode {
   height: 90vh; /* 沉浸式高度 */

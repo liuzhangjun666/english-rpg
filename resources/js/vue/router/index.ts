@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { useApiClient } from '../services/api';
 import { useUserStore } from '../stores/user';
@@ -46,7 +46,7 @@ export function normalizeLegacyHashRoute() {
 
 normalizeLegacyHashRoute();
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'login',
@@ -55,7 +55,9 @@ const routes = [
   },
   {
     path: '/hall',
-    redirect: '/practice',
+    name: 'hall',
+    component: () => import('../views/HallView.vue'),
+    meta: { requiresAuth: true },
   },
   {
     path: '/practice',
@@ -129,16 +131,14 @@ const routes = [
     component: () => import('../views/VocabularyAssessmentResult.vue'),
     meta: { requiresAuth: true, assessmentFlow: true },
   },
-  { path: '/', redirect: '/hall' },
-  { path: '/:pathMatch(.*)*', name: 'not-found', redirect: '/hall' },
   {
     path: '/map',
     name: 'map',
     component: () => import('../views/SectWorldView.vue'),
     meta: { requiresAuth: true },
   },
-  { path: '/', redirect: '/practice' },
-  { path: '/:pathMatch(.*)*', redirect: '/practice' },
+  { path: '/', redirect: '/hall' },
+  { path: '/:pathMatch(.*)*', name: 'not-found', redirect: '/hall' },
 ];
 
 export const router = createRouter({
@@ -231,30 +231,7 @@ router.beforeEach(async (to) => {
         return buildAssessmentIntroLocation(undefined, query);
       }
     }
-    return { path: '/practice' };
   }
 
   return true;
 });
-
-export function normalizeLegacyHashRoute() {
-  const hash = window.location.hash || '';
-  const mapping: Record<string, string> = {
-    '#hall': '/practice',
-    '#practice': '/practice',
-    '#login': '/login',
-    '#vocab': '/practice',
-    '#listening': '/practice',
-    '#speaking': '/practice',
-    '#writing': '/practice',
-    '#reading': '/reading',
-    '#shilianchang': '/exam',
-    '#mijing': '/mijing',
-    '#mall': '/mall',
-    '#leaderboard': '/leaderboard',
-  };
-  const mapped = mapping[hash];
-  if (mapped) {
-    window.history.replaceState({}, '', mapped);
-  }
-}

@@ -271,11 +271,11 @@
               <el-button type="primary" @click="retryLevel">再试一次</el-button>
               <el-button v-if="resultPassed" @click="nextLevel">下一关</el-button>
               <el-button @click="backHall">返回大厅</el-button>
-              </el-space>
+            </div>
+          </div>
         </template>
-        </el-result>
-</template>
-  </el-card>
+      </div>
+    </div>
 
   <DemonTransition :visible="showDemonTransition" @update:visible="showDemonTransition = $event"
     @enter-encounter="handleEnterEncounter" />
@@ -323,6 +323,7 @@ import {
   triggerWritingSceneEffect,
   type WritingValidation,
 } from '../utils/writingTalisman';
+import { resolveProfileRealm } from '../../utils/cultivation.js';
 
 type PracticeType = 'vocab' | 'grammar' | 'listening' | 'speaking' | 'reading' | 'writing';
 
@@ -409,6 +410,21 @@ const ui = useUiStore();
 const user = useUserStore();
 const demonStore = useDemonStore();
 
+const levelLayout = ref<PracticeLevelLayout | null>(null);
+const sceneType = computed<'practice' | 'grammar'>(() => (route.path === '/grammar' ? 'grammar' : 'practice'));
+const modules = [
+  { type: 'vocab' as const, label: '词汇' },
+  { type: 'grammar' as const, label: '语法' },
+  { type: 'listening' as const, label: '听力' },
+  { type: 'speaking' as const, label: '口语' },
+  { type: 'writing' as const, label: '写作' },
+];
+const displayRealm = computed(() => resolveProfileRealm(user.profile));
+const venueTitle = computed(() => {
+  if (sceneType.value === 'grammar') return VENUE_TITLES.grammar;
+  return VENUE_TITLES[currentType.value] || '练功房';
+});
+
 const currentType = ref<PracticeType>('vocab');
 const sessionState = ref<'rules' | 'idle' | 'confirm' | 'answering' | 'result'>('rules');
 const questions = ref<Array<Record<string, any>>>([]);
@@ -449,6 +465,17 @@ const autoAdvanceTimer = ref<number | null>(null);
 const vocabCombo = ref(0);
 const wsWordRef = ref<HTMLElement | null>(null);
 const optionTextRefs = reactive<Record<string, HTMLElement | null>>({});
+const grammarAnswerLocked = ref(false);
+const grammarFeedbackType = ref<'idle' | 'success' | 'error'>('idle');
+const grammarAutoAdvanceTimer = ref<number | null>(null);
+const grammarOptionTextRefs = reactive<Record<string, HTMLElement | null>>({});
+const zfQuestionRef = ref<HTMLElement | null>(null);
+const grammarBridgeVisible = computed(() => grammarFeedbackType.value !== 'idle');
+const grammarBridgeImage = computed(() => {
+  if (grammarFeedbackType.value === 'success') return zfBridgeCorrect;
+  if (grammarFeedbackType.value === 'error') return zfBridgeError;
+  return zfBridgeCorrect;
+});
 
 const showDemonTransition = ref(false);
 
@@ -889,6 +916,15 @@ function restorePracticeSession(session: PracticeSession) {
   if (sessionState.value === 'answering' && (isVocabModule.value || isGrammarModule.value)) {
     fitArenaTexts();
   }
+}
+
+function isWritingUnlocked(): boolean {
+  const realmCode = String(user.profile?.realm || 'L1').toUpperCase();
+  const layer = Math.max(1, Math.min(9, Number(user.profile?.realm_stage || 1)));
+  if (realmCode.startsWith('L')) {
+    return layer >= 7;
+  }
+  return true;
 }
 
 function parseMode(raw: unknown): PracticeType {

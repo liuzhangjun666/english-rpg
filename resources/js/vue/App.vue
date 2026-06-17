@@ -29,22 +29,26 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useApiClient } from './services/api';
 import { useAuthStore } from './stores/auth';
 import { useUserStore } from './stores/user';
 import { useUiStore } from './stores/ui';
-import { signOut } from './services/session';
+import { useStoryStore } from './stores/story';
 import { resolveProfileRealm } from '../utils/cultivation.js';
 import { useLegacyBridge } from './composables/useLegacyBridge';
-// 废弃的辅助函数 getMajorRealmText 已移动/不再使用
+import TopHud from './components/layout/TopHud.vue';
+import ProfilePanel from './components/profile/ProfilePanel.vue';
+import DemonEncounter from './components/demons/DemonEncounter.vue';
+import WorldMapOverlay from './views/WorldMapOverlay.vue';
 
 const router = useRouter();
 const route = useRoute();
 const auth = useAuthStore();
 const user = useUserStore();
 const ui = useUiStore();
+const story = useStoryStore();
 const api = useApiClient();
 const bridge = useLegacyBridge();
 
@@ -72,12 +76,6 @@ async function logout() {
   }
 }
 
-import { onMounted, onUnmounted, ref } from 'vue';
-import TopHud from './components/layout/TopHud.vue';
-import ProfilePanel from './components/profile/ProfilePanel.vue';
-import DemonEncounter from './components/demons/DemonEncounter.vue';
-import WorldMapOverlay from './views/WorldMapOverlay.vue';
-
 const showProfile = ref(false);
 
 async function openProfile() {
@@ -95,11 +93,22 @@ onMounted(() => {
   window.addEventListener('profile-updated', handleProfileUpdate);
   router.afterEach(() => { ui.hideMapOverlay(); });
 
-  // 后台预热地图 3D 模型缓存（不阻塞首屏），让首次打开地图就能瞬间显示真实模型
+  // 后台预热地图 3D 模型缓存：先关键建筑，再在空闲时补全全部模型
   if (auth.isAuthenticated) {
     setTimeout(() => {
       import('./core/sect/WorldSceneManager')
-        .then(m => m.WorldSceneManager.preload())
+        .then(m => {
+          m.WorldSceneManager.preload('critical');
+          const runAll = () => m.WorldSceneManager.preload('all');
+          const idle = (window as Window & {
+            requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number;
+          }).requestIdleCallback;
+          if (idle) {
+            idle(runAll, { timeout: 4000 });
+          } else {
+            setTimeout(runAll, 2500);
+          }
+        })
         .catch(() => { });
     }, 1500);
   }

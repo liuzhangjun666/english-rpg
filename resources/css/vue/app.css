@@ -131,6 +131,11 @@
   overflow: hidden;
 }
 
+#vue-app .shell-main:has(.hall-page) {
+  padding: 0;
+  overflow: hidden;
+}
+
 #vue-app .practice-page.practice-page-arena .practice-shell,
 #vue-app .practice-page.practice-page-arena .practice-shell.el-card {
   border-radius: 0 !important;

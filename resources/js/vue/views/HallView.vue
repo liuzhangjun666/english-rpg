@@ -59,6 +59,15 @@ const hallSceneRef = ref<HTMLElement | null>(null);
 let worldManager: WorldSceneManager | null = null;
 const userRealmLevel = ref(0);
 const radialPos = ref({ x: '50%', y: '50%' }); // RadialMenu 定位
+const SCENE_NODE_TO_BUILDING_KEY: Record<string, string> = {
+  sectHall: 'practice',
+  scriptureHall: 'reading',
+  swordHall: 'writing',
+  alchemyHall: 'exam',
+  innerDemonHall: 'demons',
+  beastGarden: 'profile',
+  farm: 'mijing',
+};
 
 onMounted(async () => {
   ui.showLoading('加载天地灵气...');
@@ -88,7 +97,8 @@ onMounted(async () => {
 
       worldManager.onBuildingClick = (nodeDef, screenX, screenY) => {
         radialPos.value = { x: screenX + 'px', y: screenY + 'px' };
-        const building = mapBuildings.value.find(b => b.key === nodeDef.id);
+        const mappedKey = SCENE_NODE_TO_BUILDING_KEY[nodeDef.id] || nodeDef.id;
+        const building = mapBuildings.value.find(b => b.key === mappedKey);
         if (building) handleBuildingClick(building);
       };
     }
@@ -109,7 +119,20 @@ function goPractice(mode = 'vocab') {
     ElMessage.warning('符篆台将在练气七层解锁');
     return;
   }
+  if (String(mode) === 'grammar') {
+    router.push('/grammar');
+    return;
+  }
   router.push({ path: '/practice', query: { mode } });
+}
+
+function isWritingUnlocked(): boolean {
+  const realmCode = String(userStore.profile?.realm || 'L1').toUpperCase();
+  const layer = Math.max(1, Math.min(9, Number(userStore.profile?.realm_stage || 1)));
+  if (realmCode.startsWith('L')) {
+    return layer >= 7;
+  }
+  return true;
 }
 
 function goReading() { router.push('/reading'); }
@@ -206,6 +229,7 @@ import DailyQuestPanel from './DailyQuestPanel.vue';
 
 
 const showReview = ref(false);
+const showProfile = ref(false);
 const showDemons = ref(false);
 const showAchievements = ref(false);
 const showDailyQuest = ref(false);
