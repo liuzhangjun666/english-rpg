@@ -100,6 +100,15 @@ const handleProfileUpdate = (e: Event) => {
 onMounted(() => {
   window.addEventListener('profile-updated', handleProfileUpdate);
   router.afterEach(() => { ui.hideMapOverlay(); });
+
+  // 后台预热地图 3D 模型缓存（不阻塞首屏），让首次打开地图就能瞬间显示真实模型
+  if (auth.isAuthenticated) {
+    setTimeout(() => {
+      import('./core/sect/WorldSceneManager')
+        .then(m => m.WorldSceneManager.preload())
+        .catch(() => {});
+    }, 1500);
+  }
 });
 
 onUnmounted(() => {

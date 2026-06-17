@@ -86,6 +86,40 @@ const LEY_FRAG = /* glsl */`
   }
 `;
 
+// ─── GLB 模块级缓存：加载一次、解析一次，之后开图直接克隆（瞬间出现） ──────────────
+
+let _sharedDraco: DRACOLoader | null = null;
+function getSharedDraco(): DRACOLoader {
+  if (!_sharedDraco) {
+    _sharedDraco = new DRACOLoader();
+    _sharedDraco.setDecoderPath('/draco/gltf/');
+  }
+  return _sharedDraco;
+}
+
+const _glbCache = new Map<string, Promise<THREE.Group>>();
+/** 加载 GLB（带缓存）；返回的是缓存场景的克隆，可安全独立变换 */
+function loadGLBCached(path: string): Promise<THREE.Group> {
+  let p = _glbCache.get(path);
+  if (!p) {
+    const loader = new GLTFLoader();
+    loader.setDRACOLoader(getSharedDraco());
+    p = new Promise<THREE.Group>((resolve, reject) => {
+      loader.load(path, (g) => resolve(g.scene), undefined, reject);
+    });
+    _glbCache.set(path, p);
+  }
+  return p.then((scene) => scene.clone(true));
+}
+
+/** 全部地图模型路径（用于预加载） */
+const ALL_MAP_MODELS = [
+  '/models/sectHall.glb', '/models/swordHall.glb', '/models/scriptureHall.glb',
+  '/models/alchemyHall.glb', '/models/innerDemonHall.glb', '/models/beastGarden.glb',
+  '/models/farm.glb', '/models/fuyan.glb', '/models/shucong.glb',
+  '/models/liangting.glb', '/models/lingjing.glb',
+];
+
 // ─── WorldSceneManager ────────────────────────────────────────────────────────
 
 export class WorldSceneManager {
@@ -139,6 +173,11 @@ export class WorldSceneManager {
   public onBuildingClick?: (node: SectNodeDef, screenX: number, screenY: number) => void;
   public onBuildingHover?: (node: SectNodeDef | null) => void;
   public onFocusedMove?: (screenX: number, screenY: number) => void; // 特写时每帧更新菜单坐标
+
+  /** 预加载全部地图模型到缓存——在进入地图前调用，让首次开图也能瞬间显示真实模型 */
+  public static preload() {
+    ALL_MAP_MODELS.forEach((p) => loadGLBCached(p).catch(() => {}));
+  }
 
   constructor(container: HTMLElement, options: WorldSceneOptions = {}) {
     this.container = container;
@@ -534,23 +573,18 @@ export class WorldSceneManager {
 
   // 加载装饰 GLB → 归一化尺寸 → 返回 {原型容器, 高度} 供克隆/堆叠
   private loadDecorProto(path: string, targetSize: number): Promise<{ proto: THREE.Group; height: number }> {
-    return new Promise((resolve) => {
-      const loader = new GLTFLoader();
-      if (this.dracoLoader) loader.setDRACOLoader(this.dracoLoader);
-      loader.load(path, (gltf) => {
-        const model = gltf.scene;
-        const box = new THREE.Box3().setFromObject(model);
-        const size = box.getSize(new THREE.Vector3());
-        const scale = targetSize / Math.max(size.x, size.y, size.z, 1);
-        model.scale.setScalar(scale);
-        const b2 = new THREE.Box3().setFromObject(model);
-        model.position.y = -b2.min.y;             // 底部归零
-        model.traverse(c => { if (c instanceof THREE.Mesh) c.castShadow = true; });
-        const container = new THREE.Group();
-        container.add(model);
-        resolve({ proto: container, height: b2.max.y - b2.min.y });
-      }, undefined, () => resolve({ proto: new THREE.Group(), height: 0 }));
-    });
+    return loadGLBCached(path).then((model) => {
+      const box = new THREE.Box3().setFromObject(model);
+      const size = box.getSize(new THREE.Vector3());
+      const scale = targetSize / Math.max(size.x, size.y, size.z, 1);
+      model.scale.setScalar(scale);
+      const b2 = new THREE.Box3().setFromObject(model);
+      model.position.y = -b2.min.y;             // 底部归零
+      model.traverse(c => { if (c instanceof THREE.Mesh) c.castShadow = true; });
+      const container = new THREE.Group();
+      container.add(model);
+      return { proto: container, height: b2.max.y - b2.min.y };
+    }).catch(() => ({ proto: new THREE.Group(), height: 0 }));
   }
 
   private buildDecorIslets() {
@@ -764,13 +798,6 @@ export class WorldSceneManager {
   // ─── 第二层：建筑 ────────────────────────────────────────────────────────────
 
   private createBuildings() {
-    const loader = new GLTFLoader();
-    // 模型经 gltf-transform 压缩为 Draco 几何，需配解码器（解码器在 public/draco/gltf/）
-    const draco = new DRACOLoader();
-    draco.setDecoderPath('/draco/gltf/');
-    loader.setDRACOLoader(draco);
-    this.dracoLoader = draco;
-
     SECT_NODES.forEach((def, idx) => {
       const group = new THREE.Group();
       const groundY = terrainAt(def.pos[0], def.pos[2]);
@@ -783,8 +810,7 @@ export class WorldSceneManager {
       this.addPlaceholder(slot, def);
 
       if (def.glbPath) {
-        loader.load(def.glbPath, (gltf) => {
-          const model = gltf.scene;
+        loadGLBCached(def.glbPath).then((model) => {
           const box = new THREE.Box3().setFromObject(model);
           const size = box.getSize(new THREE.Vector3());
           const scale = (def.glbTargetSize ?? 320) / Math.max(size.x, size.y, size.z, 1);
@@ -800,9 +826,7 @@ export class WorldSceneManager {
           });
           slot.clear();
           slot.add(model);
-        }, undefined, () => {
-          // GLB 不存在时保留占位
-        });
+        }).catch(() => { /* GLB 不存在时保留占位 */ });
       }
 
       // ── 地面法阵 ──
