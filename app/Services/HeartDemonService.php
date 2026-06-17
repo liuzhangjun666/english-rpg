@@ -199,10 +199,12 @@ class HeartDemonService
         return array_slice($questions, 0, $max);
     }
 
-    public function evaluateDemonTrial(int $userId, array $answers): array
+    public function evaluateDemonTrial(int $userId, array $answers, string $encounterType = 'manual', int $timeSpent = 0): array
     {
         $resultItems = [];
         $correctCount = 0;
+        $metricRows = [];
+        $encounterId = (string) \Illuminate\Support\Str::uuid();
 
         foreach ($answers as $item) {
             $questionId = trim((string) ($item['question_id'] ?? ''));
@@ -216,17 +218,65 @@ class HeartDemonService
             }
 
             $correct = $this->isAnswerCorrect($question->correct_answer, $answer);
+            
+            // 查询心魔记录以获取 wrong_count (用于埋点) 和更新 V1.2 字段
+            $demon = HeartDemon::where('user_id', $userId)->where('question_id', $questionId)->first();
+            $wrongCountAtEncounter = $demon ? $demon->wrong_count : 1;
+            $masteryBefore = $demon ? $demon->mastery : 0;
+            
             if ($correct) {
                 $correctCount++;
                 $this->recordCorrect($userId, $questionId);
             } else {
                 $this->recordWrong($userId, $questionId, (string) $question->type, (string) $question->realm);
             }
+            
+            // 重新获取心魔记录以更新遭遇次数、得到 mastery_after
+            $demonAfter = HeartDemon::where('user_id', $userId)->where('question_id', $questionId)->first();
+            $masteryAfter = $demonAfter ? $demonAfter->mastery : 0;
+            
+            // V1.2 更新：遭遇次数和最后遭遇时间
+            if ($demonAfter) {
+                $demonAfter->increment('encounter_count');
+                $demonAfter->last_seen_at = now();
+                $demonAfter->save();
+            }
 
             $resultItems[] = [
                 'question_id' => $questionId,
                 'correct' => $correct,
             ];
+
+            // 组装埋点数据
+            $metricRows[] = [
+                'encounter_id' => $encounterId,
+                'user_id' => $userId,
+                'question_id' => $questionId,
+                'encounter_type' => $encounterType,
+                'is_passed' => $correct,
+                'time_spent' => $timeSpent,
+                'wrong_count_at_encounter' => $wrongCountAtEncounter,
+                'mastery_before' => $masteryBefore,
+                'mastery_after' => $masteryAfter,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        $total = count($resultItems);
+
+        // 如果整场通关，为参与的所有心魔增加击败次数
+        if ($total > 0 && $correctCount === $total) {
+            foreach ($answers as $item) {
+                $qId = trim((string) ($item['question_id'] ?? ''));
+                if ($qId) {
+                    HeartDemon::where('user_id', $userId)->where('question_id', $qId)->increment('defeat_count');
+                }
+            }
+        }
+
+        if (!empty($metricRows)) {
+            \Illuminate\Support\Facades\DB::table('levelup_demon_metrics')->insert($metricRows);
         }
 
         $total = count($resultItems);

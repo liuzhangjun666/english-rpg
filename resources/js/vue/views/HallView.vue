@@ -1,38 +1,34 @@
 <template>
-  <div class="hall-page">
-    <div class="game-stage" ref="stageRef" :style="stageStyle">
-      <div class="hall-scene">
-        <!-- 背景场景容器，不再包含散落的图标 -->
-      </div>
+  <div class="hall-page" @wheel.prevent>
+    <div class="map-stage">
+      <!-- Three.js + CSS2DRenderer 挂载点 -->
+      <div class="hall-scene" ref="hallSceneRef"></div>
 
       <!-- 每日任务悬浮提醒 -->
       <button class="daily-quest-fab" @click="showDailyQuest = true" title="今日修炼任务">
         <span class="daily-quest-icon">📅</span>
         <span class="daily-quest-label">每日修炼</span>
       </button>
-
-      <!-- 底部导航 Dock (全部图标集中于此) -->
-      <div class="hall-dock">
-        <template v-for="item in dockItems" :key="item.key">
-          <div v-if="item.isSpacer" class="dock-spacer"></div>
-          <button 
-            v-else
-            type="button" 
-            :class="['action-card-icon-only', item.key === 'practice' ? 'core-icon' : 'dock-icon']" 
-            @click="item.onClick" 
-            :title="item.title"
-          >
-            <img :src="item.image" :alt="item.title" class="action-thumb-icon" />
-          </button>
-        </template>
-      </div>
     </div>
+    <GlobalHud 
+      @open-review="showReview = true"
+      @open-achievements="showAchievements = true"
+      @open-profile="showProfile = true"
+    />
+
+    <!-- 环形菜单 -->
+    <RadialMenu
+      v-if="activeRadialBuilding"
+      :visible="!!activeRadialBuilding"
+      :x="radialPos.x"
+      :y="radialPos.y"
+      :nodes="activeRadialBuilding.subNodes"
+      @close="activeRadialBuilding = null"
+    />
     
-    <!-- 弹窗组件 -->
-    <MallView v-model:visible="showMall" />
-    <LeaderboardView v-model:visible="showLeaderboard" />
+    <!-- 弹窗组件 (后续将逐个改造) -->
     <ReviewModal v-model:visible="showReview" />
-    <DemonsModal v-model:visible="showDemons" />
+    <HeartDemonRecord v-model:visible="showDemons" />
     <AchievementsModal v-model:visible="showAchievements" />
     <ProfilePanel v-model:visible="showProfile" />
     <DailyQuestPanel v-model:visible="showDailyQuest" />
@@ -40,245 +36,215 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUiStore } from '../stores/ui';
+import { useUserStore } from '../stores/user';
+import { WorldSceneManager } from '../core/sect/WorldSceneManager';
 
-import hallPractice from '../../../assets/images/ui/hall_practice.png';
+import hallPractice    from '../../../assets/images/ui/hall_practice.png';
 import hallShilianchang from '../../../assets/images/ui/hall_shilianchang.png';
-import hallCangjingge from '../../../assets/images/ui/hall_cangjingge.png';
-import hallListening from '../../../assets/images/ui/hall_listening.png';
-import hallSpeaking from '../../../assets/images/ui/hall_speaking.png';
-import hallReading from '../../../assets/images/ui/hall_reading.png';
-import hallWriting from '../../../assets/images/ui/hall_writing.png';
-import hallMijing from '../../../assets/images/ui/hall_mijing.png';
-import hallMall from '../../../assets/images/ui/hall_mall.png';
-import hallLeaderboard from '../../../assets/images/ui/hall_leaderboard.png';
-import hallReview from '../../../assets/images/ui/hall_review.png';
-import hallDemons from '../../../assets/images/ui/hall_demons.png';
-import hallAchievements from '../../../assets/images/ui/hall_achievements.png';
-import hallProfile from '../../../assets/images/ui/hall_profile.png';
-const router = useRouter();
-const bridge = useLegacyBridge();
-const ui = useUiStore();
+import hallReading     from '../../../assets/images/ui/hall_reading.png';
+import hallWriting     from '../../../assets/images/ui/hall_writing.png';
+import hallMijing      from '../../../assets/images/ui/hall_mijing.png';
+import hallDemons      from '../../../assets/images/ui/hall_demons.png';
+import hallProfile     from '../../../assets/images/ui/hall_profile.png';
 
-const stageRef = ref<HTMLElement | null>(null);
-const scale = ref(1);
-const isPortraitMode = ref(false);
-const DESIGN_WIDTH = 1920;
-const DESIGN_HEIGHT = 1080;
+import abilityReading  from '../../../assets/images/ui/ability_reading.png';
+import abilityVocab    from '../../../assets/images/ui/ability_vocab.png';
+import abilityGrammar  from '../../../assets/images/ui/ability_grammar.png';
+import abilityListening from '../../../assets/images/ui/ability_listening.png';
+import abilityWriting  from '../../../assets/images/ui/ability_writing.png';
+import abilitySpeaking from '../../../assets/images/ui/ability_speaking.png';
 
-const stageStyle = computed(() => ({
-  width: `${DESIGN_WIDTH}px`,
-  height: `${DESIGN_HEIGHT}px`,
-  // 如果是竖屏，则顺时针旋转 90 度，并应用计算出的缩放
-  transform: `translate(-50%, -50%) rotate(${isPortraitMode.value ? '90deg' : '0deg'}) scale(${scale.value})`,
-}));
+const router      = useRouter();
+const bridge      = useLegacyBridge();
+const ui          = useUiStore();
+const userStore   = useUserStore();
 
-const updateScale = () => {
-  const windowWidth = window.innerWidth;
-  const windowHeight = window.innerHeight;
-  
-  // 判定是否为竖屏
-  isPortraitMode.value = windowHeight > windowWidth;
-  
-  if (isPortraitMode.value) {
-    // 竖屏下，屏幕的高对应设计稿的宽，屏幕的宽对应设计稿的高
-    scale.value = Math.min(windowHeight / DESIGN_WIDTH, windowWidth / DESIGN_HEIGHT);
-  } else {
-    // 横屏正常逻辑
-    scale.value = Math.min(windowWidth / DESIGN_WIDTH, windowHeight / DESIGN_HEIGHT);
-  }
-};
+const hallSceneRef    = ref<HTMLElement | null>(null);
+let worldManager: WorldSceneManager | null = null;
+const userRealmLevel  = ref(0);
+const radialPos       = ref({ x: '50%', y: '50%' }); // RadialMenu 定位
 
 onMounted(async () => {
-  updateScale();
-  window.addEventListener('resize', updateScale);
-  
-  ui.showLoading('进入大厅...');
+  ui.showLoading('加载天地灵气...');
   try {
-    await bridge.switchToHall();
-  } catch (error) {
-    ElMessage.error('大厅加载失败，请刷新重试');
+    const game = await bridge.getGame();
+    await game.syncDailyStatus();
+    game.ui.hideAllPanels();
+
+    if (hallSceneRef.value) {
+      const realmStr = userStore.profile?.current_realm || '练气一层';
+      if (realmStr.includes('筑基')) userRealmLevel.value = 1;
+      else if (realmStr.includes('金丹')) userRealmLevel.value = 2;
+      else if (realmStr.includes('元婴') || realmStr.includes('化神')) userRealmLevel.value = 3;
+
+      worldManager = new WorldSceneManager(hallSceneRef.value, {
+        userRealmLevel: userRealmLevel.value,
+        buildingImages: {
+          practice: hallPractice,
+          reading:  hallReading,
+          writing:  hallWriting,
+          exam:     hallShilianchang,
+          demons:   hallDemons,
+          profile:  hallProfile,
+          mijing:   hallMijing,
+        },
+      });
+
+      worldManager.onBuildingClick = (nodeDef, screenX, screenY) => {
+        radialPos.value = { x: screenX + 'px', y: screenY + 'px' };
+        const building = mapBuildings.value.find(b => b.key === nodeDef.id);
+        if (building) handleBuildingClick(building);
+      };
+    }
+  } catch {
+    ElMessage.error('地图加载失败，请刷新重试');
   } finally {
     ui.hideLoading();
   }
 });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', updateScale);
+  worldManager?.dispose();
+  worldManager = null;
 });
 
 function goPractice(mode = 'vocab') {
   router.push({ path: '/practice', query: { mode } });
 }
 
-const actionItems = computed(() => [
+function goReading() { router.push('/reading'); }
+function goExam() { router.push('/exam'); }
+function goMijing() { router.push('/mijing'); }
+function openDemons() { showDemons.value = true; }
+function openAchievements() { showAchievements.value = true; }
+function openProfile() { showProfile.value = true; }
+
+function handleBuildingClick(building: any) {
+  if (building.unlockRealm !== undefined && userRealmLevel.value < building.unlockRealm) {
+    ElMessage.warning('道友资历不够，还需努力修行');
+    return;
+  }
+
+  if (building.subNodes && building.subNodes.length > 0) {
+    activeRadialBuilding.value = building;
+  } else if (building.onClick) {
+    activeRadialBuilding.value = null;
+    building.onClick();
+  }
+}
+
+// 建筑配置（仅保留交互数据，坐标由 CSS2DRenderer 管理）
+const mapBuildings = ref([
   {
-    key: 'practice',
-    title: '练功房',
-    image: hallPractice,
-    onClick: () => goPractice('vocab'),
+    key: 'practice', title: '练功殿', unlockRealm: 0,
+    subNodes: [
+      { key: 'practice-act',  title: '修炼',  icon: abilityVocab,    onClick: () => goPractice('vocab') },
+      { key: 'breakthrough',  title: '突破',  icon: abilityReading,  onClick: () => ElMessage.info('暂无心魔，无需突破！') },
+      { key: 'quest',         title: '任务',  icon: abilityGrammar,  onClick: () => { showDailyQuest.value = true } },
+      { key: 'signin',        title: '签到',  icon: abilityListening, onClick: () => { showDailyQuest.value = true } },
+    ],
   },
   {
-    key: 'exam',
-    title: '试炼场',
-    image: hallShilianchang,
-    onClick: () => goExam(),
+    key: 'reading', title: '藏经阁', unlockRealm: 0,
+    subNodes: [
+      { key: 'reading-game', title: '阅读', icon: abilityReading,   onClick: () => goReading() },
+      { key: 'vocab',        title: '单词', icon: abilityVocab,     onClick: () => goPractice('vocab') },
+      { key: 'grammar',      title: '语法', icon: abilityGrammar,   onClick: () => goPractice('grammar') },
+      { key: 'listening',    title: '听力', icon: abilityListening, onClick: () => goPractice('listening') },
+    ],
   },
   {
-    key: 'practice-grammar',
-    title: '阵法峰',
-    image: hallCangjingge,
-    onClick: () => goPractice('grammar'),
+    key: 'writing', title: '符箓峰', unlockRealm: 0,
+    subNodes: [
+      { key: 'writing-game', title: '写作',   icon: abilityWriting,  onClick: () => goPractice('writing') },
+      { key: 'speaking',     title: '口语',   icon: abilitySpeaking, onClick: () => goPractice('speaking') },
+      { key: 'ai',           title: 'AI问道', icon: abilityReading,  onClick: () => ElMessage.info('通灵玉简连接中...') },
+    ],
   },
   {
-    key: 'practice-listening',
-    title: '听风谷',
-    image: hallListening,
-    onClick: () => goPractice('listening'),
+    key: 'exam', title: '天道峰', unlockRealm: 1,
+    subNodes: [
+      { key: 'exam-act', title: '考试',  icon: abilityWriting,  onClick: () => goExam() },
+      { key: 'rank',     title: '排行榜', icon: abilityReading,  onClick: () => ElMessage.info('天机阁榜单更新中...') },
+      { key: 'dujie',    title: '渡劫',  icon: abilityListening, onClick: () => ElMessage.info('雷劫尚未凝聚...') },
+    ],
   },
   {
-    key: 'practice-speaking',
-    title: '诵咒峰',
-    image: hallSpeaking,
-    onClick: () => goPractice('speaking'),
+    key: 'demons', title: '心魔禁地', unlockRealm: 2,
+    subNodes: [
+      { key: 'demon-record', title: '心魔录', icon: abilityVocab,    onClick: () => openDemons() },
+      { key: 'ask-heart',    title: '问心崖', icon: abilitySpeaking, onClick: () => ElMessage.info('问心阵法推演中...') },
+    ],
   },
   {
-    key: 'reading',
-    title: '藏经阁',
-    image: hallReading,
-    onClick: () => goReading(),
+    key: 'profile', title: '洞府', unlockRealm: 0,
+    subNodes: [
+      { key: 'info',    title: '个人信息', icon: abilityVocab,    onClick: () => openProfile() },
+      { key: 'achieve', title: '成就碑',  icon: abilityReading,  onClick: () => openAchievements() },
+      { key: 'pets',    title: '灵宠园',  icon: abilityGrammar,  onClick: () => ElMessage.info('灵宠园修建中...') },
+      { key: 'storage', title: '仓库',    icon: abilityListening, onClick: () => ElMessage.info('储物袋整理中...') },
+    ],
   },
   {
-    key: 'practice-writing',
-    title: '符箓台',
-    image: hallWriting,
-    onClick: () => goPractice('writing'),
-  },
-  {
-    key: 'mijing',
-    title: '秘境',
-    image: hallMijing,
-    onClick: () => goMijing(),
-  },
-  {
-    key: 'mall',
-    title: '坊市',
-    image: hallMall,
-    onClick: () => goMall(),
-  },
-  {
-    key: 'leaderboard',
-    title: '宗门榜',
-    image: hallLeaderboard,
-    onClick: () => goLeaderboard(),
-  },
-  {
-    key: 'review',
-    title: '温故复盘',
-    image: hallReview,
-    onClick: () => openReview(),
-  },
-  {
-    key: 'demons',
-    title: '心魔录',
-    image: hallDemons,
-    onClick: () => openDemons(),
-  },
-  {
-    key: 'achievements',
-    title: '成就碑',
-    image: hallAchievements,
-    onClick: () => openAchievements(),
-  },
-  {
-    key: 'profile',
-    title: '我的洞府',
-    image: hallProfile,
-    onClick: () => openProfile(),
+    key: 'mijing', title: '虚空秘境', unlockRealm: 3,
+    subNodes: [
+      { key: 'dungeon',    title: '副本',    icon: abilityWriting,  onClick: () => goMijing() },
+      { key: 'event',      title: '活动',    icon: abilitySpeaking, onClick: () => ElMessage.info('秘境异象尚未开启') },
+      { key: 'world-boss', title: '世界挑战', icon: abilityReading,  onClick: () => ElMessage.info('上古大妖沉睡中...') },
+    ],
   },
 ]);
 
-// 重新组织底部 Dock 的顺序，以“练功房”为核心绝对居中
-// 共 14 个图标。为了让 practice 绝对居中，我们在左侧加入一个占位符(spacer)，使得左右两边都是 7 个等宽元素。
-const dockItems = computed(() => {
-  const allItems = actionItems.value;
-  
-  const leftKeys = ['exam', 'mijing', 'practice-grammar', 'practice-listening', 'practice-speaking', 'reading'];
-  const rightKeys = ['practice-writing', 'mall', 'leaderboard', 'review', 'demons', 'achievements', 'profile'];
-  
-  const items = [];
-  
-  // 补齐左侧 7 个元素，插入一个透明占位符
-  items.push({ key: 'spacer', isSpacer: true });
-  leftKeys.forEach(k => items.push(allItems.find(i => i.key === k)));
-  
-  // 核心居中
-  items.push(allItems.find(i => i.key === 'practice'));
-  
-  // 右侧 7 个元素
-  rightKeys.forEach(k => items.push(allItems.find(i => i.key === k)));
-  
-  return items;
-});
+const activeRadialBuilding = ref<any>(null);
 
-import MallView from './MallView.vue';
-import LeaderboardView from './LeaderboardView.vue';
+import GlobalHud from '../components/map/GlobalHud.vue';
+import RadialMenu from '../components/map/RadialMenu.vue';
 import ReviewModal from './ReviewModal.vue';
-import DemonsModal from './DemonsModal.vue';
+import HeartDemonRecord from '../components/demons/HeartDemonRecord.vue';
 import AchievementsModal from './AchievementsModal.vue';
 import ProfilePanel from '../components/profile/ProfilePanel.vue';
 import DailyQuestPanel from './DailyQuestPanel.vue';
 
-const showMall = ref(false);
-const showLeaderboard = ref(false);
+
 const showReview = ref(false);
 const showDemons = ref(false);
 const showAchievements = ref(false);
 const showProfile = ref(false);
 const showDailyQuest = ref(false);
-
-function goReading() {
-  router.push('/reading');
-}
-
-function goExam() {
-  router.push('/exam');
-}
-
-function goMijing() {
-  router.push('/mijing');
-}
-
-function goMall() {
-  showMall.value = true;
-}
-
-function goLeaderboard() {
-  showLeaderboard.value = true;
-}
-
-function openReview() {
-  showReview.value = true;
-}
-
-function openDemons() {
-  showDemons.value = true;
-}
-
-function openAchievements() {
-  showAchievements.value = true;
-}
-
-function openProfile() {
-  showProfile.value = true;
-}
 </script>
 
 <style scoped>
+.hall-page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
+  pointer-events: auto !important;
+}
+
+.map-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hall-scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
 .daily-quest-fab {
   position: absolute;
   top: 80px;

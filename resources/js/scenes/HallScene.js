@@ -12,51 +12,116 @@ export class HallScene {
         this.clouds = [];
         this.time = 0;
         
-        // 环境光照 (清晨/凌霄金光)
-        this.ambientLight = new THREE.AmbientLight(0xfff0dd, 0.8);
+        // 环境光照
+        this.ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         this.group.add(this.ambientLight);
 
-        this.dirLight = new THREE.DirectionalLight(0xffeedd, 1.5);
+        this.dirLight = new THREE.DirectionalLight(0xffeedd, 1.2);
         this.dirLight.position.set(10, 20, 15);
         this.group.add(this.dirLight);
 
-        // 中心法阵与剑阵组
+        // 中心法阵与剑阵组 (剑阵在聚灵阵(z=3)上方)
         this.centerGroup = new THREE.Group();
         this.group.add(this.centerGroup);
         
         this.swordGroup = new THREE.Group();
-        this.swordGroup.position.set(0, 2.5, 0); // 剑阵悬浮于中心
+        this.swordGroup.position.set(0, 2.5, 3);
         this.centerGroup.add(this.swordGroup);
 
         this._lastGuideUpdate = 0;
         this.currentRecommendModule = 'reading';
+
+        // 视差交互状态
+        this.targetLookAt = new THREE.Vector3(0, 0, 1);
+        this.currentLookAt = new THREE.Vector3(0, 0, 1);
+        this.targetHeight = 11;
+        this.currentHeight = 11;
+
+        this.isDragging = false;
+        this.previousPointer = { x: 0, y: 0 };
+        this.domElement = null;
+
+        // 投影节点
+        this.buildingNodes = [];
+        this._onPointerDownBound = null;
+        this._onPointerMoveBound = null;
+        this._onPointerUpBound = null;
+        this._onWheelBound = null;
     }
 
     build(scene, camera, renderer) {
         this.sceneRef = scene;
         this.cameraRef = camera;
+        // 规避 SceneManager 传入 renderer 为 null 的问题，直接从 DOM 中寻找大厅的 canvas
+        this.domElement = document.querySelector('.hall-scene canvas') || document.querySelector('canvas');
+        if (this.domElement) {
+            this.domElement.style.cursor = 'grab';
+        }
         
-        // 1. 无尽虚空与云海雾效 (白昼/晨曦风格)
-        scene.background = new THREE.Color(0xd8e8ff);
-        scene.fog = new THREE.FogExp2(0xd8e8ff, 0.02);
+        // 1. 背景恢复为深蓝紫色，提供大地图边缘外的自然过渡
+        scene.background = new THREE.Color(0x0c0f24);
+        scene.fog = new THREE.FogExp2(0x0c0f24, 0.012); 
 
-        // 2. 构建白玉悬空广场
-        this.createJadePlaza();
+        // 2. 载入 3D 实体大地图平面
+        const textureLoader = new THREE.TextureLoader();
+        const bgTexture = textureLoader.load('/images/bg_hall_map.png');
+        bgTexture.colorSpace = THREE.SRGBColorSpace;
+        
+        const mapW = 50;
+        const mapH = 28.125;
+        const mapGeo = new THREE.PlaneGeometry(mapW, mapH);
+        const mapMat = new THREE.MeshBasicMaterial({
+            map: bgTexture,
+            transparent: true,
+            opacity: 0.95,
+            depthWrite: false
+        });
+        const mapMesh = new THREE.Mesh(mapGeo, mapMat);
+        mapMesh.rotation.x = -Math.PI / 2;
+        mapMesh.position.set(0, -0.05, 0);
+        this.group.add(mapMesh);
 
-        // 3. 构建翻滚的云海粒子
-        this.createCloudSea();
+        // 3. 构建 3D 节点投影坐标映射 (根据 Vue 原生百分比映射到 3D 平面)
+        const nodeConfigs = [
+            { key: 'exam', pctX: 0.5, pctY: 0.15 },
+            { key: 'demons', pctX: 0.5, pctY: 0.38 },
+            { key: 'practice', pctX: 0.5, pctY: 0.60 },
+            { key: 'profile', pctX: 0.5, pctY: 0.85 },
+            { key: 'reading', pctX: 0.3, pctY: 0.55 },
+            { key: 'practice-grammar', pctX: 0.3, pctY: 0.68 },
+            { key: 'practice-listening', pctX: 0.3, pctY: 0.81 },
+            { key: 'practice-speaking', pctX: 0.7, pctY: 0.55 },
+            { key: 'practice-writing', pctX: 0.7, pctY: 0.68 },
+            { key: 'achievements', pctX: 0.15, pctY: 0.85 },
+            { key: 'zhenmo', pctX: 0.85, pctY: 0.85 },
+            { key: 'mijing', pctX: 0.85, pctY: 0.30 },
+            { key: 'mall', pctX: 0.15, pctY: 0.30 },
+            { key: 'leaderboard', pctX: 0.15, pctY: 0.15 }
+        ];
+        this.buildingNodes = nodeConfigs.map(cfg => ({
+            key: cfg.key,
+            worldPos: new THREE.Vector3(
+                (cfg.pctX - 0.5) * mapW,
+                0,
+                (cfg.pctY - 0.5) * mapH
+            )
+        }));
 
-        // 4. 构建中心太极法阵
+        // 4. 构建中心太极法阵 (移至聚灵阵上方 z=3)
         this.createCenterArray();
+        if (this.outerRing && this.innerRing) {
+            this.outerRing.position.set(0, 0.05, 3);
+            this.innerRing.position.set(0, 0.05, 3);
+        }
 
-        // 5. 构建四周的四大模块入口 (水晶传送阵)
-        this.createModulePortals();
-
-        // 6. 空气中飘散的金辉微尘
+        // 5. 空气中飘散的金辉微尘
         this.createDustParticles();
 
-        // 初始化飞剑 (读取 store 或者默认 5 把)
+        // 6. 初始化飞剑
         this.rebuildSwordArray(5);
+
+        // 7. 绑定拖拽平移与滚轮缩放事件
+        this.bindEvents();
 
         scene.add(this.group);
     }
@@ -73,7 +138,9 @@ export class HallScene {
         const sideMat = new THREE.MeshStandardMaterial({
             color: 0xf5f7fa, // 纯净的汉白玉色
             roughness: 0.15, // 比较光滑，有倒影
-            metalness: 0.1
+            metalness: 0.1,
+            transparent: true,
+            opacity: 0.1
         });
         
         const topMat = new THREE.MeshStandardMaterial({
@@ -81,7 +148,9 @@ export class HallScene {
             color: 0xffffff,
             roughness: 0.3,
             metalness: 0.1,
-            transparent: true
+            transparent: true,
+            opacity: 0.05, // 彻底弱化为透明大阵背景
+            blending: THREE.AdditiveBlending // 增加发光感，类似灵气阵法
         });
         
         // CylinderGeometry 材质顺序: [侧面, 顶面, 底面]
@@ -143,7 +212,7 @@ export class HallScene {
         const mat = new THREE.MeshBasicMaterial({ 
             color: 0xffd700, 
             transparent: true, 
-            opacity: 0.8, 
+            opacity: 0.1, // 减弱金环的亮度
             side: THREE.DoubleSide,
             blending: THREE.AdditiveBlending,
             depthWrite: false
@@ -364,23 +433,123 @@ export class HallScene {
         }
     }
 
+    bindEvents() {
+        this._onPointerDownBound = (e) => this.onPointerDown(e);
+        this._onPointerMoveBound = (e) => this.onPointerMove(e);
+        this._onPointerUpBound = (e) => this.onPointerUp(e);
+        this._onWheelBound = (e) => this.onWheel(e);
+
+        // 绑定 pointerdown 到全局 window，防止上层 z-index 较高的透明层拦截点击穿透
+        window.addEventListener('pointerdown', this._onPointerDownBound);
+        window.addEventListener('pointermove', this._onPointerMoveBound);
+        window.addEventListener('pointerup', this._onPointerUpBound);
+        if (this.domElement) {
+            this.domElement.addEventListener('wheel', this._onWheelBound, { passive: true });
+        }
+    }
+
+    unbindEvents() {
+        window.removeEventListener('pointerdown', this._onPointerDownBound);
+        window.removeEventListener('pointermove', this._onPointerMoveBound);
+        window.removeEventListener('pointerup', this._onPointerUpBound);
+        if (this.domElement) {
+            this.domElement.removeEventListener('wheel', this._onWheelBound);
+        }
+    }
+
+    onPointerDown(e) {
+        if (e.button !== 0) return; // 仅限左键
+        
+        // 过滤点击大厅弹窗、按钮、每日任务、地标卡片本身，避免打扰正常 UI 操作
+        const target = e.target;
+        if (target.closest('button') || target.closest('.map-building') || target.closest('.el-dialog') || target.closest('.el-overlay') || target.closest('.daily-quest-fab')) {
+            return;
+        }
+
+        this.isDragging = true;
+        this.previousPointer.x = e.clientX;
+        this.previousPointer.y = e.clientY;
+        if (this.domElement) {
+            this.domElement.style.cursor = 'grabbing';
+        }
+    }
+
+    onPointerMove(e) {
+        if (!this.isDragging) return;
+        const deltaX = e.clientX - this.previousPointer.x;
+        const deltaY = e.clientY - this.previousPointer.y;
+        this.previousPointer.x = e.clientX;
+        this.previousPointer.y = e.clientY;
+
+        // 拖拽灵敏度随相机高度自适应
+        const factor = 0.0015 * this.currentHeight;
+        this.targetLookAt.x -= deltaX * factor;
+        this.targetLookAt.z -= deltaY * factor;
+
+        // 限制拖拽边界以防飞出地图
+        this.targetLookAt.x = Math.max(-15, Math.min(15, this.targetLookAt.x));
+        this.targetLookAt.z = Math.max(-10, Math.min(10, this.targetLookAt.z));
+    }
+
+    onPointerUp(e) {
+        if (!this.isDragging) return;
+        this.isDragging = false;
+        if (this.domElement) {
+            this.domElement.style.cursor = 'grab';
+        }
+    }
+
+    onWheel(e) {
+        // 缩放相机高度 (6 ~ 20)
+        this.targetHeight += e.deltaY * 0.008;
+        this.targetHeight = Math.max(7, Math.min(18, this.targetHeight));
+    }
+
     animate(time) {
         this.time = time;
 
-        // 云海翻腾
-        if (this.cloudPoints) {
-            this.cloudPoints.rotation.y = time * 0.02;
-            const pos = this.cloudPoints.geometry.attributes.position;
-            for (let i = 0; i < pos.count; i++) {
-                let y = pos.getY(i);
-                // 简单的波浪扰动
-                y += Math.sin(time + pos.getX(i)) * 0.01;
-                pos.setY(i, y);
-            }
-            pos.needsUpdate = true;
+        // 1. 相机视点与缩放高度的物理 Lerp 平滑更新
+        if (this.cameraRef) {
+            this.currentLookAt.lerp(this.targetLookAt, 0.15);
+            this.currentHeight += (this.targetHeight - this.currentHeight) * 0.15;
+
+            this.cameraRef.position.x = this.currentLookAt.x;
+            this.cameraRef.position.y = this.currentLookAt.y + this.currentHeight;
+            // 倾斜仰角保持 y 与 z 偏置比例 1.6 倍
+            this.cameraRef.position.z = this.currentLookAt.z + this.currentHeight * 1.6;
+            this.cameraRef.lookAt(this.currentLookAt);
         }
 
-        // 金色微尘缓缓飘落/上升
+        // 2. 投影计算 3D 节点到 2D 坐标 (一秒 60 次实时通知 Vue)
+        if (this.cameraRef && this.buildingNodes.length > 0) {
+            // 克隆相机并将其 aspect ratio 固定设为 16:9，使投影映射完全对齐 Vue 的等比例缩放容器
+            const projCamera = this.cameraRef.clone();
+            projCamera.aspect = 16 / 9;
+            projCamera.updateProjectionMatrix();
+
+            const tempV = new THREE.Vector3();
+            const coordsMap = {};
+            this.buildingNodes.forEach(node => {
+                tempV.copy(node.worldPos);
+                tempV.project(projCamera);
+
+                const inFront = tempV.z <= 1;
+                const pctX = (tempV.x * 0.5 + 0.5) * 100;
+                const pctY = (-tempV.y * 0.5 + 0.5) * 100;
+
+                coordsMap[node.key] = {
+                    x: `${pctX.toFixed(2)}%`,
+                    y: `${pctY.toFixed(2)}%`,
+                    visible: inFront && pctX >= -10 && pctX <= 110 && pctY >= -10 && pctY <= 110
+                };
+            });
+
+            if (window.updateHallCoords) {
+                window.updateHallCoords(coordsMap);
+            }
+        }
+
+        // 金色微尘缓缓飘落
         if (this.dustPoints) {
             this.dustPoints.rotation.y = time * 0.05;
             const pos = this.dustPoints.geometry.attributes.position;
@@ -392,13 +561,13 @@ export class HallScene {
             pos.needsUpdate = true;
         }
 
-        // 中心法阵旋转
+        // 中心法阵旋转 (作为飞剑的起飞法阵)
         if (this.outerRing && this.innerRing) {
             this.outerRing.rotation.z = time * 0.2;
             this.innerRing.rotation.z = -time * 0.3;
         }
 
-        // 剑阵公转与自转浮动
+        // 飞剑公转自转 (以聚灵阵为中心)
         if (this.swordGroup) {
             this.swordGroup.rotation.y = time * 0.3;
             this.swords.forEach(sword => {
@@ -416,7 +585,7 @@ export class HallScene {
                 const guide = buildHallStoryGuide(storyProgress, progressCurrency);
                 this.currentRecommendModule = guide.recommendedModule || 'shilianchang';
                 
-                // 同步剑阵数量
+                // 同步飞剑数量
                 const user = window.game?.store?.getState()?.user || {};
                 let vocab = user.vocabulary || user.profile?.vocabulary || 0;
                 let stage = user.realm_stage || user.profile?.realm_stage || 1;
@@ -429,43 +598,16 @@ export class HallScene {
                 }
             }
         }
-
-        // 水晶传送阵呼吸效果
-        this.buildingMarkers.forEach(portal => {
-            const isRecommended = portal.userData.id === this.currentRecommendModule;
-            const crystal = portal.userData.crystal;
-            const baseRing = portal.userData.baseRing;
-            
-            // 水晶自身旋转与浮动
-            crystal.rotation.y = time * 0.5;
-            portal.position.y = portal.userData.baseY + Math.sin(time * 2 + portal.userData.id.length) * 0.2;
-            
-            // 底部光环自转
-            baseRing.rotation.z = time * 0.8;
-
-            if (isRecommended) {
-                // 推荐状态：剧烈呼吸，材质增亮，环变大
-                const intensity = Math.sin(time * 4) * 0.5 + 0.5;
-                crystal.material.emissiveIntensity = 1.0 + intensity;
-                crystal.scale.set(1.2, 1.2, 1.2);
-                baseRing.scale.set(1.5, 1.5, 1);
-                baseRing.material.opacity = 0.8;
-            } else {
-                // 待机状态：平静
-                crystal.material.emissiveIntensity = 0.5;
-                crystal.scale.set(1.0, 1.0, 1.0);
-                baseRing.scale.set(1.0, 1.0, 1);
-                baseRing.material.opacity = 0.4;
-            }
-        });
     }
 
     destroy() {
+        this.unbindEvents();
         if (this.sceneRef) {
             this.sceneRef.background = null;
             this.sceneRef.fog = null;
         }
         this.sceneRef = null;
         this.cameraRef = null;
+        this.domElement = null;
     }
 }

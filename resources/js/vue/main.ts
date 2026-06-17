@@ -142,7 +142,7 @@ bootstrapSession().finally(async () => {
   await router.isReady();
   if (auth.isAuthenticated && router.currentRoute.value.path === '/login') {
     const isNewUser = user.profile && (user.profile as any).tutorial_step === 0;
-    router.replace(isNewUser ? '/onboarding' : '/hall');
+    router.replace(isNewUser ? '/onboarding' : '/practice');
   }
   if (!auth.isAuthenticated && router.currentRoute.value.path !== '/login') {
     router.replace('/login');

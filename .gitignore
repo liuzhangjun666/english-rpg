@@ -24,3 +24,9 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# 未使用的旧大模型（首版地图遗留，代码已无引用，过大不上传）
+/public/models/reading.glb
+/public/models/exam.glb
+/public/models/practice.glb
+/public/models/main_building.glb

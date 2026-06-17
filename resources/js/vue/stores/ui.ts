@@ -5,6 +5,8 @@ export const useUiStore = defineStore('ui', {
     loading: false,
     loadingText: '加载中...',
     legacyPracticeOpen: false,
+    isMapDragging: false,
+    mapOverlayVisible: false,
   }),
   actions: {
     showLoading(text = '加载中...') {
@@ -17,5 +19,10 @@ export const useUiStore = defineStore('ui', {
     setLegacyPracticeOpen(open: boolean) {
       this.legacyPracticeOpen = open;
     },
+    setMapDragging(dragging: boolean) {
+      this.isMapDragging = dragging;
+    },
+    showMapOverlay() { this.mapOverlayVisible = true; },
+    hideMapOverlay() { this.mapOverlayVisible = false; },
   },
 });

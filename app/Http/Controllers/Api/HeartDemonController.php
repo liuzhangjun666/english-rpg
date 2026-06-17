@@ -69,36 +69,30 @@ class HeartDemonController extends Controller
         ]);
     }
 
-    /** POST /api/demons/review-submit - 娓″姭鍓嶅績榄斿涔犳彁浜?*/
+    /** POST /api/demons/review-submit - 渡劫前心魔复习提交 */
     public function reviewSubmit(Request $request): JsonResponse
     {
         $data = $request->validate([
             'answers' => 'required|array',
             'answers.*.question_id' => 'required|string',
             'answers.*.answer' => 'required|string',
+            'encounter_type' => 'nullable|string',
+            'time_spent' => 'nullable|integer',
         ]);
 
         $user = $request->user();
-        $correctCount = 0;
-        foreach ($data['answers'] as $ans) {
-            $question = Question::where('question_id', $ans['question_id'])->first();
-            $correct = $question && $question->correct_answer === $ans['answer'];
-            if ($correct) {
-                $correctCount++;
-                $this->demonService->recordCorrect($user->id, $ans['question_id']);
-            } elseif ($question) {
-                $this->demonService->recordWrong(
-                    $user->id,
-                    $ans['question_id'],
-                    $question->type,
-                    $question->realm ?? $user->realm
-                );
-            }
-        }
+        
+        $encounterType = $data['encounter_type'] ?? 'manual';
+        $timeSpent = $data['time_spent'] ?? 0;
+        
+        $result = $this->demonService->evaluateDemonTrial($user->id, $data['answers'], $encounterType, (int)$timeSpent);
 
         return response()->json([
             'success' => true,
-            'data' => ['correct_count' => $correctCount, 'total' => count($data['answers'])],
+            'data' => [
+                'correct_count' => $result['correct_count'], 
+                'total' => $result['total']
+            ],
         ]);
     }
 

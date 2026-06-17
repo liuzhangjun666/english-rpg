@@ -109,6 +109,7 @@ import { useApiClient } from '../services/api';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
+import { useDemonStore } from '../stores/demon';
 
 type Stage = 'info' | 'exam' | 'result';
 type ExamSession = {
@@ -243,14 +244,37 @@ async function loadCurrent() {
 }
 
 async function manualBreakthrough() {
-  ui.showLoading('冲击瓶颈中...');
+  const demonStore = useDemonStore();
+  
+  ui.showLoading('探查道心...');
   try {
-    const res = await api.post('/exam/breakthrough');
-    if (!res?.success || !res?.data) {
-      ElMessage.error(res?.message || '突破失败');
-      await loadCurrent();
-      return;
+    // 1. 突破前置心魔劫检查
+    const preRes = await api.get('/demons/pre-exam');
+    const demonQuestions = preRes?.data?.questions || [];
+    
+    if (demonQuestions.length > 0) {
+      ui.hideLoading();
+      // 2. 触发天劫主题心魔战
+      const encounterResult = await demonStore.triggerEncounter(demonQuestions, {
+        type: 'tribulation',
+        theme: 'thunder',
+        title: '天劫临身',
+        subtitle: '欲破此境，先斩心魔。道心有漏，雷劫不容！'
+      });
+      
+      // 3. 结果判定
+      if (!encounterResult || !encounterResult.passed) {
+        ElMessage.warning('未能斩却心魔，突破失败，修为震荡。');
+        return;
+      }
+      
+      ui.showLoading('心魔尽散，冲击瓶颈...');
+    } else {
+      ui.showLoading('冲击瓶颈中...');
     }
+
+    // 4. 正式突破
+    const res = await api.post('/exam/breakthrough');
     const userData = res.data.user || {};
     user.updateProfile({
       realm: userData.realm ?? user.profile?.realm,

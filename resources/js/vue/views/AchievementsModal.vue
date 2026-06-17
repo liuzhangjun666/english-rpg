@@ -1,15 +1,14 @@
 <template>
-  <Teleport to="body">
-    <transition name="fade">
-      <div v-if="visible" class="cultivation-overlay" @click.self="closePanel">
-        <div class="cultivation-container">
-          <div class="cultivation-header">
-            <span class="cultivation-title">🏆 成就碑</span>
-            <button class="cultivation-close-btn" @click="closePanel">关闭</button>
-          </div>
+  <transition name="slide-right">
+    <div v-if="visible" class="drawer-overlay cultivation-theme" @click.self="closePanel">
+      <div class="drawer-container">
+        <div class="drawer-header">
+          <span class="cultivation-title">🏆 成就碑</span>
+          <button class="drawer-close-btn" @click="closePanel">关闭</button>
+        </div>
 
-          <div class="cultivation-body">
-            <div v-if="loading" class="cult-center-tip">查询成就...</div>
+        <div class="drawer-body">
+          <div v-if="loading" class="cult-center-tip">查询成就...</div>
 
             <template v-else>
               <div class="achieve-summary">
@@ -38,11 +37,10 @@
                 <el-button @click="closePanel">返回宗门</el-button>
               </div>
             </template>
-          </div>
         </div>
       </div>
-    </transition>
-  </Teleport>
+    </div>
+  </transition>
 </template>
 
 <script setup lang="ts">
@@ -111,47 +109,54 @@ function closePanel() {
 </script>
 
 <style scoped>
-.cultivation-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(10, 10, 26, 0.85);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.drawer-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(10, 10, 26, 0.4);
   z-index: 2000;
-  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: flex-end;
+  backdrop-filter: blur(3px);
 }
-.cultivation-container {
-  width: 90%;
-  max-width: 480px;
-  max-height: 90vh;
+
+.drawer-container {
+  width: 460px;
+  max-width: 100%;
+  height: 100vh;
+  background: rgba(26, 26, 46, 0.95);
+  border-left: 2px solid var(--gold, #d4a843);
   display: flex;
   flex-direction: column;
-  background: #1a1a2e;
-  border: 2px solid var(--gold, #d4a843);
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: -10px 0 30px rgba(0,0,0,0.6);
+  backdrop-filter: blur(10px);
 }
-.cultivation-header {
+
+.drawer-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
+  padding: 20px 24px;
   background: rgba(255, 255, 255, 0.05);
   border-bottom: 1px solid rgba(212, 168, 67, 0.3);
   flex-shrink: 0;
 }
-.cultivation-title { font-size: 18px; color: var(--gold, #d4a843); font-weight: 700; }
-.cultivation-close-btn {
+
+.cultivation-title { font-size: 20px; color: var(--gold, #d4a843); font-weight: 700; }
+
+.drawer-close-btn {
   background: transparent;
   border: 1px solid var(--gold, #d4a843);
   color: var(--gold, #d4a843);
-  padding: 4px 12px;
+  padding: 6px 16px;
   border-radius: 4px;
   cursor: pointer;
+  transition: all 0.2s;
 }
-.cultivation-body { flex: 1; overflow-y: auto; padding: 20px; }
+.drawer-close-btn:hover {
+  background: rgba(212, 168, 67, 0.2);
+}
+
+.drawer-body { flex: 1; overflow-y: auto; padding: 24px; }
 .cult-center-tip { text-align: center; color: #c8b685; padding: 40px 0; }
 
 .achieve-summary {
@@ -192,6 +197,16 @@ function closePanel() {
   margin-top: 16px;
 }
 
-.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.slide-right-enter-from,
+.slide-right-leave-to {
+  opacity: 0;
+}
+.slide-right-enter-from .drawer-container,
+.slide-right-leave-to .drawer-container {
+  transform: translateX(100%);
+}
 </style>

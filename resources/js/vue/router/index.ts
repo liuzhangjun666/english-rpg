@@ -10,9 +10,7 @@ const routes = [
   },
   {
     path: '/hall',
-    name: 'hall',
-    component: () => import('../views/HallView.vue'),
-    meta: { requiresAuth: true },
+    redirect: '/practice',
   },
   {
     path: '/practice',
@@ -56,8 +54,14 @@ const routes = [
     component: () => import('../views/OnboardingView.vue'),
     meta: { requiresAuth: true },
   },
-  { path: '/', redirect: '/hall' },
-  { path: '/:pathMatch(.*)*', redirect: '/hall' },
+  {
+    path: '/map',
+    name: 'map',
+    component: () => import('../views/SectWorldView.vue'),
+    meta: { requiresAuth: true },
+  },
+  { path: '/', redirect: '/practice' },
+  { path: '/:pathMatch(.*)*', redirect: '/practice' },
 ];
 
 export const router = createRouter({
@@ -74,7 +78,7 @@ router.beforeEach((to) => {
   }
 
   if (to.meta.guestOnly && auth.isAuthenticated) {
-    return { path: '/hall' };
+    return { path: '/practice' };
   }
 
   return true;
@@ -83,7 +87,7 @@ router.beforeEach((to) => {
 export function normalizeLegacyHashRoute() {
   const hash = window.location.hash || '';
   const mapping: Record<string, string> = {
-    '#hall': '/hall',
+    '#hall': '/practice',
     '#practice': '/practice',
     '#login': '/login',
     '#vocab': '/practice',

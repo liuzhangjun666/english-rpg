@@ -1,76 +1,70 @@
 <template>
-  <Teleport to="body">
-    <transition name="fade">
-      <div v-if="visible" class="profile-overlay cultivation-theme" @click.self="closePanel">
-        <div class="profile-container" style="max-width: 460px;">
-          <div class="profile-header">
-            <div class="card-header" style="font-size: 20px; text-align: center; width: 100%;">
-              📊 宗门天骄榜
-            </div>
-            <button class="profile-close-btn" @click="closePanel">关闭</button>
+  <div class="leaderboard-page cultivation-theme">
+    <div class="profile-container">
+      <div class="profile-header">
+        <div class="card-header" style="font-size: 24px; text-align: center; width: 100%;">
+          📊 宗门天骄榜
+        </div>
+        <button class="profile-close-btn" @click="goBack">返回宗门</button>
+      </div>
+
+      <div class="profile-body" style="flex-direction: column; padding: 30px;">
+        <!-- Tabs -->
+        <div class="lb-tabs">
+          <button 
+            v-for="(title, key) in tabs" 
+            :key="key"
+            class="lb-tab-btn"
+            :class="{ 'is-active': currentTab === key }"
+            @click="switchTab(key as keyof typeof tabs)"
+          >
+            {{ title }}
+          </button>
+        </div>
+
+        <!-- My Rank -->
+        <div class="lb-my-rank">
+          <span v-if="myRank">你的名次：第 <span class="text-gold">{{ myRank }}</span> 位（超过 {{ myPercentile }}% 道友）</span>
+          <span v-else>继续修炼，登上宗门榜</span>
+        </div>
+
+        <!-- Loading & List -->
+        <div class="lb-list" v-loading="loading" element-loading-background="rgba(10, 10, 26, 0.8)">
+          <div v-if="!loading && leaderboard.length === 0" class="lb-empty">
+            暂无数据
           </div>
-
-          <div class="profile-body" style="flex-direction: column; padding: 20px;">
-            <!-- Tabs -->
-            <div class="lb-tabs">
-              <button 
-                v-for="(title, key) in tabs" 
-                :key="key"
-                class="lb-tab-btn"
-                :class="{ 'is-active': currentTab === key }"
-                @click="switchTab(key as keyof typeof tabs)"
-              >
-                {{ title }}
-              </button>
-            </div>
-
-            <!-- My Rank -->
-            <div class="lb-my-rank">
-              <span v-if="myRank">你的名次：第 <span class="text-gold">{{ myRank }}</span> 位（超过 {{ myPercentile }}% 道友）</span>
-              <span v-else>继续修炼，登上宗门榜</span>
-            </div>
-
-            <!-- Loading & List -->
-            <div class="lb-list" v-loading="loading" element-loading-background="rgba(10, 10, 26, 0.8)">
-              <div v-if="!loading && leaderboard.length === 0" class="lb-empty">
-                暂无数据
+          <transition-group name="list" tag="div" v-else class="lb-grid">
+            <div 
+              v-for="(item, index) in leaderboard" 
+              :key="item.nickname + index" 
+              class="lb-item"
+              :class="{ 'is-top3': index < 3 }"
+            >
+              <div class="lb-rank" :class="'rank-' + index">
+                {{ index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}` }}
               </div>
-              <transition-group name="list" tag="div" v-else>
-                <div 
-                  v-for="(item, index) in leaderboard" 
-                  :key="item.nickname + index" 
-                  class="lb-item"
-                  :class="{ 'is-top3': index < 3 }"
-                >
-                  <div class="lb-rank" :class="'rank-' + index">
-                    {{ index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}` }}
-                  </div>
-                  <div class="lb-name">{{ item.nickname || '匿名道友' }}</div>
-                  <div class="lb-metric">{{ item.metric_text || item.metric }}</div>
-                </div>
-              </transition-group>
+              <div class="lb-name">{{ item.nickname || '匿名道友' }}</div>
+              <div class="lb-metric">{{ item.metric_text || item.metric }}</div>
             </div>
-          </div>
+          </transition-group>
         </div>
       </div>
-    </transition>
-  </Teleport>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useApiClient } from '../services/api';
 import { vLoading } from 'element-plus';
 
-const props = defineProps<{
-  visible: boolean;
-}>();
-
-const emit = defineEmits<{
-  (e: 'update:visible', value: boolean): void;
-}>();
-
+const router = useRouter();
 const api = useApiClient();
+
+const goBack = () => {
+  router.push('/hall');
+};
 
 const tabs = {
   streak: '道心连修',
@@ -88,10 +82,8 @@ const leaderboard = ref<any[]>([]);
 const myRank = ref<number | null>(null);
 const myPercentile = ref<number>(1);
 
-watch(() => props.visible, (val) => {
-  if (val && leaderboard.value.length === 0) {
-    fetchLeaderboard(currentTab.value);
-  }
+onMounted(() => {
+  fetchLeaderboard(currentTab.value);
 });
 
 const switchTab = (tab: keyof typeof tabs) => {
@@ -124,31 +116,31 @@ const fetchLeaderboard = async (tab: string) => {
   }
 };
 
-const closePanel = () => {
-  emit('update:visible', false);
-};
 </script>
 
 <style scoped>
-.profile-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(10, 10, 26, 0.85);
+.leaderboard-page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: #0a0a1a url('../../../assets/images/bg_mall.jpg') center/cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
-  backdrop-filter: blur(5px);
 }
+
 .profile-container {
   width: 90%;
-  background: #1a1a2e;
+  max-width: 1000px;
+  height: 85vh;
+  background: rgba(26, 26, 46, 0.95);
   border: 2px solid var(--gold, #d4a843);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+  backdrop-filter: blur(10px);
 }
 .profile-header {
   display: flex;
@@ -216,23 +208,31 @@ const closePanel = () => {
   color: #c8b685;
   padding: 40px 0;
 }
+.lb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  padding: 10px;
+}
 .lb-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  margin-bottom: 6px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
-  border: 1px solid transparent;
+  gap: 16px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
   transition: all 0.3s;
 }
 .lb-item.is-top3 {
-  background: rgba(212, 168, 67, 0.06);
-  border-color: rgba(212, 168, 67, 0.15);
+  background: rgba(212, 168, 67, 0.08);
+  border-color: rgba(212, 168, 67, 0.25);
+  box-shadow: inset 0 0 15px rgba(212, 168, 67, 0.1);
 }
 .lb-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(212, 168, 67, 0.4);
+  transform: translateY(-2px);
 }
 .lb-rank {
   width: 32px;

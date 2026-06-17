@@ -1,113 +1,91 @@
 <template>
-  <Teleport to="body">
-    <transition name="fade">
-      <div v-if="visible" class="cultivation-profile-panel profile-overlay" @click.self="closePanel">
-        <div class="profile-container">
-          <!-- 头部信息区 -->
-          <div class="profile-header">
-            <div class="profile-header-info">
-              <!-- 头像 -->
-              <div class="avatar-wrapper" title="点击更换道影" @click="triggerAvatarUpload">
-                <img :src="user.avatar_url || defaultAvatar" class="profile-header-avatar" alt="avatar">
-                <div class="avatar-hover-mask">更换</div>
-              </div>
-              <input type="file" ref="fileInput" accept="image/png, image/jpeg, image/gif, image/webp" class="hidden-input" @change="handleAvatarUpload">
-              
-              <!-- 昵称与操作 -->
-              <div class="user-meta">
-                <div class="nickname-row">
-                  <span v-if="!isEditingNickname" class="nickname-display" title="点击修改道号" @click="startEditNickname">
-                    {{ user.nickname || '匿名前辈' }}
-                  </span>
-                  <input 
-                    v-else 
-                    ref="nicknameInputRef"
-                    type="text" 
-                    v-model="editNicknameValue" 
-                    class="nickname-input" 
-                    maxlength="50"
-                    @blur="finishEditNickname"
-                    @keyup.enter="finishEditNickname"
-                  >
-                  <span class="sub-title">的仙躯 · 命盘</span>
-                </div>
-                
-                <div class="header-actions">
-                  <span class="header-action-btn">📤 邀请道友</span>
-                  <span class="header-action-btn">🔄 温故复盘</span>
-                  <span class="header-action-btn">📋 护道人</span>
-                  <span class="header-action-btn text-danger">退出登出</span>
-                </div>
-              </div>
-            </div>
-            <button class="profile-close-btn" @click="closePanel">关闭</button>
+  <transition name="slide-right">
+    <div v-if="visible" class="drawer-overlay cultivation-theme" @click.self="closePanel">
+      <div class="drawer-container">
+        <div class="drawer-header">
+          <div class="card-header" style="font-size: 20px;">
+            🪔 个人洞府
           </div>
+          <button class="drawer-close-btn" @click="closePanel">关闭</button>
+        </div>
 
-          <!-- 主体内容区 -->
-          <div class="profile-body">
-            <!-- 左侧：仙躯核心与六维 -->
-            <div class="profile-left-pane">
-              <div class="profile-section-title">仙躯核心</div>
-              <div class="profile-stats-grid">
-                <div class="profile-stat-item">
-                  <span class="profile-stat-label">当前境界</span>
-                  <span class="profile-stat-val realm-badge">{{ currentRealmLabel }}</span>
+        <div class="drawer-body">
+          <div class="profile-scroll">
+            <!-- 头部信息区 -->
+            <div class="profile-header">
+              <div class="profile-header-info">
+                <!-- 头像 -->
+                <div class="avatar-wrapper" title="点击更换道影" @click="triggerAvatarUpload">
+                  <img :src="user.avatar_url || defaultAvatar" class="profile-header-avatar" alt="avatar">
+                  <div class="avatar-hover-mask">更换</div>
                 </div>
-                <div class="profile-stat-item">
-                  <span class="profile-stat-label">道心值</span>
-                  <span class="profile-stat-val text-red">{{ user.dao_heart || 0 }}</span>
-                </div>
-                <div class="profile-stat-item">
-                  <span class="profile-stat-label">剧情钥匙</span>
-                  <span class="profile-stat-val text-blue">{{ user.story_keys || 0 }}</span>
-                </div>
-                <div class="profile-stat-item">
-                  <span class="profile-stat-label">修为灵气</span>
-                  <span class="profile-stat-val">⚡ {{ user.exp || 0 }}</span>
-                </div>
-              </div>
-
-              <div class="profile-section-title">英语根骨 (六维)</div>
-              <div class="profile-eng-grid">
-                <div class="profile-eng-item" v-for="(val, key) in dimensions" :key="key">
-                  <div class="profile-stat-label">
-                    <img :src="getAbilityIcon(key)" alt="" class="ability-icon">{{ formatAbilityName(key) }}
+                <input type="file" ref="fileInput" accept="image/png, image/jpeg, image/gif, image/webp" class="hidden-input" @change="handleAvatarUpload">
+                
+                <!-- 昵称与操作 -->
+                <div class="user-meta">
+                  <div class="nickname-row">
+                    <span v-if="!isEditingNickname" class="nickname-display" title="点击修改道号" @click="startEditNickname">
+                      {{ user.nickname || '匿名前辈' }}
+                    </span>
+                    <input 
+                      v-else 
+                      ref="nicknameInputRef"
+                      type="text" 
+                      v-model="editNicknameValue" 
+                      class="nickname-input" 
+                      maxlength="50"
+                      @blur="finishEditNickname"
+                      @keyup.enter="finishEditNickname"
+                    >
                   </div>
-                  <div class="profile-eng-val">{{ val }}</div>
+                  <div class="header-actions">
+                    <span class="header-action-btn">📤 邀请道友</span>
+                    <span class="header-action-btn text-danger">退出登出</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- 右侧：命盘图鉴 -->
-            <div class="profile-right-pane">
-              <div class="profile-section-title">已通关命盘图鉴</div>
-              <div class="fate-nodes-list">
-                <div v-if="fateNodes.length === 0" class="fate-node-empty">
-                  暂无命盘记录，去藏经阁推演天机吧。
-                </div>
-                <div v-else class="fate-node-item" v-for="node in fateNodes" :key="node.id">
-                  <div class="fate-node-title">{{ node.title }}</div>
-                  <div class="fate-node-desc">{{ node.description || node.hint || '' }}</div>
-                </div>
+            <!-- 主体内容区 -->
+            <div class="profile-section-title mt-4">仙躯核心</div>
+            <div class="profile-stats-grid">
+              <div class="profile-stat-item">
+                <span class="profile-stat-label">当前境界</span>
+                <span class="profile-stat-val realm-badge">{{ currentRealmLabel }}</span>
               </div>
+              <div class="profile-stat-item">
+                <span class="profile-stat-label">道心值</span>
+                <span class="profile-stat-val text-red">{{ user.dao_heart || 0 }}</span>
+              </div>
+              <div class="profile-stat-item">
+                <span class="profile-stat-label">剧情钥匙</span>
+                <span class="profile-stat-val text-blue">{{ user.story_keys || 0 }}</span>
+              </div>
+              <div class="profile-stat-item">
+                <span class="profile-stat-label">修为灵气</span>
+                <span class="profile-stat-val">⚡ {{ user.exp || 0 }}</span>
+              </div>
+            </div>
 
-              <div class="profile-section-title section-mt">隐藏结局缺口</div>
-              <div class="fate-nodes-list">
-                <div class="fate-node-item hidden-gap-item" v-for="(item, idx) in hiddenGap.requirements" :key="idx">
-                  <div class="fate-node-title">{{ item.label }}</div>
-                  <div class="fate-node-desc">{{ item.progressText }}</div>
-                </div>
-                <div class="fate-node-item hidden-gap-status" :class="hiddenGap.ready ? 'is-ready' : 'not-ready'">
-                  <div class="fate-node-title">{{ hiddenGap.ready ? '条件已满足' : '尚未满足' }}</div>
-                  <div class="fate-node-desc">{{ hiddenGap.summary }}</div>
-                </div>
+            <div class="profile-section-title">英语根骨 (六维)</div>
+            <div class="profile-eng-grid">
+              <div class="profile-eng-item" v-for="(val, key) in dimensions" :key="key">
+                <div class="profile-stat-label">{{ formatAbilityName(key) }}</div>
+                <div class="profile-eng-val">{{ val }}</div>
+              </div>
+            </div>
+
+            <div class="profile-section-title">命盘图鉴</div>
+            <div class="fate-nodes-list">
+              <div v-if="fateNodes.length === 0" class="fate-node-empty">
+                暂无命盘记录。
               </div>
             </div>
           </div>
         </div>
       </div>
-    </transition>
-  </Teleport>
+    </div>
+  </transition>
 </template>
 
 <script setup lang="ts">
@@ -121,16 +99,13 @@ const emit = defineEmits<{
   (e: 'update:visible', value: boolean): void;
 }>();
 
-// 状态
 const user = ref<any>({});
 const isEditingNickname = ref(false);
 const editNicknameValue = ref('');
 const fileInput = ref<HTMLInputElement | null>(null);
 const nicknameInputRef = ref<HTMLInputElement | null>(null);
+const defaultAvatar = '/images/avatar_default.png';
 
-const defaultAvatar = '/images/avatar_default.png'; // 根据实际情况调整路径
-
-// 获取数据
 onMounted(async () => {
   if (props.visible) {
     await fetchProfileData();
@@ -138,11 +113,6 @@ onMounted(async () => {
 });
 
 const fetchProfileData = async () => {
-  // TODO: 使用实际的 API 获取数据
-  // const res = await api.get('/user/profile');
-  // if (res.success) user.value = res.data;
-  
-  // 模拟数据
   user.value = {
     nickname: '修仙狂徒',
     dao_heart: 100,
@@ -157,7 +127,6 @@ const fetchProfileData = async () => {
   };
 };
 
-// 计算属性
 const dimensions = computed(() => ({
   vocabulary: Number(user.value.vocabulary || 0),
   grammar: Number(user.value.grammar || 0),
@@ -167,18 +136,9 @@ const dimensions = computed(() => ({
   writing: Number(user.value.writing || 0),
 }));
 
-const currentRealmLabel = computed(() => '筑基中期'); // TODO: 替换为实际计算逻辑
-const fateNodes = computed(() => []); // TODO: 替换为实际计算逻辑
-const hiddenGap = computed(() => ({
-  requirements: [
-    { label: '隐藏道具 A', progressText: '已获取 1/1' },
-    { label: '修为要求', progressText: '当前 3000 / 5000' }
-  ],
-  ready: false,
-  summary: '还差一点点修为即可解锁隐藏结局。'
-}));
+const currentRealmLabel = computed(() => '筑基中期');
+const fateNodes = computed(() => []);
 
-// 方法
 const closePanel = () => {
   emit('update:visible', false);
 };
@@ -191,7 +151,6 @@ const handleAvatarUpload = (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0];
   if (file) {
     console.log('上传头像:', file);
-    // TODO: 实现上传逻辑
   }
 };
 
@@ -200,7 +159,6 @@ const startEditNickname = async () => {
   isEditingNickname.value = true;
   await nextTick();
   nicknameInputRef.value?.focus();
-  nicknameInputRef.value?.select();
 };
 
 const finishEditNickname = () => {
@@ -208,7 +166,6 @@ const finishEditNickname = () => {
   isEditingNickname.value = false;
   if (editNicknameValue.value.trim() !== '') {
     user.value.nickname = editNicknameValue.value.trim();
-    // TODO: 调用 API 保存昵称
   }
 };
 
@@ -219,57 +176,63 @@ const formatAbilityName = (key: string) => {
   };
   return map[key] || key;
 };
-
-const getAbilityIcon = (key: string) => `/images/icons/${key}.png`; // 替换为实际图标路径
-
 </script>
 
 <style scoped>
-/* 核心布局 */
-.profile-overlay {
+.slide-right-enter-active, .slide-right-leave-active { transition: transform 0.3s ease; }
+.slide-right-enter-from, .slide-right-leave-to { transform: translateX(100%); }
+
+.drawer-overlay {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(10, 10, 26, 0.85);
+  background: rgba(10, 10, 26, 0.6);
+  z-index: 2000;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(5px);
-}
-.profile-container {
-  width: 90%;
-  max-width: 800px;
-  max-height: 90vh;
-  background: #1a1a2e;
-  border: 2px solid var(--gold);
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  justify-content: flex-end;
+  backdrop-filter: blur(3px);
 }
 
-/* 头部 */
-.profile-header {
+.drawer-container {
+  width: 460px;
+  max-width: 100%;
+  height: 100vh;
+  background: #1a1a2e;
+  border-left: 2px solid var(--gold, #d4a843);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.6);
+}
+
+.drawer-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px;
   background: rgba(255,255,255,0.05);
   border-bottom: 1px solid rgba(212,168,67,0.3);
+  color: var(--gold);
 }
-.profile-header-info {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex: 1;
+
+.drawer-close-btn {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 6px 16px;
+  border-radius: 4px;
+  cursor: pointer;
 }
+
+.drawer-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.profile-scroll { flex: 1; overflow-y: auto; padding: 20px; }
+
+.profile-header { margin-bottom: 20px; }
+.profile-header-info { display: flex; align-items: center; gap: 16px; }
+
 .avatar-wrapper {
   position: relative;
-  width: 48px;
-  height: 48px;
+  width: 60px;
+  height: 60px;
   cursor: pointer;
-  flex-shrink: 0;
   border-radius: 50%;
   overflow: hidden;
   border: 2px solid var(--gold);
@@ -494,12 +457,16 @@ const getAbilityIcon = (key: string) => `/images/icons/${key}.png`; // 替换为
 }
 
 /* 过渡动画 */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
-.fade-enter-from,
-.fade-leave-to {
+.slide-right-enter-from,
+.slide-right-leave-to {
   opacity: 0;
+}
+.slide-right-enter-from .drawer-container,
+.slide-right-leave-to .drawer-container {
+  transform: translateX(100%);
 }
 </style>

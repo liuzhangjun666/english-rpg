@@ -1,74 +1,70 @@
 <template>
-  <Teleport to="body">
-    <transition name="fade">
-      <div v-if="visible" class="profile-overlay cultivation-theme" @click.self="closePanel">
-        <div class="profile-container" style="max-width: 460px;">
-          <div class="profile-header">
-            <div class="card-header" style="font-size: 20px; text-align: center; width: 100%;">
-              🏪 藏经阁 (坊市)
-            </div>
-            <button class="profile-close-btn" @click="closePanel">关闭</button>
+  <div class="mall-page cultivation-theme">
+    <div class="profile-container">
+      <div class="profile-header">
+        <div class="card-header" style="font-size: 24px; text-align: center; width: 100%;">
+          🏪 藏经阁 (坊市)
+        </div>
+        <button class="profile-close-btn" @click="goBack">返回宗门</button>
+      </div>
+
+      <div class="profile-body" style="flex-direction: column; padding: 30px;">
+        <!-- User Stones -->
+        <div class="mall-stones">
+          灵石余额：💎 <span class="text-gold">{{ stones }}</span>
+        </div>
+
+        <!-- List -->
+        <div class="mall-list" v-loading="loading" element-loading-background="rgba(10, 10, 26, 0.8)">
+          <div v-if="!loading && items.length === 0" class="mall-empty">
+            坊市暂无商品
           </div>
-
-          <div class="profile-body" style="flex-direction: column; padding: 20px;">
-            <!-- User Stones -->
-            <div class="mall-stones">
-              灵石：💎 <span class="text-gold">{{ stones }}</span>
-            </div>
-
-            <!-- List -->
-            <div class="mall-list" v-loading="loading" element-loading-background="rgba(10, 10, 26, 0.8)">
-              <div v-if="!loading && items.length === 0" class="mall-empty">
-                坊市暂无商品
+          <transition-group name="list" tag="div" v-else class="mall-grid">
+            <div v-for="item in items" :key="item.id" class="mall-item">
+              <div class="mall-item-icon">{{ item.icon || '📦' }}</div>
+              <div class="mall-item-info">
+                <div class="mall-item-name">{{ item.name }}</div>
+                <div class="mall-item-desc">{{ item.description || '' }}</div>
               </div>
-              <transition-group name="list" tag="div" v-else>
-                <div v-for="item in items" :key="item.id" class="mall-item">
-                  <div class="mall-item-icon">{{ item.icon || '📦' }}</div>
-                  <div class="mall-item-info">
-                    <div class="mall-item-name">{{ item.name }}</div>
-                    <div class="mall-item-desc">{{ item.description || '' }}</div>
-                  </div>
-                  <div class="mall-item-action">
-                    <div class="mall-price">💎 {{ item.price || 0 }}</div>
-                    <button 
-                      class="mall-buy-btn" 
-                      :disabled="stones < (item.price || 0) || buyingId === item.id"
-                      @click="buyItem(item)"
-                    >
-                      {{ buyingId === item.id ? '兑换中...' : '兑换' }}
-                    </button>
-                  </div>
-                </div>
-              </transition-group>
+              <div class="mall-item-action">
+                <div class="mall-price">💎 {{ item.price || 0 }}</div>
+                <button 
+                  class="mall-buy-btn" 
+                  :disabled="stones < (item.price || 0) || buyingId === item.id"
+                  @click="buyItem(item)"
+                >
+                  {{ buyingId === item.id ? '兑换中...' : '兑换' }}
+                </button>
+              </div>
             </div>
+          </transition-group>
+        </div>
 
-            <!-- Message -->
-            <div class="mall-msg" :class="{ 'is-error': !!errorMsg }">
-              {{ errorMsg || successMsg }}
-            </div>
-          </div>
+        <!-- Message -->
+        <div class="mall-msg" :class="{ 'is-error': !!errorMsg }">
+          {{ errorMsg || successMsg }}
         </div>
       </div>
-    </transition>
-  </Teleport>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useApiClient } from '../services/api';
 import { useUserStore } from '../stores/user';
 import { vLoading } from 'element-plus';
 
-const props = defineProps<{
-  visible: boolean;
-}>();
-
-const emit = defineEmits<{
-  (e: 'update:visible', value: boolean): void;
-}>();
-
+const router = useRouter();
 const api = useApiClient();
 const userStore = useUserStore();
+
+const goBack = () => {
+  router.push('/hall');
+};
+
+
 
 const loading = ref(false);
 const items = ref<any[]>([]);
@@ -78,12 +74,8 @@ const successMsg = ref('');
 
 const stones = computed(() => Number(userStore.profile?.spirit_stone || 0));
 
-watch(() => props.visible, (val) => {
-  if (val) {
-    errorMsg.value = '';
-    successMsg.value = '';
-    fetchItems();
-  }
+onMounted(() => {
+  fetchItems();
 });
 
 const fetchItems = async () => {
@@ -130,34 +122,34 @@ const buyItem = async (item: any) => {
       successMsg.value = '';
       errorMsg.value = '';
     }, 3000);
-  }
+}
 };
 
-const closePanel = () => {
-  emit('update:visible', false);
-};
 </script>
 
 <style scoped>
-.profile-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(10, 10, 26, 0.85);
+.mall-page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: #0a0a1a url('../../../assets/images/bg_mall.jpg') center/cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
-  backdrop-filter: blur(5px);
 }
+
 .profile-container {
   width: 90%;
-  background: #1a1a2e;
+  max-width: 1000px;
+  height: 80vh;
+  background: rgba(26, 26, 46, 0.95);
   border: 2px solid var(--gold, #d4a843);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+  backdrop-filter: blur(10px);
 }
 .profile-header {
   display: flex;
@@ -199,25 +191,30 @@ const closePanel = () => {
   color: #c8b685;
   padding: 40px 0;
 }
+.mall-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  padding: 10px;
+}
 .mall-item {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 12px;
-  padding: 12px;
-  margin-bottom: 8px;
+  padding: 20px;
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   transition: all 0.3s;
 }
 .mall-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(212, 168, 67, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(212, 168, 67, 0.4);
+  transform: translateY(-4px);
 }
 
 .mall-item-icon {
-  font-size: 28px;
-  width: 40px;
+  font-size: 40px;
   text-align: center;
 }
 .mall-item-info {
@@ -235,7 +232,12 @@ const closePanel = () => {
 }
 
 .mall-item-action {
-  text-align: right;
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 12px;
 }
 .mall-price {
   font-size: 13px;

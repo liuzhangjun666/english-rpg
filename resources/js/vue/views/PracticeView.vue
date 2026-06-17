@@ -181,6 +181,12 @@
         </el-result>
       </template>
     </el-card>
+
+    <DemonTransition 
+      :visible="showDemonTransition" 
+      @update:visible="showDemonTransition = $event"
+      @enter-encounter="handleEnterEncounter" 
+    />
   </div>
 </template>
 
@@ -192,6 +198,8 @@ import { useApiClient } from '../services/api';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
+import { useDemonStore } from '../stores/demon';
+import DemonTransition from '../components/demons/DemonTransition.vue';
 import wsSceneBg from '../../../assets/images/ui/wood_stake/background.png';
 import wsTopBack from '../../../assets/images/ui/wood_stake/back.png';
 import wsTopHelp from '../../../assets/images/ui/wood_stake/introduction.png';
@@ -245,6 +253,7 @@ const api = useApiClient();
 const bridge = useLegacyBridge();
 const ui = useUiStore();
 const user = useUserStore();
+const demonStore = useDemonStore();
 
 const currentType = ref<PracticeType>('vocab');
 const sessionState = ref<'idle' | 'confirm' | 'answering' | 'result'>('idle');
@@ -271,6 +280,8 @@ const autoAdvanceTimer = ref<number | null>(null);
 const vocabCombo = ref(0);
 const wsWordRef = ref<HTMLElement | null>(null);
 const optionTextRefs = reactive<Record<string, HTMLElement | null>>({});
+
+const showDemonTransition = ref(false);
 
 const moduleLabel = computed(() => modules.find((m) => m.type === currentType.value)?.label || '练功');
 const isVocabModule = computed(() => currentType.value === 'vocab');
@@ -346,15 +357,60 @@ watch(
 );
 
 watch(
-  () => currentQuestion.value?.question_id,
-  () => {
+  () => currentQuestion.value,
+  async (newQ) => {
+    if (!newQ) return;
+    
+    // 心魔突袭检测
+    if (sessionState.value === 'answering' && newQ._is_demon) {
+      if (checkDemonTrigger()) {
+        showDemonTransition.value = true;
+        // 不执行常规的问题状态重置和音频播放，等待心魔战结束
+        return;
+      }
+    }
+
     resetVocabRoundState();
     if (sessionState.value === 'answering' && isVocabModule.value) {
       queueWordAudioPlay();
       fitArenaTexts();
     }
-  }
+  },
+  { immediate: true }
 );
+
+function checkDemonTrigger() {
+  const lastTime = Number(localStorage.getItem('last_demon_encounter_time') || '0');
+  const now = Date.now();
+  // 5分钟冷却
+  if (now - lastTime < 5 * 60 * 1000) return false;
+  
+  // 35% 遭遇概率
+  if (Math.random() > 0.35) return false;
+  
+  localStorage.setItem('last_demon_encounter_time', String(now));
+  return true;
+}
+
+async function handleEnterEncounter() {
+  const demonPayload = {
+    ...currentQuestion.value,
+    demon: {
+      wrong_count: currentQuestion.value._demon_wrong_count,
+      last_wrong_at: currentQuestion.value._last_wrong_at
+    }
+  };
+  
+  const result = await demonStore.triggerEncounter([demonPayload], {
+    type: 'random',
+    theme: 'red',
+    title: '走火入魔',
+    subtitle: '修炼途中，杂念丛生。心魔化作你最薄弱的执念，向你的识海发起了突袭。'
+  });
+  
+  // 心魔战结束后，返回正常练习界面继续作答当前题
+  // 不干涉当前题状态，避免污染正常正确率统计
+}
 
 watch(
   () => [currentWord.value, ...woodStakeOptions.value.map((it) => `${it.key}:${it.text}`)],
