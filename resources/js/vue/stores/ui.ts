@@ -4,7 +4,6 @@ export const useUiStore = defineStore('ui', {
   state: () => ({
     loading: false,
     loadingText: '加载中...',
-    legacyPracticeOpen: false,
   }),
   actions: {
     showLoading(text = '加载中...') {
@@ -13,9 +12,6 @@ export const useUiStore = defineStore('ui', {
     },
     hideLoading() {
       this.loading = false;
-    },
-    setLegacyPracticeOpen(open: boolean) {
-      this.legacyPracticeOpen = open;
     },
   },
 });

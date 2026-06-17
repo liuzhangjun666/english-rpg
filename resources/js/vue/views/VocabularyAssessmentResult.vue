@@ -1,10 +1,14 @@
 <template>
   <div class="assessment-page">
-    <el-card class="assessment-card" shadow="hover">
-      <template #header>
-        <div class="title">词汇+语法灵根测试结果</div>
-      </template>
+    <div class="cult-panel">
+      <header class="cult-panel-header">
+        <div class="cult-panel-title">
+          <span class="cult-panel-icon">✦</span>
+          <span>词汇+语法灵根测试结果</span>
+        </div>
+      </header>
 
+      <div class="cult-panel-body">
       <div v-if="loading" class="status-box">正在结算中...</div>
 
       <div v-else-if="result">
@@ -49,24 +53,22 @@
           <el-table-column prop="accuracy" label="正确率(%)" />
         </el-table>
 
-        <el-alert
-          type="info"
-          :closable="false"
-          title="推荐修炼路线"
-          class="route-alert"
-        >
-          <template #default>
+        <div class="cult-notice info">
+          <span class="cult-notice-icon">☯</span>
+          <div class="cult-notice-body">
+            <div class="cult-notice-title">推荐修炼路线</div>
             <div v-for="(item, idx) in result.suggestions" :key="idx" class="tip-line">{{ idx + 1 }}. {{ item }}</div>
-          </template>
-        </el-alert>
+          </div>
+        </div>
 
         <div class="note">境界已按你的学段与实测表现测定，修炼内容将匹配{{ majorRealmLabel }}词库与关卡。</div>
 
-        <div class="actions">
+        <div class="cult-actions">
           <el-button type="primary" data-btn-skin="enter" @click="goHall">开启修仙之旅</el-button>
         </div>
       </div>
-    </el-card>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -175,59 +177,11 @@ onMounted(async () => {
 <style scoped>
 .assessment-page {
   max-width: 920px;
-  margin: 24px auto;
-  padding: 0 12px;
-}
-
-.assessment-card {
-  position: relative;
-  overflow: hidden;
-}
-
-.assessment-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 10% 6%, rgba(255, 227, 153, 0.09) 0%, transparent 34%),
-    radial-gradient(circle at 88% 14%, rgba(112, 226, 255, 0.1) 0%, transparent 38%),
-    linear-gradient(180deg, rgba(16, 23, 44, 0.96) 0%, rgba(8, 13, 28, 0.94) 100%);
-  z-index: 0;
-}
-
-:deep(.assessment-card.el-card) {
-  border: 1px solid rgba(212, 168, 67, 0.45);
-  border-radius: 14px;
-  background: transparent;
-  box-shadow:
-    0 16px 36px rgba(0, 0, 0, 0.42),
-    inset 0 0 0 1px rgba(255, 235, 182, 0.08);
-  color: #f4ecd0;
-}
-
-:deep(.assessment-card .el-card__header) {
-  position: relative;
-  z-index: 1;
-  border-bottom: 1px solid rgba(212, 168, 67, 0.3);
-  padding: 18px 20px;
-  background: linear-gradient(180deg, rgba(25, 35, 62, 0.72) 0%, rgba(18, 26, 48, 0.3) 100%);
-}
-
-:deep(.assessment-card .el-card__body) {
-  position: relative;
-  z-index: 1;
-  padding: 20px;
-}
-
-.title {
-  font-size: 24px;
-  font-weight: 800;
-  color: #f5de9e;
-  letter-spacing: 1px;
 }
 
 .status-box {
-  padding: 20px 0;
+  padding: 12px 0;
+  color: var(--cult-parchment-dim, #c8b685);
 }
 
 .result-hero {
@@ -244,22 +198,22 @@ onMounted(async () => {
   border-radius: 50%;
   font-size: 30px;
   font-weight: 800;
-  color: #14233f;
+  color: #1a1208;
   background: radial-gradient(circle at 30% 30%, #fff0bd 0%, #e0b85a 78%);
-  box-shadow: 0 0 18px rgba(255, 216, 136, 0.55);
+  box-shadow: 0 0 18px rgba(244, 217, 138, 0.4);
 }
 
 .hero-title {
-  font-size: 34px;
+  font-size: 32px;
   font-weight: 800;
-  color: #fff2cf;
+  color: var(--cult-gold, #f4d98a);
   margin-bottom: 6px;
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  font-family: var(--cult-font-title, 'KaiTi', serif);
 }
 
 .hero-subtitle {
-  color: #c8d7fa;
-  font-size: 15px;
+  color: var(--cult-parchment-dim, #c8b685);
+  font-size: 14px;
 }
 
 .stat-grid {
@@ -270,28 +224,29 @@ onMounted(async () => {
 }
 
 .stat-card {
-  border: 1px solid rgba(173, 208, 255, 0.24);
-  border-radius: 12px;
+  border: 1px solid rgba(212, 168, 67, 0.2);
+  border-radius: var(--cult-radius-sm, 10px);
   padding: 10px 12px;
-  background: linear-gradient(180deg, rgba(15, 26, 50, 0.72), rgba(8, 16, 34, 0.66));
+  background: rgba(0, 0, 0, 0.22);
+  text-align: center;
 }
 
 .stat-label {
   font-size: 12px;
-  color: #9eb4de;
+  color: var(--cult-parchment-muted, #9a8f6e);
   margin-bottom: 4px;
 }
 
 .stat-value {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
-  color: #fef0c8;
+  color: var(--cult-gold, #f4d98a);
 }
 
 .stat-hint {
   margin-top: 4px;
   font-size: 11px;
-  color: #7f95bf;
+  color: var(--cult-parchment-muted, #9a8f6e);
   line-height: 1.4;
 }
 
@@ -302,30 +257,30 @@ onMounted(async () => {
   gap: 8px 12px;
   margin-top: 14px;
   padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(234, 179, 8, 0.28);
-  background: rgba(234, 179, 8, 0.08);
+  border-radius: var(--cult-radius-sm, 10px);
+  border: 1px solid rgba(212, 168, 67, 0.28);
+  background: rgba(212, 168, 67, 0.06);
 }
 
 .stage-label {
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--cult-parchment-muted, #9a8f6e);
 }
 
 .stage-value {
   font-size: 15px;
   font-weight: 700;
-  color: #fde68a;
+  color: var(--cult-gold, #f4d98a);
 }
 
 .stage-hint {
   font-size: 12px;
-  color: #b8ad92;
+  color: var(--cult-parchment-dim, #c8b685);
 }
 
 .challenge-tip {
   margin-top: 10px;
-  color: #97d8ff;
+  color: var(--cult-gold-dim, #d4a843);
   text-align: center;
   font-weight: 700;
 }
@@ -334,70 +289,27 @@ onMounted(async () => {
   margin-top: 14px;
 }
 
-:deep(.level-table.el-table) {
-  --el-table-bg-color: rgba(8, 16, 34, 0.62);
-  --el-table-tr-bg-color: rgba(8, 16, 34, 0.52);
-  --el-table-row-hover-bg-color: rgba(39, 70, 118, 0.5);
-  --el-table-border-color: rgba(173, 208, 255, 0.2);
-  --el-table-header-bg-color: rgba(28, 43, 73, 0.78);
-  --el-table-text-color: #e7efff;
-  --el-table-header-text-color: #f6dfaa;
-  border: 1px solid rgba(173, 208, 255, 0.2);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.route-alert {
-  margin-top: 14px;
-}
-
-:deep(.route-alert.el-alert) {
-  border: 1px solid rgba(212, 168, 67, 0.33);
-  background: linear-gradient(180deg, rgba(28, 34, 55, 0.78), rgba(18, 24, 44, 0.68));
-  color: #f4ecd0;
-}
-
 .tip-line {
-  margin: 8px 0;
+  margin: 6px 0 0;
   line-height: 1.65;
-  color: #e6edff;
+  color: var(--cult-parchment-dim, #c8b685);
+  font-size: 13px;
 }
 
 .note {
   margin-top: 14px;
-  color: #c8d7fa;
-}
-
-.actions {
-  margin-top: 18px;
-}
-
-.actions :deep(.el-button.btn-art) {
-  --btn-art-scale: 0.68;
-  margin: 0;
+  color: var(--cult-parchment-dim, #c8b685);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 @media (max-width: 760px) {
   .hero-title {
-    font-size: 28px;
+    font-size: 26px;
   }
 
   .stat-grid {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 640px) {
-  .title {
-    font-size: 20px;
-  }
-
-  .hero-title {
-    font-size: 24px;
-  }
-
-  .actions :deep(.el-button.btn-art) {
-    --btn-art-scale: 0.62;
   }
 }
 </style>

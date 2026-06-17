@@ -1,22 +1,22 @@
 <template>
   <Teleport to="body">
     <transition name="fade">
-      <div v-if="visible" class="profile-overlay cultivation-theme" @click.self="closePanel">
-        <div class="profile-container" style="max-width: 460px;">
-          <div class="profile-header">
-            <div class="card-header" style="font-size: 20px; text-align: center; width: 100%;">
-              📊 宗门天骄榜
+      <div v-if="visible" class="cult-overlay" @click.self="closePanel">
+        <div class="cult-overlay-panel">
+          <header class="cult-panel-header">
+            <div class="cult-panel-title">
+              <span class="cult-panel-icon">📊</span>
+              <span>宗门天骄榜</span>
             </div>
-            <button class="profile-close-btn" @click="closePanel">关闭</button>
-          </div>
+            <button class="cult-panel-back" type="button" @click="closePanel">关闭</button>
+          </header>
 
-          <div class="profile-body" style="flex-direction: column; padding: 20px;">
-            <!-- Tabs -->
-            <div class="lb-tabs">
-              <button 
-                v-for="(title, key) in tabs" 
+          <div class="cult-overlay-body">
+            <div class="cult-tabs">
+              <button
+                v-for="(title, key) in tabs"
                 :key="key"
-                class="lb-tab-btn"
+                class="cult-tab-btn"
                 :class="{ 'is-active': currentTab === key }"
                 @click="switchTab(key as keyof typeof tabs)"
               >
@@ -24,23 +24,21 @@
               </button>
             </div>
 
-            <!-- My Rank -->
             <div class="lb-my-rank">
               <span v-if="myRank">你的名次：第 <span class="text-gold">{{ myRank }}</span> 位（超过 {{ myPercentile }}% 道友）</span>
               <span v-else>继续修炼，登上宗门榜</span>
             </div>
 
-            <!-- Loading & List -->
             <div class="lb-list" v-loading="loading" element-loading-background="rgba(10, 10, 26, 0.8)">
-              <div v-if="!loading && leaderboard.length === 0" class="lb-empty">
+              <div v-if="!loading && leaderboard.length === 0" class="cult-empty">
                 暂无数据
               </div>
               <transition-group name="list" tag="div" v-else>
-                <div 
-                  v-for="(item, index) in leaderboard" 
-                  :key="item.nickname + index" 
-                  class="lb-item"
-                  :class="{ 'is-top3': index < 3 }"
+                <div
+                  v-for="(item, index) in leaderboard"
+                  :key="item.nickname + index"
+                  class="cult-list-item lb-item"
+                  :class="{ 'is-highlight': index < 3 }"
                 >
                   <div class="lb-rank" :class="'rank-' + index">
                     {{ index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}` }}
@@ -130,147 +128,82 @@ const closePanel = () => {
 </script>
 
 <style scoped>
-.profile-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(10, 10, 26, 0.85);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  backdrop-filter: blur(5px);
-}
-.profile-container {
-  width: 90%;
-  background: #1a1a2e;
-  border: 2px solid var(--gold, #d4a843);
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-.profile-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
-  background: rgba(255,255,255,0.05);
-  border-bottom: 1px solid rgba(212,168,67,0.3);
-}
-.profile-close-btn {
-  background: transparent;
-  border: 1px solid var(--gold, #d4a843);
-  color: var(--gold, #d4a843);
-  padding: 4px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.lb-tabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.lb-tab-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(212, 168, 67, 0.2);
-  color: #c8b685;
-  padding: 8px;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.lb-tab-btn:hover {
-  background: rgba(212, 168, 67, 0.1);
-}
-.lb-tab-btn.is-active {
-  background: rgba(212, 168, 67, 0.2);
-  border-color: #d4a843;
-  color: #f4d98a;
-  font-weight: bold;
-}
-
 .lb-my-rank {
   font-size: 13px;
-  color: #c8b685;
+  color: var(--cult-parchment-dim, #c8b685);
   margin-bottom: 12px;
   text-align: center;
 }
+
 .text-gold {
-  color: #d4a843;
-  font-weight: bold;
+  color: var(--cult-gold, #f4d98a);
+  font-weight: 700;
 }
 
 .lb-list {
-  flex: 1;
   max-height: 400px;
   overflow-y: auto;
   position: relative;
-  min-height: 150px;
+  min-height: 120px;
 }
-.lb-empty {
-  text-align: center;
-  color: #c8b685;
-  padding: 40px 0;
-}
-.lb-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  margin-bottom: 6px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
-  border: 1px solid transparent;
-  transition: all 0.3s;
-}
-.lb-item.is-top3 {
-  background: rgba(212, 168, 67, 0.06);
-  border-color: rgba(212, 168, 67, 0.15);
-}
-.lb-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
+
 .lb-rank {
-  width: 32px;
+  width: 36px;
   text-align: center;
-  font-weight: bold;
+  font-weight: 700;
 }
-.rank-0 { color: #d4a843; font-size: 18px; }
-.rank-1 { color: #f4d98a; font-size: 18px; }
-.rank-2 { color: #c8b685; font-size: 18px; }
-.rank-3, .rank-4, .rank-5, .rank-6, .rank-7, .rank-8, .rank-9 { color: #8a8a8a; }
+
+.lb-rank.rank-0,
+.lb-rank.rank-1,
+.lb-rank.rank-2 {
+  font-size: 18px;
+}
+
+.lb-rank.rank-0 { color: var(--cult-gold-dim, #d4a843); }
+.lb-rank.rank-1 { color: var(--cult-gold, #f4d98a); }
+.lb-rank.rank-2 { color: var(--cult-parchment-dim, #c8b685); }
+.lb-rank.rank-3,
+.lb-rank.rank-4,
+.lb-rank.rank-5,
+.lb-rank.rank-6,
+.lb-rank.rank-7,
+.lb-rank.rank-8,
+.lb-rank.rank-9 {
+  color: var(--cult-parchment-muted, #9a8f6e);
+}
 
 .lb-name {
   flex: 1;
   font-size: 14px;
-  color: #f7f3e8;
+  color: var(--cult-parchment, #f7f3e8);
 }
+
 .lb-metric {
   font-size: 13px;
-  color: #d4a843;
-  font-weight: bold;
+  color: var(--cult-gold-dim, #d4a843);
+  font-weight: 700;
 }
 
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.4s ease;
+  transition: all 0.35s ease;
 }
+
 .list-enter-from {
   opacity: 0;
-  transform: translateX(30px);
+  transform: translateX(16px);
 }
+
 .list-leave-to {
   opacity: 0;
-  transform: translateX(-30px);
+  transform: translateX(-16px);
 }
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;

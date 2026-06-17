@@ -1,7 +1,21 @@
 <template>
   <div class="cangjing-page" :style="{ backgroundImage: `url(${bgImage})` }">
     <div class="cangjing-shell">
-      <template v-if="stage === 'lobby'">
+      <template v-if="stage === 'rules'">
+        <div class="lobby-card" :style="{ backgroundImage: `url(${bgImage})` }">
+          <div class="lobby-mask"></div>
+          <div class="lobby-content">
+            <ModuleRulesIntro
+              module-key="reading"
+              :show-back="true"
+              @confirm="stage = 'lobby'"
+              @back="backHall"
+            />
+          </div>
+        </div>
+      </template>
+
+      <template v-else-if="stage === 'lobby'">
         <div class="lobby-card" :style="{ backgroundImage: `url(${bgImage})` }">
           <div class="lobby-mask"></div>
           <div class="lobby-content">
@@ -9,8 +23,9 @@
             <div class="lobby-meta">当前境界：{{ currentRealmLabel }}</div>
             <div class="lobby-meta">当前关卡：{{ currentLevel.levelId }}（{{ currentLevel.index + 1 }}/{{ currentLevel.total }}）</div>
             <div class="lobby-meta">本关题数：{{ totalCount }} ｜ 消耗灵力：{{ spiritCost }} ｜ 当前灵力：{{ currentSpirit }}</div>
+            <div v-if="totalCount <= 0" class="lobby-meta lobby-empty-hint">当前境界暂无阅读题目，请先修炼其他模块。</div>
             <div class="lobby-actions">
-              <el-button type="primary" @click="startMechanism">进入机关</el-button>
+              <el-button type="primary" :disabled="totalCount <= 0" @click="startMechanism">进入机关</el-button>
               <el-button @click="backHall">返回大厅</el-button>
             </div>
           </div>
@@ -121,19 +136,22 @@
       </template>
 
       <template v-else-if="stage === 'result'">
-        <el-result
-          :icon="result.passed ? 'success' : 'warning'"
-          :title="result.passed ? '机关通关' : '机关未破'"
-          :sub-title="`正确率 ${result.accuracy}% ｜ 灵气 +${result.exp} ｜ 灵石 +${result.stones}`"
-        >
-          <template #extra>
-            <el-space>
-              <el-button type="primary" @click="retryLevel">再试一次</el-button>
-              <el-button v-if="result.passed" @click="nextLevel">下一关</el-button>
-              <el-button @click="backHall">返回大厅</el-button>
-            </el-space>
-          </template>
-        </el-result>
+        <div class="cult-panel result-panel">
+          <div class="cult-panel-body">
+            <div class="cult-result" :class="result.passed ? 'success' : 'warning'">
+              <div class="cult-result-icon">{{ result.passed ? '✦' : '☁' }}</div>
+              <div class="cult-result-title">{{ result.passed ? '机关通关' : '机关未破' }}</div>
+              <div class="cult-result-sub">
+                正确率 {{ result.accuracy }}% ｜ 灵气 +{{ result.exp }} ｜ 灵石 +{{ result.stones }}
+              </div>
+              <div class="cult-actions">
+                <el-button type="primary" @click="retryLevel">再试一次</el-button>
+                <el-button v-if="result.passed" @click="nextLevel">下一关</el-button>
+                <el-button @click="backHall">返回大厅</el-button>
+              </div>
+            </div>
+          </div>
+        </div>
       </template>
     </div>
   </div>
@@ -151,8 +169,9 @@ import bgImage from '../../../assets/images/ui/cangjingge/background.png';
 import backIcon from '../../../assets/images/ui/cangjingge/back.png';
 import questionIcon from '../../../assets/images/ui/cangjingge/question.png';
 import optionIcon from '../../../assets/images/ui/cangjingge/options.png';
+import ModuleRulesIntro from '../components/ModuleRulesIntro.vue';
 
-type Stage = 'lobby' | 'answer' | 'result';
+type Stage = 'rules' | 'lobby' | 'answer' | 'result';
 type JudgeChoice = 'T' | 'F';
 type LevelInfo = {
   realm: string;
@@ -180,7 +199,7 @@ const bridge = useLegacyBridge();
 const ui = useUiStore();
 const user = useUserStore();
 
-const stage = ref<Stage>('lobby');
+const stage = ref<Stage>('rules');
 const questions = ref<Array<Record<string, any>>>([]);
 const spiritCost = ref(5);
 const currentSpirit = ref(0);
@@ -460,6 +479,10 @@ async function reloadQuestions() {
 }
 
 async function startMechanism() {
+  if (totalCount.value <= 0) {
+    ElMessage.warning('当前境界暂无阅读题目');
+    return;
+  }
   const level = currentLevel.value;
   const consumeRes = await api.post('/user/consume-spirit', {
     amount: spiritCost.value,

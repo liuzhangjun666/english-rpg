@@ -1,0 +1,5646 @@
+[
+  {
+    "lemma": "my",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "我的"
+    ]
+  },
+  {
+    "lemma": "your",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "你的"
+    ]
+  },
+  {
+    "lemma": "name",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "名字",
+      "姓名"
+    ]
+  },
+  {
+    "lemma": "new",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "新的",
+      "新来的"
+    ]
+  },
+  {
+    "lemma": "year",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "年",
+      "岁数"
+    ]
+  },
+  {
+    "lemma": "old",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "岁的",
+      "年老的"
+    ]
+  },
+  {
+    "lemma": "how old",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "（年龄）多大"
+    ]
+  },
+  {
+    "lemma": "class",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "班级"
+    ]
+  },
+  {
+    "lemma": "grade",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "年级"
+    ]
+  },
+  {
+    "lemma": "age",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "年龄"
+    ]
+  },
+  {
+    "lemma": "dear",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "亲爱的（用于书信中",
+      "表示客气）"
+    ]
+  },
+  {
+    "lemma": "body",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "身体"
+    ]
+  },
+  {
+    "lemma": "head",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "头"
+    ]
+  },
+  {
+    "lemma": "hair",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "头发"
+    ]
+  },
+  {
+    "lemma": "arm",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "胳膊"
+    ]
+  },
+  {
+    "lemma": "hand",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "手"
+    ]
+  },
+  {
+    "lemma": "leg",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "腿"
+    ]
+  },
+  {
+    "lemma": "foot (feet)",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "脚"
+    ]
+  },
+  {
+    "lemma": "the matter",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "麻烦事",
+      "困难",
+      "毛病"
+    ]
+  },
+  {
+    "lemma": "hurt",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "疼痛",
+      "弄疼"
+    ]
+  },
+  {
+    "lemma": "help",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "帮助"
+    ]
+  },
+  {
+    "lemma": "bad",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "坏的",
+      "糟糕"
+    ]
+  },
+  {
+    "lemma": "bite",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "咬"
+    ]
+  },
+  {
+    "lemma": "tongue",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "舌头"
+    ]
+  },
+  {
+    "lemma": "kick",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "踢"
+    ]
+  },
+  {
+    "lemma": "morning",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "早晨"
+    ]
+  },
+  {
+    "lemma": "afternoon",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "下午"
+    ]
+  },
+  {
+    "lemma": "summary",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "总结",
+      "摘要"
+    ]
+  },
+  {
+    "lemma": "face",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "脸"
+    ]
+  },
+  {
+    "lemma": "eye",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "眼睛"
+    ]
+  },
+  {
+    "lemma": "nose",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "鼻子"
+    ]
+  },
+  {
+    "lemma": "mouth",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "嘴巴"
+    ]
+  },
+  {
+    "lemma": "ear",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "耳朵"
+    ]
+  },
+  {
+    "lemma": "bread",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "面包"
+    ]
+  },
+  {
+    "lemma": "cake",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "蛋糕"
+    ]
+  },
+  {
+    "lemma": "fruit",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "水果"
+    ]
+  },
+  {
+    "lemma": "ice cream",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "冰淇淋"
+    ]
+  },
+  {
+    "lemma": "potato",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "土豆"
+    ]
+  },
+  {
+    "lemma": "tomato",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "西红柿"
+    ]
+  },
+  {
+    "lemma": "meat",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "肉"
+    ]
+  },
+  {
+    "lemma": "for",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "当作",
+      "作为"
+    ]
+  },
+  {
+    "lemma": "shopping list",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "购物单"
+    ]
+  },
+  {
+    "lemma": "cola",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "可乐"
+    ]
+  },
+  {
+    "lemma": "buy",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "买"
+    ]
+  },
+  {
+    "lemma": "rice",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "米饭",
+      "米"
+    ]
+  },
+  {
+    "lemma": "noodles",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "面条"
+    ]
+  },
+  {
+    "lemma": "vegetables",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "蔬菜"
+    ]
+  },
+  {
+    "lemma": "fish",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "鱼肉"
+    ]
+  },
+  {
+    "lemma": "chicken",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "鸡肉"
+    ]
+  },
+  {
+    "lemma": "egg",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "鸡蛋"
+    ]
+  },
+  {
+    "lemma": "duck",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "鸭子"
+    ]
+  },
+  {
+    "lemma": "chicken",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "小鸡"
+    ]
+  },
+  {
+    "lemma": "rabbit",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "兔子"
+    ]
+  },
+  {
+    "lemma": "pet",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "宠物"
+    ]
+  },
+  {
+    "lemma": "snake",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "蛇"
+    ]
+  },
+  {
+    "lemma": "turtle",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "海龟"
+    ]
+  },
+  {
+    "lemma": "small",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "小的"
+    ]
+  },
+  {
+    "lemma": "long",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "长的"
+    ]
+  },
+  {
+    "lemma": "look for",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "寻找"
+    ]
+  },
+  {
+    "lemma": "tail",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "尾巴"
+    ]
+  },
+  {
+    "lemma": "dance",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "跳舞"
+    ]
+  },
+  {
+    "lemma": "cat",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "猫"
+    ]
+  },
+  {
+    "lemma": "dog",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "狗"
+    ]
+  },
+  {
+    "lemma": "bird",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "鸟"
+    ]
+  },
+  {
+    "lemma": "fish",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "鱼"
+    ]
+  },
+  {
+    "lemma": "monkey",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "猴子"
+    ]
+  },
+  {
+    "lemma": "tiger",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "老虎"
+    ]
+  },
+  {
+    "lemma": "big",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "大",
+      "大的"
+    ]
+  },
+  {
+    "lemma": "short",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "短",
+      "短的"
+    ]
+  },
+  {
+    "lemma": "cap",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "帽子"
+    ]
+  },
+  {
+    "lemma": "coat",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "大衣"
+    ]
+  },
+  {
+    "lemma": "shoes",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "鞋"
+    ]
+  },
+  {
+    "lemma": "sweater",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "毛衣"
+    ]
+  },
+  {
+    "lemma": "jacket",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "夹克衫"
+    ]
+  },
+  {
+    "lemma": "gloves",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "手套"
+    ]
+  },
+  {
+    "lemma": "trousers",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "裤子"
+    ]
+  },
+  {
+    "lemma": "should",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "应该"
+    ]
+  },
+  {
+    "lemma": "wear",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "穿"
+    ]
+  },
+  {
+    "lemma": "week",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "星期"
+    ]
+  },
+  {
+    "lemma": "soon",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "不久",
+      "很快"
+    ]
+  },
+  {
+    "lemma": "look forward to",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "盼望",
+      "期待"
+    ]
+  },
+  {
+    "lemma": "T-shirt T",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "恤衫",
+      "短袖圆领汗衫"
+    ]
+  },
+  {
+    "lemma": "shorts",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "短裤"
+    ]
+  },
+  {
+    "lemma": "socks",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "短袜"
+    ]
+  },
+  {
+    "lemma": "skirt",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "裙子"
+    ]
+  },
+  {
+    "lemma": "dress",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "连衣裙",
+      "套裙"
+    ]
+  },
+  {
+    "lemma": "shirt",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "衬衫"
+    ]
+  },
+  {
+    "lemma": "January",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "一月"
+    ]
+  },
+  {
+    "lemma": "February",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "二月"
+    ]
+  },
+  {
+    "lemma": "March",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "三月"
+    ]
+  },
+  {
+    "lemma": "April",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "四月"
+    ]
+  },
+  {
+    "lemma": "May",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "五月"
+    ]
+  },
+  {
+    "lemma": "June",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "六月"
+    ]
+  },
+  {
+    "lemma": "July",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "七月"
+    ]
+  },
+  {
+    "lemma": "August",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "八月"
+    ]
+  },
+  {
+    "lemma": "September",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "九月"
+    ]
+  },
+  {
+    "lemma": "October",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "十月"
+    ]
+  },
+  {
+    "lemma": "November",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "十一月"
+    ]
+  },
+  {
+    "lemma": "December",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "十二月"
+    ]
+  },
+  {
+    "lemma": "birthday",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "生日"
+    ]
+  },
+  {
+    "lemma": "first",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "第一"
+    ]
+  },
+  {
+    "lemma": "party",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "聚会"
+    ]
+  },
+  {
+    "lemma": "delicious",
+    "grade_level": "三年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "美味的"
+    ]
+  },
+  {
+    "lemma": "Chinese",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "语文",
+      "汉语（的）"
+    ]
+  },
+  {
+    "lemma": "English",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "英语（的）"
+    ]
+  },
+  {
+    "lemma": "science",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "科学"
+    ]
+  },
+  {
+    "lemma": "PE",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "体育"
+    ]
+  },
+  {
+    "lemma": "music",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "音乐"
+    ]
+  },
+  {
+    "lemma": "maths",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "数学"
+    ]
+  },
+  {
+    "lemma": "art",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "美术"
+    ]
+  },
+  {
+    "lemma": "computer class",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "计算机课"
+    ]
+  },
+  {
+    "lemma": "we",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "我们"
+    ]
+  },
+  {
+    "lemma": "that",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "那",
+      "那个"
+    ]
+  },
+  {
+    "lemma": "classroom",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "教室"
+    ]
+  },
+  {
+    "lemma": "library",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "图书馆"
+    ]
+  },
+  {
+    "lemma": "toilet",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "厕所",
+      "洗手间"
+    ]
+  },
+  {
+    "lemma": "playground",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "操场",
+      "运动场"
+    ]
+  },
+  {
+    "lemma": "first",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "第一的"
+    ]
+  },
+  {
+    "lemma": "second",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "第二的"
+    ]
+  },
+  {
+    "lemma": "third",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "第三的"
+    ]
+  },
+  {
+    "lemma": "floor",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（楼）层"
+    ]
+  },
+  {
+    "lemma": "room",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "房间"
+    ]
+  },
+  {
+    "lemma": "our",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "我们的"
+    ]
+  },
+  {
+    "lemma": "they",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "他们"
+    ]
+  },
+  {
+    "lemma": "chair",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "椅子"
+    ]
+  },
+  {
+    "lemma": "desk",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "书桌",
+      "写字台"
+    ]
+  },
+  {
+    "lemma": "blackboard",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "黑板"
+    ]
+  },
+  {
+    "lemma": "after school",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "放学后"
+    ]
+  },
+  {
+    "lemma": "play sports",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "做运动"
+    ]
+  },
+  {
+    "lemma": "draw pictures",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "画画"
+    ]
+  },
+  {
+    "lemma": "play chess",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "下棋"
+    ]
+  },
+  {
+    "lemma": "dance",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "跳舞"
+    ]
+  },
+  {
+    "lemma": "sing songs",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "唱歌"
+    ]
+  },
+  {
+    "lemma": "read books",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "读书"
+    ]
+  },
+  {
+    "lemma": "really",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "确实"
+    ]
+  },
+  {
+    "lemma": "tomorrow",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "明天"
+    ]
+  },
+  {
+    "lemma": "wake up",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "叫醒"
+    ]
+  },
+  {
+    "lemma": "be back",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "回来"
+    ]
+  },
+  {
+    "lemma": "play football",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "踢足球"
+    ]
+  },
+  {
+    "lemma": "fly a kite",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "放风筝"
+    ]
+  },
+  {
+    "lemma": "ride a bike",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "骑自行车"
+    ]
+  },
+  {
+    "lemma": "swim",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "游泳"
+    ]
+  },
+  {
+    "lemma": "make a model plane",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "做飞机模型"
+    ]
+  },
+  {
+    "lemma": "make a snowman",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "堆雪人"
+    ]
+  },
+  {
+    "lemma": "family",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "家庭"
+    ]
+  },
+  {
+    "lemma": "uncle",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "姑父",
+      "伯父",
+      "舅父",
+      "叔叔"
+    ]
+  },
+  {
+    "lemma": "aunt",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "姑母",
+      "伯母",
+      "舅妈",
+      "阿姨"
+    ]
+  },
+  {
+    "lemma": "cousin",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "堂（或表）兄弟",
+      "堂（或表）姐妹"
+    ]
+  },
+  {
+    "lemma": "handsome",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "英俊的"
+    ]
+  },
+  {
+    "lemma": "beautiful",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "美丽的"
+    ]
+  },
+  {
+    "lemma": "lost",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "遗失"
+    ]
+  },
+  {
+    "lemma": "water bottle",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "水瓶"
+    ]
+  },
+  {
+    "lemma": "know",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "知道"
+    ]
+  },
+  {
+    "lemma": "OK",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "好的",
+      "行"
+    ]
+  },
+  {
+    "lemma": "much",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "很多地",
+      "非常"
+    ]
+  },
+  {
+    "lemma": "welcome",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "受欢迎的"
+    ]
+  },
+  {
+    "lemma": "grandfather",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（外）祖父"
+    ]
+  },
+  {
+    "lemma": "grandmother",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（外）祖母"
+    ]
+  },
+  {
+    "lemma": "father",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "父亲",
+      "爸爸"
+    ]
+  },
+  {
+    "lemma": "mother",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "母亲",
+      "妈妈"
+    ]
+  },
+  {
+    "lemma": "brother",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "兄",
+      "弟"
+    ]
+  },
+  {
+    "lemma": "sister",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "姐",
+      "妹"
+    ]
+  },
+  {
+    "lemma": "cooking dinner",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "正在做饭"
+    ]
+  },
+  {
+    "lemma": "walking the dog",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "正在遛狗"
+    ]
+  },
+  {
+    "lemma": "watering the plants",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "正在给植物浇水"
+    ]
+  },
+  {
+    "lemma": "cleaning the room",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "正在打扫房间"
+    ]
+  },
+  {
+    "lemma": "listening to music",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "正在听音乐"
+    ]
+  },
+  {
+    "lemma": "watching TV",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "正在看电视"
+    ]
+  },
+  {
+    "lemma": "feeding the fish",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "正在喂鱼"
+    ]
+  },
+  {
+    "lemma": "play with",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "与......玩耍"
+    ]
+  },
+  {
+    "lemma": "in one hour",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "一小时之后"
+    ]
+  },
+  {
+    "lemma": "everyone",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "每人",
+      "人人"
+    ]
+  },
+  {
+    "lemma": "children",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "孩子们"
+    ]
+  },
+  {
+    "lemma": "run",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "跑"
+    ]
+  },
+  {
+    "lemma": "home",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "家",
+      "家庭"
+    ]
+  },
+  {
+    "lemma": "bedroom",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "卧室"
+    ]
+  },
+  {
+    "lemma": "living room",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "客厅"
+    ]
+  },
+  {
+    "lemma": "bathroom",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "浴室"
+    ]
+  },
+  {
+    "lemma": "dining room",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "餐厅"
+    ]
+  },
+  {
+    "lemma": "study",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "书房"
+    ]
+  },
+  {
+    "lemma": "kitchen",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "厨房"
+    ]
+  },
+  {
+    "lemma": "for rent",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "供出租"
+    ]
+  },
+  {
+    "lemma": "sofa",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "沙发"
+    ]
+  },
+  {
+    "lemma": "light",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "灯",
+      "发光体"
+    ]
+  },
+  {
+    "lemma": "bed",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "床",
+      "床架",
+      "床垫"
+    ]
+  },
+  {
+    "lemma": "door",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "门",
+      "出入口"
+    ]
+  },
+  {
+    "lemma": "box",
+    "grade_level": "三年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "箱子",
+      "盒子"
+    ]
+  },
+  {
+    "lemma": "running",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "跑步"
+    ]
+  },
+  {
+    "lemma": "basketball",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "篮球"
+    ]
+  },
+  {
+    "lemma": "roller skating",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "滑旱冰"
+    ]
+  },
+  {
+    "lemma": "jumping rope",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "跳绳"
+    ]
+  },
+  {
+    "lemma": "ping-pong",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "乒乓球"
+    ]
+  },
+  {
+    "lemma": "What about ...?",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "怎么样？"
+    ]
+  },
+  {
+    "lemma": "interesting",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "有趣的"
+    ]
+  },
+  {
+    "lemma": "often",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "经常"
+    ]
+  },
+  {
+    "lemma": "be good at",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "擅长"
+    ]
+  },
+  {
+    "lemma": "late",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "晚"
+    ]
+  },
+  {
+    "lemma": "swim",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "游泳"
+    ]
+  },
+  {
+    "lemma": "friend",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "朋友"
+    ]
+  },
+  {
+    "lemma": "father",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "父亲"
+    ]
+  },
+  {
+    "lemma": "get up",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "起床"
+    ]
+  },
+  {
+    "lemma": "visit one’s grandparents",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "看望（外）祖父母"
+    ]
+  },
+  {
+    "lemma": "go to a drawing club",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "去绘画俱乐部"
+    ]
+  },
+  {
+    "lemma": "climb a hill",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "爬山"
+    ]
+  },
+  {
+    "lemma": "pick fruit",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "采摘水果"
+    ]
+  },
+  {
+    "lemma": "play computer games",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "玩电脑游戏"
+    ]
+  },
+  {
+    "lemma": "go fishing",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "钓鱼"
+    ]
+  },
+  {
+    "lemma": "go to the cinema",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "看电影"
+    ]
+  },
+  {
+    "lemma": "on the weekend",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "在周末"
+    ]
+  },
+  {
+    "lemma": "fun",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "有趣的"
+    ]
+  },
+  {
+    "lemma": "always",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "总是"
+    ]
+  },
+  {
+    "lemma": "step",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "踏",
+      "踩"
+    ]
+  },
+  {
+    "lemma": "paint",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "颜料"
+    ]
+  },
+  {
+    "lemma": "evening",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "傍晚",
+      "黄昏"
+    ]
+  },
+  {
+    "lemma": "dirty",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "脏的"
+    ]
+  },
+  {
+    "lemma": "their",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "他们的"
+    ]
+  },
+  {
+    "lemma": "house",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "房子"
+    ]
+  },
+  {
+    "lemma": "poor",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "可怜的",
+      "贫穷的"
+    ]
+  },
+  {
+    "lemma": "hope",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "希望"
+    ]
+  },
+  {
+    "lemma": "so",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "那么"
+    ]
+  },
+  {
+    "lemma": "Saturday",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "星期六"
+    ]
+  },
+  {
+    "lemma": "near",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "靠近"
+    ]
+  },
+  {
+    "lemma": "day",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "白天"
+    ]
+  },
+  {
+    "lemma": "usually",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "通常"
+    ]
+  },
+  {
+    "lemma": "by bus",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "乘公交车"
+    ]
+  },
+  {
+    "lemma": "by boat",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "乘小船"
+    ]
+  },
+  {
+    "lemma": "by ship",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "乘轮船"
+    ]
+  },
+  {
+    "lemma": "by car",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "乘小汽车"
+    ]
+  },
+  {
+    "lemma": "by taxi",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "乘出租车"
+    ]
+  },
+  {
+    "lemma": "by bike",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "骑自行车"
+    ]
+  },
+  {
+    "lemma": "on foot",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "步行"
+    ]
+  },
+  {
+    "lemma": "by school bus",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "乘校车"
+    ]
+  },
+  {
+    "lemma": "by subway",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "乘地铁"
+    ]
+  },
+  {
+    "lemma": "by plane",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "乘飞机"
+    ]
+  },
+  {
+    "lemma": "by train",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "乘火车"
+    ]
+  },
+  {
+    "lemma": "garden",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "花园"
+    ]
+  },
+  {
+    "lemma": "meeting place",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "集合地点"
+    ]
+  },
+  {
+    "lemma": "gate",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "大门"
+    ]
+  },
+  {
+    "lemma": "transportation",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "交通"
+    ]
+  },
+  {
+    "lemma": "film",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "电影"
+    ]
+  },
+  {
+    "lemma": "earth",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "地球",
+      "世界"
+    ]
+  },
+  {
+    "lemma": "snow",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "雪"
+    ]
+  },
+  {
+    "lemma": "theatre",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "剧场"
+    ]
+  },
+  {
+    "lemma": "come",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "来"
+    ]
+  },
+  {
+    "lemma": "enjoy",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "欣赏"
+    ]
+  },
+  {
+    "lemma": "park",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "公园"
+    ]
+  },
+  {
+    "lemma": "apple",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "苹果"
+    ]
+  },
+  {
+    "lemma": "pen",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "钢笔"
+    ]
+  },
+  {
+    "lemma": "knife",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "小刀"
+    ]
+  },
+  {
+    "lemma": "eraser",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "橡皮"
+    ]
+  },
+  {
+    "lemma": "crayon",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "蜡笔"
+    ]
+  },
+  {
+    "lemma": "scissors",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "剪刀"
+    ]
+  },
+  {
+    "lemma": "glue stick",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "胶棒"
+    ]
+  },
+  {
+    "lemma": "paper",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "纸"
+    ]
+  },
+  {
+    "lemma": "use",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "使用"
+    ]
+  },
+  {
+    "lemma": "please",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "请"
+    ]
+  },
+  {
+    "lemma": "find",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "找到"
+    ]
+  },
+  {
+    "lemma": "Information Centre",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "咨询中心"
+    ]
+  },
+  {
+    "lemma": "Excuse me",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "对不起",
+      "打扰一下。"
+    ]
+  },
+  {
+    "lemma": "phone",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "电话"
+    ]
+  },
+  {
+    "lemma": "dad",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "爸爸"
+    ]
+  },
+  {
+    "lemma": "hamburger",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "汉堡包"
+    ]
+  },
+  {
+    "lemma": "ruler",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "尺子"
+    ]
+  },
+  {
+    "lemma": "pencil",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "铅笔"
+    ]
+  },
+  {
+    "lemma": "schoolbag",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "书包"
+    ]
+  },
+  {
+    "lemma": "shop",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "商店"
+    ]
+  },
+  {
+    "lemma": "climb on the window ledge",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "爬窗台"
+    ]
+  },
+  {
+    "lemma": "dangerous",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "危险的"
+    ]
+  },
+  {
+    "lemma": "play with fire",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "玩火"
+    ]
+  },
+  {
+    "lemma": "Be careful!",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "当心！"
+    ]
+  },
+  {
+    "lemma": "run down the stairs",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "跑下楼梯"
+    ]
+  },
+  {
+    "lemma": "sidewalk",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "人行道"
+    ]
+  },
+  {
+    "lemma": "wait for",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "等待"
+    ]
+  },
+  {
+    "lemma": "safe",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "安全的"
+    ]
+  },
+  {
+    "lemma": "stop",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "停"
+    ]
+  },
+  {
+    "lemma": "street",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "街道"
+    ]
+  },
+  {
+    "lemma": "safety rule",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "安全规则"
+    ]
+  },
+  {
+    "lemma": "green",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "绿色的"
+    ]
+  },
+  {
+    "lemma": "red",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "红色的"
+    ]
+  },
+  {
+    "lemma": "play football",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "踢足球"
+    ]
+  },
+  {
+    "lemma": "nurse",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "护士"
+    ]
+  },
+  {
+    "lemma": "cook",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "厨师"
+    ]
+  },
+  {
+    "lemma": "doctor",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "医生"
+    ]
+  },
+  {
+    "lemma": "bus driver",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "公交司机"
+    ]
+  },
+  {
+    "lemma": "police officer",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "警官"
+    ]
+  },
+  {
+    "lemma": "taxi driver",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "出租司机"
+    ]
+  },
+  {
+    "lemma": "farmer",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "农民"
+    ]
+  },
+  {
+    "lemma": "worker",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "工人"
+    ]
+  },
+  {
+    "lemma": "in the future",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "将来"
+    ]
+  },
+  {
+    "lemma": "great",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "好极了"
+    ]
+  },
+  {
+    "lemma": "job",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "工作"
+    ]
+  },
+  {
+    "lemma": "sick",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "有病的"
+    ]
+  },
+  {
+    "lemma": "people",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "人们"
+    ]
+  },
+  {
+    "lemma": "teach",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "教"
+    ]
+  },
+  {
+    "lemma": "just",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "只是"
+    ]
+  },
+  {
+    "lemma": "myself",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "我自己"
+    ]
+  },
+  {
+    "lemma": "sound",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "听起来"
+    ]
+  },
+  {
+    "lemma": "Monday",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "星期一"
+    ]
+  },
+  {
+    "lemma": "Tuesday",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "星期二"
+    ]
+  },
+  {
+    "lemma": "Wednesday",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "星期三"
+    ]
+  },
+  {
+    "lemma": "Thursday",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "星期四"
+    ]
+  },
+  {
+    "lemma": "Friday",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "星期五"
+    ]
+  },
+  {
+    "lemma": "teacher",
+    "grade_level": "四年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "老师"
+    ]
+  },
+  {
+    "lemma": "across from",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "在对面"
+    ]
+  },
+  {
+    "lemma": "next to",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "紧邻"
+    ]
+  },
+  {
+    "lemma": "between",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "在......之间"
+    ]
+  },
+  {
+    "lemma": "restaurant",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "餐馆"
+    ]
+  },
+  {
+    "lemma": "post office",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "邮局"
+    ]
+  },
+  {
+    "lemma": "bank",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "银行"
+    ]
+  },
+  {
+    "lemma": "grocery",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "食品杂货店"
+    ]
+  },
+  {
+    "lemma": "turn left",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "向左转"
+    ]
+  },
+  {
+    "lemma": "turn right",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "向右转"
+    ]
+  },
+  {
+    "lemma": "go straight",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "直行"
+    ]
+  },
+  {
+    "lemma": "crossroads",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "十字路口"
+    ]
+  },
+  {
+    "lemma": "neighbourhood",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "街坊",
+      "附近"
+    ]
+  },
+  {
+    "lemma": "send",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "寄",
+      "发送"
+    ]
+  },
+  {
+    "lemma": "get",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "得到"
+    ]
+  },
+  {
+    "lemma": "money",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "钱"
+    ]
+  },
+  {
+    "lemma": "get to",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "到达"
+    ]
+  },
+  {
+    "lemma": "before",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "在......之前"
+    ]
+  },
+  {
+    "lemma": "leave",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "离开"
+    ]
+  },
+  {
+    "lemma": "toy",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "玩具"
+    ]
+  },
+  {
+    "lemma": "hospital",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "医院"
+    ]
+  },
+  {
+    "lemma": "bookshop",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "书店"
+    ]
+  },
+  {
+    "lemma": "school",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "学校"
+    ]
+  },
+  {
+    "lemma": "supermarket",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "超市"
+    ]
+  },
+  {
+    "lemma": "ball",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "球"
+    ]
+  },
+  {
+    "lemma": "city",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "城市"
+    ]
+  },
+  {
+    "lemma": "street",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "街道"
+    ]
+  },
+  {
+    "lemma": "sports centre",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "体育中心"
+    ]
+  },
+  {
+    "lemma": "hotel",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "宾馆"
+    ]
+  },
+  {
+    "lemma": "square",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "广场"
+    ]
+  },
+  {
+    "lemma": "buy toys",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "买玩具"
+    ]
+  },
+  {
+    "lemma": "see a film",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "看电影"
+    ]
+  },
+  {
+    "lemma": "go boating",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "去划船"
+    ]
+  },
+  {
+    "lemma": "busy",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "忙碌的"
+    ]
+  },
+  {
+    "lemma": "station",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（车）站"
+    ]
+  },
+  {
+    "lemma": "place",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "地方"
+    ]
+  },
+  {
+    "lemma": "thing",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "事",
+      "事物"
+    ]
+  },
+  {
+    "lemma": "stay",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "停留"
+    ]
+  },
+  {
+    "lemma": "star",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "星"
+    ]
+  },
+  {
+    "lemma": "king",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "国王"
+    ]
+  },
+  {
+    "lemma": "central",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "中心的"
+    ]
+  },
+  {
+    "lemma": "take photos",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "照相"
+    ]
+  },
+  {
+    "lemma": "museum",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "博物馆"
+    ]
+  },
+  {
+    "lemma": "dream",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "梦"
+    ]
+  },
+  {
+    "lemma": "sea",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "海",
+      "海洋"
+    ]
+  },
+  {
+    "lemma": "ski",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "滑雪"
+    ]
+  },
+  {
+    "lemma": "eat seafood",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "吃海鲜"
+    ]
+  },
+  {
+    "lemma": "visit the Mogao Caves",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "参观莫高窟"
+    ]
+  },
+  {
+    "lemma": "West Lake",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "西湖"
+    ]
+  },
+  {
+    "lemma": "row a boat",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "划船"
+    ]
+  },
+  {
+    "lemma": "the Great Wall",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "长城"
+    ]
+  },
+  {
+    "lemma": "take photos",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "照相"
+    ]
+  },
+  {
+    "lemma": "summer vacation",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "暑假"
+    ]
+  },
+  {
+    "lemma": "travel",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "旅游"
+    ]
+  },
+  {
+    "lemma": "reading",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "读书"
+    ]
+  },
+  {
+    "lemma": "skateboarding",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "玩滑板"
+    ]
+  },
+  {
+    "lemma": "singing",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "唱歌"
+    ]
+  },
+  {
+    "lemma": "dancing",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "跳舞"
+    ]
+  },
+  {
+    "lemma": "doing jigsaw puzzles",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "拼拼图"
+    ]
+  },
+  {
+    "lemma": "making models",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "制作模型"
+    ]
+  },
+  {
+    "lemma": "collecting erasers",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "收集橡皮"
+    ]
+  },
+  {
+    "lemma": "different",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "不同的"
+    ]
+  },
+  {
+    "lemma": "hobby",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "爱好"
+    ]
+  },
+  {
+    "lemma": "stamp",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "邮票"
+    ]
+  },
+  {
+    "lemma": "catch",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "抓住"
+    ]
+  },
+  {
+    "lemma": "go for a picnic",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "去野餐"
+    ]
+  },
+  {
+    "lemma": "play the violin",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "拉小提琴"
+    ]
+  },
+  {
+    "lemma": "go skating",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "去滑冰"
+    ]
+  },
+  {
+    "lemma": "go camping",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "去野营"
+    ]
+  },
+  {
+    "lemma": "do the housework",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "做家务"
+    ]
+  },
+  {
+    "lemma": "free",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "空闲的"
+    ]
+  },
+  {
+    "lemma": "never",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "从不"
+    ]
+  },
+  {
+    "lemma": "once a week",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "一周一次"
+    ]
+  },
+  {
+    "lemma": "twice a week",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "一周两次"
+    ]
+  },
+  {
+    "lemma": "three times a week",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "一周三次"
+    ]
+  },
+  {
+    "lemma": "Canada",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "加拿大"
+    ]
+  },
+  {
+    "lemma": "Australia",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "澳大利亚"
+    ]
+  },
+  {
+    "lemma": "the UK",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "英国"
+    ]
+  },
+  {
+    "lemma": "the USA",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "美国"
+    ]
+  },
+  {
+    "lemma": "China",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "中国"
+    ]
+  },
+  {
+    "lemma": "koala",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "考拉"
+    ]
+  },
+  {
+    "lemma": "maple leaves",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "枫叶"
+    ]
+  },
+  {
+    "lemma": "Big Ben",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "大本钟"
+    ]
+  },
+  {
+    "lemma": "Disneyland",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "迪斯尼乐园"
+    ]
+  },
+  {
+    "lemma": "campfire",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "篝火"
+    ]
+  },
+  {
+    "lemma": "cute",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "可爱的"
+    ]
+  },
+  {
+    "lemma": "country",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "国家"
+    ]
+  },
+  {
+    "lemma": "pretty",
+    "grade_level": "四年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "漂亮的"
+    ]
+  },
+  {
+    "lemma": "clever",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "聪明的"
+    ]
+  },
+  {
+    "lemma": "careless",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "粗心的"
+    ]
+  },
+  {
+    "lemma": "polite",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "有礼貌的"
+    ]
+  },
+  {
+    "lemma": "quiet",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "安静的"
+    ]
+  },
+  {
+    "lemma": "cute",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "漂亮的",
+      "可爱的"
+    ]
+  },
+  {
+    "lemma": "friendly",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "友好的"
+    ]
+  },
+  {
+    "lemma": "helpful",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "肯帮忙的"
+    ]
+  },
+  {
+    "lemma": "active",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "活跃的"
+    ]
+  },
+  {
+    "lemma": "popular",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "受欢迎的"
+    ]
+  },
+  {
+    "lemma": "talk",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "说话"
+    ]
+  },
+  {
+    "lemma": "party",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "聚会"
+    ]
+  },
+  {
+    "lemma": "all",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "全部"
+    ]
+  },
+  {
+    "lemma": "but",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "但是"
+    ]
+  },
+  {
+    "lemma": "sometimes",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "有时"
+    ]
+  },
+  {
+    "lemma": "bark",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "吠",
+      "叫"
+    ]
+  },
+  {
+    "lemma": "forget",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "忘记"
+    ]
+  },
+  {
+    "lemma": "with",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "同......一起"
+    ]
+  },
+  {
+    "lemma": "wear glasses",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "戴眼镜"
+    ]
+  },
+  {
+    "lemma": "slim",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "苗条的"
+    ]
+  },
+  {
+    "lemma": "curly",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "卷曲的"
+    ]
+  },
+  {
+    "lemma": "straight",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "直的"
+    ]
+  },
+  {
+    "lemma": "nice",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "好的"
+    ]
+  },
+  {
+    "lemma": "young",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "年轻的"
+    ]
+  },
+  {
+    "lemma": "teach",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "教"
+    ]
+  },
+  {
+    "lemma": "guess",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "猜"
+    ]
+  },
+  {
+    "lemma": "has",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "有"
+    ]
+  },
+  {
+    "lemma": "animal",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "动物"
+    ]
+  },
+  {
+    "lemma": "elephant",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "大象"
+    ]
+  },
+  {
+    "lemma": "panda",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "熊猫"
+    ]
+  },
+  {
+    "lemma": "horse",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "马"
+    ]
+  },
+  {
+    "lemma": "cow",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "奶牛"
+    ]
+  },
+  {
+    "lemma": "pig",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "猪"
+    ]
+  },
+  {
+    "lemma": "sheep",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "绵羊"
+    ]
+  },
+  {
+    "lemma": "bee",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "蜜蜂"
+    ]
+  },
+  {
+    "lemma": "farm",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "农场"
+    ]
+  },
+  {
+    "lemma": "fast",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "快的",
+      "迅速地"
+    ]
+  },
+  {
+    "lemma": "why",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "为什么"
+    ]
+  },
+  {
+    "lemma": "lovely",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "可爱的"
+    ]
+  },
+  {
+    "lemma": "butterf ly",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "蝴蝶"
+    ]
+  },
+  {
+    "lemma": "exercise book",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "练习本"
+    ]
+  },
+  {
+    "lemma": "pencil sharpener",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "铅笔刀"
+    ]
+  },
+  {
+    "lemma": "a pair of scissors",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "一把剪刀"
+    ]
+  },
+  {
+    "lemma": "pencil box",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "铅笔盒"
+    ]
+  },
+  {
+    "lemma": "a box of crayons",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "一盒蜡笔"
+    ]
+  },
+  {
+    "lemma": "please",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "请"
+    ]
+  },
+  {
+    "lemma": "only",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "只",
+      "仅仅"
+    ]
+  },
+  {
+    "lemma": "also",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "也"
+    ]
+  },
+  {
+    "lemma": "saleswoman",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "女售货员"
+    ]
+  },
+  {
+    "lemma": "great",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "好极了"
+    ]
+  },
+  {
+    "lemma": "love",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "喜欢"
+    ]
+  },
+  {
+    "lemma": "how much",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "（价钱）多少？"
+    ]
+  },
+  {
+    "lemma": "a lot",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "很多"
+    ]
+  },
+  {
+    "lemma": "wonderful",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "精彩的"
+    ]
+  },
+  {
+    "lemma": "cool",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "酷的"
+    ]
+  },
+  {
+    "lemma": "fantastic",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "极好的"
+    ]
+  },
+  {
+    "lemma": "cartoons",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "动画片"
+    ]
+  },
+  {
+    "lemma": "news shows",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "新闻节目"
+    ]
+  },
+  {
+    "lemma": "nature shows",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "自然节目"
+    ]
+  },
+  {
+    "lemma": "chore",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "家务"
+    ]
+  },
+  {
+    "lemma": "clean the room",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "打扫房间"
+    ]
+  },
+  {
+    "lemma": "make the bed",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "整理床铺"
+    ]
+  },
+  {
+    "lemma": "take out the rubbish",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "倒垃圾"
+    ]
+  },
+  {
+    "lemma": "wash clothes",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "洗衣服"
+    ]
+  },
+  {
+    "lemma": "tidy the desk",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "清理书桌"
+    ]
+  },
+  {
+    "lemma": "sweep the floor",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "扫地"
+    ]
+  },
+  {
+    "lemma": "call",
+    "grade_level": "五年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "打电话给......"
+    ]
+  },
+  {
+    "lemma": "too much",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "太多"
+    ]
+  },
+  {
+    "lemma": "candy",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "糖果"
+    ]
+  },
+  {
+    "lemma": "go to bed",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "去睡",
+      "就寝"
+    ]
+  },
+  {
+    "lemma": "early",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "早"
+    ]
+  },
+  {
+    "lemma": "exercise",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "锻炼"
+    ]
+  },
+  {
+    "lemma": "tired",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "困倦的",
+      "疲倦的"
+    ]
+  },
+  {
+    "lemma": "drink",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "喝",
+      "饮"
+    ]
+  },
+  {
+    "lemma": "before",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "在......之前"
+    ]
+  },
+  {
+    "lemma": "dirty",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "肮脏的"
+    ]
+  },
+  {
+    "lemma": "always",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "总是"
+    ]
+  },
+  {
+    "lemma": "stomachache",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "胃疼"
+    ]
+  },
+  {
+    "lemma": "headache",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "头疼"
+    ]
+  },
+  {
+    "lemma": "toothache",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "牙疼"
+    ]
+  },
+  {
+    "lemma": "a lot of",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "大量",
+      "许多"
+    ]
+  },
+  {
+    "lemma": "sleepy",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "困的",
+      "欲睡的"
+    ]
+  },
+  {
+    "lemma": "subject",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "学科"
+    ]
+  },
+  {
+    "lemma": "mark",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "分数"
+    ]
+  },
+  {
+    "lemma": "advice",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "建议"
+    ]
+  },
+  {
+    "lemma": "more",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "更多的"
+    ]
+  },
+  {
+    "lemma": "New Year’s Day",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "新年"
+    ]
+  },
+  {
+    "lemma": "Tree Planting Day",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "植树节"
+    ]
+  },
+  {
+    "lemma": "Mother’s Day",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "母亲节"
+    ]
+  },
+  {
+    "lemma": "Children’s Day",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "儿童节"
+    ]
+  },
+  {
+    "lemma": "Father’s Day",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "父亲节"
+    ]
+  },
+  {
+    "lemma": "Teachers’ Day",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "教师节"
+    ]
+  },
+  {
+    "lemma": "National Day",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "国庆节"
+    ]
+  },
+  {
+    "lemma": "Christmas Day",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "圣诞节"
+    ]
+  },
+  {
+    "lemma": "birthday",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "生日"
+    ]
+  },
+  {
+    "lemma": "fifth (5th)",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "第五"
+    ]
+  },
+  {
+    "lemma": "tenth (10th)",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "第十"
+    ]
+  },
+  {
+    "lemma": "twelfth (12th)",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "第十二"
+    ]
+  },
+  {
+    "lemma": "twenty-fifth (25th)",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "第二十五"
+    ]
+  },
+  {
+    "lemma": "plant",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "种植"
+    ]
+  },
+  {
+    "lemma": "make a poster",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "制作海报"
+    ]
+  },
+  {
+    "lemma": "celebrate",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "庆祝"
+    ]
+  },
+  {
+    "lemma": "have a picnic",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "野餐"
+    ]
+  },
+  {
+    "lemma": "office",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "办公室"
+    ]
+  },
+  {
+    "lemma": "together",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "在一起",
+      "共同"
+    ]
+  },
+  {
+    "lemma": "special",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "特殊的",
+      "特别的"
+    ]
+  },
+  {
+    "lemma": "send an email",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "发送电子邮件"
+    ]
+  },
+  {
+    "lemma": "write a letter",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "写信"
+    ]
+  },
+  {
+    "lemma": "make a phone call",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "打电话"
+    ]
+  },
+  {
+    "lemma": "send a short message",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "发送短消息"
+    ]
+  },
+  {
+    "lemma": "mail a present",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "邮寄礼物"
+    ]
+  },
+  {
+    "lemma": "make a video call",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "打视频电话"
+    ]
+  },
+  {
+    "lemma": "say",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "说",
+      "讲"
+    ]
+  },
+  {
+    "lemma": "make a card",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "制作卡片"
+    ]
+  },
+  {
+    "lemma": "everywhere",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "各处",
+      "到处"
+    ]
+  },
+  {
+    "lemma": "flower show",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "花展"
+    ]
+  },
+  {
+    "lemma": "cleaned the window",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）擦窗子"
+    ]
+  },
+  {
+    "lemma": "watched TV",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）看电视"
+    ]
+  },
+  {
+    "lemma": "climbed a hill",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）爬山"
+    ]
+  },
+  {
+    "lemma": "visited grandparents",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）看望祖父母"
+    ]
+  },
+  {
+    "lemma": "danced",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（dance的过去式）跳舞"
+    ]
+  },
+  {
+    "lemma": "jumped rope",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）跳绳"
+    ]
+  },
+  {
+    "lemma": "listened to music",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式） 听音乐"
+    ]
+  },
+  {
+    "lemma": "rowed a boat",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式） 划船"
+    ]
+  },
+  {
+    "lemma": "played computer games",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式） 玩电子游戏"
+    ]
+  },
+  {
+    "lemma": "stayed at home",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）呆在家里"
+    ]
+  },
+  {
+    "lemma": "played the piano",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）弹钢琴"
+    ]
+  },
+  {
+    "lemma": "played chess",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）下棋"
+    ]
+  },
+  {
+    "lemma": "washed clothes",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）洗衣服"
+    ]
+  },
+  {
+    "lemma": "boring",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "单调的",
+      "乏味的"
+    ]
+  },
+  {
+    "lemma": "badminton",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "羽毛球"
+    ]
+  },
+  {
+    "lemma": "won",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（win的过去式）赢",
+      "获胜"
+    ]
+  },
+  {
+    "lemma": "went to the beach",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）去海边"
+    ]
+  },
+  {
+    "lemma": "drank cold drinks",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）喝冷饮"
+    ]
+  },
+  {
+    "lemma": "swam",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（swim的过去式）游泳"
+    ]
+  },
+  {
+    "lemma": "ate ice cream",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）吃冰激凌"
+    ]
+  },
+  {
+    "lemma": "the Stone Forest",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "石林"
+    ]
+  },
+  {
+    "lemma": "bought some gifts",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）买些礼物"
+    ]
+  },
+  {
+    "lemma": "took photos",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）拍照片"
+    ]
+  },
+  {
+    "lemma": "saw flowers",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）赏花"
+    ]
+  },
+  {
+    "lemma": "slept",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（sleep的过去式）睡觉"
+    ]
+  },
+  {
+    "lemma": "delicious",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "美味的",
+      "可口的"
+    ]
+  },
+  {
+    "lemma": "felt happy",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）觉得高兴"
+    ]
+  },
+  {
+    "lemma": "sad",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "悲哀的",
+      "难过的"
+    ]
+  },
+  {
+    "lemma": "left",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（leave的过去式）离开"
+    ]
+  },
+  {
+    "lemma": "French fries",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "法式炸薯条"
+    ]
+  },
+  {
+    "lemma": "were",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（are的过去式）是"
+    ]
+  },
+  {
+    "lemma": "was born",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）出生"
+    ]
+  },
+  {
+    "lemma": "started to speak",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）开始说话"
+    ]
+  },
+  {
+    "lemma": "learned to walk",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）学走路"
+    ]
+  },
+  {
+    "lemma": "learned to ride a bike",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）学骑自行车"
+    ]
+  },
+  {
+    "lemma": "went to kindergarten",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）上幼儿园"
+    ]
+  },
+  {
+    "lemma": "went to school",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）上学"
+    ]
+  },
+  {
+    "lemma": "learned to swim",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）学游泳"
+    ]
+  },
+  {
+    "lemma": "fifteenth (15th)",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "第十五"
+    ]
+  },
+  {
+    "lemma": "started to buy things",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）开始学买东西"
+    ]
+  },
+  {
+    "lemma": "started to study English",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）开始学英语"
+    ]
+  },
+  {
+    "lemma": "started to use a computer",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（过去式）开始使用电脑"
+    ]
+  },
+  {
+    "lemma": "all over",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "到处",
+      "各处"
+    ]
+  },
+  {
+    "lemma": "out of",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "离开（某处）"
+    ]
+  },
+  {
+    "lemma": "into",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "进入",
+      "到......里"
+    ]
+  },
+  {
+    "lemma": "chopsticks",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "筷子"
+    ]
+  },
+  {
+    "lemma": "wet",
+    "grade_level": "五年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "湿的",
+      "潮湿的"
+    ]
+  },
+  {
+    "lemma": "morning tea",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "早茶"
+    ]
+  },
+  {
+    "lemma": "soup",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "汤"
+    ]
+  },
+  {
+    "lemma": "garden",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "花园"
+    ]
+  },
+  {
+    "lemma": "the Potala Palace",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "布达拉宫"
+    ]
+  },
+  {
+    "lemma": "the Summer Palace",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "颐和园"
+    ]
+  },
+  {
+    "lemma": "the Terracotta Army",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "兵马俑"
+    ]
+  },
+  {
+    "lemma": "vacation",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "假期"
+    ]
+  },
+  {
+    "lemma": "taste",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "品尝"
+    ]
+  },
+  {
+    "lemma": "map",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "地图"
+    ]
+  },
+  {
+    "lemma": "north",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "北"
+    ]
+  },
+  {
+    "lemma": "south",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "南"
+    ]
+  },
+  {
+    "lemma": "east",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "东"
+    ]
+  },
+  {
+    "lemma": "west",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "西"
+    ]
+  },
+  {
+    "lemma": "famous",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "著名的"
+    ]
+  },
+  {
+    "lemma": "temple",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "寺"
+    ]
+  },
+  {
+    "lemma": "around",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "遍及",
+      "围绕"
+    ]
+  },
+  {
+    "lemma": "the Yangtze River",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "长江"
+    ]
+  },
+  {
+    "lemma": "foggy",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "有雾的"
+    ]
+  },
+  {
+    "lemma": "spicy",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "辣的"
+    ]
+  },
+  {
+    "lemma": "silk",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "丝绸"
+    ]
+  },
+  {
+    "lemma": "forest",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "树林"
+    ]
+  },
+  {
+    "lemma": "stone",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "石头"
+    ]
+  },
+  {
+    "lemma": "London",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "伦敦"
+    ]
+  },
+  {
+    "lemma": "Toronto",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "多伦多"
+    ]
+  },
+  {
+    "lemma": "Sydney",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "悉尼"
+    ]
+  },
+  {
+    "lemma": "Washington",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "华盛顿"
+    ]
+  },
+  {
+    "lemma": "the British Museum",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "不列颠博物馆"
+    ]
+  },
+  {
+    "lemma": "the CN Tower",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "加拿大国家电视塔"
+    ]
+  },
+  {
+    "lemma": "kangaroo",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "袋鼠"
+    ]
+  },
+  {
+    "lemma": "the Opera House",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "（悉尼）歌剧院"
+    ]
+  },
+  {
+    "lemma": "National Museum of Natural History",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "（美国）国立自然历史博物馆（华盛顿特区）"
+    ]
+  },
+  {
+    "lemma": "clock",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "时钟"
+    ]
+  },
+  {
+    "lemma": "speak",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "讲",
+      "说"
+    ]
+  },
+  {
+    "lemma": "French",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "法语"
+    ]
+  },
+  {
+    "lemma": "Tower Bridge",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "（伦敦）塔桥"
+    ]
+  },
+  {
+    "lemma": "the London Eye",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "伦敦眼"
+    ]
+  },
+  {
+    "lemma": "hiking",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "远足"
+    ]
+  },
+  {
+    "lemma": "sunrise",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "日出"
+    ]
+  },
+  {
+    "lemma": "reptile",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "爬行动物"
+    ]
+  },
+  {
+    "lemma": "bird",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "鸟"
+    ]
+  },
+  {
+    "lemma": "fish",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "鱼"
+    ]
+  },
+  {
+    "lemma": "mammal",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "哺乳动物"
+    ]
+  },
+  {
+    "lemma": "insect",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "昆虫"
+    ]
+  },
+  {
+    "lemma": "penguin",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "企鹅"
+    ]
+  },
+  {
+    "lemma": "shark",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "鲨鱼"
+    ]
+  },
+  {
+    "lemma": "whale",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "鲸"
+    ]
+  },
+  {
+    "lemma": "kind",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "种类"
+    ]
+  },
+  {
+    "lemma": "metre",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "米"
+    ]
+  },
+  {
+    "lemma": "spend",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "花费"
+    ]
+  },
+  {
+    "lemma": "trunk",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "象鼻"
+    ]
+  },
+  {
+    "lemma": "peanut",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "花生"
+    ]
+  },
+  {
+    "lemma": "fan",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "扇子"
+    ]
+  },
+  {
+    "lemma": "tusk",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "（象",
+      "野猪等的）长牙"
+    ]
+  },
+  {
+    "lemma": "Africa",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "非洲"
+    ]
+  },
+  {
+    "lemma": "Asia",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "亚洲"
+    ]
+  },
+  {
+    "lemma": "smart",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "聪明的"
+    ]
+  },
+  {
+    "lemma": "scared",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "害怕的"
+    ]
+  },
+  {
+    "lemma": "worried",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "担心的"
+    ]
+  },
+  {
+    "lemma": "angry",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "生气的"
+    ]
+  },
+  {
+    "lemma": "proud",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "自豪的",
+      "骄傲的"
+    ]
+  },
+  {
+    "lemma": "sad",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "难过的"
+    ]
+  },
+  {
+    "lemma": "excited",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "激动的"
+    ]
+  },
+  {
+    "lemma": "happy",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "高兴的"
+    ]
+  },
+  {
+    "lemma": "ill",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "有病",
+      "不舒服"
+    ]
+  },
+  {
+    "lemma": "win",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "获胜"
+    ]
+  },
+  {
+    "lemma": "race",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "赛跑"
+    ]
+  },
+  {
+    "lemma": "find",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "发现"
+    ]
+  },
+  {
+    "lemma": "cry",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "哭"
+    ]
+  },
+  {
+    "lemma": "because",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "因为"
+    ]
+  },
+  {
+    "lemma": "test",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "测验"
+    ]
+  },
+  {
+    "lemma": "competition",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "竞赛"
+    ]
+  },
+  {
+    "lemma": "hurt",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "弄伤"
+    ]
+  },
+  {
+    "lemma": "astronaut",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "宇航员"
+    ]
+  },
+  {
+    "lemma": "artist",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "画家",
+      "艺术家"
+    ]
+  },
+  {
+    "lemma": "scientist",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "科学家"
+    ]
+  },
+  {
+    "lemma": "Polish",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "波兰人"
+    ]
+  },
+  {
+    "lemma": "poet",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "诗人"
+    ]
+  },
+  {
+    "lemma": "writer",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "作家"
+    ]
+  },
+  {
+    "lemma": "American",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "美国人",
+      "美国的"
+    ]
+  },
+  {
+    "lemma": "poem",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "诗",
+      "诗歌"
+    ]
+  },
+  {
+    "lemma": "paint",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "用颜料画"
+    ]
+  },
+  {
+    "lemma": "invention",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "发明"
+    ]
+  },
+  {
+    "lemma": "invent",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "发明"
+    ]
+  },
+  {
+    "lemma": "French",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "法国人",
+      "法国的"
+    ]
+  },
+  {
+    "lemma": "study",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "学习",
+      "研究"
+    ]
+  },
+  {
+    "lemma": "Danish",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "丹麦人",
+      "丹麦的",
+      "丹麦语"
+    ]
+  },
+  {
+    "lemma": "story",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "故事"
+    ]
+  },
+  {
+    "lemma": "university",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "大学"
+    ]
+  },
+  {
+    "lemma": "deaf",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "聋的"
+    ]
+  },
+  {
+    "lemma": "blind",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "失明的"
+    ]
+  },
+  {
+    "lemma": "fall",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "落下"
+    ]
+  },
+  {
+    "lemma": "dumpling",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "饺子",
+      "汤团"
+    ]
+  },
+  {
+    "lemma": "fan",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "迷",
+      "爱好者"
+    ]
+  },
+  {
+    "lemma": "ice lantern",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "冰灯"
+    ]
+  },
+  {
+    "lemma": "bring",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "带来"
+    ]
+  },
+  {
+    "lemma": "be afraid of",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "害怕"
+    ]
+  },
+  {
+    "lemma": "hear",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "听到"
+    ]
+  },
+  {
+    "lemma": "pen pal",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "笔友"
+    ]
+  },
+  {
+    "lemma": "broken",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "损坏了的"
+    ]
+  },
+  {
+    "lemma": "pity",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "遗憾"
+    ]
+  },
+  {
+    "lemma": "prize",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "奖（品）"
+    ]
+  },
+  {
+    "lemma": "look forward to",
+    "grade_level": "六年级上册",
+    "level_tag": "小学",
+    "meanings": [
+      "盼望"
+    ]
+  },
+  {
+    "lemma": "live",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "居住",
+      "生活"
+    ]
+  },
+  {
+    "lemma": "quite",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "很",
+      "相当"
+    ]
+  },
+  {
+    "lemma": "scarf",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "围巾"
+    ]
+  },
+  {
+    "lemma": "airport",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "机场"
+    ]
+  },
+  {
+    "lemma": "pupil",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "小学生"
+    ]
+  },
+  {
+    "lemma": "arrive",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "到达"
+    ]
+  },
+  {
+    "lemma": "meet",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "迎接",
+      "遇见",
+      "会面"
+    ]
+  },
+  {
+    "lemma": "wardrobe",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "衣柜"
+    ]
+  },
+  {
+    "lemma": "show ... around",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "带领......参观"
+    ]
+  },
+  {
+    "lemma": "Queen’s Park",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "女王公园"
+    ]
+  },
+  {
+    "lemma": "art gallery",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "画廊",
+      "艺术馆"
+    ]
+  },
+  {
+    "lemma": "public library",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "公共图书馆"
+    ]
+  },
+  {
+    "lemma": "downtown",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "闹市区",
+      "市中心"
+    ]
+  },
+  {
+    "lemma": "Lake Ontario",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "安大略湖"
+    ]
+  },
+  {
+    "lemma": "stadium",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "（露天）体育场"
+    ]
+  },
+  {
+    "lemma": "volunteer",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "志愿者"
+    ]
+  },
+  {
+    "lemma": "sandwich",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "三明治"
+    ]
+  },
+  {
+    "lemma": "top",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "上边",
+      "上面"
+    ]
+  },
+  {
+    "lemma": "habit",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "习惯"
+    ]
+  },
+  {
+    "lemma": "idea",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "主意",
+      "想法",
+      "意见"
+    ]
+  },
+  {
+    "lemma": "less",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "更少"
+    ]
+  },
+  {
+    "lemma": "at least",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "至少"
+    ]
+  },
+  {
+    "lemma": "talk about",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "谈论"
+    ]
+  },
+  {
+    "lemma": "hockey",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "曲棍球",
+      "冰上曲棍球"
+    ]
+  },
+  {
+    "lemma": "together",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "一起"
+    ]
+  },
+  {
+    "lemma": "special",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "特殊",
+      "特别"
+    ]
+  },
+  {
+    "lemma": "beaver",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "海（河）狸"
+    ]
+  },
+  {
+    "lemma": "raccoon",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "浣熊"
+    ]
+  },
+  {
+    "lemma": "moose",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "北美麋",
+      "驼鹿"
+    ]
+  },
+  {
+    "lemma": "countryside",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "农村",
+      "乡下"
+    ]
+  },
+  {
+    "lemma": "Thanksgiving",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "感恩节"
+    ]
+  },
+  {
+    "lemma": "roast turkey",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "烤火鸡"
+    ]
+  },
+  {
+    "lemma": "squirrel",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "松鼠"
+    ]
+  },
+  {
+    "lemma": "swan",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "天鹅"
+    ]
+  },
+  {
+    "lemma": "English-Chinese dictionary",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "英汉词典"
+    ]
+  },
+  {
+    "lemma": "shopping centre",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "购物中心"
+    ]
+  },
+  {
+    "lemma": "shopping mall",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "大型综合商业中心"
+    ]
+  },
+  {
+    "lemma": "amazing",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "惊人的",
+      "神奇的"
+    ]
+  },
+  {
+    "lemma": "hot pot",
+    "grade_level": "六年级下册",
+    "level_tag": "小学",
+    "meanings": [
+      "火锅"
+    ]
+  }
+]

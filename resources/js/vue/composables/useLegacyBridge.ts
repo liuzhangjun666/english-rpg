@@ -95,22 +95,6 @@ class LegacyBridge {
     game.ui.hideAllPanels();
   }
 
-  async openPracticePanel(type = 'vocab') {
-    const game = await this.getGame();
-    this.applySessionToGame(game, this.pendingProfile);
-    game.ensureSceneInitialized();
-    const mode = modeFromPracticeType(type);
-    let sceneName = 'practice';
-    if (mode === 'listening') sceneName = 'listening';
-    else if (mode === 'speaking') sceneName = 'speaking';
-    else if (mode === 'writing') sceneName = 'writing';
-    
-    await game.scene.switchTo(sceneName, { mode });
-    game.ui.hideAllPanels();
-    const panel = await game.loadPanel('practice');
-    panel.showLevelSelect(type);
-  }
-
   async switchToPracticeScene(type = 'vocab') {
     const game = await this.getGame();
     this.applySessionToGame(game, this.pendingProfile);
@@ -145,12 +129,6 @@ class LegacyBridge {
     game.ensureSceneInitialized();
     await game.scene.switchTo('cangjingge');
     game.ui.hideAllPanels();
-  }
-
-  async openExam() {
-    const game = await this.getGame();
-    this.applySessionToGame(game, this.pendingProfile);
-    game.goToScene('shilianchang');
   }
 
   async switchToExamScene() {

@@ -8,6 +8,7 @@ use App\Models\Question;
 use App\Services\AchievementService;
 use App\Services\CurrencyService;
 use App\Services\HeartDemonService;
+use App\Services\PracticeLevelService;
 use App\Services\RealmService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -118,45 +119,55 @@ class GrammarController extends Controller
         ],
     ];
 
+    private PracticeLevelService $levelService;
+
     public function __construct(
         CurrencyService $currencyService,
         HeartDemonService $demonService,
         AchievementService $achievementService,
-        RealmService $realmService
+        RealmService $realmService,
+        PracticeLevelService $levelService
     )
     {
         $this->currencyService = $currencyService;
         $this->demonService = $demonService;
         $this->achievementService = $achievementService;
         $this->realmService = $realmService;
+        $this->levelService = $levelService;
     }
 
     /**
-     * GET /api/grammar/questions?level=L1&stage=01
+     * GET /api/grammar/questions?stage=01
      */
     public function questions(Request $request): JsonResponse
     {
-        $level = $request->query('level', 'L1');
-        $stage = $request->query('stage', '01');
+        $stageNo = $this->levelService->parseStageNo($request->query('stage', 1));
         $user = $request->user();
         $this->currencyService->recoverSpiritPower($user);
         $user->refresh();
 
-        $normalCount = 10;
-        $allQuestions = $this->demonService->getInjectedQuestions($user->id, 'grammar', $level, $stage, $normalCount);
+        $layout = $this->levelService->getStageLayout($user, 'grammar');
+        $normalCount = PracticeLevelService::PER_SESSION['grammar'];
+        $allQuestions = $this->demonService->getInjectedQuestions($user->id, 'grammar', $stageNo, $normalCount);
 
         if (empty($allQuestions)) {
-            $allQuestions = $this->demoQuestionsForStage($level, $stage, $normalCount);
+            $stageCode = str_pad((string) $stageNo, 2, '0', STR_PAD_LEFT);
+            $allQuestions = $this->demoQuestionsForStage($layout['realm'], $stageCode, $normalCount);
         }
         $spiritCost = CurrencyService::SPIRIT_COST_PER_LEVEL;
 
         $demonCount = count(array_filter($allQuestions, fn ($q) => !empty($q['_is_demon'])));
+        $stageMeta = collect($layout['stages'])->firstWhere('stage_no', $stageNo) ?? [];
 
         return response()->json([
             'success' => true,
             'data' => [
-                'level' => $level,
-                'stage' => $stage,
+                'level' => $layout['realm'],
+                'stage' => $stageMeta['stage_code'] ?? str_pad((string) $stageNo, 2, '0', STR_PAD_LEFT),
+                'stage_no' => $stageNo,
+                'current_realm' => $layout['current_realm'],
+                'grade_labels' => $layout['grade_labels'],
+                'level_id' => $stageMeta['level_id'] ?? sprintf('%s-%02d', $layout['realm'], $stageNo),
                 'questions' => $allQuestions,
                 'total' => count($allQuestions),
                 'spirit_cost' => $spiritCost,
@@ -213,7 +224,7 @@ class GrammarController extends Controller
             if ($question) {
                 if (!$correct) {
                     if (!isset($reportedWrongIds[$ans['question_id']])) {
-                        $this->demonService->recordWrong($user->id, $ans['question_id'], 'grammar', $data['level']);
+                        $this->demonService->recordWrong($user->id, $ans['question_id'], 'grammar', (string) ($user->realm ?? 'L1'));
                     }
                 } else {
                     $this->demonService->recordCorrect($user->id, $ans['question_id']);

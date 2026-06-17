@@ -1,52 +1,7 @@
 <template>
-  <div class="practice-page" :class="{ 'practice-page-arena': sessionState === 'answering' && (isVocabModule || isGrammarModule || isWritingModule) }">
-    <el-card shadow="hover" class="practice-shell" :class="{ 'practice-shell-arena': sessionState === 'answering' && (isVocabModule || isGrammarModule || isWritingModule) }">
-      <template v-if="!(sessionState === 'answering' && (isVocabModule || isGrammarModule || isWritingModule))" #header>
-        <div class="card-header">{{ venueTitle }}</div>
-      </template>
-
-      <template v-if="sessionState === 'idle'">
-        <el-alert
-          v-if="resumeSession"
-          type="warning"
-          :closable="false"
-          show-icon
-          title="检测到上次修炼进度"
-          description="你可以继续上次修炼，或重新开始本关。"
-          style="margin-bottom: 12px;"
-        />
-        <div class="level-box">
-          <div class="level-title">当前关卡</div>
-          <div class="level-main">{{ currentLevel.levelId }}</div>
-          <div class="level-sub">{{ currentLevel.realm }} · 第{{ String(currentLevel.stageNo).padStart(2, '0') }}关</div>
-          <div class="level-sub">进度：{{ currentLevel.index + 1 }}/{{ currentLevel.total }}</div>
-        </div>
-        <div class="practice-actions">
-          <template v-if="resumeSession">
-            <el-button type="primary" @click="continueFromResume">继续上次进度</el-button>
-            <el-button @click="restartFromResume">重新开始本关</el-button>
-          </template>
-          <el-button v-else type="primary" @click="startChallenge">开始修炼</el-button>
-          <el-button @click="backHall">返回大厅</el-button>
-        </div>
-      </template>
-
-      <template v-else-if="sessionState === 'confirm'">
-        <el-alert
-          type="warning"
-          :closable="false"
-          show-icon
-          :title="`本次将消耗灵力 ${spiritCost}`"
-          :description="`当前灵力：${currentSpirit}`"
-        />
-        <div class="practice-actions">
-          <el-button type="primary" @click="confirmChallenge">确认开始</el-button>
-          <el-button @click="cancelChallenge">取消</el-button>
-        </div>
-      </template>
-
-      <template v-else-if="sessionState === 'answering' && !isWritingModule">
-        <div v-if="isVocabModule" class="vocab-arena">
+  <div class="practice-page" :class="{ 'practice-page-arena': isArenaMode }">
+    <template v-if="isArenaMode">
+      <div v-if="sessionState === 'answering' && isVocabModule" class="vocab-arena">
           <img class="ws-bg" :src="wsSceneBg" alt="木桩场景" />
           <div class="ws-mask"></div>
 
@@ -145,34 +100,7 @@
 
         </div>
 
-        <template v-else>
-          <div class="question-head">
-            <el-tag type="info">{{ currentIndex + 1 }} / {{ questions.length }}</el-tag>
-            <span class="question-level">{{ currentLevel.levelId }}</span>
-          </div>
-          <div class="question-stem">{{ currentQuestionText }}</div>
-
-          <el-radio-group v-model="selectedAnswer" class="option-group">
-            <el-radio
-              v-for="option in optionEntries"
-              :key="option.key"
-              :label="option.key"
-              border
-              class="option-item"
-            >
-              {{ option.key }}. {{ option.text }}
-            </el-radio>
-          </el-radio-group>
-
-          <div class="practice-actions">
-            <el-button @click="backQuestion">上一题</el-button>
-            <el-button type="primary" @click="nextQuestion">{{ isLastQuestion ? '提交结算' : '下一题' }}</el-button>
-          </div>
-        </template>
-      </template>
-
-      <template v-else-if="sessionState === 'answering' && isWritingModule">
-        <div class="writing-arena">
+      <div v-else-if="sessionState === 'answering' && isWritingModule" class="writing-arena">
           <div class="fz-mask"></div>
 
           <div class="fz-top">
@@ -202,24 +130,180 @@
             />
           </div>
         </div>
-      </template>
+    </template>
 
-      <template v-else-if="sessionState === 'result'">
-        <el-result
-          :icon="resultPassed ? 'success' : 'warning'"
-          :title="resultPassed ? '修炼完成' : '修炼未达标'"
-          :sub-title="resultSubtitle"
-        >
-          <template #extra>
-            <el-space>
+    <div v-else class="cult-panel practice-panel">
+      <header class="cult-panel-header">
+        <div class="cult-panel-title">
+          <span class="cult-panel-icon">⚔</span>
+          <span>{{ venueTitle }}</span>
+        </div>
+        <button class="cult-panel-back" type="button" @click="backHall">返回大厅</button>
+      </header>
+
+      <div class="cult-panel-body">
+        <template v-if="sessionState === 'rules'">
+          <ModuleRulesIntro
+            :module-key="rulesModuleKey"
+            @confirm="sessionState = 'idle'"
+            @back="backHall"
+          />
+        </template>
+
+        <template v-else-if="sessionState === 'idle'">
+          <div v-if="!hasQuestionBank" class="cult-notice warning">
+            <span class="cult-notice-icon">☁</span>
+            <div class="cult-notice-body">
+              <div class="cult-notice-title">当前境界暂无题目</div>
+              <div class="cult-notice-desc">
+                {{ venueTitle }}在本境界（{{ levelLayout?.grade_labels?.join(' / ') || displayRealm }}）尚未配置题库，请先修炼其他模块或提升境界后再来。
+              </div>
+            </div>
+          </div>
+          <div v-if="resumeSession && hasQuestionBank" class="cult-notice warning">
+            <span class="cult-notice-icon">⟳</span>
+            <div class="cult-notice-body">
+              <div class="cult-notice-title">检测到上次修炼进度</div>
+              <div class="cult-notice-desc">你可以继续上次修炼，或重新开始本关。</div>
+            </div>
+          </div>
+          <div class="level-box">
+            <div class="level-title">当前境界</div>
+            <div class="level-main">{{ levelLayout?.current_realm || displayRealm }}</div>
+            <template v-if="hasQuestionBank">
+              <div class="level-sub">第 {{ String(currentLevel.stageNo).padStart(2, '0') }} 关 · {{ currentLevel.levelId }}</div>
+              <div class="level-sub">境界题库 {{ levelLayout?.total_questions ?? 0 }} 题，进度 {{ currentLevel.index + 1 }}/{{ currentLevel.total }}</div>
+            </template>
+            <template v-else>
+              <div class="level-sub">境界题库 {{ levelLayout?.total_questions ?? 0 }} 题，暂无可修炼关卡</div>
+            </template>
+            <div v-if="levelLayout?.grade_labels?.length" class="level-sub">
+              对应年级：{{ levelLayout.grade_labels.join(' / ') }}
+            </div>
+          </div>
+          <div class="cult-actions">
+            <template v-if="hasQuestionBank && resumeSession">
+              <el-button type="primary" @click="continueFromResume">继续上次进度</el-button>
+              <el-button @click="restartFromResume">重新开始本关</el-button>
+            </template>
+            <el-button v-else-if="hasQuestionBank" type="primary" @click="startChallenge">开始修炼</el-button>
+            <el-button @click="backHall">返回大厅</el-button>
+          </div>
+        </template>
+
+        <template v-else-if="sessionState === 'confirm'">
+          <div class="cult-notice warning">
+            <span class="cult-notice-icon">⚡</span>
+            <div class="cult-notice-body">
+              <div class="cult-notice-title">本次将消耗灵力 {{ spiritCost }}</div>
+              <div class="cult-notice-desc">当前灵力：{{ currentSpirit }}</div>
+            </div>
+          </div>
+          <div class="cult-actions">
+            <el-button type="primary" @click="confirmChallenge">确认开始</el-button>
+            <el-button @click="cancelChallenge">取消</el-button>
+          </div>
+        </template>
+
+        <template v-else-if="sessionState === 'answering' && isListeningModule">
+          <div class="cult-tag-row">
+            <span class="cult-tag info">{{ currentIndex + 1 }} / {{ questions.length }}</span>
+            <span class="cult-tag warning">{{ currentLevel.levelId }}</span>
+          </div>
+          <ListeningModule
+            :key="String(currentQuestion.question_id || currentIndex)"
+            :question="listeningQuestion"
+            @submit-answer="onListeningSubmit"
+          />
+        </template>
+
+        <template v-else-if="sessionState === 'answering' && isSpeakingModule">
+          <div class="cult-tag-row">
+            <span class="cult-tag info">{{ currentIndex + 1 }} / {{ questions.length }}</span>
+            <span class="cult-tag warning">{{ currentLevel.levelId }}</span>
+          </div>
+          <SpeakingModule
+            :key="String(currentQuestion.question_id || currentIndex)"
+            :question="speakingQuestion"
+            @submit-answer="onSpeakingSubmit"
+          />
+        </template>
+
+        <template v-else-if="sessionState === 'answering'">
+          <div class="cult-tag-row">
+            <span class="cult-tag info">{{ currentIndex + 1 }} / {{ questions.length }}</span>
+            <span class="cult-tag warning">{{ currentLevel.levelId }}</span>
+          </div>
+          <div class="cult-question-stem">{{ currentQuestionText }}</div>
+          <el-radio-group v-model="selectedAnswer" class="cult-option-group">
+            <el-radio
+              v-for="option in optionEntries"
+              :key="option.key"
+              :label="option.key"
+              border
+              class="cult-option-item"
+            >
+              {{ option.key }}. {{ option.text }}
+            </el-radio>
+          </el-radio-group>
+          <div class="cult-actions">
+            <el-button @click="backQuestion">上一题</el-button>
+            <el-button type="primary" @click="nextQuestion">{{ isLastQuestion ? '提交结算' : '下一题' }}</el-button>
+          </div>
+        </template>
+
+        <template v-else-if="sessionState === 'result'">
+          <div class="cult-result" :class="resultPassed ? 'success' : 'warning'">
+            <div class="cult-result-icon">{{ resultPassed ? '✦' : '☁' }}</div>
+            <div class="cult-result-title">{{ resultPassed ? '修炼完成' : '修炼未达标' }}</div>
+
+            <div class="cult-result-stats">
+              <div class="cult-result-stat">
+                <span class="cult-result-stat-label">正确率</span>
+                <span class="cult-result-stat-value">{{ resultAccuracy }}%</span>
+              </div>
+              <div class="cult-result-stat highlight">
+                <span class="cult-result-stat-label">修为</span>
+                <span class="cult-result-stat-value">+{{ resultExp }}</span>
+              </div>
+              <div class="cult-result-stat">
+                <span class="cult-result-stat-label">灵石</span>
+                <span class="cult-result-stat-value">+{{ resultStones }}</span>
+              </div>
+              <div v-if="resultAbilityLabel && resultCorrectCount > 0" class="cult-result-stat">
+                <span class="cult-result-stat-label">{{ resultAbilityLabel }}</span>
+                <span class="cult-result-stat-value">+{{ resultCorrectCount }}</span>
+              </div>
+            </div>
+
+            <div v-if="realmProgress" class="cult-result-realm">
+              <div class="cult-result-realm-head">
+                <span>境界进境</span>
+                <span class="cult-result-realm-name">{{ realmProgress.current_realm || displayRealm }}</span>
+              </div>
+              <div class="cult-progress-track cult-result-realm-track">
+                <div
+                  class="cult-progress-fill"
+                  :style="{ width: `${Math.min(100, Math.max(0, Number(realmProgress.realm_progress_percent || 0)))}%` }"
+                ></div>
+              </div>
+              <p class="cult-result-realm-sub">
+                突破进度 {{ Math.min(100, Math.max(0, Number(realmProgress.realm_progress_percent || 0))) }}%
+                <template v-if="realmProgress.next_realm">
+                  · 下一境界 {{ realmProgress.next_realm }}
+                </template>
+              </p>
+            </div>
+
+            <div class="cult-actions">
               <el-button type="primary" @click="retryLevel">再试一次</el-button>
               <el-button v-if="resultPassed" @click="nextLevel">下一关</el-button>
               <el-button @click="backHall">返回大厅</el-button>
-            </el-space>
-          </template>
-        </el-result>
-      </template>
-    </el-card>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
 
     <WritingScorePanel
       v-if="writingScorePanel.visible"
@@ -239,6 +323,8 @@
       :results="writingResults"
       :exp-gained="resultExp"
       :stones-gained="resultStones"
+      :passed-count="writingPassedCount"
+      :realm-progress="realmProgress"
       :max-combo="writingMaxCombo"
       @retry="retryLevel"
       @next="nextLevel"
@@ -274,8 +360,12 @@ import zfOptionStoneActive from '../../../assets/images/ui/zhenfafeng/correct_ch
 import zfBridgeCorrect from '../../../assets/images/ui/zhenfafeng/correct_bridge.png';
 import zfBridgeError from '../../../assets/images/ui/zhenfafeng/error_bridge.png';
 import WritingModule from './modules/WritingModule.vue';
+import ListeningModule from './modules/ListeningModule.vue';
+import SpeakingModule from './modules/SpeakingModule.vue';
 import WritingScorePanel from '../components/practice/WritingScorePanel.vue';
 import WritingFinalResult from '../components/practice/WritingFinalResult.vue';
+import ModuleRulesIntro from '../components/ModuleRulesIntro.vue';
+import type { ModuleRulesKey } from '../data/moduleRules';
 import {
   clearWritingDraft,
   loadWritingDraft,
@@ -292,6 +382,25 @@ type LevelInfo = {
   levelId: string;
   index: number;
   total: number;
+};
+
+type PracticeStageMeta = {
+  stage_no: number;
+  stage_code: string;
+  level_id: string;
+  question_count: number;
+};
+
+type PracticeLevelLayout = {
+  realm: string;
+  realm_stage: number;
+  current_realm: string;
+  grade_labels: string[];
+  total_questions: number;
+  questions_per_stage: number;
+  total_stages: number;
+  stages: PracticeStageMeta[];
+  progress_key: string;
 };
 
 type PracticeSession = {
@@ -315,6 +424,24 @@ type PracticeSession = {
   writingResults: Array<Record<string, unknown>>;
 };
 
+type RealmProgressSnapshot = {
+  current_realm?: string;
+  cultivation_energy?: number;
+  next_realm_energy?: number;
+  next_realm?: string;
+  realm_progress_percent?: number;
+  remaining_energy_to_next_realm?: number;
+  abilities?: Record<string, { value: number; target: number; met: boolean }>;
+};
+
+const PRACTICE_ABILITY_LABELS: Partial<Record<PracticeType, string>> = {
+  vocab: '词汇修行',
+  grammar: '语法修行',
+  listening: '听力修行',
+  speaking: '口语修行',
+  writing: '写作修行',
+};
+
 const VENUE_TITLES: Record<PracticeType, string> = {
   vocab: '练功房',
   grammar: '阵法峰',
@@ -333,6 +460,10 @@ const user = useUserStore();
 
 const WRITING_UNLOCK_REALM_INDEX = 6; // 练气七层解锁
 
+const levelLayout = ref<PracticeLevelLayout | null>(null);
+
+const displayRealm = computed(() => resolveProfileRealm(user.profile) || '初入仙途');
+
 function isWritingUnlocked() {
   const label = resolveProfileRealm(user.profile);
   const idx = getCultivationRealmIndex(label);
@@ -342,7 +473,7 @@ function isWritingUnlocked() {
 const sceneType = computed<'practice' | 'grammar'>(() => (route.path === '/grammar' ? 'grammar' : 'practice'));
 
 const currentType = ref<PracticeType>('vocab');
-const sessionState = ref<'idle' | 'confirm' | 'answering' | 'result'>('idle');
+const sessionState = ref<'rules' | 'idle' | 'confirm' | 'answering' | 'result'>('rules');
 const questions = ref<Array<Record<string, any>>>([]);
 const currentIndex = ref(0);
 const selectedAnswer = ref('');
@@ -354,6 +485,8 @@ const currentSpirit = ref(0);
 const resultAccuracy = ref(0);
 const resultExp = ref(0);
 const resultStones = ref(0);
+const resultCorrectCount = ref(0);
+const realmProgress = ref<RealmProgressSnapshot | null>(null);
 const resultPassed = ref(false);
 const writingSubmittedCount = ref(0);
 const writingPassedCount = ref(0);
@@ -398,7 +531,20 @@ const venueTitle = computed(() => {
 const isVocabModule = computed(() => currentType.value === 'vocab');
 const isGrammarModule = computed(() => currentType.value === 'grammar');
 const isWritingModule = computed(() => currentType.value === 'writing');
+const isListeningModule = computed(() => currentType.value === 'listening');
+const isSpeakingModule = computed(() => currentType.value === 'speaking');
+const isArenaMode = computed(
+  () => sessionState.value === 'answering' && (isVocabModule.value || isGrammarModule.value || isWritingModule.value)
+);
+const rulesModuleKey = computed<ModuleRulesKey>(() => {
+  if (sceneType.value === 'grammar' || currentType.value === 'grammar') return 'grammar';
+  if (currentType.value === 'listening') return 'listening';
+  if (currentType.value === 'speaking') return 'speaking';
+  if (currentType.value === 'writing') return 'writing';
+  return 'vocab';
+});
 const currentLevel = computed(() => getCurrentPlayableLevel(currentType.value));
+const hasQuestionBank = computed(() => (levelLayout.value?.total_questions ?? 0) > 0);
 const isLastQuestion = computed(() => currentIndex.value >= questions.value.length - 1);
 const currentQuestion = computed(() => questions.value[currentIndex.value] || {});
 const currentWritingPrompt = computed(() => currentQuestion.value || {});
@@ -418,6 +564,31 @@ const optionEntries = computed(() => {
   if (!options || typeof options !== 'object') return [];
   return Object.entries(options).map(([key, value]) => ({ key: String(key), text: String(value ?? '') }));
 });
+const listeningQuestion = computed(() => {
+  const q = currentQuestion.value;
+  const opts = q?.options;
+  let options: Array<{ key: string; text: string }> = [];
+  if (Array.isArray(opts)) {
+    options = opts.map((item: Record<string, unknown>) => ({
+      key: String(item.key ?? ''),
+      text: String(item.text ?? ''),
+    }));
+  } else if (opts && typeof opts === 'object') {
+    options = Object.entries(opts).map(([key, value]) => ({ key: String(key), text: String(value ?? '') }));
+  }
+  return {
+    ...q,
+    audioUrl: String(q.audio_url || q.audioUrl || ''),
+    options,
+  };
+});
+const speakingQuestion = computed(() => {
+  const q = currentQuestion.value;
+  return {
+    ...q,
+    content: String(q.speaking_text || q.listening_text || q.question || q.stem || ''),
+  };
+});
 const woodStakeOptions = computed(() => optionEntries.value.slice(0, 4));
 const grammarOptions = computed(() => optionEntries.value.slice(0, 4));
 const correctAnswerKey = computed(() => String(currentQuestion.value?.correct_answer || '').trim().toUpperCase());
@@ -436,12 +607,39 @@ const currentWord = computed(() => {
 });
 const vocabRewardHint = computed(() => 5);
 const grammarRewardHint = computed(() => 6);
-const resultSubtitle = computed(() => {
-  if (isWritingModule.value) {
-    return `平均分 ${resultAccuracy.value} ｜ 通过 ${writingPassedCount.value}/${Math.max(1, writingSubmittedCount.value)} ｜ 灵气 +${resultExp.value} ｜ 灵石 +${resultStones.value}`;
+const resultAbilityLabel = computed(() => PRACTICE_ABILITY_LABELS[currentType.value] || '');
+
+function applySettlementFromResponse(data: Record<string, any>, options?: { accumulate?: boolean }) {
+  const accumulate = Boolean(options?.accumulate);
+  const expDelta = Number(data.total_exp ?? data.exp_gained ?? 0);
+  const stonesDelta = Number(data.stones_gained || 0);
+
+  if (accumulate) {
+    resultExp.value += expDelta;
+    resultStones.value += stonesDelta;
+  } else {
+    resultAccuracy.value = Number(data.accuracy || 0);
+    resultExp.value = expDelta;
+    resultStones.value = stonesDelta;
+    resultPassed.value = Boolean(data.passed);
+    resultCorrectCount.value = Number(data.correct_count ?? 0);
   }
-  return `正确率 ${resultAccuracy.value}% ｜ 灵气 +${resultExp.value} ｜ 灵石 +${resultStones.value}`;
-});
+
+  const rp = (data.realm_progress || null) as RealmProgressSnapshot | null;
+  if (rp) {
+    realmProgress.value = rp;
+  }
+
+  if (expDelta || stonesDelta) {
+    user.updateProfile({
+      exp: Number(user.profile?.exp || 0) + expDelta,
+      spirit_stone: Number(user.profile?.spirit_stone || 0) + stonesDelta,
+      spirit_power: currentSpirit.value,
+      ...(rp?.current_realm ? { current_realm: rp.current_realm } : {}),
+      ...(rp?.cultivation_energy != null ? { cultivation_energy: rp.cultivation_energy } : {}),
+    });
+  }
+}
 
 const onSceneInteract = (e: Event) => {
   const customEvent = e as CustomEvent;
@@ -513,30 +711,64 @@ watch(
 );
 
 function levelSequence(): Array<Omit<LevelInfo, 'index' | 'total'>> {
-  const list: Array<Omit<LevelInfo, 'index' | 'total'>> = [];
-  ['L1', 'L2', 'L3'].forEach((realm) => {
-    for (let stageNo = 1; stageNo <= 9; stageNo += 1) {
-      list.push({
-        realm,
-        stageNo,
-        levelId: `${realm}-${String(stageNo).padStart(2, '0')}`,
-      });
+  const stages = levelLayout.value?.stages ?? [];
+  const realm = levelLayout.value?.realm || String(user.profile?.realm || 'L1').toUpperCase();
+  if (!stages.length) {
+    return [];
+  }
+  return stages.map((stage) => ({
+    realm,
+    stageNo: stage.stage_no,
+    levelId: stage.level_id,
+  }));
+}
+
+async function fetchLevelLayout(type: PracticeType) {
+  if (type === 'reading') {
+    levelLayout.value = null;
+    return null;
+  }
+  try {
+    const res = await api.get(`/practice/levels/${type}`);
+    if (res?.success && res.data) {
+      levelLayout.value = res.data as PracticeLevelLayout;
+      return levelLayout.value;
     }
-  });
-  return list;
+  } catch {
+  }
+  levelLayout.value = null;
+  return null;
 }
 
 function progressKey(type: PracticeType) {
-  return `levelup_progress_${type}`;
+  if (levelLayout.value?.progress_key) {
+    return levelLayout.value.progress_key;
+  }
+  const uid = user.profile?.id || 'guest';
+  const realm = String(user.profile?.realm || 'L1').toUpperCase();
+  const realmStage = Number(user.profile?.realm_stage || 1);
+  return `levelup_progress_${uid}_${type}_${realm}_${realmStage}`;
 }
 
 function sessionKey(type: PracticeType) {
   const uid = user.profile?.id || 'guest';
-  return `levelup_vue_practice_session_${uid}_${type}`;
+  const realm = String(user.profile?.realm || 'L1').toUpperCase();
+  const realmStage = Number(user.profile?.realm_stage || 1);
+  return `levelup_vue_practice_session_${uid}_${type}_${realm}_${realmStage}`;
 }
 
 function getCurrentPlayableLevel(type: PracticeType): LevelInfo {
   const list = levelSequence();
+  if (!list.length) {
+    const realm = String(levelLayout.value?.realm || user.profile?.realm || 'L1').toUpperCase();
+    return {
+      realm,
+      stageNo: 1,
+      levelId: `${realm}-01`,
+      index: 0,
+      total: 0,
+    };
+  }
   const unlocked = Number(localStorage.getItem(progressKey(type)) || '0');
   const index = Math.min(Math.max(unlocked, 0), list.length - 1);
   return {
@@ -567,6 +799,8 @@ function resetQuestionState() {
   resultAccuracy.value = 0;
   resultExp.value = 0;
   resultStones.value = 0;
+  resultCorrectCount.value = 0;
+  realmProgress.value = null;
   resultPassed.value = false;
   writingSubmittedCount.value = 0;
   writingPassedCount.value = 0;
@@ -713,16 +947,23 @@ async function bootstrapModuleFromRoute() {
 
   ui.showLoading(sceneType.value === 'grammar' ? sceneLoadingText('grammar') : sceneLoadingText(type));
   try {
+    await fetchLevelLayout(type);
     if (sceneType.value === 'grammar') {
       await bridge.switchToGrammarScene();
     } else {
       await bridge.switchToPracticeScene(type);
     }
     await bridge.closeLegacyPanels();
-    resumeSession.value = loadPracticeSession(type);
-    if (resumeSession.value) {
-      ElMessage.info('检测到上次修炼进度，请选择继续或重开');
+    if ((levelLayout.value?.total_questions ?? 0) <= 0) {
+      clearPracticeSession(type);
+      resumeSession.value = null;
+    } else {
+      resumeSession.value = loadPracticeSession(type);
+      if (resumeSession.value) {
+        ElMessage.info('检测到上次修炼进度，请选择继续或重开');
+      }
     }
+    sessionState.value = 'rules';
   } catch {
     ElMessage.error('练功场景切换失败');
   } finally {
@@ -745,6 +986,10 @@ async function switchModule(type: PracticeType) {
 }
 
 async function startChallenge() {
+  if (!hasQuestionBank.value) {
+    ElMessage.warning('当前境界暂无题目，无法开始修炼');
+    return;
+  }
   resumeSession.value = null;
   resetVocabRoundState();
   resetGrammarRoundState();
@@ -752,8 +997,8 @@ async function startChallenge() {
   ui.showLoading('加载题库...');
   try {
     const endpoint = isWritingModule.value
-      ? `/writing/prompts?level=${level.realm}&stage=${String(level.stageNo).padStart(2, '0')}`
-      : `/${currentType.value}/questions?level=${level.realm}&stage=${String(level.stageNo).padStart(2, '0')}`;
+      ? `/writing/prompts?stage=${String(level.stageNo).padStart(2, '0')}`
+      : `/${currentType.value}/questions?stage=${String(level.stageNo).padStart(2, '0')}`;
     const res = await api.get(endpoint);
 
     if (!res?.success) {
@@ -768,20 +1013,6 @@ async function startChallenge() {
     if (!questions.value.length) {
       ElMessage.warning('该关卡暂无题目');
       return;
-    }
-
-    if (!isWritingModule.value && currentType.value === 'speaking') {
-      ElMessage.info('口语模块暂走经典模式（录音与跟读链路未迁移）');
-      await openLegacy(currentType.value);
-      return;
-    }
-
-    if (!isWritingModule.value) {
-      const hasComplexQuestion = questions.value.some((q) => !q?.options || typeof q.options !== 'object');
-      if (hasComplexQuestion) {
-        ElMessage.warning('当前题型不支持 Vue 原生渲染，请使用经典模式');
-        return;
-      }
     }
 
     spiritCost.value = Number(res?.data?.spirit_cost || 5);
@@ -864,6 +1095,8 @@ async function nextQuestion() {
   if (isVocabModule.value) return;
   if (isGrammarModule.value) return;
   if (isWritingModule.value) return;
+  if (isListeningModule.value) return;
+  if (isSpeakingModule.value) return;
   const qid = String(currentQuestion.value?.question_id || '');
   if (!qid) return;
   if (!selectedAnswer.value) {
@@ -893,6 +1126,10 @@ async function submitChallenge() {
       answers: questions.value.map((q) => ({
         question_id: String(q.question_id),
         answer: answers[String(q.question_id)] || '',
+        answer_text:
+          (isVocabModule.value && (q as any)?.options && (answers[String(q.question_id)] || ''))
+            ? String(((q as any).options || {})[answers[String(q.question_id)] || ''] || '')
+            : undefined,
         mode: 'choice',
       })),
     };
@@ -904,16 +1141,7 @@ async function submitChallenge() {
     }
 
     const data = res?.data || {};
-    resultAccuracy.value = Number(data.accuracy || 0);
-    resultExp.value = Number(data.total_exp ?? data.exp_gained ?? 0);
-    resultStones.value = Number(data.stones_gained || 0);
-    resultPassed.value = Boolean(data.passed);
-
-    user.updateProfile({
-      exp: Number(user.profile?.exp || 0) + resultExp.value,
-      spirit_stone: Number(user.profile?.spirit_stone || 0) + resultStones.value,
-      spirit_power: currentSpirit.value,
-    });
+    applySettlementFromResponse(data);
 
     if (resultPassed.value) {
       unlockNextLevel(currentType.value, level.levelId);
@@ -995,14 +1223,14 @@ async function onWritingSubmit(payload: { content: string; validation: WritingVa
     if (passed) writingPassedCount.value += 1;
     writingResults.value.push({ score, passed });
 
-    resultExp.value += exp;
-    resultStones.value += stones + bonusStones;
-
-    user.updateProfile({
-      exp: Number(user.profile?.exp || 0) + exp,
-      spirit_stone: Number(user.profile?.spirit_stone || 0) + stones + bonusStones,
-      spirit_power: currentSpirit.value,
-    });
+    applySettlementFromResponse(
+      {
+        exp_gained: exp,
+        stones_gained: stones + bonusStones,
+        realm_progress: data.realm_progress,
+      },
+      { accumulate: true },
+    );
 
     const uid = user.profile?.id || 'guest';
     clearWritingDraft(uid, promptId);
@@ -1034,6 +1262,7 @@ function onWritingScoreContinue() {
     const avgScore = Math.round(writingTotalScore.value / Math.max(1, writingSubmittedCount.value));
     resultAccuracy.value = avgScore;
     resultPassed.value = avgScore >= 60;
+    resultCorrectCount.value = writingPassedCount.value;
     if (resultPassed.value) {
       unlockNextLevel(currentType.value, currentLevel.value.levelId);
     }
@@ -1055,7 +1284,7 @@ function retryLevel() {
 function nextLevel() {
   clearPracticeSession();
   resetQuestionState();
-  startChallenge();
+  void startChallenge();
 }
 
 function continueFromResume() {
@@ -1145,7 +1374,7 @@ function applyArenaTextFit() {
   }
   if (isGrammarModule.value) {
     if (zfQuestionRef.value) {
-      fitTextToBounds(zfQuestionRef.value, 20, 58);
+      fitGrammarQuestionText(zfQuestionRef.value);
     }
     const optionMin = window.innerWidth <= 900 ? 10 : 12;
     const optionMax = window.innerWidth <= 900 ? 30 : 44;
@@ -1176,6 +1405,21 @@ function fitTextToBounds(el: HTMLElement, minPx: number, maxPx: number) {
       size -= 1;
       el.style.fontSize = `${size}px`;
     }
+  }
+}
+
+/** 语法题干：优先完整展示，过长则缩小字号并允许卷轴内滚动 */
+function fitGrammarQuestionText(el: HTMLElement) {
+  if (!el.clientWidth || !el.clientHeight) return;
+  const min = 16;
+  const max = 40;
+  let size = max;
+  el.style.lineHeight = '1.35';
+  el.style.overflowY = 'auto';
+  el.style.fontSize = `${size}px`;
+  while (size > min && el.scrollWidth > el.clientWidth + 1) {
+    size -= 1;
+    el.style.fontSize = `${size}px`;
   }
 }
 
@@ -1329,16 +1573,29 @@ function playCurrentWordAudio() {
   }
 }
 
-async function openLegacy(type: PracticeType) {
-  ui.showLoading('加载经典面板...');
-  try {
-    await bridge.openPracticePanel(type);
-    ElMessage.success('已切换到经典练功面板');
-  } catch {
-    ElMessage.error('经典面板加载失败');
-  } finally {
-    ui.hideLoading();
+async function onListeningSubmit(payload: { answer: string }) {
+  const qid = String(currentQuestion.value?.question_id || '');
+  if (!qid) return;
+  answers[qid] = payload.answer;
+  if (isLastQuestion.value) {
+    await submitChallenge();
+    return;
   }
+  currentIndex.value += 1;
+  persistPracticeSession();
+}
+
+async function onSpeakingSubmit() {
+  const q = currentQuestion.value;
+  const qid = String(q?.question_id || '');
+  if (!qid) return;
+  answers[qid] = String(q.correct_answer || 'FOLLOWED');
+  if (isLastQuestion.value) {
+    await submitChallenge();
+    return;
+  }
+  currentIndex.value += 1;
+  persistPracticeSession();
 }
 
 function backHall() {
@@ -1901,6 +2158,7 @@ function backHall() {
 }
 
 .zf-question-wrap {
+  position: relative;
   width: min(90%, 980px);
   margin: 20px auto 0;
   aspect-ratio: 1300 / 385;
@@ -1917,20 +2175,22 @@ function backHall() {
   left: 50%;
   top: 51%;
   transform: translate(-50%, -50%);
-  width: 66%;
-  height: 44%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 72%;
+  max-height: 58%;
+  min-height: 36%;
+  display: block;
   text-align: center;
   color: #1b1b1b;
-  font-size: 50px;
-  line-height: 1.2;
+  font-size: clamp(18px, 2.4vw, 42px);
+  line-height: 1.35;
   font-weight: 700;
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 6px 8px;
+  scrollbar-width: thin;
 }
 
 .zf-bridge-wrap {

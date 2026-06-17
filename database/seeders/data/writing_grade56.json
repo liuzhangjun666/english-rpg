@@ -1,0 +1,707 @@
+[
+  {
+    "prompt_id": "WP-L1-07-1",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "07",
+    "title": "My day",
+    "topic": "用题目：My day来写一写你的一天。\n要求：1.条理清晰，用词得当，书写工整，规范。\n2.不少于5句。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级上册",
+      "reference_sample": "My Day\n\nI usually get up at 6:30 in the morning. After that, I brush my teeth and wash my face. Then I have breakfast with my parents at 7:00. I often eat bread and drink milk for breakfast. At 7:30, I go to school by bike. I have four classes in the morning and two classes in the afternoon. My favourite subject is English because it is very interesting. After school, I often play basketball with my friends. I go home at 5:00 p.m. In the evening, I do my homework first. Then I watch TV for a while. I go to bed at 9:30. This is my day. I feel happy every day!"
+    }
+  },
+  {
+    "prompt_id": "WP-L1-07-2",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "07",
+    "title": "My Teacher",
+    "topic": "用题目：My Teacher来分享一下你眼中的某一位老师是怎样的。\n要求：1.条理清晰，用词得当，书写工整，规范。\n2.不少于6句。",
+    "passage": null,
+    "word_limit_min": 48,
+    "word_limit_max": 90,
+    "scoring_criteria": {
+      "grade": "五年级上册",
+      "reference_sample": "My Teacher\n\nMiss Wang is my English teacher. She is young and beautiful. She has long hair and big eyes. She is very kind to us, but sometimes she is strict. Her classes are always interesting because she often tells us stories and plays games with us. She often helps us with our English after class. When we have problems, she always listens to us carefully and gives us good advice. She likes reading books and singing songs. We all love her very much. I want to be a teacher like her in the future."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-07-3",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "07",
+    "title": "My Favourite Animal",
+    "topic": "用题目：My Favourite Animal 来聊一聊你最喜欢的宠物。\n要求：1.条理清晰，用词得当，书写工整，规范。\n2.不少于5句。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级上册",
+      "reference_sample": "My Favourite Animal\n\nMy favourite animal is the dog. I have a pet dog named Lucky. He is two years old. He is yellow and white. He has two big ears and a short tail. He is very cute and friendly. Every morning, he waits for me at the door. When I come back from school, he runs to me happily. He likes eating bones and playing with balls. I often take him for a walk in the park. He is my good friend. I love him very much!"
+    }
+  },
+  {
+    "prompt_id": "WP-L1-07-4",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "07",
+    "title": "My School Things",
+    "topic": "用题目：My School Things 来写一写你的学校。\n要求：1.条理清晰，用词得当，书写工整，规范。\n2.不少于6句。",
+    "passage": null,
+    "word_limit_min": 48,
+    "word_limit_max": 90,
+    "scoring_criteria": {
+      "grade": "五年级上册",
+      "reference_sample": "My School Things\n\nI have a beautiful school. It is big and clean. There are many trees and flowers in it. There is a big playground in the middle of the school. We often play sports there. There are thirty classrooms in my school. My classroom is on the second floor. It is bright and tidy. There are forty desks and chairs in it. There is a big blackboard on the wall. I love my school very much. I am proud of my school!"
+    }
+  },
+  {
+    "prompt_id": "WP-L1-07-5",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "07",
+    "title": "My friend",
+    "topic": "用题目：My friend 来写一写你的朋友。\n要求：1.条理清晰，用词得当，书写工整，规范。\n2.不少于5句。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级上册",
+      "reference_sample": "My Friend\n\nI have a good friend. His name is Tom. He is eleven years old. He is tall and thin. He has short black hair and big eyes. He is very friendly and helpful. He often helps me with my maths. We both like playing football. After school, we often play football together on the playground. He runs very fast and he is good at sports. He wants to be a football player in the future. I am very happy to have such a good friend."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-07-6",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "07",
+    "title": "My weekend",
+    "topic": "用题目：My weekend 来分享一下你的周末。\n要求：1.条理清晰，用词得当，书写工整，规范。\n2.不少于5句。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级上册",
+      "reference_sample": "My Weekend\n\nI had a happy weekend. On Saturday morning, I did my homework at home. In the afternoon, I went to the library with my sister. We read some interesting books there. On Sunday morning, I visited my grandparents. They were very happy to see me. My grandma cooked delicious food for me. In the afternoon, I played basketball with my friends in the park. We had a good time. In the evening, I watched a movie with my family. What a wonderful weekend!"
+    }
+  },
+  {
+    "prompt_id": "WP-L1-07-7",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "07",
+    "title": "At the shop",
+    "topic": "用题目：At the shop 来写一写你的一次在商店的经历吧。\n要求：1.条理清晰，用词得当，书写工整，规范。\n2.不少于5句。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级上册",
+      "reference_sample": "At the Shop\n\nLast Sunday, I went to a shop with my mother. The shop was big and clean. There were many things in it. First, we bought some fresh vegetables and fruit. Then we went to the clothes section. My mother bought a beautiful dress for me. I liked it very much. After that, we went to the book section. I bought a storybook about animals. The shop assistant was very kind. She helped us find what we wanted. We were very happy. I like going shopping with my mother."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-07-8",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "07",
+    "title": "My Favourite TV Shows",
+    "topic": "用题目：My Favourite TV Shows来分享一下你最喜欢的电视节目吧。\n要求：1.条理清晰，用词得当，书写工整，规范。\n2.不少于6句。",
+    "passage": null,
+    "word_limit_min": 48,
+    "word_limit_max": 90,
+    "scoring_criteria": {
+      "grade": "五年级上册",
+      "reference_sample": "My Favourite TV Shows\n\nMy favourite TV show is Animal World. I watch it every Saturday evening. It is about different animals in the world. I can see lions, tigers, elephants and many other animals. I learn a lot about animals from this show. For example, I know that pandas eat bamboo and koalas live in Australia. The show also tells us how to protect animals. I think it is very meaningful. Watching Animal World makes me love animals more. It is the best TV show for me!"
+    }
+  },
+  {
+    "prompt_id": "WP-L1-07-9",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "07",
+    "title": "On the farm",
+    "topic": "用题目：On the farm 来写一写你的农场经历或者你想象中的农场。\n要求：1.条理清晰，用词得当，书写工整，规范。\n2.不少于5句。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级上册",
+      "reference_sample": "On the Farm\n\nLast summer holiday, I visited my uncle's farm. It was a big farm with many animals and plants. In the morning, I helped my uncle feed the chickens and ducks. They were very lovely. Then I rode a horse. It was exciting! At noon, we had lunch in the farmhouse. The vegetables were very fresh and delicious. In the afternoon, I picked some apples with my cousin. They were sweet and juicy. I had a great time on the farm. I hope I can go there again!"
+    }
+  },
+  {
+    "prompt_id": "WP-L1-07-10",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "07",
+    "title": "My family",
+    "topic": "用题目：My family来写一写你的家庭。\n要求：1.条理清晰，用词得当，书写工整，规范。\n2.不少于5句。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级上册",
+      "reference_sample": "My Family\n\nThere are four people in my family. They are my father, my mother, my sister and me. My father is a doctor. He works in a big hospital. He is very busy but he always spends time with us. My mother is a teacher. She teaches Chinese in a middle school. She is kind and patient. My sister is two years older than me. She is good at dancing. I love my family very much. We often have dinner together and talk about our day. I feel very happy to live with them."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-07-11",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "07",
+    "title": "About me",
+    "topic": "用题目：About me来介绍一下你自己。\n要求：1.条理清晰，用词得当，书写工整，规范。\n2.不少于5句。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级上册",
+      "reference_sample": "About Me\n\nMy name is Li Hua. I am eleven years old. I am a student in Grade Five. I am tall and thin. I have short black hair and big eyes. I am an active boy. I like playing basketball and reading books. My favourite subject is English because I want to travel around the world someday. I am good at drawing too. I often draw pictures in my free time. I have many friends at school. We often help each other. I am happy every day!"
+    }
+  },
+  {
+    "prompt_id": "WP-L1-08-1",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "08",
+    "title": "My Advice",
+    "topic": "题目：My Advice\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于5句话；3. 针对健康问题给出建议，说明原因和具体做法。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级下册",
+      "reference_sample": "My Advice\n\nIf you want to be healthy, here is my advice. First, you should eat more vegetables and fruit every day. They are good for your body. Second, you should drink plenty of water. Water helps us stay healthy. Third, you should do exercise for at least one hour every day. Running and swimming are good choices. Fourth, you should go to bed early and get up early. Enough sleep is very important. Finally, you should not eat too much junk food. It is bad for your health. Follow my advice and you will be healthy!"
+    }
+  },
+  {
+    "prompt_id": "WP-L1-08-2",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "08",
+    "title": "Healthy Life",
+    "topic": "题目:Healthy Life\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于5句话；3. 介绍你的健康生活习惯，说明这样做的好处。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级下册",
+      "reference_sample": "Healthy Life\n\nI have a healthy life. First, I always eat breakfast on time. I usually have milk, bread and an egg. Second, I eat a lot of vegetables and fruit every day. They give me vitamins and energy. Third, I do exercise every day. I often run in the morning and play basketball after school. Fourth, I sleep for nine hours every night. I never stay up late. These healthy habits make me strong and energetic. I rarely get sick. I think a healthy life is very important for everyone."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-08-3",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "08",
+    "title": "My Favourite Festival",
+    "topic": "题目:My Favourite Festival\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于5句话；3. 介绍你最喜欢的节日，说明时间和庆祝方式。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级下册",
+      "reference_sample": "My Favourite Festival\n\nMy favourite festival is the Spring Festival. It usually comes in January or February. It is the most important festival in China. Before the festival, my family cleans the house and buys new clothes. On New Year's Eve, we have a big dinner together. We eat dumplings, fish and many other delicious dishes. After dinner, we watch the Spring Festival Gala on TV. During the festival, we visit our relatives and friends. Children can get red envelopes with money. I love the Spring Festival because I can spend time with my family."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-08-4",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "08",
+    "title": "My Birthday",
+    "topic": "题目:My Birthday\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于5句话；3. 描述你的一次生日，说明时间、活动和感受。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级下册",
+      "reference_sample": "My Birthday\n\nMy birthday is on June 15th. I had a wonderful birthday party last year. In the morning, my mother made a big birthday cake for me. It was very beautiful and delicious. In the afternoon, my friends came to my home. They gave me many nice gifts, such as books, toys and cards. We played games together and we were very happy. In the evening, we had a big dinner. My father cooked my favourite food. I made a wish and blew out the candles. It was the best birthday ever!"
+    }
+  },
+  {
+    "prompt_id": "WP-L1-08-5",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "08",
+    "title": "A Card to My Friend",
+    "topic": "题目:A Card to My Friend\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于5句话；3. 写一张给朋友的卡片，表达祝福并说明联系方式。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级下册",
+      "reference_sample": "A Card to My Friend\n\nDear Tom,\n\nHappy New Year! I hope you are happy and healthy. I miss you very much. How is everything going? I am writing to tell you about my new school life. I have made many new friends here. My favourite subject is still English. I often think of the good times we had together. Please write to me soon. You can email me at lihua@email.com or call me at 1234567890. I am looking forward to hearing from you. Best wishes!\n\nYours,\nLi Hua"
+    }
+  },
+  {
+    "prompt_id": "WP-L1-08-6",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "08",
+    "title": "Sending Wishes",
+    "topic": "题目:Sending Wishes\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于5句话；3. 描述你如何向远方亲友发送祝福，说明方式和内容。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级下册",
+      "reference_sample": "Sending Wishes\n\nThe Spring Festival is coming. I want to send my best wishes to my grandparents who live in another city. First, I will make a beautiful card for them. I will draw some flowers and write \"Happy New Year\" on it. Then, I will buy some gifts for them, such as tea and fruit. I will send the card and gifts by express delivery. I will also video call them on New Year's Eve. I want to tell them that I love them and hope they are healthy and happy. I am sure they will be very glad to receive my wishes."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-08-7",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "08",
+    "title": "My Weekend",
+    "topic": "题目:My Weekend\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于5句话；3. 描述你上周末的活动，使用一般过去时叙述具体经历。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级下册",
+      "reference_sample": "My Weekend\n\nI had a busy but happy weekend. On Saturday morning, I went to the park with my family. We flew a kite there. The weather was sunny and windy. In the afternoon, I visited my grandparents. They were very happy to see me. On Sunday morning, I did my homework and read a book. In the afternoon, I played football with my friends in the playground. We had a great time. In the evening, I watched an interesting movie with my parents. I really enjoyed my weekend."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-08-8",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "08",
+    "title": "A Happy Day",
+    "topic": "题目:A Happy Day\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于5句话；3. 描述你开心的一天，使用一般过去时叙述活动和感受。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级下册",
+      "reference_sample": "A Happy Day\n\nLast Sunday was a happy day for me. In the morning, my parents took me to the zoo. I saw many animals there, such as pandas, monkeys and elephants. The pandas were very cute. They ate bamboo happily. At noon, we had lunch in a restaurant near the zoo. The food was delicious. In the afternoon, we went to the cinema and watched a funny cartoon. We laughed a lot. In the evening, we went home together. I felt very happy. It was really a wonderful day!"
+    }
+  },
+  {
+    "prompt_id": "WP-L1-08-9",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "08",
+    "title": "My Holiday",
+    "topic": "题目:My Holiday\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于5句话；3. 描述你的一次假期旅行，使用一般过去时叙述地点和经历。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级下册",
+      "reference_sample": "My Holiday\n\nLast summer holiday, I went to Beijing with my parents. We went there by train. It took us about five hours. On the first day, we visited the Great Wall. It was very long and great. I climbed to the top and took many photos. On the second day, we went to the Palace Museum. I saw many old and beautiful things there. On the third day, we visited Tian'anmen Square. It was very big and grand. We also tried Beijing Duck. It was delicious. I had a wonderful holiday in Beijing."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-08-10",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "08",
+    "title": "A Trip",
+    "topic": "题目:A Trip\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于5句话；3. 描述你的一次旅行，使用一般过去时叙述活动和美食。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级下册",
+      "reference_sample": "A Trip\n\nLast month, I went on a trip to Hangzhou with my classmates. We went there by bus. It took us three hours. First, we visited the West Lake. It was very beautiful. The water was clean and the trees were green. We took a boat on the lake. It was relaxing. Then we went to a famous restaurant for lunch. We tried Dongpo Pork and West Lake Fish. They were very tasty. In the afternoon, we walked around the lake and bought some souvenirs. We were tired but happy. It was an unforgettable trip!"
+    }
+  },
+  {
+    "prompt_id": "WP-L1-08-11",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "08",
+    "title": "When I Was Young",
+    "topic": "题目:When I Was Young\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于5句话；3. 描述你小时候的成长经历，使用一般过去时叙述学会的技能。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "五年级下册",
+      "reference_sample": "When I Was Young\n\nWhen I was young, I was very shy. I was afraid to speak in front of others. One day, my mother encouraged me to learn swimming. At first, I was scared of water. But my coach was very patient. He taught me step by step. After two months of practice, I could swim very well. I even won a swimming competition at school. My parents were very proud of me. From this experience, I learned that practice makes perfect. Now I am confident and brave. I am no longer a shy boy."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-09-1",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "09",
+    "title": "My Growth",
+    "topic": "题目:My Growth\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于5句话；3. 描述你的成长故事，使用一般过去时叙述重要时刻和感受。",
+    "passage": null,
+    "word_limit_min": 40,
+    "word_limit_max": 75,
+    "scoring_criteria": {
+      "grade": "六年级上册",
+      "reference_sample": "My Growth\n\nI have changed a lot since I was a child. When I was six years old, I was very short and thin. I was afraid of the dark and I couldn't sleep alone. My mother always stayed with me until I fell asleep. When I was eight, I learned to ride a bike. At first, I fell down many times. But I didn't give up. Finally, I could ride it well. I felt very proud. Now I am twelve years old. I am tall and strong. I can do many things by myself, such as cooking simple meals and washing clothes. I have become more independent and confident. I know that growing up means learning new things and facing challenges bravely."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-09-2",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "09",
+    "title": "My Favourite City",
+    "topic": "题目：My Favourite City。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 介绍你最喜欢的一座城市，描述地理位置、著名景点、特色美食和气候特点，并说明想去旅行的原因和计划。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级上册",
+      "reference_sample": "My Favourite City\n\nMy favourite city is Shanghai. It is in the east of China. It is a big and modern city. There are many famous places in Shanghai. The Bund is very beautiful, especially at night. The lights are colourful and amazing. The Oriental Pearl Tower is another famous place. It is very tall and special. Yu Garden is a traditional place with old buildings and beautiful gardens. Shanghai is also famous for its delicious food, such as xiaolongbao and shengjianbao. The weather in Shanghai is mild. Spring and autumn are the best seasons. I want to visit Shanghai again because there is always something new to discover. I plan to go there next summer holiday with my family."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-09-3",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "09",
+    "title": "A Trip to Remember",
+    "topic": "题目：A Trip to Remember。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 描述一次难忘的旅行经历，包括目的地、参观的景点、品尝的美食、看到的自然景观以及旅行中的感受。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级上册",
+      "reference_sample": "A Trip to Remember\n\nLast summer, I went on a trip to Guilin with my family. It was a trip I will never forget. Guilin is in the south of China and it is famous for its beautiful mountains and rivers. First, we visited the Li River. The water was green and clear. The mountains along the river looked like paintings. We took a bamboo raft and enjoyed the beautiful scenery. Then we visited the Reed Flute Cave. There were many amazing stalactites and stalagmites. The lights made them look like a fairyland. We also tried Guilin rice noodles. They were very tasty. During the trip, I saw many beautiful natural landscapes. I felt relaxed and happy. This trip taught me that nature is truly wonderful. I hope I can visit Guilin again someday."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-09-4",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "09",
+    "title": "My Dream City",
+    "topic": "题目：My Dream City。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 介绍你最想去的国外城市，描述该城市的著名建筑、特色动物、语言文化和有趣活动，并说明为什么特别向往这座城市。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级上册",
+      "reference_sample": "My Dream City\n\nMy dream city is Paris, the capital of France. I have always wanted to visit this romantic city. Paris is famous for the Eiffel Tower. It is very tall and beautiful, especially when it lights up at night. The Louvre Museum is another amazing place. It has many world-famous artworks, such as the Mona Lisa. I also want to see the Notre-Dame Cathedral. It is a beautiful old church with special architecture. In Paris, people speak French. I think it is a very elegant language. There are many interesting activities in Paris, such as visiting cafes and watching street performances. I am particularly interested in French food, like croissants and cheese. I want to go to Paris because it is a city full of art and culture. I plan to study French hard and save money for this trip."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-09-5",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "09",
+    "title": "An Unforgettable Journey Abroad",
+    "topic": "题目：An Unforgettable Journey Abroad。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 描述一次国外旅行或想象中的国外旅行，包括目的地、参观的博物馆或地标建筑、看到的独特风景以及旅行收获。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级上册",
+      "reference_sample": "An Unforgettable Journey Abroad\n\nLast year, I had an unforgettable journey to London, the capital of the United Kingdom. It was my first time going abroad. First, I visited the British Museum. It is one of the largest museums in the world. I saw many treasures from different countries, including ancient Egyptian mummies and Greek sculptures. Then I went to the Tower of London. It is a historic castle with a long history. I learned many interesting stories about British kings and queens. I also visited Big Ben and the London Eye. The view from the London Eye was fantastic. I could see the whole city. During the trip, I saw many unique buildings and beautiful parks. I learned a lot about British history and culture. This journey opened my eyes to the world. I will always remember it."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-09-6",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "09",
+    "title": "Amazing Animals",
+    "topic": "题目：Amazing Animals。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 介绍一种你最喜欢的动物，说明它属于哪类动物、生活在哪里、外形特征、饮食习惯以及你认为它聪明或特别的原因。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级上册",
+      "reference_sample": "Amazing Animals\n\nMy favourite animal is the dolphin. It is a mammal that lives in the ocean. Dolphins are very intelligent animals. They have smooth grey skin and a long beak. They can grow up to four metres long. Dolphins live in groups called pods. They communicate with each other by making special sounds. Dolphins eat fish and squid. They are very good swimmers and can jump high out of the water. What makes dolphins special is their intelligence. They can learn tricks quickly and help people in the sea. Some dolphins have even saved swimmers from sharks. I think dolphins are amazing because they are friendly, smart and beautiful. We should protect them and their ocean home."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-09-7",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "09",
+    "title": "A Visit to the Zoo",
+    "topic": "题目：A Visit to the Zoo。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 描述一次动物园或自然博物馆的参观经历，包括看到的不同种类动物、印象最深的一种动物以及参观后的感想和收获。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级上册",
+      "reference_sample": "A Visit to the Zoo\n\nLast Saturday, I visited the city zoo with my classmates. It was a wonderful experience. The zoo is very big and has many different kinds of animals. First, we saw the giant pandas. They were eating bamboo and rolling on the ground. They looked so cute and lazy. Then we went to the monkey mountain. The monkeys were very active. They jumped from tree to tree and some even made faces at us. We also saw lions, tigers, elephants and giraffes. The animal that impressed me most was the elephant. It was huge but gentle. It used its long trunk to pick up food and spray water. At the end of the visit, we watched a dolphin show. The dolphins were very smart and performed many amazing tricks. This visit made me understand that animals are our friends. We should love and protect them. I learned a lot and had a great time."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-09-8",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "09",
+    "title": "A Day Full of Feelings",
+    "topic": "题目：A Day Full of Feelings。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 描述一天中经历多种情绪变化的故事，包括发生的事情、你的感受变化以及原因，最后谈谈从中学到了什么。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级上册",
+      "reference_sample": "A Day Full of Feelings\n\nLast Monday was a day full of feelings for me. In the morning, I felt nervous because I had an important English test. I was worried that I might fail. During the test, I tried my best and finished all the questions. After the test, I felt relieved. In the afternoon, the teacher announced the results. I got an A! I felt extremely happy and proud. My classmates congratulated me. However, in the evening, I felt sad because my best friend told me he was moving to another city. I was going to miss him very much. But then he said we could keep in touch online. This made me feel better. From this day, I learned that life has ups and downs. We should enjoy the good moments and face the bad ones bravely. Every feeling is part of our growth."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-09-9",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "09",
+    "title": "My Proudest Moment",
+    "topic": "题目：My Proudest Moment。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 描述一次让你感到自豪的经历，包括参加的比赛或测试、遇到的困难、如何克服以及最终获胜或成功时的心情和感悟。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级上册",
+      "reference_sample": "My Proudest Moment\n\nMy proudest moment happened last year when I won the school speech contest. At first, I was not confident because there were many excellent competitors. The topic was \"My Dream\". I practised every day for two weeks. I wrote my speech carefully and rehearsed it many times in front of the mirror. Sometimes I felt tired and wanted to give up. But my teacher encouraged me to keep going. On the day of the contest, I was very nervous. My hands were shaking when I walked onto the stage. However, when I started speaking, I forgot my fear. I spoke loudly and clearly. I looked at the audience and smiled. When I finished, everyone clapped warmly. Finally, the judge announced that I won the first prize. I couldn't believe it! I felt so proud and happy. This experience taught me that hard work leads to success. I will never forget this proud moment."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-09-10",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "09",
+    "title": "My Dream Job",
+    "topic": "题目：My Dream Job。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 介绍你未来想从事的职业，说明选择这个职业的原因、需要学习哪些知识和技能、崇拜的相关名人以及为实现梦想会做的具体努力。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级上册",
+      "reference_sample": "My Dream Job\n\nMy dream job is to become a doctor. I want to be a doctor because doctors can save people's lives and help them recover from illness. I think it is a very meaningful job. To become a doctor, I need to study hard, especially biology and chemistry. I also need to develop good communication skills because doctors need to talk with patients and their families. I admire Doctor Zhong Nanshan very much. He is a famous respiratory specialist in China. During the COVID-19 pandemic, he worked hard to protect people's health. He is brave, professional and responsible. To achieve my dream, I will study diligently every day. I will read more medical books and learn first aid skills. I will also exercise regularly to keep healthy. I believe that with hard work and persistence, my dream will come true someday."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-09-11",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "09",
+    "title": "A Great Person I Admire",
+    "topic": "题目：A Great Person I Admire。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 介绍一位你敬佩的伟人或名人，包括国籍、职业、主要成就、代表作品或发明以及他/她给你的启发和影响。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级上册",
+      "reference_sample": "A Great Person I Admire\n\nThe great person I admire most is Yuan Longping, who is known as the \"Father of Hybrid Rice\". He was a Chinese agricultural scientist. He was born in 1930 and passed away in 2021. Dr. Yuan devoted his whole life to researching hybrid rice. He developed a special kind of rice that could produce much more grain than ordinary rice. His invention helped feed millions of people in China and around the world. He won many awards for his great contribution to agriculture. Even when he was old, he still worked in the rice fields every day. He was very humble and always said he was just a farmer. Dr. Yuan taught me that we should work hard for our dreams and care about other people. His spirit of dedication and perseverance inspires me greatly. I want to be a useful person like him in the future."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-09-12",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "09",
+    "title": "My Favourite Festival",
+    "topic": "题目：My Favourite Festival。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 介绍你最喜欢的中国传统节日，描述节日习俗、特色美食、家庭活动以及你对这个节日的期待和感受，可以提及给笔友写信分享的经历。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级上册",
+      "reference_sample": "My Favourite Festival\n\nMy favourite festival is the Mid-Autumn Festival. It falls on the 15th day of the eighth lunar month. On this day, the moon is the roundest and brightest of the year. My family always gets together to celebrate it. We eat mooncakes, which are round like the moon and symbolize reunion. My favourite flavour is egg yolk lotus seed paste. In the evening, we usually sit in the garden, admire the full moon and tell stories about Chang'e. Sometimes we also carry lanterns and walk around the neighbourhood. I love this festival because it makes me feel the warmth of family. Last year, I wrote a letter to my pen pal in Canada about this festival. I told him about the beautiful moon and delicious mooncakes. He said he wanted to celebrate it with me someday. The Mid-Autumn Festival is not just about eating and fun; it is about love and togetherness."
+    }
+  },
+  {
+    "prompt_id": "WP-L1-09-13",
+    "writing_type": "topic",
+    "realm": "L1",
+    "stage": "09",
+    "title": "A Letter to My Pen Pal",
+    "topic": "题目：A Letter to My Pen Pal。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 以书信格式给笔友写一封信，介绍你最近的生活、参加的活动或比赛、获得的奖品以及对即将到来的活动的盼望，注意书信格式正确。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级上册",
+      "reference_sample": "A Letter to My Pen Pal\n\nDear Mike,\n\nHow are you? I hope everything is going well with you. I am writing to tell you about my recent life. Last month, I took part in the school English competition. I was very nervous at first, but I tried my best. To my surprise, I won the first prize! The prize was a beautiful English dictionary. I was so excited and proud. My parents were very happy too. They took me to a nice restaurant to celebrate. Now I am preparing for the summer camp next month. I will go to the countryside with my classmates. We will plant trees and help farmers pick fruit. I am really looking forward to it. What about you? Have you had any interesting experiences recently? Please write back soon.\n\nBest wishes,\nLi Hua"
+    }
+  },
+  {
+    "prompt_id": "WP-L2-01-1",
+    "writing_type": "topic",
+    "realm": "L2",
+    "stage": "01",
+    "title": "My New Life in a New City",
+    "topic": "题目：My New Life in a New City。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 描述你搬到一个新城市生活的经历。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级下册",
+      "reference_sample": "My New Life in a New City\n\nLast year, my family moved to Hangzhou because of my father's job. At first, I felt nervous about starting a new life in a strange city. Everything was different from my hometown. The streets were wider and the buildings were taller. However, the people here were very friendly. My new neighbours welcomed us warmly and helped us a lot. My new school was big and modern. The teachers were kind and the classmates were helpful. They invited me to join their study group. I made many new friends quickly. On weekends, my parents often took me to visit the West Lake. It was so beautiful that I fell in love with this city. Now I have adapted to my new life. I enjoy living in Hangzhou. This experience taught me that change can bring new opportunities and happiness."
+    }
+  },
+  {
+    "prompt_id": "WP-L2-01-2",
+    "writing_type": "topic",
+    "realm": "L2",
+    "stage": "01",
+    "title": "A Letter from My Pen Pal",
+    "topic": "题目：A Letter from My Pen Pal。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 以书信格式描述笔友即将来访，你计划去机场迎接他/她，并介绍你的城市生活和居住的地方，注意书信格式正确。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级下册",
+      "reference_sample": "A Letter from My Pen Pal\n\nDear Li Hua,\n\nI have some exciting news! I am going to visit your city next month. My parents and I will take a flight and arrive at 10:00 a.m. on July 15th. I am really looking forward to seeing you!\n\nI plan to stay in your city for a week. I have heard that your city is beautiful and has many interesting places. I would like to visit the city centre, the museum and the famous park. I also want to try the local food. Could you show me around?\n\nBy the way, I will stay at the Holiday Hotel near your home. It is not far from where you live, right? Please let me know if you can meet me at the airport. I can't wait to see you!\n\nYours,\nMike"
+    }
+  },
+  {
+    "prompt_id": "WP-L2-01-3",
+    "writing_type": "topic",
+    "realm": "L2",
+    "stage": "01",
+    "title": "Show You Around My City",
+    "topic": "题目：Show You Around My City。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 假设你是小导游，带领外国朋友参观你的城市，介绍市中心的公园、艺术馆、公共图书馆、湖泊或体育场等特色地点，并说明推荐理由。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级下册",
+      "reference_sample": "Show You Around My City\n\nWelcome to my city! I am very happy to be your guide. Let me show you around some special places. First, we will visit the City Centre Park. It is the largest park in our city. There are beautiful flowers, tall trees and a clean lake. Many people exercise there every morning. Next, we will go to the Art Museum. It has many famous paintings and sculptures. You can learn a lot about art history there. Then we will visit the Public Library. It is a modern building with thousands of books. You can read and study in a quiet environment. After that, we will go to the Blue Lake. The water is clear and you can see fish swimming. Finally, we will visit the Sports Stadium. It is very big and can hold 50,000 people. Many exciting sports events are held there. I am sure you will love my city!"
+    }
+  },
+  {
+    "prompt_id": "WP-L2-01-4",
+    "writing_type": "topic",
+    "realm": "L2",
+    "stage": "01",
+    "title": "My Favourite Place in the City",
+    "topic": "题目：My Favourite Place in the City。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 介绍你所在城市中最喜欢的一个地方，描述它的位置、特色、你在那里做过的有趣活动，以及为什么想带朋友去参观。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级下册",
+      "reference_sample": "My Favourite Place in the City\n\nMy favourite place in the city is the City Library. It is located in the centre of the city, near the main square. The building is very modern and beautiful with large glass windows. Inside, it is quiet and comfortable. There are thousands of books on different subjects. I often go there on weekends. I like reading science fiction and history books. Sometimes I do my homework there because the environment helps me concentrate. Last month, I joined a reading club at the library. We meet every Saturday afternoon to share our favourite books. It is very interesting. I also like the café on the second floor. They serve delicious coffee and cakes. I want to bring my friends here because it is a perfect place to relax and learn. I think everyone should visit this wonderful place."
+    }
+  },
+  {
+    "prompt_id": "WP-L2-01-5",
+    "writing_type": "topic",
+    "realm": "L2",
+    "stage": "01",
+    "title": "My Healthy Habits",
+    "topic": "题目：My Healthy Habits。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 介绍你的健康生活习惯，包括饮食习惯、运动习惯、作息习惯等，对比过去和现在的变化，说明至少三个好习惯以及养成这些习惯的好主意。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级下册",
+      "reference_sample": "My Healthy Habits\n\nI have developed many healthy habits over the years. First, I have good eating habits. I eat breakfast every day and I rarely eat junk food. I prefer vegetables, fruit and whole grains. Second, I exercise regularly. I run for thirty minutes every morning and play basketball twice a week. Third, I have a regular sleep schedule. I go to bed at 9:30 p.m. and get up at 6:30 a.m. I never stay up late playing computer games. Compared with three years ago, I have changed a lot. I used to hate vegetables and I always ate snacks. I never did exercise and I often felt tired. Now I am much healthier and more energetic. My advice for developing healthy habits is to start small, be consistent and find a partner to exercise with you. Healthy habits make a healthy life!"
+    }
+  },
+  {
+    "prompt_id": "WP-L2-01-6",
+    "writing_type": "topic",
+    "realm": "L2",
+    "stage": "01",
+    "title": "A Day as a Volunteer",
+    "topic": "题目：A Day as a Volunteer。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 描述你作为志愿者的一天，包括参加的活动、帮助的对象、学到的经验以及从中学到的宝贵意见，谈谈志愿服务给你的收获。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级下册",
+      "reference_sample": "A Day as a Volunteer\n\nLast Saturday, I worked as a volunteer at the City Animal Shelter. It was a meaningful experience. In the morning, I helped clean the cages and feed the animals. There were dogs, cats and even some rabbits. They were very cute but some looked sad. Then I played with the dogs in the yard. I threw balls for them and they ran happily. In the afternoon, I helped the staff bathe the dogs. It was hard work but I enjoyed it. I also talked to visitors and told them about animal adoption. One family decided to adopt a small dog. I felt very happy. From this experience, I learned that animals need our love and care. Volunteering is not just about helping others; it also makes me feel fulfilled. I plan to volunteer there every month. It is a valuable experience that I will always remember."
+    }
+  },
+  {
+    "prompt_id": "WP-L2-01-7",
+    "writing_type": "topic",
+    "realm": "L2",
+    "stage": "01",
+    "title": "My Favourite Sport",
+    "topic": "题目：My Favourite Sport。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 介绍你最喜欢的运动，可以谈论曲棍球或其他运动，描述和朋友一起参与的特殊经历以及这项运动带给你的快乐。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级下册",
+      "reference_sample": "My Favourite Sport\n\nMy favourite sport is basketball. I have been playing it since I was eight years old. Basketball is exciting and challenging. It requires teamwork, speed and skill. Every weekend, I play basketball with my friends at the community court. Last month, we had a special experience. Our team participated in a school basketball tournament. In the final game, we were behind by ten points at halftime. Everyone felt nervous. But our captain encouraged us to keep fighting. In the second half, we worked together perfectly. I scored two three-pointers and my teammates defended well. Finally, we won the game by two points! We were so excited that we jumped and shouted. Basketball not only makes me strong but also teaches me the importance of teamwork. It brings me joy and friendship. I will keep playing basketball forever."
+    }
+  },
+  {
+    "prompt_id": "WP-L2-01-8",
+    "writing_type": "topic",
+    "realm": "L2",
+    "stage": "01",
+    "title": "Special Animals in Canada",
+    "topic": "题目：Special Animals in Canada。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 介绍加拿大的特色动物，如海狸、浣熊或驼鹿，描述它们的外形特征、生活习性以及为什么这些动物对这个国家有特殊意义。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级下册",
+      "reference_sample": "Special Animals in Canada\n\nCanada is home to many special animals. One of the most famous is the beaver. It is a large rodent with brown fur and a flat tail. Beavers are excellent builders. They cut down trees with their sharp teeth and build dams in rivers. These dams create ponds where they live. Another special animal is the raccoon. It has a black mask on its face and a ringed tail. Raccoons are very clever. They can open doors and containers to find food. The moose is also a symbol of Canada. It is the largest member of the deer family. Moose have large antlers and long legs. They live in forests and near lakes. These animals are special to Canada because they represent the country's wild nature. The beaver is even on the Canadian five-cent coin. Canadians are proud of these animals and work hard to protect them."
+    }
+  },
+  {
+    "prompt_id": "WP-L2-01-9",
+    "writing_type": "topic",
+    "realm": "L2",
+    "stage": "01",
+    "title": "A Wonderful Thanksgiving",
+    "topic": "题目：A Wonderful Thanksgiving。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 描述你在乡下或农村度过的一次感恩节，包括烤火鸡等节日美食、看到的松鼠和天鹅等动物、家庭团聚活动以及你的感恩之情。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级下册",
+      "reference_sample": "A Wonderful Thanksgiving\n\nLast Thanksgiving, I spent a wonderful day at my grandparents' house in the countryside. The village was peaceful and beautiful. In the morning, my grandma and I prepared the Thanksgiving dinner. We roasted a big turkey in the oven. It smelled delicious. We also made pumpkin pie and mashed potatoes. While waiting for the food, I went outside and saw some squirrels climbing trees. They were busy collecting nuts for winter. Near the pond, I saw two white swans swimming gracefully. They looked like angels on the water. In the afternoon, all our relatives arrived. We sat around the table, said grace and enjoyed the feast. We talked and laughed happily. Before dinner, everyone shared what they were thankful for. I said I was thankful for my family and health. It was a warm and loving day. I felt very grateful and happy."
+    }
+  },
+  {
+    "prompt_id": "WP-L2-01-10",
+    "writing_type": "topic",
+    "realm": "L2",
+    "stage": "01",
+    "title": "Life in the Countryside",
+    "topic": "题目：Life in the Countryside。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 对比城市生活和乡村生活，描述你在农村的经历，包括看到的自然风光以及乡村生活给你的感受。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级下册",
+      "reference_sample": "Life in the Countryside\n\nLast summer, I stayed in the countryside with my grandparents for two weeks. It was quite different from city life. In the city, I live in a tall building and there are many cars and noise. In the countryside, my grandparents have a small house with a big garden. The air is fresh and clean. Every morning, I woke up to the sound of birds singing. I helped my grandpa feed the chickens and water the vegetables. The tomatoes and cucumbers were so fresh and tasty. In the afternoon, I often went to the nearby hill. I saw colourful wildflowers and butterflies. The sky was so blue and the clouds were so white. At night, I could see thousands of stars in the sky. It was amazing! Life in the countryside is simple but beautiful. It made me feel relaxed and close to nature. I hope I can go back there soon."
+    }
+  },
+  {
+    "prompt_id": "WP-L2-01-11",
+    "writing_type": "topic",
+    "realm": "L2",
+    "stage": "01",
+    "title": "A Day at the Shopping Centre",
+    "topic": "题目：A Day at the Shopping Centre。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 描述你在购物中心或大型商场的一天，包括购买的物品、品尝的美食如火锅、看到的神奇事物以及购物的收获和感受。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级下册",
+      "reference_sample": "A Day at the Shopping Centre\n\nLast Sunday, I had an exciting day at the shopping centre with my family. The shopping centre was huge and modern. First, we went to the bookstore on the third floor. I bought two novels and a science magazine. Then we went to the electronics store. My father looked at some new phones. At noon, we had lunch at a hot pot restaurant on the fourth floor. The hot pot was spicy but delicious. We ate beef, lamb and many kinds of vegetables. After lunch, we walked around the shopping centre. I saw a magic show in the central hall. The magician pulled a rabbit out of a hat! It was amazing. Then my mother bought a beautiful dress and I got a new pair of sports shoes. We were tired but very happy. It was a fun and fruitful day. I love going to the shopping centre with my family."
+    }
+  },
+  {
+    "prompt_id": "WP-L2-01-12",
+    "writing_type": "topic",
+    "realm": "L2",
+    "stage": "01",
+    "title": "My Amazing Discovery",
+    "topic": "题目：My Amazing Discovery。\n要求：1. 条理清晰，用词得当，书写工整，规范；2. 不少于8句话；3. 描述一次令人惊叹的发现或经历，可以是在商场、书店或旅行中，说明发生了什么、为什么觉得神奇以及这次经历给你的启发。",
+    "passage": null,
+    "word_limit_min": 64,
+    "word_limit_max": 120,
+    "scoring_criteria": {
+      "grade": "六年级下册",
+      "reference_sample": "My Amazing Discovery\n\nLast month, I made an amazing discovery at the city museum. I went there with my classmates for a school trip. In the dinosaur exhibition, I saw a huge dinosaur skeleton. It was over twenty metres long! But the most amazing thing was in the science section. There was an interactive display about optical illusions. When I looked at a spinning pattern, the static picture seemed to move! I couldn't believe my eyes. I asked the museum guide about it. He explained that our brains sometimes interpret visual information in strange ways. This is called an optical illusion. I was fascinated. I spent an hour trying different illusions. This discovery made me realize that science is full of surprises. It inspired me to learn more about psychology and the human brain. I think the world is full of amazing things waiting for us to discover."
+    }
+  }
+]

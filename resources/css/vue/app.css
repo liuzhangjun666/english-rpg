@@ -2,11 +2,40 @@
 @source "../../js/vue/**/*.vue";
 @source "../../js/vue/**/*.ts";
 
+:root {
+  --cult-gold: #f4d98a;
+  --cult-gold-dim: #d4a843;
+  --cult-gold-border: rgba(212, 168, 67, 0.32);
+  --cult-parchment: #f7f3e8;
+  --cult-parchment-dim: #c8b685;
+  --cult-parchment-muted: #9a8f6e;
+  --cult-purple: #a29bfe;
+  --cult-purple-border: rgba(162, 155, 254, 0.35);
+  --cult-panel-bg: linear-gradient(165deg, rgba(12, 16, 32, 0.92) 0%, rgba(8, 10, 22, 0.88) 100%);
+  --cult-radius: 14px;
+  --cult-radius-sm: 10px;
+  --cult-font-title: 'STKaiti', 'KaiTi', 'Microsoft YaHei', sans-serif;
+}
+
 #vue-app {
   position: fixed;
   inset: 0;
   z-index: 140;
   pointer-events: auto;
+
+  /* 修仙主题设计令牌 */
+  --cult-gold: #f4d98a;
+  --cult-gold-dim: #d4a843;
+  --cult-gold-border: rgba(212, 168, 67, 0.32);
+  --cult-parchment: #f7f3e8;
+  --cult-parchment-dim: #c8b685;
+  --cult-parchment-muted: #9a8f6e;
+  --cult-purple: #a29bfe;
+  --cult-purple-border: rgba(162, 155, 254, 0.35);
+  --cult-panel-bg: linear-gradient(165deg, rgba(12, 16, 32, 0.92) 0%, rgba(8, 10, 22, 0.88) 100%);
+  --cult-radius: 14px;
+  --cult-radius-sm: 10px;
+  --cult-font-title: 'STKaiti', 'KaiTi', 'Microsoft YaHei', sans-serif;
 }
 
 #vue-app .vue-shell {
@@ -37,6 +66,8 @@
   flex: 1;
   padding: 16px;
   overflow: auto;
+  background: radial-gradient(ellipse at 50% 0%, rgba(212, 168, 67, 0.04) 0%, transparent 50%),
+    linear-gradient(180deg, rgba(6, 8, 18, 0.35) 0%, rgba(6, 8, 18, 0.15) 100%);
 }
 
 #vue-app .vue-shell.is-login .shell-main {
@@ -71,8 +102,10 @@
 #vue-app .legacy-module-page,
 #vue-app .reading-page,
 #vue-app .exam-page,
-#vue-app .mijing-page {
-  width: min(1024px, 100%);
+#vue-app .mijing-page,
+#vue-app .assessment-page,
+#vue-app .onboarding-page {
+  width: min(720px, 100%);
   margin: 0 auto;
 }
 
@@ -117,7 +150,7 @@
 
 #vue-app .mall-page,
 #vue-app .leaderboard-page {
-  width: min(1024px, 100%);
+  width: min(720px, 100%);
   margin: 0 auto;
 }
 
@@ -261,7 +294,7 @@ html, body, #app {
 }
 
 #vue-app .core-icon {
-  width: 200px;
+  width: 180px;
 }
 
 #vue-app .arc-icon {
@@ -270,7 +303,59 @@ html, body, #app {
 }
 
 #vue-app .dock-icon {
-  width: 110px;
+  width: 96px;
+}
+
+#vue-app .dock-entry {
+  gap: 6px;
+}
+
+#vue-app .dock-entry-glow {
+  position: absolute;
+  inset: 10% 5% auto;
+  height: 55%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 100%, rgba(212, 168, 67, 0.35) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#vue-app .dock-entry:hover .dock-entry-glow,
+#vue-app .dock-entry.is-core .dock-entry-glow {
+  opacity: 1;
+}
+
+#vue-app .dock-label {
+  font-size: 11px;
+  line-height: 1.2;
+  color: rgba(212, 168, 67, 0.75);
+  letter-spacing: 0.08em;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.25s ease, transform 0.25s ease, color 0.25s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+#vue-app .dock-entry:hover .dock-label,
+#vue-app .dock-entry.is-core .dock-label {
+  opacity: 1;
+  transform: translateY(0);
+  color: #f0d48a;
+}
+
+#vue-app .core-icon.is-core {
+  width: 180px;
+  margin-bottom: 4px;
+}
+
+#vue-app .core-icon.is-core .dock-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
 }
 
 #vue-app .core-icon:hover {
@@ -326,6 +411,1108 @@ html, body, #app {
   border-color: rgba(212, 168, 67, 0.25);
 }
 
+/* ================== 修仙冒险面板（试炼场 / 秘境等） ================== */
+#vue-app .cult-panel {
+  background: linear-gradient(165deg, rgba(12, 16, 32, 0.92) 0%, rgba(8, 10, 22, 0.88) 100%);
+  border: 1px solid rgba(212, 168, 67, 0.32);
+  border-radius: 14px;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 236, 184, 0.08);
+  backdrop-filter: blur(14px);
+  overflow: hidden;
+}
+
+#vue-app .mijing-panel {
+  border-color: rgba(162, 155, 254, 0.35);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(162, 155, 254, 0.06),
+    inset 0 1px 0 rgba(200, 190, 255, 0.1);
+}
+
+#vue-app .mijing-panel.is-challenge {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+#vue-app .cult-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(212, 168, 67, 0.22);
+  background: linear-gradient(180deg, rgba(212, 168, 67, 0.08), transparent);
+}
+
+#vue-app .mijing-panel .cult-panel-header {
+  border-bottom-color: rgba(162, 155, 254, 0.22);
+  background: linear-gradient(180deg, rgba(162, 155, 254, 0.1), transparent);
+}
+
+#vue-app .cult-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f4d98a;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', sans-serif;
+}
+
+#vue-app .mijing-panel .cult-panel-title {
+  color: #e8e4ff;
+}
+
+#vue-app .cult-panel-icon {
+  font-size: 18px;
+  filter: drop-shadow(0 0 6px rgba(244, 217, 138, 0.5));
+}
+
+#vue-app .cult-panel-back {
+  padding: 6px 14px;
+  border: 1px solid rgba(212, 168, 67, 0.35);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  color: #c8b685;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#vue-app .mijing-panel .cult-panel-back {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  border-color: rgba(162, 155, 254, 0.35);
+  color: rgba(232, 228, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+#vue-app .cult-panel-back:hover {
+  border-color: rgba(212, 168, 67, 0.7);
+  color: #f4d98a;
+  background: rgba(212, 168, 67, 0.1);
+}
+
+#vue-app .mijing-panel .cult-panel-back:hover {
+  border-color: rgba(255, 120, 120, 0.5);
+  color: #ff8a8a;
+  background: rgba(255, 80, 80, 0.15);
+}
+
+#vue-app .cult-panel-body {
+  padding: 16px 18px 20px;
+}
+
+#vue-app .mijing-panel.is-challenge .cult-panel-body {
+  padding: 0;
+}
+
+#vue-app .cult-notice {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 168, 67, 0.25);
+  background: rgba(212, 168, 67, 0.06);
+}
+
+#vue-app .cult-notice.info {
+  border-color: rgba(100, 180, 220, 0.35);
+  background: linear-gradient(135deg, rgba(30, 60, 90, 0.5), rgba(15, 25, 45, 0.6));
+}
+
+#vue-app .mijing-panel .cult-notice.info {
+  border-color: rgba(162, 155, 254, 0.35);
+  background: linear-gradient(135deg, rgba(40, 25, 70, 0.55), rgba(20, 12, 40, 0.65));
+}
+
+#vue-app .cult-notice.warning {
+  border-color: rgba(230, 170, 80, 0.4);
+  background: linear-gradient(135deg, rgba(80, 50, 10, 0.45), rgba(40, 25, 5, 0.55));
+}
+
+#vue-app .cult-notice-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f4d98a;
+  font-size: 14px;
+}
+
+#vue-app .cult-notice.info .cult-notice-icon {
+  color: #7ec8e8;
+}
+
+#vue-app .mijing-panel .cult-notice.info .cult-notice-icon {
+  color: #a29bfe;
+}
+
+#vue-app .cult-notice.warning .cult-notice-icon {
+  color: #f0b45c;
+}
+
+#vue-app .cult-notice-title {
+  color: #f7f3e8;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+#vue-app .cult-notice-desc {
+  color: #c8b685;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+#vue-app .cult-realm-banner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 16px;
+  margin-bottom: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 168, 67, 0.28);
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(180, 60, 40, 0.15), transparent 60%),
+    linear-gradient(180deg, rgba(20, 14, 8, 0.7), rgba(10, 8, 16, 0.8));
+}
+
+#vue-app .cult-realm-banner.ready {
+  border-color: rgba(99, 187, 126, 0.45);
+  box-shadow: 0 0 20px rgba(99, 187, 126, 0.08);
+}
+
+#vue-app .cult-realm-side {
+  text-align: center;
+}
+
+#vue-app .cult-realm-label {
+  display: block;
+  color: #9a8f6e;
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+
+#vue-app .cult-realm-name {
+  display: block;
+  color: #f4d98a;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: 'STKaiti', 'KaiTi', sans-serif;
+}
+
+#vue-app .cult-realm-side.highlight .cult-realm-name {
+  color: #ffe9a8;
+  text-shadow: 0 0 12px rgba(244, 217, 138, 0.4);
+}
+
+#vue-app .cult-realm-arrow {
+  grid-column: 2;
+  grid-row: 1;
+  color: #d4a843;
+  font-size: 22px;
+  text-shadow: 0 0 8px rgba(212, 168, 67, 0.5);
+}
+
+#vue-app .cult-realm-msg {
+  grid-column: 1 / -1;
+  margin: 4px 0 0;
+  text-align: center;
+  color: #c8b685;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+#vue-app .cult-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+#vue-app .cult-stat-card {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 168, 67, 0.2);
+  background: rgba(0, 0, 0, 0.22);
+  text-align: center;
+}
+
+#vue-app .cult-stat-label {
+  display: block;
+  color: #9a8f6e;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+#vue-app .cult-stat-value {
+  display: block;
+  color: #f4d98a;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+#vue-app .cult-stat-value.sm {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+#vue-app .cult-stat-sub {
+  display: block;
+  color: #7a7058;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+#vue-app .cult-section-title {
+  color: #d4a843;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+#vue-app .mijing-panel .cult-section-title {
+  color: #a29bfe;
+}
+
+#vue-app .cult-progress-section {
+  margin-bottom: 16px;
+}
+
+#vue-app .cult-progress-list {
+  display: grid;
+  gap: 8px;
+}
+
+#vue-app .cult-progress-item {
+  padding: 10px 12px;
+  border-radius: 9px;
+  border: 1px solid rgba(212, 168, 67, 0.18);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+#vue-app .cult-progress-item.met {
+  border-color: rgba(99, 187, 126, 0.35);
+  background: rgba(30, 80, 50, 0.12);
+}
+
+#vue-app .cult-progress-item.unmet {
+  border-color: rgba(200, 100, 100, 0.25);
+}
+
+#vue-app .cult-progress-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+#vue-app .cult-progress-label {
+  color: #f7f3e8;
+  font-weight: 600;
+  flex: 1;
+}
+
+#vue-app .cult-progress-value {
+  color: #c8b685;
+}
+
+#vue-app .cult-progress-status {
+  color: #9a8f6e;
+  font-size: 12px;
+}
+
+#vue-app .cult-progress-item.met .cult-progress-status {
+  color: #7dd99a;
+}
+
+#vue-app .cult-progress-item.unmet .cult-progress-status {
+  color: #e8a0a0;
+}
+
+#vue-app .cult-progress-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+#vue-app .cult-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #8b6914, #f4d98a);
+  transition: width 0.35s ease;
+}
+
+#vue-app .cult-progress-item.met .cult-progress-fill {
+  background: linear-gradient(90deg, #2d6a4f, #63bb7e);
+}
+
+#vue-app .cult-progress-item.unmet .cult-progress-fill {
+  background: linear-gradient(90deg, #6b3030, #c87878);
+}
+
+#vue-app .cult-form-section {
+  margin: 14px 0 16px;
+}
+
+#vue-app .cult-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+#vue-app .cult-field.full {
+  grid-column: 1 / -1;
+}
+
+#vue-app .cult-field-label {
+  display: block;
+  color: #c8b685;
+  font-size: 12px;
+  margin-bottom: 6px;
+  font-family: 'STKaiti', 'KaiTi', sans-serif;
+}
+
+#vue-app .cult-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(212, 168, 67, 0.12);
+}
+
+#vue-app .mijing-panel .cult-actions {
+  border-top-color: rgba(162, 155, 254, 0.12);
+}
+
+#vue-app .cult-actions.center {
+  justify-content: center;
+}
+
+#vue-app .cult-actions .el-button:not(.btn-art):not(.nav-portal-btn) {
+  background: rgba(212, 168, 67, 0.08) !important;
+  border: 1px solid rgba(212, 168, 67, 0.35) !important;
+  color: #f4d98a !important;
+  border-radius: 8px !important;
+  font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', sans-serif !important;
+  transition: all 0.2s ease !important;
+}
+
+#vue-app .mijing-panel .cult-actions .el-button:not(.btn-art):not(.nav-portal-btn) {
+  background: rgba(162, 155, 254, 0.08) !important;
+  border-color: rgba(162, 155, 254, 0.35) !important;
+  color: #e8e4ff !important;
+}
+
+#vue-app .cult-actions .el-button:not(.btn-art):not(.nav-portal-btn):hover:not(.is-disabled) {
+  background: rgba(212, 168, 67, 0.16) !important;
+  border-color: rgba(212, 168, 67, 0.65) !important;
+  box-shadow: 0 0 12px rgba(212, 168, 67, 0.15) !important;
+}
+
+#vue-app .mijing-panel .cult-actions .el-button:not(.btn-art):not(.nav-portal-btn):hover:not(.is-disabled) {
+  background: rgba(162, 155, 254, 0.16) !important;
+  border-color: rgba(162, 155, 254, 0.6) !important;
+  box-shadow: 0 0 12px rgba(162, 155, 254, 0.15) !important;
+}
+
+#vue-app .cult-actions .el-button.is-disabled {
+  opacity: 0.45 !important;
+}
+
+#vue-app .cult-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+#vue-app .cult-tag {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+#vue-app .cult-tag.danger {
+  color: #ffb3b3;
+  border-color: rgba(230, 120, 120, 0.4);
+  background: rgba(120, 30, 30, 0.35);
+}
+
+#vue-app .cult-tag.warning {
+  color: #f0d080;
+  border-color: rgba(212, 168, 67, 0.4);
+  background: rgba(80, 60, 10, 0.35);
+}
+
+#vue-app .cult-tag.info {
+  color: #a8d4f0;
+  border-color: rgba(100, 160, 200, 0.35);
+  background: rgba(20, 50, 80, 0.35);
+}
+
+#vue-app .cult-question-stem {
+  color: #f7f3e8;
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 14px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 168, 67, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+#vue-app .cult-option-group {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+#vue-app .cult-option-group .el-radio {
+  margin-right: 0 !important;
+  height: auto !important;
+  padding: 12px 14px !important;
+  border-color: rgba(212, 168, 67, 0.25) !important;
+  background: rgba(0, 0, 0, 0.22) !important;
+  border-radius: 10px !important;
+  transition: all 0.2s ease !important;
+}
+
+#vue-app .cult-option-group .el-radio:hover {
+  border-color: rgba(212, 168, 67, 0.5) !important;
+  background: rgba(212, 168, 67, 0.06) !important;
+}
+
+#vue-app .cult-option-group .el-radio.is-checked {
+  border-color: rgba(212, 168, 67, 0.7) !important;
+  background: rgba(212, 168, 67, 0.12) !important;
+}
+
+#vue-app .cult-option-group .el-radio__label {
+  color: #f7f3e8 !important;
+  font-size: 14px !important;
+  white-space: normal !important;
+  line-height: 1.5 !important;
+}
+
+#vue-app .cult-option-group .el-radio__inner {
+  border-color: rgba(212, 168, 67, 0.5) !important;
+  background: transparent !important;
+}
+
+#vue-app .cult-option-group .el-radio__input.is-checked .el-radio__inner {
+  border-color: #f4d98a !important;
+  background: #f4d98a !important;
+}
+
+#vue-app .cult-result {
+  text-align: center;
+  padding: 28px 16px 12px;
+}
+
+#vue-app .cult-result-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 16px rgba(244, 217, 138, 0.4));
+}
+
+#vue-app .cult-result.success .cult-result-icon {
+  color: #f4d98a;
+}
+
+#vue-app .cult-result.warning .cult-result-icon {
+  color: #c8b685;
+}
+
+#vue-app .cult-result-title {
+  color: #f4d98a;
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  font-family: 'STKaiti', 'KaiTi', sans-serif;
+}
+
+#vue-app .cult-result.warning .cult-result-title {
+  color: #e8c878;
+}
+
+#vue-app .cult-result-sub {
+  color: #c8b685;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+#vue-app .cult-result-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+#vue-app .cult-result-stat {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 168, 67, 0.18);
+  background: rgba(0, 0, 0, 0.22);
+  text-align: center;
+}
+
+#vue-app .cult-result-stat.highlight {
+  border-color: rgba(212, 168, 67, 0.45);
+  background: rgba(212, 168, 67, 0.08);
+}
+
+#vue-app .cult-result-stat-label {
+  display: block;
+  color: #9a8f6e;
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+
+#vue-app .cult-result-stat-value {
+  display: block;
+  color: #f4d98a;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+#vue-app .cult-result-realm {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 168, 67, 0.25);
+  background: rgba(212, 168, 67, 0.05);
+  text-align: left;
+}
+
+#vue-app .cult-result-realm-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  color: #c8b685;
+  font-size: 12px;
+}
+
+#vue-app .cult-result-realm-name {
+  color: #f4d98a;
+  font-weight: 700;
+}
+
+#vue-app .cult-result-realm-track {
+  margin-bottom: 8px;
+}
+
+#vue-app .cult-result-realm-sub {
+  margin: 0;
+  color: #9a8f6e;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+#vue-app .mijing-panel .cult-result-title {
+  color: #e8e4ff;
+}
+
+/* cult-panel 内表单控件 */
+#vue-app .cult-panel .el-input__wrapper,
+#vue-app .cult-panel .el-select__wrapper {
+  background-color: rgba(8, 12, 24, 0.75) !important;
+  border: 1px solid rgba(212, 168, 67, 0.28) !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+#vue-app .mijing-panel .el-input__wrapper,
+#vue-app .mijing-panel .el-select__wrapper {
+  border-color: rgba(162, 155, 254, 0.3) !important;
+}
+
+#vue-app .cult-panel .el-input__wrapper.is-focus,
+#vue-app .cult-panel .el-input__wrapper:hover,
+#vue-app .cult-panel .el-select__wrapper.is-focused,
+#vue-app .cult-panel .el-select__wrapper:hover {
+  border-color: rgba(212, 168, 67, 0.65) !important;
+  box-shadow: 0 0 10px rgba(212, 168, 67, 0.15) !important;
+}
+
+#vue-app .mijing-panel .el-input__wrapper.is-focus,
+#vue-app .mijing-panel .el-input__wrapper:hover,
+#vue-app .mijing-panel .el-select__wrapper.is-focused,
+#vue-app .mijing-panel .el-select__wrapper:hover {
+  border-color: rgba(162, 155, 254, 0.6) !important;
+  box-shadow: 0 0 10px rgba(162, 155, 254, 0.15) !important;
+}
+
+#vue-app .cult-panel .el-input__inner,
+#vue-app .cult-panel .el-select__selected-item {
+  color: #f7f3e8 !important;
+  font-size: 14px !important;
+}
+
+#vue-app .cult-panel .el-select {
+  width: 100%;
+}
+
+#vue-app .cult-panel .el-select .el-select__placeholder {
+  color: rgba(200, 182, 133, 0.5) !important;
+}
+
+@media (max-width: 640px) {
+  #vue-app .cult-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #vue-app .cult-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #vue-app .cult-realm-name {
+    font-size: 15px;
+  }
+}
+
+/* ================== 弹层 / 全局 Element Plus 暗色适配 ================== */
+/* Teleport to body 的弹层在 #vue-app 外，需独立选择器 */
+.cult-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(8, 10, 22, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+.cult-overlay-panel {
+  width: min(480px, 100%);
+  max-height: min(90vh, 720px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--cult-panel-bg);
+  border: 1px solid var(--cult-gold-border);
+  border-radius: var(--cult-radius);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 236, 184, 0.08);
+}
+
+.cult-overlay .cult-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(212, 168, 67, 0.22);
+  background: linear-gradient(180deg, rgba(212, 168, 67, 0.08), transparent);
+}
+
+.cult-overlay .cult-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f4d98a;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  font-family: var(--cult-font-title);
+}
+
+.cult-overlay .cult-panel-icon {
+  font-size: 18px;
+  filter: drop-shadow(0 0 6px rgba(244, 217, 138, 0.5));
+}
+
+.cult-overlay .cult-panel-back {
+  padding: 6px 14px;
+  border: 1px solid rgba(212, 168, 67, 0.35);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  color: #c8b685;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cult-overlay .cult-panel-back:hover {
+  border-color: rgba(212, 168, 67, 0.7);
+  color: #f4d98a;
+  background: rgba(212, 168, 67, 0.1);
+}
+
+.cult-overlay-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 18px 20px;
+}
+
+.cult-overlay .cult-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: var(--cult-radius-sm);
+  border: 1px solid rgba(212, 168, 67, 0.15);
+  background: rgba(0, 0, 0, 0.2);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.cult-overlay .cult-list-item:hover {
+  border-color: rgba(212, 168, 67, 0.3);
+  background: rgba(212, 168, 67, 0.05);
+}
+
+.cult-overlay .cult-list-item.is-highlight {
+  border-color: rgba(212, 168, 67, 0.35);
+  background: rgba(212, 168, 67, 0.08);
+}
+
+.cult-overlay .cult-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.cult-overlay .cult-tab-btn {
+  padding: 8px 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(212, 168, 67, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--cult-parchment-dim);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cult-overlay .cult-tab-btn:hover {
+  border-color: rgba(212, 168, 67, 0.4);
+  color: var(--cult-gold);
+}
+
+.cult-overlay .cult-tab-btn.is-active {
+  border-color: var(--cult-gold-dim);
+  background: rgba(212, 168, 67, 0.15);
+  color: var(--cult-gold);
+  font-weight: 700;
+}
+
+.cult-overlay .cult-msg {
+  text-align: center;
+  font-size: 13px;
+  min-height: 20px;
+  margin-top: 12px;
+  color: #4ec07a;
+}
+
+.cult-overlay .cult-msg.is-error {
+  color: #ff8a8a;
+}
+
+.cult-overlay .cult-empty {
+  text-align: center;
+  color: var(--cult-parchment-dim);
+  padding: 40px 0;
+}
+
+#vue-app .assessment-page {
+  padding: 0 4px;
+}
+
+#vue-app .vue-shell.is-assessment .assessment-page,
+#vue-app .vue-shell.is-assessment .assessment-gate {
+  width: min(860px, 100%);
+  margin: 0 auto;
+}
+
+/* 全局暗色 Alert / Tag / Table / Result 兜底 */
+#vue-app .el-alert {
+  border-radius: var(--cult-radius-sm) !important;
+  border: 1px solid rgba(212, 168, 67, 0.25) !important;
+  background: linear-gradient(135deg, rgba(30, 60, 90, 0.45), rgba(15, 25, 45, 0.55)) !important;
+}
+
+#vue-app .el-alert .el-alert__title {
+  color: var(--cult-parchment) !important;
+  font-size: 14px !important;
+}
+
+#vue-app .el-alert .el-alert__description {
+  color: var(--cult-parchment-dim) !important;
+  font-size: 13px !important;
+}
+
+#vue-app .el-alert--warning {
+  border-color: rgba(230, 170, 80, 0.35) !important;
+  background: linear-gradient(135deg, rgba(80, 50, 10, 0.45), rgba(40, 25, 5, 0.55)) !important;
+}
+
+#vue-app .el-alert--success {
+  border-color: rgba(99, 187, 126, 0.35) !important;
+  background: linear-gradient(135deg, rgba(20, 60, 40, 0.45), rgba(10, 35, 25, 0.55)) !important;
+}
+
+#vue-app .el-alert--error {
+  border-color: rgba(230, 120, 120, 0.35) !important;
+  background: linear-gradient(135deg, rgba(80, 20, 20, 0.45), rgba(40, 10, 10, 0.55)) !important;
+}
+
+#vue-app .el-tag {
+  border-radius: 999px !important;
+  border: 1px solid rgba(212, 168, 67, 0.3) !important;
+  background: rgba(0, 0, 0, 0.25) !important;
+  color: var(--cult-parchment-dim) !important;
+}
+
+#vue-app .el-tag.el-tag--info {
+  border-color: rgba(100, 160, 200, 0.35) !important;
+  color: #a8d4f0 !important;
+}
+
+#vue-app .el-tag.el-tag--warning {
+  border-color: rgba(212, 168, 67, 0.4) !important;
+  color: #f0d080 !important;
+}
+
+#vue-app .el-tag.el-tag--danger {
+  border-color: rgba(230, 120, 120, 0.4) !important;
+  color: #ffb3b3 !important;
+}
+
+#vue-app .el-result {
+  padding: 24px 12px !important;
+}
+
+#vue-app .el-result .el-result__title p {
+  color: var(--cult-gold) !important;
+  font-family: var(--cult-font-title) !important;
+}
+
+#vue-app .el-result .el-result__subtitle p {
+  color: var(--cult-parchment-dim) !important;
+}
+
+#vue-app .el-table {
+  --el-table-bg-color: rgba(8, 12, 24, 0.65);
+  --el-table-tr-bg-color: rgba(8, 12, 24, 0.55);
+  --el-table-row-hover-bg-color: rgba(212, 168, 67, 0.08);
+  --el-table-border-color: rgba(212, 168, 67, 0.18);
+  --el-table-header-bg-color: rgba(20, 28, 48, 0.85);
+  --el-table-text-color: var(--cult-parchment);
+  --el-table-header-text-color: var(--cult-gold);
+  border-radius: var(--cult-radius-sm);
+  overflow: hidden;
+}
+
+#vue-app .option-group,
+#vue-app .practice-page .option-group {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+#vue-app .option-group .el-radio.is-bordered,
+#vue-app .practice-page .option-item.el-radio.is-bordered {
+  margin-right: 0 !important;
+  height: auto !important;
+  min-height: 48px;
+  padding: 12px 14px !important;
+  border-color: rgba(212, 168, 67, 0.25) !important;
+  background: rgba(0, 0, 0, 0.22) !important;
+  border-radius: var(--cult-radius-sm) !important;
+  color: var(--cult-parchment) !important;
+}
+
+#vue-app .option-group .el-radio.is-bordered:hover,
+#vue-app .practice-page .option-item.el-radio.is-bordered:hover {
+  border-color: rgba(212, 168, 67, 0.5) !important;
+  background: rgba(212, 168, 67, 0.06) !important;
+}
+
+#vue-app .option-group .el-radio.is-bordered.is-checked,
+#vue-app .practice-page .option-item.el-radio.is-bordered.is-checked {
+  border-color: rgba(212, 168, 67, 0.7) !important;
+  background: rgba(212, 168, 67, 0.12) !important;
+}
+
+#vue-app .option-group .el-radio__label,
+#vue-app .practice-page .option-item .el-radio__label {
+  color: var(--cult-parchment) !important;
+  white-space: normal !important;
+  line-height: 1.5 !important;
+}
+
+#vue-app .practice-actions,
+#vue-app .module-actions {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  padding-top: 14px;
+  border-top: 1px solid rgba(212, 168, 67, 0.12);
+}
+
+#vue-app .skill-module-wrap {
+  padding: 4px 0;
+}
+
+/* ================== 模块玩法说明 ================== */
+#vue-app .module-rules-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(212, 168, 67, 0.15);
+}
+
+#vue-app .module-rules-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(212, 168, 67, 0.1);
+  border: 1px solid rgba(212, 168, 67, 0.25);
+  font-size: 22px;
+}
+
+#vue-app .module-rules-title {
+  color: var(--cult-gold, #f4d98a);
+  font-size: 17px;
+  font-weight: 700;
+  font-family: var(--cult-font-title, 'KaiTi', serif);
+}
+
+#vue-app .module-rules-subtitle {
+  margin-top: 2px;
+  color: var(--cult-parchment-muted, #9a8f6e);
+  font-size: 12px;
+}
+
+#vue-app .module-rules-summary {
+  margin: 0 0 14px;
+  color: var(--cult-parchment-dim, #c8b685);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+#vue-app .module-rules-section {
+  margin-bottom: 14px;
+}
+
+#vue-app .module-rules-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+#vue-app .module-rules-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: var(--cult-radius-sm, 10px);
+  border: 1px solid rgba(212, 168, 67, 0.15);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+#vue-app .module-rules-index {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(212, 168, 67, 0.15);
+  color: var(--cult-gold, #f4d98a);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+#vue-app .module-rules-text {
+  color: var(--cult-parchment, #f7f3e8);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+#vue-app .module-rules-tips {
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  border-radius: var(--cult-radius-sm, 10px);
+  border: 1px dashed rgba(212, 168, 67, 0.25);
+  background: rgba(212, 168, 67, 0.04);
+}
+
+#vue-app .module-rules-tip {
+  margin: 6px 0 0;
+  color: var(--cult-parchment-muted, #9a8f6e);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+#vue-app .mijing-panel .module-rules-item {
+  border-color: rgba(162, 155, 254, 0.2);
+}
+
+#vue-app .mijing-panel .module-rules-index {
+  background: rgba(162, 155, 254, 0.15);
+  color: #e8e4ff;
+}
+
+#vue-app .cangjing-page .lobby-content .module-rules-head {
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+}
+
+#vue-app .cangjing-page .lobby-content .module-rules {
+  text-align: left;
+}
+
+#vue-app .cangjing-page .lobby-content .cult-actions {
+  justify-content: center;
+}
+
+#vue-app .cangjing-page .result-panel {
+  width: min(560px, 100%);
+  margin: 24px auto;
+}
+
 #vue-app .mall-shell,
 #vue-app .leaderboard-shell {
   background: rgba(15, 20, 38, 0.78);
@@ -342,10 +1529,12 @@ html, body, #app {
 }
 
 #vue-app .level-box {
-  border: 1px dashed rgba(212, 168, 67, 0.35);
-  background: rgba(212, 168, 67, 0.06);
-  border-radius: 10px;
-  padding: 14px;
+  border: 1px solid rgba(212, 168, 67, 0.28);
+  background: rgba(0, 0, 0, 0.22);
+  border-radius: var(--cult-radius-sm);
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 4px;
 }
 
 #vue-app .level-title {
@@ -418,18 +1607,6 @@ html, body, #app {
   height: auto;
   min-height: 42px;
   width: 100%;
-}
-
-#vue-app .practice-actions {
-  margin-top: 14px;
-  display: flex;
-  gap: 8px;
-}
-
-#vue-app .module-actions {
-  margin-top: 14px;
-  display: flex;
-  gap: 8px;
 }
 
 #vue-app .reading-toolbar {

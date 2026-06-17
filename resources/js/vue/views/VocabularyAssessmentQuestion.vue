@@ -1,21 +1,27 @@
 <template>
   <div class="assessment-page">
-    <el-card class="assessment-card" shadow="hover">
-      <template #header>
-        <div class="header-row">
+    <div class="cult-panel assessment-panel">
+      <header class="cult-panel-header">
+        <div class="cult-panel-title">
           <div class="header-left">
-            <span class="title">词汇+语法灵根测试</span>
+            <span>词汇+语法灵根测试</span>
             <span class="subtitle">天机问心 · 双维灵根鉴定</span>
           </div>
-          <div class="counter-pill">{{ progress.current }}/{{ progress.total }}</div>
         </div>
-      </template>
+        <span class="counter-pill">{{ progress.current }}/{{ progress.total }}</span>
+      </header>
 
+      <div class="cult-panel-body">
       <div v-if="loading" class="status-box">正在抽取题目...</div>
 
       <div v-else-if="loadError" class="status-box">
-        <el-alert type="warning" :closable="false" :title="loadError" />
-        <div class="actions">
+        <div class="cult-notice warning">
+          <span class="cult-notice-icon">!</span>
+          <div class="cult-notice-body">
+            <div class="cult-notice-title">{{ loadError }}</div>
+          </div>
+        </div>
+        <div class="cult-actions">
           <el-button @click="goIntro">返回引导页</el-button>
         </div>
       </div>
@@ -51,13 +57,13 @@
           <div class="stem">{{ question.question }}</div>
         </div>
 
-        <el-radio-group v-model="selectedAnswer" class="option-group">
+        <el-radio-group v-model="selectedAnswer" class="cult-option-group">
           <el-radio
             v-for="(text, key) in question.options"
             :key="key"
             :label="String(key)"
             border
-            class="option-item"
+            class="cult-option-item"
             :disabled="submitted || submitting || loading"
             @change="onAnswerChange"
           >
@@ -65,20 +71,24 @@
           </el-radio>
         </el-radio-group>
 
-        <el-alert
+        <div
           v-if="feedback"
-          :type="feedback.is_correct ? 'success' : 'error'"
-          :closable="false"
-          :title="feedback.is_correct ? '回答正确' : '回答错误'"
-          :description="feedbackDescription || undefined"
-          class="feedback-alert"
-        />
+          class="cult-notice"
+          :class="feedback.is_correct ? 'info' : 'warning'"
+        >
+          <span class="cult-notice-icon">{{ feedback.is_correct ? '✓' : '✗' }}</span>
+          <div class="cult-notice-body">
+            <div class="cult-notice-title">{{ feedback.is_correct ? '回答正确' : '回答错误' }}</div>
+            <div v-if="feedbackDescription" class="cult-notice-desc">{{ feedbackDescription }}</div>
+          </div>
+        </div>
 
-        <div class="actions">
+        <div class="cult-actions">
           <el-button data-btn-skin="back" @click="goIntro">暂停 · 返回引导</el-button>
         </div>
       </div>
-    </el-card>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -279,55 +289,10 @@ onBeforeUnmount(() => {
 <style scoped>
 .assessment-page {
   max-width: 920px;
-  margin: 24px auto;
-  padding: 0 12px;
 }
 
-.assessment-card {
-  position: relative;
-  overflow: hidden;
-}
-
-.assessment-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 12% 8%, rgba(255, 227, 153, 0.1) 0%, transparent 34%),
-    radial-gradient(circle at 90% 16%, rgba(117, 224, 255, 0.12) 0%, transparent 36%),
-    linear-gradient(180deg, rgba(16, 23, 44, 0.96) 0%, rgba(8, 13, 28, 0.94) 100%);
-  z-index: 0;
-}
-
-:deep(.assessment-card.el-card) {
-  border: 1px solid rgba(212, 168, 67, 0.45);
-  border-radius: 14px;
-  box-shadow:
-    0 16px 36px rgba(0, 0, 0, 0.42),
-    inset 0 0 0 1px rgba(255, 235, 182, 0.08);
-  color: #f4ecd0;
-  background: transparent;
-}
-
-:deep(.assessment-card .el-card__header) {
-  position: relative;
-  z-index: 1;
-  border-bottom: 1px solid rgba(212, 168, 67, 0.3);
-  padding: 18px 20px;
-  background: linear-gradient(180deg, rgba(25, 35, 62, 0.72) 0%, rgba(18, 26, 48, 0.3) 100%);
-}
-
-:deep(.assessment-card .el-card__body) {
-  position: relative;
-  z-index: 1;
-  padding: 20px;
-}
-
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
+.assessment-panel .cult-panel-header {
+  align-items: flex-start;
 }
 
 .header-left {
@@ -335,64 +300,60 @@ onBeforeUnmount(() => {
   gap: 4px;
 }
 
-.title {
-  font-size: 24px;
-  font-weight: 800;
-  color: #f5de9e;
-  letter-spacing: 1px;
+.header-left > span:first-child {
+  font-size: 17px;
 }
 
 .subtitle {
-  color: #b7c8ef;
-  font-size: 13px;
-  letter-spacing: 1px;
+  color: var(--cult-parchment-dim, #c8b685);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
 }
 
 .counter-pill {
-  border: 1px solid rgba(212, 168, 67, 0.56);
+  flex-shrink: 0;
+  border: 1px solid rgba(212, 168, 67, 0.45);
   border-radius: 999px;
   padding: 6px 12px;
-  color: #f9e7b6;
+  color: var(--cult-gold, #f4d98a);
   font-weight: 700;
-  background: linear-gradient(180deg, rgba(47, 58, 89, 0.78), rgba(25, 33, 56, 0.58));
-  box-shadow: inset 0 0 10px rgba(255, 229, 158, 0.12);
+  font-size: 13px;
+  background: rgba(0, 0, 0, 0.25);
 }
 
 .status-box {
-  padding: 20px 0;
+  padding: 12px 0;
 }
 
 .progress-wrap {
   margin-bottom: 14px;
   padding: 10px 12px 12px;
-  border: 1px solid rgba(175, 203, 255, 0.18);
-  border-radius: 12px;
-  background: rgba(8, 16, 34, 0.6);
+  border: 1px solid rgba(212, 168, 67, 0.18);
+  border-radius: var(--cult-radius-sm, 10px);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .progress-top {
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
-  color: #d7e2ff;
+  color: var(--cult-parchment-dim, #c8b685);
   font-size: 13px;
-  letter-spacing: 0.4px;
 }
 
 .progress-track {
   width: 100%;
-  height: 10px;
+  height: 8px;
   border-radius: 999px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .progress-fill {
   height: 100%;
-  width: 0;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #38c0ff 0%, #78f0ff 45%, #ffe59a 100%);
-  box-shadow: 0 0 14px rgba(138, 229, 255, 0.55);
+  border-radius: inherit;
+  background: linear-gradient(90deg, #8b6914, #f4d98a);
   transition: width 0.35s ease;
 }
 
@@ -404,36 +365,34 @@ onBeforeUnmount(() => {
 }
 
 .meta-item {
-  border: 1px solid rgba(173, 208, 255, 0.2);
-  border-radius: 12px;
+  border: 1px solid rgba(212, 168, 67, 0.18);
+  border-radius: var(--cult-radius-sm, 10px);
   padding: 10px 12px;
-  background: linear-gradient(180deg, rgba(15, 26, 50, 0.72), rgba(8, 16, 34, 0.66));
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .meta-label {
   display: block;
   font-size: 12px;
-  color: #9eb4de;
+  color: var(--cult-parchment-muted, #9a8f6e);
   margin-bottom: 4px;
 }
 
 .meta-value {
-  font-size: 15px;
-  color: #eff5ff;
+  font-size: 14px;
+  color: var(--cult-parchment, #f7f3e8);
   font-weight: 700;
 }
 
 .question-panel {
-  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 10px;
   margin: 12px 0 14px;
   padding: 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(212, 168, 67, 0.38);
-  background: linear-gradient(180deg, rgba(42, 34, 19, 0.45), rgba(20, 18, 11, 0.3));
-  box-shadow: inset 0 0 0 1px rgba(255, 232, 173, 0.08);
+  border-radius: var(--cult-radius-sm, 10px);
+  border: 1px solid rgba(212, 168, 67, 0.28);
+  background: rgba(0, 0, 0, 0.22);
 }
 
 .question-mark {
@@ -443,103 +402,17 @@ onBeforeUnmount(() => {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  color: #0f1a34;
+  color: #1a1208;
   font-weight: 800;
   background: radial-gradient(circle at 30% 30%, #fff0bd 0%, #e0b85a 75%);
-  box-shadow: 0 0 10px rgba(255, 217, 136, 0.5);
 }
 
 .stem {
   margin: 0;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
-  color: #fff3d0;
-  line-height: 1.7;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
-}
-
-.option-group {
-  display: grid;
-  gap: 10px;
-}
-
-.option-item {
-  margin-right: 0;
-  width: 100%;
-}
-
-:deep(.option-item.el-radio.is-bordered) {
-  height: auto;
-  min-height: 52px;
-  margin: 0;
-  border-radius: 12px;
-  border: 1px solid rgba(173, 208, 255, 0.25);
-  background: linear-gradient(180deg, rgba(8, 16, 34, 0.68), rgba(7, 13, 28, 0.7));
-  color: #e7efff;
-  transition: all 0.2s ease;
-}
-
-:deep(.option-item.el-radio.is-bordered:hover) {
-  transform: translateY(-1px);
-  border-color: rgba(137, 205, 255, 0.65);
-  box-shadow: 0 8px 18px rgba(8, 19, 42, 0.45);
-}
-
-:deep(.option-item.el-radio.is-bordered.is-checked) {
-  border-color: rgba(255, 217, 129, 0.9);
-  background: linear-gradient(180deg, rgba(45, 38, 22, 0.72), rgba(27, 22, 12, 0.66));
-  box-shadow:
-    0 0 0 1px rgba(255, 225, 147, 0.2),
-    inset 0 0 18px rgba(255, 212, 117, 0.12);
-}
-
-:deep(.option-item .el-radio__label) {
-  color: inherit;
-  font-size: 17px;
-  font-weight: 600;
-  line-height: 1.45;
-  white-space: normal;
-  padding-left: 10px;
-}
-
-:deep(.option-item .el-radio__inner) {
-  width: 18px;
-  height: 18px;
-  border-color: rgba(161, 194, 245, 0.75);
-  background: rgba(8, 16, 34, 0.92);
-}
-
-:deep(.option-item.is-checked .el-radio__inner) {
-  border-color: #f6d27c;
-  background: #f6d27c;
-}
-
-:deep(.option-item .el-radio__inner::after) {
-  width: 6px;
-  height: 6px;
-  background: #1f283f;
-}
-
-.feedback-alert {
-  margin-top: 14px;
-}
-
-:deep(.feedback-alert.el-alert) {
-  border: 1px solid rgba(185, 219, 255, 0.28);
-  background: rgba(8, 16, 34, 0.7);
-}
-
-.actions {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 16px;
-}
-
-.actions :deep(.el-button.btn-art) {
-  --btn-art-scale: 0.68;
-  margin: 0;
+  color: var(--cult-gold, #f4d98a);
+  line-height: 1.6;
 }
 
 @media (max-width: 860px) {
@@ -548,44 +421,7 @@ onBeforeUnmount(() => {
   }
 
   .stem {
-    font-size: 20px;
-  }
-}
-
-@media (max-width: 640px) {
-  .assessment-page {
-    margin: 14px auto;
-  }
-
-  .title {
-    font-size: 20px;
-  }
-
-  .subtitle {
-    font-size: 12px;
-  }
-
-  .counter-pill {
-    padding: 5px 10px;
-    font-size: 12px;
-  }
-
-  .stem {
     font-size: 18px;
-  }
-
-  :deep(.option-item .el-radio__label) {
-    font-size: 16px;
-  }
-
-  .actions {
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .actions :deep(.el-button.btn-art) {
-    --btn-art-scale: 0.62;
   }
 }
 </style>

@@ -16,7 +16,7 @@ class RealmServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new RealmService();
+        $this->service = app(RealmService::class);
     }
 
     public function test_get_realm_index()

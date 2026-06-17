@@ -20,6 +20,7 @@ class Question extends Model
         'expected_time',
         'realm',
         'stage',
+        'word_id',
         'listening_text',
         'question',
         'options',
@@ -36,5 +37,10 @@ class Question extends Model
             'is_assessment' => 'integer',
             'expected_time' => 'integer',
         ];
+    }
+
+    public function vocabularyWord()
+    {
+        return $this->belongsTo(VocabularyWord::class, 'word_id');
     }
 }

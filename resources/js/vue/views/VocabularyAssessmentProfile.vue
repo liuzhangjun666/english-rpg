@@ -1,25 +1,23 @@
 <template>
   <div class="assessment-page">
-    <el-card class="assessment-card" shadow="hover">
-      <template #header>
-        <div class="title">词汇灵根测试 · 准备开始</div>
-      </template>
-
-      <p class="desc">注册时选择的学段将匹配试炼起点，<strong>初始境界由灵根测试结果决定</strong>。</p>
-      <p class="desc">点击下方按钮即可开始灵根测试。</p>
-
-      <div class="actions">
-        <el-button data-btn-skin="back" @click="goBack">返回</el-button>
-        <el-button
-          type="primary"
-          data-btn-skin="challenge"
-          :loading="starting"
-          @click="startAssessment"
-        >
-          开始试炼
-        </el-button>
+    <div class="cult-panel">
+      <header class="cult-panel-header">
+        <div class="cult-panel-title">
+          <span class="cult-panel-icon">✧</span>
+          <span>词汇灵根测试 · 准备开始</span>
+        </div>
+      </header>
+      <div class="cult-panel-body">
+        <p class="assessment-desc">注册时选择的学段将匹配试炼起点，<strong>初始境界由灵根测试结果决定</strong>。</p>
+        <p class="assessment-desc">点击下方按钮即可开始灵根测试。</p>
+        <div class="cult-actions">
+          <el-button data-btn-skin="back" @click="goBack">返回</el-button>
+          <el-button type="primary" data-btn-skin="challenge" :loading="starting" @click="startAssessment">
+            开始试炼
+          </el-button>
+        </div>
       </div>
-    </el-card>
+    </div>
   </div>
 </template>
 
@@ -56,66 +54,14 @@ async function startAssessment() {
 </script>
 
 <style scoped>
-.assessment-page {
-  max-width: 860px;
-  margin: 24px auto;
-  padding: 0 12px;
-}
-
-.title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #f5de9e;
-  letter-spacing: 1px;
-}
-
-:deep(.assessment-card.el-card) {
-  border: 1px solid rgba(212, 168, 67, 0.45);
-  border-radius: 14px;
-  background: linear-gradient(180deg, rgba(16, 23, 44, 0.94) 0%, rgba(9, 14, 30, 0.92) 100%);
-  box-shadow:
-    0 14px 34px rgba(0, 0, 0, 0.4),
-    inset 0 0 0 1px rgba(255, 235, 182, 0.08);
-  color: #f4ecd0;
-}
-
-:deep(.assessment-card .el-card__header) {
-  border-bottom: 1px solid rgba(212, 168, 67, 0.3);
-  padding: 18px 20px;
-  background: linear-gradient(180deg, rgba(25, 35, 62, 0.75) 0%, rgba(18, 26, 48, 0.42) 100%);
-}
-
-:deep(.assessment-card .el-card__body) {
-  padding: 20px;
-}
-
-.desc {
-  margin: 8px 0;
+.assessment-desc {
+  color: var(--cult-parchment-dim, #c8b685);
+  font-size: 14px;
   line-height: 1.7;
-  color: #f4ecd0;
+  margin: 0 0 10px;
 }
 
-.actions {
-  margin-top: 24px;
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.actions :deep(.el-button.btn-art) {
-  --btn-art-scale: 0.68;
-  margin: 0;
-}
-
-@media (max-width: 640px) {
-  .actions {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .actions :deep(.el-button.btn-art) {
-    --btn-art-scale: 0.62;
-  }
+.assessment-desc strong {
+  color: var(--cult-gold, #f4d98a);
 }
 </style>
