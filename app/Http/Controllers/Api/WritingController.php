@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\CurrencyService;
+use App\Services\PracticeLevelService;
 use App\Services\WritingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ class WritingController extends Controller
     public function __construct(
         private readonly WritingService $writingService,
         private readonly CurrencyService $currencyService,
+        private readonly PracticeLevelService $levelService,
     ) {}
 
     /**
@@ -20,13 +22,13 @@ class WritingController extends Controller
      */
     public function prompts(Request $request): JsonResponse
     {
-        $realm = $request->query('level', 'L1');
-        $stage = $request->query('stage', '01');
+        $stageNo = $this->levelService->parseStageNo($request->query('stage', 1));
         $user = $request->user();
         $this->currencyService->recoverSpiritPower($user);
         $user->refresh();
 
-        $prompts = $this->writingService->getPrompts($realm, $stage);
+        $layout = $this->levelService->getStageLayout($user, 'writing');
+        $prompts = $this->writingService->getPromptsForUser($user, $stageNo);
 
         if (empty($prompts)) {
             return response()->json([
@@ -37,12 +39,17 @@ class WritingController extends Controller
         }
 
         $spiritCost = CurrencyService::SPIRIT_COST_PER_LEVEL;
+        $stageMeta = collect($layout['stages'])->firstWhere('stage_no', $stageNo) ?? [];
 
         return response()->json([
             'success' => true,
             'data' => [
-                'level' => $realm,
-                'stage' => $stage,
+                'level' => $layout['realm'],
+                'stage' => $stageMeta['stage_code'] ?? str_pad((string) $stageNo, 2, '0', STR_PAD_LEFT),
+                'stage_no' => $stageNo,
+                'current_realm' => $layout['current_realm'],
+                'grade_labels' => $layout['grade_labels'],
+                'level_id' => $stageMeta['level_id'] ?? sprintf('%s-%02d', $layout['realm'], $stageNo),
                 'prompts' => $prompts,
                 'total' => count($prompts),
                 'spirit_cost' => $spiritCost,

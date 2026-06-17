@@ -475,6 +475,111 @@
         padding: 7px 10px;
     }
 
+    .cangjingge-reading-panel {
+        top: 0;
+        left: 0;
+        transform: none;
+        width: 100vw !important;
+        max-width: none !important;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .cangjingge-reading-content {
+        padding: 12px 10px calc(12px + env(safe-area-inset-bottom));
+        gap: 8px;
+    }
+
+    .cangjingge-back-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .cangjingge-header {
+        margin-top: -40px;
+        gap: 8px;
+    }
+
+    .cangjingge-title {
+        font-size: 22px;
+        letter-spacing: 1px;
+    }
+
+    .cangjingge-floor {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+
+    .cangjingge-lock-title {
+        font-size: 15px;
+    }
+
+    .cangjingge-scroll-text {
+        max-height: 12vh;
+    }
+
+    .cangjingge-scroll-text .reading-story-line {
+        font-size: 14px;
+        padding: 6px 8px;
+    }
+
+    .cangjingge-question-wrap {
+        min-height: 260px;
+        max-width: 100%;
+    }
+
+    .cangjingge-question-content {
+        inset: 12% 10% 9% 11%;
+    }
+
+    .cangjingge-question-head {
+        font-size: 16px;
+    }
+
+    .cangjingge-question-stem,
+    .cangjingge-question-claim {
+        font-size: 15px;
+    }
+
+    .cangjingge-judge-btn {
+        min-height: 72px;
+        font-size: 34px;
+    }
+
+    .cangjingge-aux-actions {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        font-size: 12px;
+    }
+
+    .cangjingge-nav-row {
+        grid-template-columns: 1fr;
+    }
+
+    .cangjingge-nav-arrow {
+        width: 100%;
+    }
+
+    .cangjingge-nav-list {
+        justify-content: flex-start;
+    }
+
+    .cangjingge-nav-btn {
+        width: 30px;
+        height: 30px;
+    }
+
+    .cangjingge-bottom-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .cangjingge-meta {
+        justify-content: flex-start;
+        gap: 8px;
+        font-size: 11px;
+    }
+
     .realm-progress-row {
         grid-template-columns: 52px 1fr 30px;
         gap: 6px;

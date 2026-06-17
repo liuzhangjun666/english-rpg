@@ -37,7 +37,10 @@ export class Game {
         this.sceneInitialized = false;
         this.routeRestoring = false;
         this.storySyncTimer = null;
-        window.addEventListener('auth:logout', () => this.handleForceLogout());
+        window.addEventListener('auth:logout', () => {
+            if (window.__VUE_MIGRATION_ACTIVE__) return;
+            this.handleForceLogout();
+        });
     }
 
     // Getters for lazy‑loaded panels

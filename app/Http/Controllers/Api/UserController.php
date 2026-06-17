@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\LearningRecord;
 use App\Models\Question;
+use App\Models\User;
+use App\Models\UserLearningProfile;
 use App\Support\CultivationProfile;
 use App\Services\CurrencyService;
 use App\Services\RealmService;
@@ -32,19 +34,32 @@ class UserController extends Controller
         $user = $request->user();
         $this->currencyService->recoverSpiritPower($user);
         $user->refresh();
-        $snapshot = $this->realmService->getCultivationProgress($user);
+
+        $learningProfile = UserLearningProfile::query()->where('user_id', $user->id)->first();
+        $this->reconcileRealmFromLearningProfile($user, $learningProfile);
+        $user->refresh();
+
+        $resolvedRealm = $this->realmService->resolveCurrentRealm($user);
+        $cultivationSnapshot = $this->realmService->getCultivationProgress($user);
         if ((int) ($user->tutorial_step ?? 0) >= 1 && empty($user->initiation_completed_at)) {
             $user->initiation_completed_at = now();
             $user->save();
             $user->refresh();
         }
-        if (($user->current_realm ?? null) !== $snapshot['current_realm']) {
-            $user->current_realm = $snapshot['current_realm'];
+
+        $existingRealm = trim((string) ($user->current_realm ?? ''));
+        $existingIndex = $this->realmService->getCultivationRealmIndex($existingRealm);
+        $snapshotRealm = trim((string) ($cultivationSnapshot['current_realm'] ?? ''));
+        $snapshotIndex = $this->realmService->getCultivationRealmIndex($snapshotRealm);
+
+        if ($snapshotIndex >= 0 && ($existingIndex < 0 || $snapshotIndex > $existingIndex)) {
+            $user->current_realm = $snapshotRealm;
             $user->save();
             $user->refresh();
+            $cultivationSnapshot = $this->realmService->getCultivationProgress($user);
         }
 
-        $snapshot = $this->storyService->snapshot($user);
+        $storySnapshot = $this->storyService->snapshot($user);
 
         $realm = (string) $user->realm;
         $stage = max(1, (int) $user->realm_stage);
@@ -66,14 +81,47 @@ class UserController extends Controller
             'next_threshold' => $nextThreshold,
             'progress_percent' => $progressPercent,
             'remaining_exp' => $remainingExp,
+            'initial_assessment_done' => (int) ($learningProfile?->initial_assessment_done ?? 0),
+            'school_grade_label' => CultivationProfile::schoolGradeLabel($user->school_grade),
         ];
 
-        $data = array_merge($user->toArray(), $snapshot, $extraData);
+        $data = array_merge($user->toArray(), $cultivationSnapshot, $storySnapshot, $extraData);
+        $data['current_realm'] = $resolvedRealm;
+        $data['realm'] = (string) $user->realm;
+        $data['realm_stage'] = max(1, (int) $user->realm_stage);
 
         return response()->json([
             'success' => true,
             'data' => $data,
         ]);
+    }
+
+    private function reconcileRealmFromLearningProfile(User $user, ?UserLearningProfile $learningProfile): void
+    {
+        if (!$learningProfile || (int) ($learningProfile->initial_assessment_done ?? 0) !== 1) {
+            return;
+        }
+
+        $assessedRealm = trim((string) ($learningProfile->current_realm ?? ''));
+        if ($assessedRealm === '') {
+            return;
+        }
+
+        $assessedIndex = $this->realmService->getCultivationRealmIndex($assessedRealm);
+        if ($assessedIndex < 0) {
+            return;
+        }
+
+        $storedRealm = trim((string) ($user->current_realm ?? ''));
+        $storedIndex = $this->realmService->getCultivationRealmIndex($storedRealm);
+        $derivedIndex = $this->realmService->getCultivationRealmIndex(
+            $this->realmService->composeCurrentRealm((string) ($user->realm ?? 'L1'), max(1, (int) ($user->realm_stage ?? 1)))
+        );
+        $currentBestIndex = max($storedIndex, $derivedIndex);
+
+        if ($assessedIndex >= $currentBestIndex) {
+            $this->realmService->applyRealmLabelToUser($user, $assessedRealm);
+        }
     }
 
     /**
@@ -284,10 +332,15 @@ class UserController extends Controller
         $progressPercent = (int) round(($progressValue / $progressRange) * 100);
         $remainingExp = max(0, $nextThreshold - $exp);
         $realmSnapshot = $this->realmService->getCultivationProgress($user);
+        $resolvedRealm = $this->realmService->resolveCurrentRealm($user);
         $learningStage = CultivationProfile::learningStage($realm, $stage, $user->school_grade);
-        if (($user->current_realm ?? null) !== $realmSnapshot['current_realm']) {
-            $user->current_realm = $realmSnapshot['current_realm'];
-            $user->save();
+
+        $storedIndex = $this->realmService->getCultivationRealmIndex(trim((string) ($user->current_realm ?? '')));
+        $resolvedIndex = $this->realmService->getCultivationRealmIndex($resolvedRealm);
+        if ($resolvedIndex > $storedIndex) {
+            $this->realmService->applyRealmLabelToUser($user, $resolvedRealm);
+            $user->refresh();
+            $realmSnapshot = $this->realmService->getCultivationProgress($user);
         }
 
         return response()->json([
@@ -301,12 +354,12 @@ class UserController extends Controller
                 'progress_percent' => $progressPercent,
                 'remaining_exp' => $remainingExp,
                 'cefr_hint' => CultivationProfile::cefrHint($realm),
-                'realm_name' => $realmSnapshot['current_realm'],
+                'realm_name' => $resolvedRealm,
                 'learning_stage' => $learningStage['label'],
                 'ability_focus' => $learningStage['focus'],
                 'school_grade' => $user->school_grade,
                 'school_grade_label' => CultivationProfile::schoolGradeLabel($user->school_grade),
-                'current_realm' => $realmSnapshot['current_realm'],
+                'current_realm' => $resolvedRealm,
                 'cultivation_energy' => $realmSnapshot['cultivation_energy'],
                 'next_realm' => $realmSnapshot['next_realm'],
                 'current_realm_index' => $realmSnapshot['current_realm_index'],

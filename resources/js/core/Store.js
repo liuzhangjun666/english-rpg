@@ -1,6 +1,7 @@
 // LevelUp 英语修仙 - 本地状态管理
 import { pinia } from '../vue/main';
 import { useUserStore } from '../vue/stores/user';
+import { mergeRealmPatch, normalizeUserProfile } from '../utils/cultivation.js';
 
 export class Store {
     constructor() {
@@ -45,17 +46,21 @@ export class Store {
     }
 
     normalizeRealmUser(user) {
-        if (!user) return user;
-        const normalized = { ...user };
-        normalized.current_realm = normalized.current_realm || '练气一层';
-        normalized.cultivation_energy = Number(normalized.cultivation_energy || 0);
-        normalized.vocabulary = Number(normalized.vocabulary || 0);
-        normalized.grammar = Number(normalized.grammar || 0);
-        normalized.reading = Number(normalized.reading || 0);
-        normalized.listening = Number(normalized.listening || 0);
-        normalized.writing = Number(normalized.writing || 0);
-        normalized.speaking = Number(normalized.speaking || 0);
-        return normalized;
+        return normalizeUserProfile(user);
+    }
+
+    /** Partial updates must not inject default realm labels into Pinia. */
+    sanitizeUserPatch(updates) {
+        if (!updates) return updates;
+        const patch = { ...updates };
+        if ('cultivation_energy' in patch) patch.cultivation_energy = Number(patch.cultivation_energy || 0);
+        if ('vocabulary' in patch) patch.vocabulary = Number(patch.vocabulary || 0);
+        if ('grammar' in patch) patch.grammar = Number(patch.grammar || 0);
+        if ('reading' in patch) patch.reading = Number(patch.reading || 0);
+        if ('listening' in patch) patch.listening = Number(patch.listening || 0);
+        if ('writing' in patch) patch.writing = Number(patch.writing || 0);
+        if ('speaking' in patch) patch.speaking = Number(patch.speaking || 0);
+        return patch;
     }
 
     // 用户数据
@@ -73,12 +78,15 @@ export class Store {
 
     updateUser(updates) {
         if (this.state.user) {
-            Object.assign(this.state.user, this.normalizeRealmUser(updates));
+            const sanitized = this.sanitizeUserPatch(updates);
+            const patch = mergeRealmPatch(this.state.user, sanitized);
+            Object.assign(this.state.user, patch);
+            this.state.user = normalizeUserProfile(this.state.user);
             this.notify();
             // [BRIDGE] 同步到 Pinia，供 Vue 3 组件使用
             try {
                 const userStore = useUserStore(pinia);
-                userStore.updateProfile(this.normalizeRealmUser(updates));
+                userStore.setProfile(this.state.user);
             } catch (e) {
                 console.error('桥接 Pinia 失败:', e);
             }

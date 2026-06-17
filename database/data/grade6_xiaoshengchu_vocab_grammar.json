@@ -1,0 +1,5695 @@
+{
+  "sources": [
+    "c:\\Users\\Administrator\\Documents\\WeChat Files\\wxid_znj0gx1tx1zq22\\FileStorage\\File\\2026-05\\小升初题库\\小升初题库\\词汇辨析.xlsx"
+  ],
+  "summary": {
+    "total_questions": 284,
+    "stage_counts": {
+      "L3-07": 95,
+      "L3-08": 95,
+      "L3-09": 94
+    }
+  },
+  "questions": [
+    {
+      "question_id": "EGX-L3-07-0001",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Which of the following is different from others? ( )",
+      "options": {
+        "A": "interesting",
+        "B": "amazing",
+        "C": "crossing",
+        "D": "cook; cooking"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：下面的哪一个与其他不同？A选项有趣的，B选项令人惊喜的，C选项十字路口，AB选项为形容词，C选项为名词，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0002",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "I like _________. I want to be a _________. ( )",
+      "options": {
+        "A": "cook; cooking",
+        "B": "cooking; cooker",
+        "C": "cooking; cook",
+        "D": "cooker; cooker"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：我喜欢___。我想成为一名____。喜欢做某事用like to do sth或like doing sth；根据a可知第二空用名词，cooker炊具，cook厨师，根据句意应是厨师。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0003",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—Where are you going, Millie? ( ) —To the _______. My little brother’s birthday is coming. I want to buy him a football.",
+      "options": {
+        "A": "sports shop",
+        "B": "clothes shop",
+        "C": "toy shop",
+        "D": "bookshop"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：—米莉，你要去哪里？—去____。我弟弟的生日快到了。我想给他买一个足球。本题考查名词和名词词组辨析。A体育用品店，B服装店，C玩具店，D书店。买足球需要去体育用品店，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0004",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—In which city, drivers drive on the left side? ( ) —In ______.",
+      "options": {
+        "A": "London",
+        "B": "Beijing",
+        "C": "New York",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：—在哪个城市，司机靠左边行驶？—在_____。本题考查名词和名词词组辨析。A伦敦，B北京，C纽约。根据常识可知伦敦靠左行驶，故选 A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0005",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Lily is good at ______ the piano, she wants to be a ________. ( )",
+      "options": {
+        "A": "playing; pianist",
+        "B": "play; pianist",
+        "C": "playing; dancer",
+        "D": "plays; pianist"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：莉莉擅长弹钢琴，她想成为一名钢琴家。本题考查动词的形式和名词辨析。be good at后面跟动名词形式，playing是动名词，play是动词原形，plays是动词的第三人称单数，playing符合题意。pianist钢琴家，dancer舞蹈家，擅长弹钢琴，想要成为钢琴家，pianist符合题意，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0006",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "You will find Buckingham Palace in _______. ( )",
+      "options": {
+        "A": "America",
+        "B": "Australia",
+        "C": "England",
+        "D": "China"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：你将在英国找到白金汉宫。本题考查名词辨析。A美国，B澳大利亚，C英国，D中国，根据常识可知白金汉宫在英国，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0007",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "In Hangzhou, many people go to work by ______. ( )",
+      "options": {
+        "A": "ferry",
+        "B": "subway",
+        "C": "sled",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：在杭州，许多人乘地铁去上班。本题考查名词辨析。A渡船，B地铁，C雪橇。杭州是城市，人们一般乘地铁去上班，by subway乘地铁，符合题意，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0008",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "We have a long ________in summer. We don’t have classes. ( )",
+      "options": {
+        "A": "holiday",
+        "B": "week",
+        "C": "time",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：在夏天我们有一个很长的假期。我们不上课。本题考查名词辨析。A假期，B周，C时间。根据句意和常识，可知在夏天我们有一个很长的假期。故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0009",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "It’s 7:30 a.m. We are _____. ( )",
+      "options": {
+        "A": "having breakfast",
+        "B": "having lunch",
+        "C": "having dinner",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：现在是早上7:30。我们正在吃早饭。本题考查名词辨析。A吃早饭，B吃午饭，C吃晚饭，根据时间可知是吃早饭，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0010",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Don’t eat too much fruit, or you will have a ________. ( )",
+      "options": {
+        "A": "headache",
+        "B": "cough",
+        "C": "stomachache",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：不要吃太多水果，否则你将会______。本题考查名词辨析，A头痛，B咳嗽，C胃痛，根据常识可知，吃太多水果会胃痛，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0011",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Jack wants to be a ________. He will go to ________ school. ( )",
+      "options": {
+        "A": "cooker; cook",
+        "B": "dance; dancing",
+        "C": "cook; cooking",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：杰克想成为一名______。他将去______学校。本题考查名词和名词词组辨析。A厨具；厨师，B跳舞；舞蹈，C厨师；烹饪。选项C符合句意，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0012",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "My family has a big table in our ________. We have our meals there. ( )",
+      "options": {
+        "A": "dining room",
+        "B": "bedroom",
+        "C": "living room",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：我家餐厅有一张大餐桌。我们在那里吃饭。本题考查名词辨析和名词词组。A餐厅，B卧室，C客厅，吃饭在餐厅，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0013",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "The seventh month of the year is ________. ( )",
+      "options": {
+        "A": "June",
+        "B": "August",
+        "C": "February",
+        "D": "July"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：一年的第七个月是 ________。本题考查名词辨析。A六月，B八月，C二月，D七月。根据常识可知一年的第七个月是7月，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0014",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "We always have PE class in the _______. ( )",
+      "options": {
+        "A": "dining hall",
+        "B": "computer room",
+        "C": "gym",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：我们总是在_______上体育课。本题考查名词和名词词组的辨析，A餐厅，B电脑室，C体育馆，根据常识可知在体育馆上体育课，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0015",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—What vegetables would you like for dinner? ( ) —I'd like some ________.",
+      "options": {
+        "A": "fish",
+        "B": "strawberries",
+        "C": "potatoes",
+        "D": "tomato"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：—晚餐你想吃什么蔬菜？—我想要一些______。A鱼肉，不可数名词。B草莓，名词复数。C土豆，名词复数。D西红柿，名词单数。AB不是蔬菜，排除AB选项。some加可数名词复数，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0016",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "There is a new ________ in our city. There are some books in it. Let’s go and read. ( )",
+      "options": {
+        "A": "hospital",
+        "B": "library",
+        "C": "zoo",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：我们的城市里有一座新的____。里面有一些书。我们去阅读吧。A医院，B图书馆，C动物园，根据题意和常识可知，图书馆里有一些书，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0017",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "It’s hot and sunny. I can put on my ______. ( )",
+      "options": {
+        "A": "jacket",
+        "B": "sweater",
+        "C": "sunglasses",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：天气炎热晴朗。我可以戴上我的______。A夹克，B毛衣，C太阳镜，根据天气情况可知戴上太阳镜合适，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0018",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "That boy is 35 ______. ( )",
+      "options": {
+        "A": "size",
+        "B": "tons",
+        "C": "kilograms",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：那个男孩35公斤。35修饰可数名词复数，size是可数名词单数，排除A；B吨，C公斤，kilograms符合句意，排除B。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0019",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "They say it is a very good ______. Will you go to the cinema with me tonight? ( )",
+      "options": {
+        "A": "photo",
+        "B": "film",
+        "C": "book",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：他们说这是一部好的_____。你今晚打算和我一起去电影院吗？photo照片； film电影； book书；由句子中cinema可知是电影院，所以是一部好看的电影，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0020",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "I come from _______. I am a _______. ( )",
+      "options": {
+        "A": "China; China",
+        "B": "English; English",
+        "C": "China; Chinese",
+        "D": "Chinese; China"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：我来自____。我是一名____。A中国，中国；B英国人，英国人；C中国，中国人；D中国人，中国。根据题意可知，我来自中国，我是中国人。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0021",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—What is your ______? ( ) —I like to play football.",
+      "options": {
+        "A": "name",
+        "B": "hobby",
+        "C": "father",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：—你的____是什么？—我喜欢踢足球。A名字，B爱好，C父亲，答句是喜欢做的事情，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0022",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "My brother will go to the library ______. ( )",
+      "options": {
+        "A": "tomorrow",
+        "B": "yesterday",
+        "C": "last week",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：我哥哥_____将去图书馆。A明天，B昨天，C上星期，该句是一般将来时，故用表将来的时间状语，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0023",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "I played football ________. ( )",
+      "options": {
+        "A": "next week",
+        "B": "next Monday",
+        "C": "yesterday",
+        "D": "tomorrow"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：我_____踢足球了。A下周；B下个星期一；C昨天；D明天；该句是一般过去时，故用表示过去的时间状语，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0024",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "If you can type quickly, you can be a _______ one day. ( )",
+      "options": {
+        "A": "P.E. teacher",
+        "B": "secretary",
+        "C": "scientist",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：如果你打字很快，有一天你可以成为一名秘书。A选项体育老师，B选项秘书，C选项科学家。B选项符合题意，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0025",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "The film The Captain is meaningful. I’d like to see it at the __________. ( )",
+      "options": {
+        "A": "hospital",
+        "B": "university",
+        "C": "cinema",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：电影《队长》很有意义。我想在______看它。选项A医院，选项B大学，选项C电影院。根据常识可知：看电影要在电影院。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0026",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "My aunt is a _______. She works at a university. ( )",
+      "options": {
+        "A": "scientist",
+        "B": "police officer",
+        "C": "pilot",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：我的阿姨是一位___。她在一所大学工作。A科学家；B警察；C飞行员；根据题意，可知我的阿姨是一位科学家，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0027",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—Where is the ________? I want to buy some beef. ( ) —It’s next to the park on Dongfang Street.",
+      "options": {
+        "A": "science museum",
+        "B": "supermarket",
+        "C": "post office",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：—________在哪？我想买些牛肉。—它在东方街的公园旁边。根据常识买东西应该去超市supermarket，故答案为supermarket。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0028",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—What’s your favourite _______? ( ) —Ping-pong.",
+      "options": {
+        "A": "food",
+        "B": "colour",
+        "C": "sport",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：—你最喜爱____？—乒乓球。A食物；B颜色；C运动；根据答语可知C选项符合，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0029",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "British people eat ________ a lot, and they are usually cooked(烹饪) in different ways. ( )",
+      "options": {
+        "A": "chicken",
+        "B": "beef",
+        "C": "potatoes",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：英国人常吃土豆，并且土豆被（他们）用不同的方式烹制。A鸡肉，B牛肉，C土豆，根据常识可知，英国人常吃土豆，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0030",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "We know the weather from the weather _____ on TV every night. ( )",
+      "options": {
+        "A": "report",
+        "B": "survey",
+        "C": "picture",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意为我们通过每晚电视上的天气预报知道天气，A意为报告，B意为调查，C意为照片，由句意可知，此处应用weather report，意为天气预报，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0031",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Fruit and ______are good for us. ( )",
+      "options": {
+        "A": "vegetables",
+        "B": "sweet",
+        "C": "French fries",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：水果和蔬菜对我们有好处。A. vegetables蔬菜，B. sweet甜食，C. French fries薯条。蔬菜和水果一样是健康食品，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0032",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "In England, drivers drive on the ____side of the road. ( )",
+      "options": {
+        "A": "right",
+        "B": "left",
+        "C": "in front of",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：在英国，司机靠左行驶。根据常识，英国是靠左行驶的国家，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0033",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "This dinosaur is 21 ___________ tall. ( )",
+      "options": {
+        "A": "mm",
+        "B": "kg",
+        "C": "m",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：这只恐龙高21___。A. mm毫米，B. kg公斤（重量单位），C. m米。恐龙身高用米作单位，21米是合理的恐龙身高，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0034",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "I want to use your _____ because I'm going to write a letter. ( )",
+      "options": {
+        "A": "pen",
+        "B": "eraser",
+        "C": "ruler",
+        "D": "knife"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：我想用你的___，因为我要写一封信。A. pen钢笔，B. eraser橡皮，C. ruler尺子，D. knife刀。写信需要用笔，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0035",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—What does your uncle do? —He works at sea. He is a ______. ( )",
+      "options": {
+        "A": "pilot",
+        "B": "postman",
+        "C": "fisherman",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：—你叔叔是做什么的？—他在海上工作。他是一名___。A. pilot飞行员，B. postman邮递员，C. fisherman渔民。在海上工作的是渔民，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0036",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "What ________ are your shoes, Mike? ( )",
+      "options": {
+        "A": "size",
+        "B": "big",
+        "C": "foot",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：迈克，你的鞋是 ？A. size尺寸，B. big大，    C. foot脚，由题意知，你的鞋是多大码？故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0037",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "I go to the beach. It is sunny and hot. It is ( )",
+      "options": {
+        "A": "winter",
+        "B": "summer",
+        "C": "spring",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：我去海滩。天气晴朗炎热。这是___。A. winter冬天，B. summer夏天，C. spring春天。海滩晴朗炎热的天气符合夏天，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0038",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Lu Ban was a(n) . ( )",
+      "options": {
+        "A": "artist",
+        "B": "craftsman",
+        "C": "farmer",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：鲁班是一名___。A. artist艺术家，B. craftsman工匠，C. farmer农民。鲁班是中国古代著名的工匠（木匠），故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0039",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "How many oranges? ( )",
+      "options": {
+        "A": "Four apples.",
+        "B": "Four oranges.",
+        "C": "interesting",
+        "D": "amazing"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：多少个橘子？问的是橘子，A回答的是苹果，B回答的是橘子，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0040",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "The astronaut travelled to space in a ________. （ ）",
+      "options": {
+        "A": "plane",
+        "B": "ship",
+        "C": "spaceship",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：宇航员乘___去了太空。A. plane飞机，B. ship船，C. spaceship宇宙飞船。宇航员去太空乘坐宇宙飞船，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0041",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "I am hungry. I want . ( )",
+      "options": {
+        "A": "some books",
+        "B": "some water",
+        "C": "some rice",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：我饿了。我想要___。A. some books一些书，B. some water一些水，C. some rice一些米饭。饿了应该吃米饭，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0042",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "---Who is the _____? ( ) ---He is my uncle.",
+      "options": {
+        "A": "boy",
+        "B": "man",
+        "C": "woman",
+        "D": "girl"
+      },
+      "correct_answer": "B",
+      "explanation": "根据回答中的uncle，故用B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0043",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—What’s your father’s _____? ( ) —He is a worker.",
+      "options": {
+        "A": "job",
+        "B": "name",
+        "C": "address",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：你的爸爸的工作是什么？他是一位工人。从He is a worker.可知是问职业，B项为名字，排除B；C项为地址，排除C。故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0044",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "________ in bed. It’s bad for your eyes. ( )",
+      "options": {
+        "A": "Not to read",
+        "B": "Don’t read",
+        "C": "Don’t to read",
+        "D": "Not read"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：不要在床上看书。对你的眼睛不好。本题考查否定祈使句。A. Not to read不能放在句首，B. Don't read不要读，C. Don't to read语法错误，D. Not read不能放在句首。祈使句否定形式用Don't + 动词原形，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0045",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "I will send a card to ______ on my______ birthday. ( )",
+      "options": {
+        "A": "she; mother's",
+        "B": "her; father's",
+        "C": "her; sister's",
+        "D": "it; brother's"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：在我姐姐生日的那天，我将寄给她一张卡片。to是介词，后跟人称代词的宾格her，某人的需要名词所有格。she是主格；it是主格或者宾格，故答案为C。本题主要考查代词的用法。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0046",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "My son has piano _____ every week. ( )",
+      "options": {
+        "A": "class",
+        "B": "lesson",
+        "C": "classes",
+        "D": "lessons"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：我儿子每周都有钢琴___。A. class课（单数），B. lesson课（单数），C. classes课（复数），D. lessons课（复数）。every week表示每周都有的课程，通常用复数形式，piano lessons钢琴课是固定用法，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0047",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "I’ve got a toothache. I’m going to the__________.( )",
+      "options": {
+        "A": "park",
+        "B": "dentist",
+        "C": "teacher",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：我牙疼，我要去看牙医。dentist牙医，名词，go to the dentist去看牙医，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0048",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "There is not enough __________ in the comer to put the table.",
+      "options": {
+        "A": "place",
+        "B": "room",
+        "C": "floor",
+        "D": "ground"
+      },
+      "correct_answer": "B",
+      "explanation": "思路分析：本题考查的是固定词组的用法。\n名师解析：本句意思是：在拐角处没有足够的空间放桌子。选项A是指实实在在的地方，选项B除了是房间的意思外还有空间的意思，是抽象的空间概念，选项C是楼层，选项D是操场，故答案为B。\n易错提示：不要与place混淆，本题指的是想象的空间。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0049",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "— Where does the rain come from? — It comes from the______.",
+      "options": {
+        "A": "soil",
+        "B": "clouds",
+        "C": "sun",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "思路分析：本题考查的是名词的词义。我们需要根据上下文判断答案。\n名师解析：据Where does the rain come from?故It comes from the______.中用B. clouds云。A. soil土壤，C. sun太阳不符合题意，所以答案为B。句意：——雨来自哪里？——它来自云。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0050",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "There is not enough ________ in the corner to put the table.",
+      "options": {
+        "A": "place",
+        "B": "room",
+        "C": "floor",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "思路分析：本题考查的是名词的用法。我们需要记住这些名词的汉语意思及用法。\n名师解析：本句中，据is故 enough后要跟不可数名词B. room空间。A. place地方， C. floor地板，都是可数名词，所以答案为B。句意：在角落里没有足够的空间放这张桌子。\n易错提示：不可数名词的用法记不牢。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0051",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "I like , because it's cool, and I can fly kites. ( )",
+      "options": {
+        "A": "winter",
+        "B": "summer",
+        "C": "spring",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "思路分析：本题考查的是季节的描述。\n名师解析：冠词在本题中，because it's cool, and I can fly kites. 因为天气凉爽，我能去放风筝的季节描述符合春季。故答案是C。\n易错提示：在做题时容易混淆四季的天气和活动描述。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0052",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—What’s your favourite animal? —______.",
+      "options": {
+        "A": "Monkey",
+        "B": "Tea",
+        "C": "Apples",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "思路分析：本题考查的是句意的理解。\n名师解析：本题题意是，你最喜欢的动物是什么？A猴子；B茶；C苹果，答案是A。\n易错提示：容易误解题意。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0054",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "There is going to be a good film at the ____. ( )",
+      "options": {
+        "A": "stadium",
+        "B": "cinema",
+        "C": "office",
+        "D": "school"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：___将有一部好电影。A. stadium体育场，B. cinema电影院，C. office办公室，D. school学校。看电影在电影院，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0055",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "The races in our school are very exciting. We all want to ______. ( )",
+      "options": {
+        "A": "make",
+        "B": "win",
+        "C": "interesting",
+        "D": "amazing"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：我们学校的比赛非常精彩。我们都想赢。本题考查动词辨析。A制作，B赢。选项B符合句意，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0056",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—Is David going to ______ some drinks to the party? ( ) —No, he ______.",
+      "options": {
+        "A": "bring; isn’t",
+        "B": "bring; is",
+        "C": "take; is",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：—大卫要带些饮料来派对吗？—不，他不带。本题考查动词辨析和一般疑问句的否定回答。“bring”表示“带来”，指将某物从别处带到说话人所在的地方。“take”表示“带走”，指将某物从说话人所在的地方带到别处。在派对场景中，饮料是被带到派对现场，是说话者所在之处，因此用 bring更合适。否定回答需用“isn’t”对应“No”。故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0057",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "I’m ______ my toy cars, but I can’t _______ them. ( )",
+      "options": {
+        "A": "looking for; find",
+        "B": "find; look for",
+        "C": "finding; look for",
+        "D": "looking for; finding"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：我正在寻找我的玩具汽车，但我找不到它们。本题考查动词短语，动词辨析和动词的形式。look for寻找，表示寻找的动作；find找到，表示寻找的结果。根据句意可知前半句是现在进行时，其句型结构为：be+动词的现在分词，表示正在寻找，用looking for；后半句表示寻找的结果，情态动词can后跟动词原形，用find。故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0058",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "This is my pet. It _____ a rabbit. It _____ a small mouth and two red eyes. ( )",
+      "options": {
+        "A": "has; is",
+        "B": "is; has",
+        "C": "is; is",
+        "D": "has; has"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：这是我的宠物。它是一只兔子。它有一张小嘴和两只红眼睛。本题考查动词辨析。has有，is是，根据句意可知第一空用is，第二空用has。故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0059",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Please _____ your photos here with you tomorrow. ( )",
+      "options": {
+        "A": "bring",
+        "B": "take",
+        "C": "show",
+        "D": "keep"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：明天随身把你的照片带到这来。本题考查动词辨析，A带来，B带走，C展示，D保持，根据句意，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0060",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—Can you ______ a bike? ( ) —Yes, I can.",
+      "options": {
+        "A": "ride",
+        "B": "put",
+        "C": "drive",
+        "D": "walk"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：—你会骑自行车吗？—是的，我会。本题考查动词辨析。A骑，B放，C驾驶，D走，选项A符合句意，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0061",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Don’t _________ too much money buying jewelry (珠宝) because some people are in hunger! ( )",
+      "options": {
+        "A": "take",
+        "B": "spend",
+        "C": "cost",
+        "D": "pay"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：不要花太多钱买珠宝，因为有些人正在挨饿！本题考查动词辨析。take通常指花费时间，spend通常指人花费时间或金钱，cost通常指物或某种活动花费金钱，pay通常指支付金钱，根据句意，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0062",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "John _______ an email to his mother every week. ( )",
+      "options": {
+        "A": "draws",
+        "B": "speaks",
+        "C": "writes",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：约翰每周给他的妈妈_______一封电子邮件。A选项画，B选项讲；说，C选项写，write an email写一封电子邮件，固定搭配，故C选项符合，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0063",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Let’s __________ him __________ an interesting story. ( )",
+      "options": {
+        "A": "to hear; speak",
+        "B": "to hear; talk",
+        "C": "listen to; say",
+        "D": "listen to; tell"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：让我们听他讲一个有趣的故事吧。let sb do sth让某人做某事，故AB选项错误；say说；tell讲；根据句意应是讲故事，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0064",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Let’s go to the classroom to hear what Tina is __________ with the little boy. ( )",
+      "options": {
+        "A": "telling",
+        "B": "talking",
+        "C": "speaking",
+        "D": "saying"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：让我们去教室听听蒂娜在和那个小男孩说什么。talk with sb和某人交谈，固定搭配，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0065",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—Could you _______ your bike? ( ) —I want to go home.",
+      "options": {
+        "A": "borrow my",
+        "B": "borrow me",
+        "C": "lend my",
+        "D": "lend me"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：—你能借给我你的自行车吗？—我想回家。lend sb sth，借给某人某物，动词后面用宾格，根据题意，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0066",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—May I __________ these books out of the reading room? ( ) —No, you can’t.",
+      "options": {
+        "A": "bring",
+        "B": "catch",
+        "C": "take",
+        "D": "put"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：—我可以把这些书从阅览室拿出去吗？—不，你不能。A.bring带来，B.catch抓住， C.take 拿走，D.put放，所以C符合句意的，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0067",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—Coffee is ready. How nice it __________! Would you like some? ( ) —Yes, please.",
+      "options": {
+        "A": "feels",
+        "B": "looks",
+        "C": "sounds",
+        "D": "smells"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：—咖啡准备好了。闻起来很美味啊！你想要一些吗？—是的，请来一些。A. 感觉；B. 看起来；C. 听起来；D. 闻起来；前面说的是咖啡，应该是闻起来很好，smells符合题意，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0068",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—What did you do last Sunday? ( ) —I _______ a Beijing Opera with my friends.",
+      "options": {
+        "A": "looked",
+        "B": "went",
+        "C": "saw",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：——上星期天你做什么了？——我和朋友们一起看京剧了。A看，B去，C看见，看京剧see a Beijing Opera，此处用see的过去式saw。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0069",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "I _____ TV last Sunday evening. ( )",
+      "options": {
+        "A": "saw",
+        "B": "watched",
+        "C": "looked",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：上周日晚上我___电视。A. saw看（强调结果），B. watched观看，C. looked看（强调方向）。看电视用watch TV，last Sunday evening是过去时，用过去式watched，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0070",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Where did you ________ last weekend? ( )",
+      "options": {
+        "A": "do",
+        "B": "go",
+        "C": "to",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：上个周末你去了___？A. do做，B. go去，C. to介词。last weekend是一般过去时，疑问句中用过去式，Where did you go?你去哪了？故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0071",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "It's windy now. I have to ________ the window. ( )",
+      "options": {
+        "A": "open",
+        "B": "put",
+        "C": "close",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：现在起风了。我不得不___窗户。A. open打开，B. put放，C. close关。起风了应该关窗户，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0072",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "---Can they us some stories about their trip to Hainan? ( ) ---I think they can.",
+      "options": {
+        "A": "speak",
+        "B": "talk",
+        "C": "say",
+        "D": "tell"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：—他们能给我们讲一些关于海南之旅的故事吗？—我想他们可以。A. speak说（语言），B. talk谈话，C. say说（内容），D. tell告诉/讲述。tell sb stories给某人讲故事，固定搭配，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0073",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Tigers can ______， but they cannot ______.（ ）",
+      "options": {
+        "A": "climb trees; fly",
+        "B": "run; fly",
+        "C": "swim; run",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：老虎会___，但它们不会___。A. 爬树；飞，B. 跑；飞，C. 游泳；跑。老虎会跑但不会飞，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0074",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "I can’t ______ the words (单词). They are too small. ( )",
+      "options": {
+        "A": "look",
+        "B": "see",
+        "C": "watch",
+        "D": "say"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：我看不见单词，它们太小了。本题考查动词的辨析，A强调“看”的瞬间；B强调“看”的结果；C观看电视等；D说，根据句意“他们太小了。”可推断前句应该是“看不清”，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0075",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "I need to write a lost note. Can you _______ me _________?",
+      "options": {
+        "A": "take; a pencil",
+        "B": "bring; some book",
+        "C": "take; some papers",
+        "D": "bring; a pen"
+      },
+      "correct_answer": "D",
+      "explanation": "take拿走，从近到远，bring拿来，从远到近，可数名词要前加冠词或变复数，故选D.A项为拿走，排除A; B项book没变复数，排除B; C项take拿走，排除C.句意：我需要写一个寻物告示，你能给我拿支钢笔吗？\n规律总结：take拿走，从近到远，bring拿来，从远到近；可数名词在句中如以单数形式出现，必须前加冠词或形容词等词，也可变复数。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0076",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "I _______ to school by bus this morning. ( )",
+      "options": {
+        "A": "walked",
+        "B": "went",
+        "C": "come",
+        "D": "coming"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：我今天早上乘公共汽车去上学。本题考查动词辨析和动词的形式，A走路，动词过去式；B去，动词过去式；C来，动词原形；D来，现在分词或动名词，this morning可知是一般过去时，谓语动词要用过去时，go to school 去上学，go的过去式是went，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0077",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "We have to ________ school uniforms in school every day. ( )",
+      "options": {
+        "A": "put on",
+        "B": "have",
+        "C": "wear",
+        "D": "are in"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：我们每天在学校必须穿校服。本题考查动词的辨析，A穿上，强调动作；B有；C穿着，强调状态；D穿着；根据语法及句意可知BD选项错误；本句强调状态。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0078",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Excuse me, may I ______ your dictionary? ______ is at home.",
+      "options": {
+        "A": "lend, My",
+        "B": "borrow; Mine",
+        "C": "lend; Mine",
+        "D": "borrow; my"
+      },
+      "correct_answer": "B",
+      "explanation": "lend借出，borrow借入，my dictionary=mine,故选B;A项my应为mine,排除A; C项lend应为borrow,排除C; D项my应为mine,排除D.句意：对不起，我可以借用你的字典吗？我的不在家。\n规律总结：lend借出，borrow借入；形容词性物主代词要后接名词，名词词物主代词不接名词，等于形容词词物主代词加名词。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0079",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Jim and Ben are _____ about Ben’s birthday. ( )",
+      "options": {
+        "A": "saying",
+        "B": "speaking",
+        "C": "talking",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：吉姆和本正在谈论本的生日。A. saying说，B. speaking讲话，C. talking谈论。talk about谈论某事，固定搭配，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0080",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—Where is Lisa’s ruler? ( ) —______ ruler is in the pencil case.",
+      "options": {
+        "A": "My",
+        "B": "Her",
+        "C": "His",
+        "D": "Your"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：—丽莎的尺子在哪？—______尺子在铅笔盒。本题考查代词辨析，A我的，B她的，C他的，D你的，问句是问丽莎的尺子，这里丽莎是女生，答语用形容词性物主代词her，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0081",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—Which do you prefer, tea or coffee? ( ) — ____ is OK. I don’t care.",
+      "options": {
+        "A": "Either",
+        "B": "Neither",
+        "C": "Both",
+        "D": "One"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：—你更喜欢那种，茶还是咖啡？—___都行，我不在乎。A选项两者中任何一个，B选项两者中任何一个都不，C选项两者都，D选项一个。根据题意，可知句意为任何一个都行，我不在乎。A选项符合，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0082",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Would you like __________ tea? ( )",
+      "options": {
+        "A": "some",
+        "B": "any",
+        "C": "/",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "题干句意：你想喝点茶吗？some和any都表示一些，some用于肯定句中，any用于否定句和疑问句中；但是当期望得到对方可定回答时，要用some，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0083",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "I can't carry them _____.（ ）",
+      "options": {
+        "A": "each",
+        "B": "one",
+        "C": "all",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "我不能把它们全部带着。考查代词辨析。题干译为：我不能把它们全部带着。them译为它们，是they的宾格，是复数，故排除AB。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0084",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "This is my friend. _______ name’s Bob. ( )",
+      "options": {
+        "A": "My",
+        "B": "Your",
+        "C": "His",
+        "D": "Her"
+      },
+      "correct_answer": "C",
+      "explanation": "思路分析：分析句意，横线处需要填一个代词。易错提示：介绍他人时代词要用第三人称。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0085",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Look at these monkeys. Let's feed(喂) ___ some bananas. ( )",
+      "options": {
+        "A": "they",
+        "B": "their",
+        "C": "them",
+        "D": "it"
+      },
+      "correct_answer": "C",
+      "explanation": "根据所给的前句，看这些猴子，后句是祈使句，构成Let's+动词原形+代词宾格+其它.选项A代词主格，选项B形容词性物主代词，选项C宾格，复数，选项D代词主格或者宾格，单数，本句想要复数宾格.故选C.此题考查祈使句.（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0086",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—Where's _____ new toy? ( ) —Is _____ under _____ bed?",
+      "options": {
+        "A": "me; its; your",
+        "B": "me; it; your",
+        "C": "my; it; yours",
+        "D": "my; it; your"
+      },
+      "correct_answer": "D",
+      "explanation": "形容词性物主代词+名词使用，人称代词主格作主语，选项中只有选项D符合题意.故选D.此题考查代词用法.（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0087",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "I have two good pen friends. One is an American, __________ is in England. ( )",
+      "options": {
+        "A": "the other",
+        "B": "another one",
+        "C": "another",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：我有两个好的笔友。一个是美国人，另一个在英国。本题考查的是another和other的用法，the other表示两个中的另一个；another指同类中又多一个的或与之前不同的另一个。本题中住在英国的笔友是两个笔友中的另一个，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0088",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "The shirts are for ______. ( )",
+      "options": {
+        "A": "you and me",
+        "B": "you and I",
+        "C": "I and you",
+        "D": "me and you"
+      },
+      "correct_answer": "A",
+      "explanation": "思路分析：本题考查的是代词基本用法。\n名师解析：本句子意是，这些是你和我的衬衣。人称代词在句子中可以充当主语、宾语和表语，在充当宾语时，要使用人称代词的宾格形式。在本句中，人称代词在句子中充当宾语。B选项和C选项都没有使用人称代词的宾格形式。当出现并列人称代词时，礼貌的排列顺序应该是你、她、我。故答案是A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0089",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "There are thirty pupils in our class. _______ of them are young pioneers. ( )",
+      "options": {
+        "A": "Any",
+        "B": "Either",
+        "C": "All",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：我们班有三十个学生。他们中的___是少先队员。选项A一些，选项B（两者中）任何一个，选项C所有、都。根据常识可知，所有小学生都是少先队员，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0090",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "Lily is a friend of ________. ( )",
+      "options": {
+        "A": "hers",
+        "B": "her",
+        "C": "she",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：莉莉是她的一个朋友。hers名词性物主代词，her形容词性物主代词或人称代词宾格，she人称代词主格，横线后面没有名词，该空考查名词性物主代词，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0091",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "It will ______ in Hainan. Lots of people go to Sanya in winter. ( )",
+      "options": {
+        "A": "be cold",
+        "B": "sun",
+        "C": "be warm",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：海南将会______。许多人在冬天去三亚。be cold是寒冷的；sun太阳；be warm是温暖的。句子是一般将来时，will后跟动词原形，根据常识可知冬季的三亚是温暖的。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0092",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "The students are ______ because the football match is very ______. ( )",
+      "options": {
+        "A": "excited; excited",
+        "B": "excited; exciting",
+        "C": "exciting; excited",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：学生们很兴奋，因为足球比赛非常令人兴奋的。本题考查形容词辨析。excited感到兴奋的，修饰人，exciting令人兴奋的，修饰事物。第一个空主语是“学生”，用excited；第二个空描述“比赛”，用exciting。故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0093",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "It was ____ in the morning. But it ____ in the afternoon. ( )",
+      "options": {
+        "A": "sunny; rainy",
+        "B": "rainy; rained",
+        "C": "rainy; sunny",
+        "D": "sunny; rained"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：上午是晴天的。但是下午下雨了。本题考查形容词的用法，形容词辨析和动词的形式。be动词was后面是形容词，sunny是形容词晴朗的，rainy是形容词下雨的。第二句缺少谓语动词，rain是动词下雨，时态是一般过去时态，动词rain的过去式是rained。but表示转折，下午下雨了，上午应该是晴天的，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0094",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "—How are your parents? ( ) —They are very _____, thank you.",
+      "options": {
+        "A": "bad",
+        "B": "kind",
+        "C": "well",
+        "D": "happy"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：—你的父母好吗？—他们很好，谢谢你。本题考查形容词辨析。A坏的，B友善的，C健康的，D快乐的，根据句意选项C符合，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0095",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "In our city, it is _____ in July, but it is even _____ in August. ( )",
+      "options": {
+        "A": "hotter; hottest",
+        "B": "hot; hot",
+        "C": "hotter; hot",
+        "D": "hot; hotter"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：在我们的城市，七月是热的，但是八月甚至更热。本题考查形容词辨析和形容词的比较级。热的hot，比较级是hotter，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-07-0096",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "07",
+      "question": "The cake smells _____. Please throw it away. ( )",
+      "options": {
+        "A": "good",
+        "B": "badly",
+        "C": "bad",
+        "D": "well"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：这个蛋糕闻起来坏了。请把它扔掉。本题考查形容词辨析和形容词的用法。A好的，形容词；B坏地，副词；C坏的，形容词；D好地，副词。根据句意应是坏的，排除AD，该空用形容词做smell的表语，排除B，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0097",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Oh, dear. I get a “C” in the test. My mum will ______ with me. ( )",
+      "options": {
+        "A": "be happy",
+        "B": "be angry",
+        "C": "angry",
+        "D": "happy"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：哦，天哪。我考试得了“C”。我妈妈对我很生气。本题考查动词的形式和形容词辨析。happy高兴的，angry生气的，will后跟动词原形，根据句意可知是生气的，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0098",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "It’s always ______ in Hainan. People like to visit there in winter. ( )",
+      "options": {
+        "A": "cold",
+        "B": "cool",
+        "C": "hot",
+        "D": "warm"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：海南总是很_______。人们喜欢在冬天参观那里。本题考查形容词辨析。A冷的，B凉爽的，C热的，D暖和的，选项D符合题意，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0099",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Mum, what are you cooking? It smells ______. I can’t wait. ( )",
+      "options": {
+        "A": "nice",
+        "B": "bad",
+        "C": "long",
+        "D": "short"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：妈妈，你在做什么？闻起来很香。我等不及了。本题考查形容词辨析。A美味的，B坏的，C长的，D矮的；短的，nice符合题意，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0100",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "You look so _______. Please go to the bedroom and have a nap. ( )",
+      "options": {
+        "A": "tired",
+        "B": "thirsty",
+        "C": "hungry",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：你看上去那么_____。请去卧室打个盹吧。A累的；B口渴的；C饿的；根据下一句的意思可知该空填tired，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0101",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Your shoes are size 38. My shoes are size 39. My feet are _______ than yours. ( )",
+      "options": {
+        "A": "shorter",
+        "B": "smaller",
+        "C": "bigger 【点睛】",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：你的鞋是38号的。我的鞋是39码的。我的脚比你的大。than是比较级的标志词，A短的，形容词，B小的，形容词，C大的，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0102",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "I’m 162 cm. Tom is 163 cm. I’m ________ than Tom. ( )",
+      "options": {
+        "A": "shorter",
+        "B": "taller",
+        "C": "short 【点睛】",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：我身高162厘米。汤姆身高163厘米。我比汤姆 ____。shorter更矮的，形容词比较级；taller更高的，形容词比较级；short矮的，形容词原级。根据句中的than，可知该空为形容词比较级，由句意可知我比汤姆矮，该空应当用short的比较级shorter，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0103",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "—How _______ are you? （ ） —I’m nine.",
+      "options": {
+        "A": "tall",
+        "B": "old",
+        "C": "older 【点睛】这是考查疑问词的题目，注意how所组成的疑问词短语的用法。",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：— 你多_____了? — 我12岁了. 根据回答这里问年龄, 用疑问词how old多大，how tall意思是多高， 意思不合适，how做疑问词不和比较级连用。故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0104",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "—What colour are your shorts? ( ) —They are .",
+      "options": {
+        "A": "hot",
+        "B": "nice",
+        "C": "red 【点睛】这是考查词汇的题目。要抓住关键词What colour。",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：—你的短裤是什么颜色？— 它们是......。A选项是：炎热的；B选项是：美好的；C选项是：红色的。根据What colour“什么颜色”可知用C选项正确。故答案为C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0105",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Xinjiang is ________ than shanghai, I think. ( )",
+      "options": {
+        "A": "bigger",
+        "B": "shorter",
+        "C": "longer",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：我认为新疆比上海大。than是比较级的标志词，A. bigger更大的，B. shorter更矮的，C. longer更长的。根据常识新疆面积比上海大得多，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0106",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "We can cross the street now. The light is . ( )",
+      "options": {
+        "A": "green",
+        "B": "yellow",
+        "C": "red",
+        "D": "on"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：我们可以过马路了。现在是____灯。A. green绿的，B. yellow黄的，C. red红的， D.  on在上面，所以A符合句意，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0107",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Harry Potter is an _______ book for children, but my cousin doesn’t seem at all _____in it. ( )",
+      "options": {
+        "A": "interesting; interesting",
+        "B": "interested; interested",
+        "C": "interesting; interested",
+        "D": "interested; interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意为哈利波特对孩子们来说是一本有趣的书，但我表弟似乎不喜欢。interesting 表示使人感兴趣，主语通常是物。interested 表示某人自己本身感兴趣。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0108",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "My father is tall, but my mother is ___________. ( )",
+      "options": {
+        "A": "high",
+        "B": "short",
+        "C": "tall 点评：本题容易误解题意，并未理解but的转折连词的作用从而错认为应该填与前半句中的形容词tall一致，从而误将答案选为C项。",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "本题句意为“我的父亲个子很高，但是我的母亲个子很矮。”那么根据句意分析可知，由连词but表示句意的转折可判断，此处所填的形容词应与前半句的形容词tall为反义词。A项high意为“高的”，通常修饰飞的高或者抽象上的高；B项short意为“短的，矮的”，可用来修饰个子低，与C项tall为一对反义词。因此本题的正确答案为B项。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0109",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "An elephant is much _________ than a mouse.",
+      "options": {
+        "A": "longer",
+        "B": "bigger",
+        "C": "smaller 名师解析：据than故本句中much后跟形容词比较级，A.longer更长；B.bigger 更大；C.smaller更小。据语境，所以答案为B。句意：一只大象比一只老鼠大得多。 易错提示：不能根据语境判断合适的比较级。",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "思路分析：本题考查的是形容词比较级。我们需要记住形容词比较级的变化形式及汉语意思。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0110",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "—How ________ are you? ( ) —I’m 160 cm tall.",
+      "options": {
+        "A": "old",
+        "B": "tall",
+        "C": "heavy",
+        "D": "far"
+      },
+      "correct_answer": "B",
+      "explanation": "答语意为我160cm高，问句应用how tall（多高）来引导，A意为旧的，C意为重的，D意为远的，由句意可知，ACD均不符合题意，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0111",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Stop at a _________ light.",
+      "options": {
+        "A": "red",
+        "B": "yellow",
+        "C": "green",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：红灯停。本句是一条交通法规。A.red红色的；B.yellow黄色的；C.green绿色的。据交通法规，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0112",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Elephants’ ears are ________ than pigs’. ( )",
+      "options": {
+        "A": "bigger",
+        "B": "big",
+        "C": "smaller",
+        "D": "biger 名师解析：than前用形容词比较级，且据我们的常识大象的耳朵比猪的大故选A。A. bigger更大，B. big大，C. smaller更小，D. biger单词错误。因此答案为 A。 易错提示：忽略than而错选了原级big。"
+      },
+      "correct_answer": "A",
+      "explanation": "思路分析：本题考查的是形容词比较级。要做对此题，需要清楚比较级的用法。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0113",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "—How _____ is your uncle? ( ) —He’s 30.",
+      "options": {
+        "A": "large",
+        "B": "old",
+        "C": "尾巴 Ｄ．How heavy: 多重 选B, 其他选项无法搭配。 易错提示：对于特殊疑问词的使用不当。",
+        "D": "heavy 名师解析：本句的回答是他30岁了，问句应该为你的叔叔多大了？A. 提问物体的多大 B. How old人的年龄多大？"
+      },
+      "correct_answer": "B",
+      "explanation": "思路分析：本题考查的是特殊疑问句型。在做这种题时，最关键的是翻译句意，根据句子的含义，选择合适的答语。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0114",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "It’s _________ now. It’s going to rain. ( )",
+      "options": {
+        "A": "rainy",
+        "B": "sunny",
+        "C": "snowy",
+        "D": "cloudy 名师解析：rainy是“下雨的”，sunny是“阳光明媚的”，snowy是“下雪的”，cloudy是“多云的”，根据句意“天是______的，马上要下雨了。”故选择D。 易错提示：区分形容词的词意，正确把握句意，不看后半句就很容易出错。"
+      },
+      "correct_answer": "D",
+      "explanation": "思路分析：本题考查的是形容词的用法。区分词意，辨别句意就能完成。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0115",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Lucy is 42 kg. Kate is 46 kg. So Lucy is _________ than Kate.",
+      "options": {
+        "A": "lighter",
+        "B": "younger",
+        "C": "fatter 名师解析：Lucy is 42 kg. Kate is 46 kg.意为，Lucy42公斤，Kate46公斤。在形容人的体重时常用heavy\\light，故应该是Lucy比Kate轻。答案是A。 易错提示：容易误解题意。",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "思路分析：本题考查的是句意的理解。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0116",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "The girl is ___________ than her friend. ( )",
+      "options": {
+        "A": "short",
+        "B": "longer",
+        "C": "taller",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：这个女孩比她的朋友___________。本题考查形容词辨析和形容词比较级，A矮的，B更长的，C更高的。根据than可知形容词用比较级，taller符合句意，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0117",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "In England, drivers drive on the _______ side of the road. ( )",
+      "options": {
+        "A": "right",
+        "B": "left",
+        "C": "this",
+        "D": "that"
+      },
+      "correct_answer": "B",
+      "explanation": "本句中，England已经表明地点为英国，在做本题时要知道英国驾驶人员坐在车的右侧，在路的左侧驾驶。所以该句应填left。答案为B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0118",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "The book is very_____. I’m_____ in it.( )",
+      "options": {
+        "A": "interested，interested",
+        "B": "interesting, interested",
+        "C": "interesting, interesting",
+        "D": "interested, interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "interesting是主动形容词,即用于修饰人或事物本身,以外界的视角来观察被修饰对象，表示使人感兴趣；而interested是被动形容词,即表示人或事物被赋予的意义，表示某人本身感兴趣。本题中books是物，应该用interesting修饰，I 是人，用interested修饰。故答案是B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0119",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Elephants’ ears are ________ than pigs’. ( )",
+      "options": {
+        "A": "bigger",
+        "B": "big",
+        "C": "smaller",
+        "D": "biger"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：大象的耳朵比猪的耳朵大。than是比较级的标志词，后接比较级。A. bigger更大，B. big大（原级），C. smaller更小，D. biger拼写错误。根据常识大象耳朵比猪的大，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0120",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "—There isn’t _______ water here. Could you get _______ for me? ( ) —All right.",
+      "options": {
+        "A": "some; any",
+        "B": "any; any",
+        "C": "any; some",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：—这里没有一些水。你能帮我弄到些吗？—好的。some用在肯定句中，any用于否定句和疑问句中，题干句子是否定句和一般疑问句，故都用any，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0121",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Mr. Brown _______ exercises, so he is very fat. ( )",
+      "options": {
+        "A": "often",
+        "B": "sometimes",
+        "C": "always",
+        "D": "never"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：布朗先生____锻炼，所以他很胖。本题考查副词辨析。A经常，B有时，C总是，D从不。选项D符合句意，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0122",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "He doesn’t like swimming. So he ______ goes swimming. ( )",
+      "options": {
+        "A": "always",
+        "B": "never",
+        "C": "often",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：他不喜欢游泳。因此______去游泳。本题考查副词辨析，A总是，B从不，C经常，根据前面他不喜欢游泳，可知他从不去游泳，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0123",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Tommy lives far away from school. But he is ______ late. ( )",
+      "options": {
+        "A": "sometimes",
+        "B": "usually",
+        "C": "often",
+        "D": "never"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：汤米住在离学校很远的地方。但他从不迟到。本题考查副词辨析，A有时候，B通常，C经常，D从不，根据句意，never与句意相符，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0124",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Don’t speak too ________. My brother is sleeping. ( )",
+      "options": {
+        "A": "loudly",
+        "B": "quietly",
+        "C": "carefully",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：不要说得太大声。我弟弟正在睡觉。A大声地，B轻声地，C仔细地，选项A符合题意，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0125",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "It’s very late, but she is _________ in the classroom. ( )",
+      "options": {
+        "A": "still",
+        "B": "yet",
+        "C": "also",
+        "D": "too"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：很晚了，可是她_______在教室里。A还；仍然，B还；仍然，C也，D也，根据句意排除CD选项；A选项用于肯定句，B选项用于疑问句或否定句中，该句为肯定句，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0126",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "My father doesn’t like monkeys. My mother doesn’t like monkeys, _________. ( )",
+      "options": {
+        "A": "too",
+        "B": "also",
+        "C": "either",
+        "D": "neither"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：我爸爸不喜欢猴子。我妈妈______不喜欢猴子。A也，B也，C也，D也不，根据句意排除D选项；AB选项用于肯定句，C选项用于否定句，该句为否定句，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0127",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "She walks down the street ______. ( )",
+      "options": {
+        "A": "loud",
+        "B": "loudly",
+        "C": "quick",
+        "D": "slowly 【点睛】"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：她_____走在街上。A大声的，形容词。B大声地，副词。C快的，形容词。D慢慢地，副词。该空修饰动词walk，应该填副词，排除AC。根据句意，可知D选项符合题意，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0128",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "I was quiet ________. But ________ I’m very ________ in class. ( )",
+      "options": {
+        "A": "now; ago; smart",
+        "B": "ago; now; happy",
+        "C": "before; ago; silence",
+        "D": "before; now; active"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：我以前很安静。但现在在课堂上很________。根据am可知后一句是一般现在时态，该空应填写现在now，排除AC。根据was可知，前一句为一般过去时态。B选项，ago前面需要加时间表示多久之前，与题干不符。根据题意可知，以前很安静，对比现在应该是活跃的，选项D符合题意，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0129",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Peter doesn’t want to be late for school. So he walks ________. ( )",
+      "options": {
+        "A": "fast",
+        "B": "beautifully",
+        "C": "slow",
+        "D": "slowly 【点睛】"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：彼得不想上学迟到。所以他走得很快。A快速地，B漂亮地，C慢的，D缓慢地，因为不想迟到，可知应该走的快，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0130",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "I ____ play football. I don't like it.（ ）",
+      "options": {
+        "A": "often",
+        "B": "never",
+        "C": "always 【点睛】",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "我从不踢足球，我不喜欢。考查频度副词。题干译为：我__踢足球，我不喜欢。可知此处应为不踢足球。A译为经常，C是总是，均不符合。never译为从不，符合语境。故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0131",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "My sister sat ______ to me to listen to the story.",
+      "options": {
+        "A": "close",
+        "B": "closely",
+        "C": "nearby",
+        "D": "with"
+      },
+      "correct_answer": "B",
+      "explanation": "我妹妹紧挨着我坐着听故事，closely紧挨着，修饰动词sat.（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0132",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Your sister is a quick learner. She learns _______.",
+      "options": {
+        "A": "quick",
+        "B": "quickly",
+        "C": "slow",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：她学得很快。learn是动词。后面跟着副词用来修饰动词。只有quickly是副词。quick：快速的，形容词。故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0133",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "We should speak to the old man .",
+      "options": {
+        "A": "polite",
+        "B": "politely",
+        "C": "politer",
+        "D": "more polite"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：我们应该礼貌地对老人说话.副词修饰动词，选项A礼貌的，形容词，选项B礼貌地，副词，选项C更形容词的，选项D更礼貌的.故选B（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0134",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "She plays the piano .",
+      "options": {
+        "A": "very good",
+        "B": "very well",
+        "C": "good very",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "根据所给的句子和选项，她钢琴弹得很好.very well非常好修饰动词.故选B（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0135",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "When we are in the library, we should work .",
+      "options": {
+        "A": "quick",
+        "B": "quiet",
+        "C": "quickly",
+        "D": "quietly"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：当我们在图书馆时，我们应该安静地工作.图书馆要安静，副词修饰动词，quiet副词是quietly.故选D（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0136",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "The drivers can see you .",
+      "options": {
+        "A": "easy",
+        "B": "easily",
+        "C": "easier",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：司机很容易就能看到你.选项A容易的，选项B容易地，选项C更容易.故选B.（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0137",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "The wind moved _______ and blew the kite away.",
+      "options": {
+        "A": "tightly",
+        "B": "quickly",
+        "C": "slightly",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：风吹的……并把风筝吹走了。根据所给单词可知风吹的很快，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0138",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Everyone played ________.",
+      "options": {
+        "A": "hard",
+        "B": "hardly",
+        "C": "easy",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：每个人都玩得很认真。A.努力地/认真地；B. 几乎不；C.容易的。play是动词，需要福词修饰，根据题意A符合，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0139",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "My sister is a good runner. She can run_______. ( )",
+      "options": {
+        "A": "slow",
+        "B": "quick",
+        "C": "fast",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：我姐姐是个好跑步者。她能跑得很快。A. 慢的，不合题意；B. 快的（形容词）；C.快地（副词）。因为run是动词，需要副词修饰，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0140",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Wendy is lazy. She helps her mother at home.",
+      "options": {
+        "A": "never",
+        "B": "always",
+        "C": "usually",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：Wendy很懒。她在家____帮助她妈妈。A.从不；B. 总是；C.通常。根据上句“lazy懒”得知A符合题意，故选A（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0141",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "I'm going to study many subjects and learn ________ my new friends ________.",
+      "options": {
+        "A": "of, happy",
+        "B": "with, happily",
+        "C": "for, happily",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：我打算学很多科目并且跟我的新朋友们开心地学。介词with“和，learn是动词需要副词修饰，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0142",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "________ having breakfast is good for you.",
+      "options": {
+        "A": "Don't",
+        "B": "Always",
+        "C": "Sometimes",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：.....吃早餐对你有好处。根据常识，一直要吃早饭，对人的身体有好处，选项A不，选项B一直，频度副词，选项C有时，频度副词，故选B.（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0143",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "—What ________will Judy do? —She will also go swimming.",
+      "options": {
+        "A": "other",
+        "B": "each",
+        "C": "else",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：朱迪将要做……什么？她还要去游泳。will是动词，前面用副词修饰，AB是形容词，故答案为C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0144",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "________, brush your teeth. ________ have breakfast.",
+      "options": {
+        "A": "One, Then",
+        "B": "First, Than",
+        "C": "First, Then",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：首先刷牙，然后吃早饭。A. 一，然后；B.首先，那么；C.首先，然后。选项C符合题意，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0145",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "—Where is the train? ( ) —It’s _________ the station.",
+      "options": {
+        "A": "on",
+        "B": "at",
+        "C": "to",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：—火车在哪？—它在车站。on在……上，to朝……，at后面接小地点，车站是小地点。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0146",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "I got a nice present _________ my father on my birthday. ( )",
+      "options": {
+        "A": "from",
+        "B": "to",
+        "C": "for",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：我____爸爸那里收到了一份很棒的礼物。表示“从某人那里得到某物”用get sth. from sb.。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0147",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "He will get to Shanghai ________ the afternoon ________ May 10th. ( )",
+      "options": {
+        "A": "on; on",
+        "B": "in; in",
+        "C": "on; of",
+        "D": "at; in"
+      },
+      "correct_answer": "C",
+      "explanation": "n句意：他将在5月10日下午到达上海。本题考查时间介词和介词辨析。in用在年，季，月和泛指的上下午和晚上前面；on用在具体某一天和某一天的上下午和晚上前面；at用在具体时间点前面。第一空后是某一天的下午，需用on；第二空表示五月十日的，用of表示……的，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0148",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "He’s in Beijing ______ his cousin, Simon. ( )",
+      "options": {
+        "A": "at",
+        "B": "with",
+        "C": "for",
+        "D": "in"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：他和他的堂兄西蒙在北京。本题考查介词辨析。A在，B和，C为，D在……里面，with符合句意，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0149",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Wu Yifan ran _____ a cheetah. ( )",
+      "options": {
+        "A": "like",
+        "B": "at",
+        "C": "for",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：吴一凡像猎豹一样奔跑。本题考查介词辨析。A像，B在，C为，like符合句意，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0150",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "They will have a party __________ the evening of May 25, 2021. ( )",
+      "options": {
+        "A": "on",
+        "B": "in",
+        "C": "of",
+        "D": "at"
+      },
+      "correct_answer": "A",
+      "explanation": "我们将在2021年5月25日的晚上有个派对。在特定某一个晚上介词用on，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0151",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "________ all the cities in China, shanghai is the largest. ( )",
+      "options": {
+        "A": "In",
+        "B": "At",
+        "C": "With",
+        "D": "Of"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：在中国的所有城市中，上海是最大的。A后面接某个城市，B后面接某个地点，指的是小地点，C和某人，D所有……的，表示出一个具体的范围，通常用最高级。该句中用的是最高级形式，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0152",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "— Can you tell me the way to the supermarket? ( ) — Go straight and turn left _____ the crossing. Then you can see it _____ your right.",
+      "options": {
+        "A": "on; at",
+        "B": "on; on",
+        "C": "at; on",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：—你能告诉我去超市的路吗？—直往前走，在十字路口左转。然后你可以在你的右边看到它。在……路口，用介词at；on + 形容词性物主代词 + right / left在右，左边。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0153",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "You can play ____________ the dog after class. ( )",
+      "options": {
+        "A": "with",
+        "B": "in",
+        "C": "at",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意为下学后你可以和狗一起玩。play with意为跟……一起玩，为固定搭配。BC均不符合题意，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0154",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "—When is Tree Planting Day? ( ) —It’s _______ March.",
+      "options": {
+        "A": "in",
+        "B": "on",
+        "C": "at",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：什么时候是植树节，在3月。月份前介词用in，具体的某一天用on，时间点用at，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0155",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "The teachers’ office is _______ the second floor. ( )",
+      "options": {
+        "A": "to",
+        "B": "at",
+        "C": "on",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：老师办公室在二楼。在某个楼层，介词用on。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0156",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Turn right _______ the library. ( )",
+      "options": {
+        "A": "on",
+        "B": "by",
+        "C": "at",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：在图书馆右转。在某个小地方用介词at，on表示在……上面，by表示在……旁边，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0157",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "What are you going to do ________ this morning? ( )",
+      "options": {
+        "A": "in",
+        "B": "at",
+        "C": "/",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：今天早上你打算做什么？this morning今天早上，前面不需要加介词，直接用即可。in用在年月季节前，at用在具体时间点前，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0158",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Who is the boy red hair ? ( )",
+      "options": {
+        "A": "with",
+        "B": "in",
+        "C": "by",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：那个红头发的男孩是谁？with具有，带着，有……的特征。with red hair表示留着红头发，是固定搭配，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0159",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "They’re talking about their plans _______ the weekend. ( )",
+      "options": {
+        "A": "of",
+        "B": "for",
+        "C": "on",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：他们正在讨论周末的计划。plans for the weekend表示关于周末的计划，介词for表示目的或对象，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0160",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Qingdao is famous sea food and beautiful beach. ( )",
+      "options": {
+        "A": "for",
+        "B": "about",
+        "C": "in",
+        "D": "from"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：青岛以海鲜和美丽的海滩而闻名。be famous for以……而闻名，是固定搭配，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0161",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "They asked ______ some questions _____ English. ( )",
+      "options": {
+        "A": "me；about",
+        "B": "I；about",
+        "C": "I；with",
+        "D": "me；with"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：他们问我一些关于英语的问题。ask是动词，后面需要人称代词的宾格；ask ab about sth是固定用法，意思是：问某人有关某事。故答案为A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0162",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "I didn't think she had _______ more CDs __________ Mike. ( )",
+      "options": {
+        "A": "so;as",
+        "B": "much; than",
+        "C": "as; as",
+        "D": "many; than"
+      },
+      "correct_answer": "D",
+      "explanation": "句意为：我不认为她比麦克的CD多很多。many more 修饰可数名词；much more 修饰不可数名词。CD，可数名词，故填many than sb. ，比某人……。故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0163",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "—Where is the dog? ( ) —It’s _______ the chair.",
+      "options": {
+        "A": "under",
+        "B": "for",
+        "C": "of",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：—狗在哪里？—它在椅子下。本题考查介词辨析。A在……下，B为了，C……的。选项A符合句意，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0164",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "I will go to Beijing ______my parents. ( )",
+      "options": {
+        "A": "on",
+        "B": "for",
+        "C": "with",
+        "D": "in"
+      },
+      "correct_answer": "C",
+      "explanation": "on 在...时候； for为了； in在 ...里；with和……在一起，表示伴随。本题题意是，我将和我的父母去北京。故答案是C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0165",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "— When’s your birthday? —It’s ____January 1st. —What would you like _____a birthday present? —I would like a yo - yo.",
+      "options": {
+        "A": "on; for",
+        "B": "in; as",
+        "C": "on; with",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "January 1st 是一月一日，具体的某一天，前面的介词要选择on；第三句翻译为：作为生日礼物你想要什么？表目的的介词应该选择for。因此，选择答案A。选项B中as不能表示目的，而是伴随。选项C中with也不能表示目的。故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0166",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "I can see Eddie _________ his computer _______ the window. ( )",
+      "options": {
+        "A": "at; on",
+        "B": "on; at",
+        "C": "at; through",
+        "D": "on; by 【点睛】"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：通过窗户我看见Eddie在电脑旁。at the computer在电脑旁(用电脑)。at这个介词有“在……边(干……)”的意思。如：at the table就是“在桌子边”的意思了，through the window通过窗户，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0167",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "We need fifteen more people _____our team to do the job. ( )",
+      "options": {
+        "A": "but",
+        "B": "except",
+        "C": "as well",
+        "D": "besides"
+      },
+      "correct_answer": "D",
+      "explanation": "句意为：除了我们队还需要15个人做这份工作。选except表示我们不去做，15人去做；选besides表示我们和15人都去做，表示除了还包括……，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0168",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "I have ________ green apple. ( )",
+      "options": {
+        "A": "some",
+        "B": "an",
+        "C": "a",
+        "D": "the"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：我有一个绿苹果。a 用于读音以辅音音素开头的字母或单词前。green是以辅音音素开头的单词。这里的苹果是单数名词不能用some修饰。在这里苹果也不表示特指，是泛指。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0169",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "That was a long ______ dull(无聊的) talk. ( )",
+      "options": {
+        "A": "so",
+        "B": "and",
+        "C": "so that",
+        "D": "or"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：那是一段漫长而又无聊的对话。本题考查连词辨析，A因此，B并且，C以便，D或者，表示并列关系用 and。故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0170",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "My grandfather is eighty years old, ______ he is still very healthy. ( )",
+      "options": {
+        "A": "or",
+        "B": "but",
+        "C": "so",
+        "D": "for"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：我的祖父八十岁，但是他仍然很健康。本题考查连词辨析，A或者，B但是，C因此，D为了，根据前后句子是转折关系，用连词but，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0171",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "It must be late, ______ all the shops have closed. ( )",
+      "options": {
+        "A": "because",
+        "B": "and",
+        "C": "so",
+        "D": "for"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：一定是晚了，因为所有的商店都关门了。本题考查连词辨析，A因为，B和，C所以，D因为，由于。根据语境应该是表示原因，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0172",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "We ran to the trees, ______ we couldn’t see any more monkeys. ( )",
+      "options": {
+        "A": "but",
+        "B": "and",
+        "C": "so",
+        "D": "for"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：我们跑向树，但我们再也看不到猴子了。本题考查连词辨析。A但是，B和，C因此，D由于。根据句意可知此处表转折，用but。故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0173",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "He’s short, ______ he can run very fast. ( )",
+      "options": {
+        "A": "but",
+        "B": "because",
+        "C": "and",
+        "D": "or"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：他很矮，________他跑得很快。本题考查连词辨析。A但是，B因为，C和，D或者。题干横线前后两句是转折关系，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0174",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "—Would you like to come to the party? ( ) —I’d like to, ______ I’m busy.",
+      "options": {
+        "A": "and",
+        "B": "or",
+        "C": "but",
+        "D": "so"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：—你愿意来参加聚会吗？—我很乐意，______我很忙。A和，B或者，C但是，D因此。根据句意，可知横线前后是转折关系，连词用but，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0175",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "I am sad ________ my best friend will go back to the US",
+      "options": {
+        "A": "and",
+        "B": "because",
+        "C": "but",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：我很难过，因为我最好的朋友要回美国了。A和，B因为，C但是，because符合句意，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0176",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Hurry up, ____ you will be late. ( )",
+      "options": {
+        "A": "and",
+        "B": "as",
+        "C": "but",
+        "D": "or"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：快点，否则你将要迟到。A和，表示并列，B好像，C但是，均不符合语境。D否则，符合语境，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0177",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Work hard, _______ you will win. ( )",
+      "options": {
+        "A": "and",
+        "B": "or",
+        "C": "but",
+        "D": "because 【点睛】"
+      },
+      "correct_answer": "A",
+      "explanation": "句意为：努力工作，你就会取得胜利。A和，表示并列递进；B或者；C但是，表示转折；D因为。故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0178",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "I speak English _____ ______ my sister. ( )",
+      "options": {
+        "A": "better, as",
+        "B": "better, than",
+        "C": "good, as",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：我英语说得比我姐姐好。speak是动词，用副词better修饰；than是比较级的标志词，表示比，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0179",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "---Why? ----______it’s good for you. ( )",
+      "options": {
+        "A": "Before",
+        "B": "Because",
+        "C": "After",
+        "D": "What"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：——为什么？——因为它对你有好处。回答用Because引导，表示原因。A在……之前，B因为，C在……之后，D什么，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0180",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "My family have been living in Chengdu ______ I was born. ( )",
+      "options": {
+        "A": "for",
+        "B": "while",
+        "C": "since",
+        "D": "when"
+      },
+      "correct_answer": "C",
+      "explanation": "本题考查时间状语从句的连词。For引导原因状语从句，while强调同时性，一般前后均进行时，since常见的从句用一般过去时，主句用现在完成时，符合本题，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0181",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "It rained all day, I had to stay inside. （ ）",
+      "options": {
+        "A": "so",
+        "B": "but",
+        "C": "because",
+        "D": "too 【点睛】"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：下了一整天的雨，____ 我只能呆在家里。根据语境，空缺应该是表示所以的逻辑关系，所以对应A选项。B但是，C因为，D也，均不符合语境，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0182",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Because he is the tallest in his class, __________ he sits at the back of the classroom. ( )",
+      "options": {
+        "A": "or",
+        "B": "but",
+        "C": "though",
+        "D": "/"
+      },
+      "correct_answer": "D",
+      "explanation": "句意为因为他是班上最高的，所以他坐在教室的后面，A意为或者，B意为但是，C意为虽然，由句意可知，ABC均不符合题意，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0183",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Mr. Brown doesn’t have much money, he always enjoys himself. ( )",
+      "options": {
+        "A": "but",
+        "B": "so",
+        "C": "and",
+        "D": "or"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：虽然布朗先生没有太多的钱，但是他很享受自己的人生。表示转折关系，but但是，so那么，and和，并且，or或者。故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0184",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Lucy knew nothing about it ____ her mother told her. ( )",
+      "options": {
+        "A": "because",
+        "B": "until",
+        "C": "if",
+        "D": "since"
+      },
+      "correct_answer": "B",
+      "explanation": "本题考查状语从句的引导词，until是直到的意思。前句中有Nothing,其实可以把本句当做not—until的句型来理解。意思是，直到她妈妈告诉他，她才知道这件事。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0185",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "—_____ do you like science? ( ) —_____ it’s interesting.",
+      "options": {
+        "A": "Why；Because",
+        "B": "What；So",
+        "C": "When；But",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：你……喜欢科学？-……它很有趣。根据句意可知此处是对原因进行提问，为什么喜欢科学，因为它很有趣，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0186",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Sam had too many biscuits yesterday, ________ today he has got a stomachache. ( )",
+      "options": {
+        "A": "so",
+        "B": "because",
+        "C": "or 名师解析：so 表示结果是，是引导结果的；because 表示因为，是引导原因; or 表示或者。根据本句句意，Sam 昨天吃了太多的饼干，因而他今天胃疼。胃疼是产生的结果，应该用so, 答案是A。",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "思路分析：本题考查的是连词so, because, or 的用法。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0187",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "Kitty goes running to keep ______ every day, because he thinks running is good for his ______. ( )",
+      "options": {
+        "A": "health; health",
+        "B": "healthy; health",
+        "C": "health; healthy",
+        "D": "healthy; healthy"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：凯蒂每天跑步来保持健康，因为他认为跑步对他的健康有好处。本题考查形容词的用法和名词词组。health名词，健康。healthy形容词，健康的。keep healthy动词短语，保持健康。his形容词性物主代词，后面跟名词，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0188",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "They are talking about road ______. ( )",
+      "options": {
+        "A": "safety",
+        "B": "safe",
+        "C": "safely",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：他们正在谈论道路安全。本题考查名词词组。A安全，是名词，B安全的，是形容词，C安全地，是副词，road safety道路安全，是固定搭配，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0189",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "There are 34 ________ doctors in the hospital. ( )",
+      "options": {
+        "A": "woman",
+        "B": "women",
+        "C": "woman’s",
+        "D": "women’s"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：这家医院有34名女医生。本题考查名词词组，可数名词及其单复数。女医生woman doctor，复数是women doctors，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0190",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "My father has ________ for breakfast. ( )",
+      "options": {
+        "A": "two piece of bread",
+        "B": "two pieces of bread",
+        "C": "two piece of breads",
+        "D": "two pieces of breads"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：我父亲早餐吃_______。本题考查名词词组和不可数名词。bread是不可数名词，两片面包two pieces of bread。故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-08-0191",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "08",
+      "question": "It’s about ________from my home to our school. ( )",
+      "options": {
+        "A": "twenty minutes’ walk",
+        "B": "walk of twenty minutes’",
+        "C": "twenty minute’s walk",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：从我家到我们学校是大约20分钟的步行距离。本题考查名词词组。“20分钟的步行距离”表达方式为twenty minutes’ walk或twenty-minute walk，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0192",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Do you have any ________? ( )",
+      "options": {
+        "A": "toy animals",
+        "B": "toys animal",
+        "C": "toys animals",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：你有玩具动物吗？本题考查名词词组和可数名词及其单复数，玩具动物toy animal，any修饰可数名词复数，toy animal的复数是toy animals，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0193",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "The ______ Festival is usually in January or February. People eat ______ on that day. ( )",
+      "options": {
+        "A": "Mid-Autumn; moon cakes",
+        "B": "Double Ninth; rice cakes",
+        "C": "Chongyang; rice dumplings",
+        "D": "Spring; tangyuan"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：______节通常在一月或二月。人们在那一天吃______。本题考查专有名词和名词辨析，A中秋；月饼，B重阳；年糕；C重阳；粽子，D春季；汤圆，根据常识可知The Spring Festival春节在一月或二月，南方春节吃汤圆，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0194",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "The students will have a sports meeting at school _____. ( )",
+      "options": {
+        "A": "last Tuesday",
+        "B": "every Tuesday",
+        "C": "next Tuesday",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：_____学生们将在学校举行运动会。本题考查名词词组，A上星期二，B每个星期二，C下星期二，根据will可知句子为一般将来时，用将来的时间，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0195",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "What are you going to do _______? ( )",
+      "options": {
+        "A": "last day",
+        "B": "this evening",
+        "C": "Wednesday",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：_______你要做什么？本题考查名词词组，A表达错误，B今晚，C星期三，在某一天用介词on，C选项排除，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0196",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "These days, more and more people care about food . ( )",
+      "options": {
+        "A": "safe",
+        "B": "safety",
+        "C": "safely",
+        "D": "save 【点睛】这是考查单词的题目。注意名词短语。"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：这些日子，越来越多的人关注食品......。名词短语food safety“食品安全问题”， 故答案为B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0197",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "I would like ________.( )",
+      "options": {
+        "A": "some banana",
+        "B": "eat some bananas",
+        "C": "some bananas eat",
+        "D": "some bananas"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：我想要______。would like后接名词或代词，A选项banana是单数且缺少冠词，B选项和C选项语序不对，D选项some bananas是正确形式，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0198",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "There are _____ on the table. ( )",
+      "options": {
+        "A": "two bottles of milk",
+        "B": "two bottles milk",
+        "C": "two bottles of milks",
+        "D": "two bottle of milk"
+      },
+      "correct_answer": "A",
+      "explanation": "there are后要加复数形式，milk为不可数名词，所以要选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0199",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "These are __________. You can buy a pair for your mother. （ ）",
+      "options": {
+        "A": "woman sock",
+        "B": "women sock",
+        "C": "women socks",
+        "D": "woman socks"
+      },
+      "correct_answer": "C",
+      "explanation": "以man或woman为前缀的名词变复数时，前后两个名词都变成复数，所以选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0200",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Those are _______.( )",
+      "options": {
+        "A": "apple tree",
+        "B": "apple trees",
+        "C": "apples trees",
+        "D": "apples tree"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：那些是______。apple tree苹果树，复数形式是apple trees，只变后面的名词为复数。A是单数，C中apples不对，D中apples和tree都不对，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0201",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Tom is having ______ breakfast, but the bell rings. ( )",
+      "options": {
+        "A": "a",
+        "B": "an",
+        "C": "/",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：汤姆正在吃早餐，但是铃响了。三餐前不加冠词，have breakfast吃早餐，固定搭配。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0202",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "It’s time ________ school. Let’s go ________ school. ( )",
+      "options": {
+        "A": "to; for",
+        "B": "to; to",
+        "C": "for; to",
+        "D": "for; for"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：该到上学的时间了。让我们去学校吧。本题考查介词辨析和动词短语，it is time for something该到做某事的时间了，go to school去上学，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0203",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "I often help my sister ________ her homework. ( )",
+      "options": {
+        "A": "in",
+        "B": "with",
+        "C": "for",
+        "D": "to"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：我经常帮助我的妹妹做她的作业。本题考查动词短语，help somebody with something在某方面帮助某人，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0204",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Look ________the window. There is heavy rain. ( )",
+      "options": {
+        "A": "out of",
+        "B": "out for",
+        "C": "out",
+        "D": "for"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：看看窗外。下大雨了。本题考查动词短语，根据句意可知短语是look out of看向……外，符合题意，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0205",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—Do you like playing ________ ping-pong? ( ) —Yes, I do.",
+      "options": {
+        "A": "the",
+        "B": "/",
+        "C": "a",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：—你喜欢打乒乓球吗？—是的，我喜欢。本题考查动词短语。play后面跟球类名词，不用冠词，play ping-pong是动词短语，打乒乓球，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0206",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Mr. Brown comes ________ America. ( )",
+      "options": {
+        "A": "at",
+        "B": "from",
+        "C": "in",
+        "D": "on"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：布朗先生来自美国。本题考查动词短语，根据句意可知短语是come from来自，符合句意，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0207",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "She is playing ________ violin at home. ( )",
+      "options": {
+        "A": "a",
+        "B": "an",
+        "C": "the",
+        "D": "/"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：她正在家里拉小提琴。本题考查动词短语，play后面跟乐器用定冠词the，play the violin是动词短语，拉小提琴，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0208",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "They will move ________ the new school next Monday. ( )",
+      "options": {
+        "A": "on",
+        "B": "in",
+        "C": "to",
+        "D": "up"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：下周一他们将要搬到那所新的学校去。本题考查动词短语，move to搬到，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0209",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Let’s have ______. ( )",
+      "options": {
+        "A": "an look",
+        "B": "the look",
+        "C": "a look",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：让我们看一看。本题考查动词短语，have a look看一看，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0210",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—Why do you ______? ( ) —Because I lost my new watch.",
+      "options": {
+        "A": "look sad",
+        "B": "so tired",
+        "C": "feel so happy",
+        "D": "look sleepy"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：—你为什么看起来很伤心？—因为我丢了我的新表。本题考查动词短语。A看起来很伤心，B很累，C感觉很高兴，D看起来很困，选项A符合题意，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0211",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Who do you want to _______? ( )",
+      "options": {
+        "A": "write",
+        "B": "write to",
+        "C": "writing",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：你想给谁写信？本题考查动词短语和动词的形式。write to sb给某人写信，want to do sth想做某事，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0212",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—Can you ________ a bike? ( ) —Yes, I can.",
+      "options": {
+        "A": "ride",
+        "B": "by",
+        "C": "drive",
+        "D": "walk"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：—你会骑自行车吗？—是的，我会。本题考查动词短语。A骑，B通过，C开，D步行，ride a bike骑自行车，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0213",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "We often _______ on the grass at night. It's very interesting. ( )",
+      "options": {
+        "A": "go fishing",
+        "B": "go swimming",
+        "C": "go camping",
+        "D": "go shopping"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：我们夜里经常在草地上_____。非常有趣。go fishing去钓鱼； go swimming去游泳； go camping去野营； go shopping去购物；由句子可知在草地上是野营，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0214",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—I'm so fat. What should I do? ( ) —_______",
+      "options": {
+        "A": "You should do more exercise.",
+        "B": "You should wear warm clothes.",
+        "C": "You should take a deep breath.",
+        "D": "You should count to ten."
+      },
+      "correct_answer": "A",
+      "explanation": "上文句意：我这么胖。我应该怎么做？A你应该多做运动；B你应该穿暖和的衣服；C你应该深呼吸；D你应该数到十。根据上文可知下文应回答针对胖而采取的具体做法，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0215",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Sam is _______ with his grandpa at home now. ( )",
+      "options": {
+        "A": "says",
+        "B": "talks",
+        "C": "telling",
+        "D": "talking"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：山姆正在家和爷爷谈话。be动词is后加动词现在分词表示现在进行时，故排除A和B。tell告诉，和……谈论用talk with，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0216",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—What are you doing, Mary? ( ) —I’m ______ some beautiful leaves.",
+      "options": {
+        "A": "looking for",
+        "B": "looking after",
+        "C": "looking",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：—玛丽，你正在做什么？—我正在______一些漂亮的叶子。A寻找，B照看，C看。B选项不符合题意，排除B选项。C选刊看某物用look at，横线后没有介词at，排除C选项。A选项符合题意，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0217",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "I fell ________ my bike last Wednesday. ( )",
+      "options": {
+        "A": "off",
+        "B": "of",
+        "C": "from",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：上星期三我从自行车上摔了下来。fall off跌落，固定动词短语，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0218",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "We can look ________ the words in the dictionary. ( )",
+      "options": {
+        "A": "at",
+        "B": "for",
+        "C": "up",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：我们可以在字典里查单词。look at看，look for寻找，look up查找讲时，后接词典之类的书籍，look up符合句意，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0219",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "She can play ________ piano. ( )",
+      "options": {
+        "A": "a",
+        "B": "the",
+        "C": "/",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：她会弹钢琴。play the piano弹钢琴，固定动词短语，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0220",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "He is playing ________ football. But she is playing ________ flute. ( )",
+      "options": {
+        "A": "the; the",
+        "B": "/; the",
+        "C": "the; /",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：他正在踢足球。但是她正在吹长笛。踢足球play football，球类前不加任何限定词，吹长笛play the flute，乐器前加定冠词the，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0221",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "How dirty your coat is! __________ and __________. ( )",
+      "options": {
+        "A": "Take your coat off; give it me",
+        "B": "Take it off; give it to me",
+        "C": "Take off your coat; to give me it",
+        "D": "Take off it; it gives me"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：你的外套很脏！脱下来，把它给我。前面有名词coat，下一句再次提到用it代替，take off脱下，代词位于中间，即take it off；把它给我只能用give it to me结构表达；故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0222",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Some teachers are __________ our test papers carefully. ( )",
+      "options": {
+        "A": "looking over",
+        "B": "looking into",
+        "C": "looking out",
+        "D": "looking"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：一些老师正在仔细地翻阅我们的试卷。A.翻阅，B.调查，C.往外看，D.看，D选项后加介词at，根据题意，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0223",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—What’s your father’s hobby? ( ) —My father _______ rock music.",
+      "options": {
+        "A": "like listening",
+        "B": "like to listen to",
+        "C": "likes listening to",
+        "D": "likes listening"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：—你爸爸的爱好是什么？—我爸爸喜欢听摇滚乐。father是可数名词单数，后面的动词用第三人称单数，排除AB；listen是不及物动词，与to构成短语listen to，排除D。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0224",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—What's wrong? ( ) —I _____ my bike and hurt my leg.",
+      "options": {
+        "A": "fell down",
+        "B": "falls off",
+        "C": "fell off",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：—怎么了？—我从自行车上摔下来，伤了腿。hurt是过去式，前后时态一致，用fall off的过去式fell off表示\"从……摔下来\"；fell down是\"摔倒\"，不符合句意。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0225",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "You can __________ to the shopping centre. （ ）",
+      "options": {
+        "A": "by metro",
+        "B": "take the metro",
+        "C": "take metro",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：你可以乘地铁去购物中心。can是情态动词，后接动词原形，排除A选项by metro（介词短语、不能作谓语）；take the metro为固定短语\"乘地铁\"；C选项缺少冠词。故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0226",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "I stayed ________ home ________ my grandma. ( )",
+      "options": {
+        "A": "at; for",
+        "B": "in; of",
+        "C": "at; with",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：我和奶奶待在家里。stay at home 待在家，固定搭配；with 和……一起。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0227",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "I like winter. I often ________. ( )",
+      "options": {
+        "A": "count to ten",
+        "B": "make a snowman",
+        "C": "see a doctor",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：我喜欢冬天。我经常____。根据句意，冬天经常堆雪人；count to ten 数到十，see a doctor 看医生，均不符合句意。make a snowman 堆雪人，符合题意。故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0228",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Hawk is talking ________ a friend.They are talking ________ English. ( )",
+      "options": {
+        "A": "with; with",
+        "B": "with; in",
+        "C": "in; in",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：霍克正在____朋友交谈。他们正在用英语交谈。talk with sb 与某人交谈，是固定搭配；\"in+语言\"表示用某种语言（in English 用英语）。故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0229",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "It's nine o'clock. I must ______. ( )",
+      "options": {
+        "A": "go home",
+        "B": "go to home",
+        "C": "to go home",
+        "D": "go the home"
+      },
+      "correct_answer": "A",
+      "explanation": "情态动词后要用动词原形，go home为固定短语。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0230",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Lin Dan is ______ at study and he always does homework ______.（ ）",
+      "options": {
+        "A": "good; careful",
+        "B": "well; carefully",
+        "C": "good; carefully",
+        "D": "well; careful"
+      },
+      "correct_answer": "C",
+      "explanation": "本题考查短语与副词的用法。短语be good at表示：擅长，是固定搭配。careful是形容词，表示：仔细的，小心的。carefully是副词，表示：仔细地。修饰动词词组do homework要用副词carefully。 故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0231",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Could you tell me when you will Australia on business? ( )",
+      "options": {
+        "A": "leaves",
+        "B": "leave for",
+        "C": "left",
+        "D": "left for"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：你能告诉我你什么时候……澳大利亚出差吗？leave离开，leave for，离开去……表达去澳大利亚出差，用leave for，出差是还没发生的事情，本句是一般将来时，构成will+动词原形，故选B。\n本题考查动词leave的用法，注意时态的确定。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0232",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "The sign “Keep off the grass!” means ___________. ( )",
+      "options": {
+        "A": "keep the grass clean",
+        "B": "don’t walk on the grass",
+        "C": "keep the grass warm",
+        "D": "don’t cut the grass"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：标识\"Keep off the grass!\"的意思是____。Keep off the grass! 是常见的公共标识语，意为\"请勿践踏草坪\"，即don't walk on the grass。故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0233",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "He often ________ TV in the evening. ( )",
+      "options": {
+        "A": "watches",
+        "B": "reads",
+        "C": "watch",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：他经常在晚上看电视。often 是一般现在时的标志词，主语 he 是第三人称单数，动词需用第三人称单数形式 watches；read 意为\"阅读\"，不搭配 TV（看电视用 watch TV）。故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0234",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "I’m sorry I can’t _____ the pen you lent me yesterday.( )",
+      "options": {
+        "A": "look for",
+        "B": "look out",
+        "C": "find",
+        "D": "find out"
+      },
+      "correct_answer": "C",
+      "explanation": "look for寻找，强调找的动作，找没找到不知道，look out,意思是小心，留神。Find意思是找到，find out 意思是找出（事实的真相等）本题中用find更合适。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0235",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—Do you have any hobbies? ( ) —Yes, I do. I like _________.",
+      "options": {
+        "A": "take photos",
+        "B": "taking photo",
+        "C": "taking photos",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：你有爱好吗？有啊，我喜欢拍照。like doing喜欢做某事，固定搭配，take photos拍照，固定短语，A项为动词原形，排除A；B项photo为单数，排除B。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0236",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "It is cold today, you must _______ your coat. ( )",
+      "options": {
+        "A": "take off",
+        "B": "put on",
+        "C": "pick up",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：今天冷，你必须穿上外衣。A项为脱掉，排除A；C项为挑选，排除C；冷了应穿上外衣，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0237",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "I like to go ____on Sundays. ( )",
+      "options": {
+        "A": "fishing",
+        "B": "to fish",
+        "C": "fish",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意为在周日，我喜欢去钓鱼。去钓鱼go fishing。固定搭配。故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0238",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Turn right ________ the school, then go ________.( )",
+      "options": {
+        "A": "of, straight",
+        "B": "at, straight",
+        "C": "in, straight",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：在学校处右转，然后直走。turn right at… 在……处右转，at+地点表示在某个具体地点；go straight 直走，为固定短语。故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0239",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "We have to ________ school uniforms in school every day.",
+      "options": {
+        "A": "put on",
+        "B": "have",
+        "C": "wear",
+        "D": "are in"
+      },
+      "correct_answer": "C",
+      "explanation": "思路分析：分析句子意思，横线处需要填一个动词。\n名师解析：推测句意：我们每天在学校都不得不穿校服。wear意思是穿……，强调状态，put on 意思是穿上……，强调动作，本题强调的是穿校服这个状态，那么答案为C。A项强调的是穿校服这个动作，B项用法不对，D项不应该有are，in有表示“穿着，戴着”的意思，例如：He is dressed in black.他穿黑色衣服。所以这三项都不符合题意。\n易错提示：容易错选D，误解了in的用法。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0240",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "You should ___________ your little brother when your mother is out.",
+      "options": {
+        "A": "look at",
+        "B": "look for",
+        "C": "look after",
+        "D": "look up"
+      },
+      "correct_answer": "C",
+      "explanation": "思路分析：本题考查的是look的相关短语的词义辨析。需要根据具体的句意和语境来判断正确答案。\n名师解析：本题句意为“当你妈妈出去时你应该照顾好你的小弟弟。”A项look at意为“看”；B项look for意为“寻找”；C项look after意为“照顾，照看”；D项look up意为“查阅，向上看”。根据句意和语境可知这里表示“照顾”好弟弟，因此本题的正确答案应为C项。\n易错提示：本题考查的是四个look的相关短语的词义辨析，考生在没有掌握look相关短语的意思时很容易混淆从而选出错误的答案。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0241",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "I’m a new comer here, so I had a lot of problems_______ the bus stop.",
+      "options": {
+        "A": "looking for",
+        "B": "to look for",
+        "C": "find",
+        "D": "finding"
+      },
+      "correct_answer": "D",
+      "explanation": "思路分析：本题考查的是动词短语的用法。我们需要记住have a lot of problems doing做某事遇到很多问题，且根据语境选择正确答案。\n名师解析：本句中，have a lot of problems doing 与have problems to do something做某事遇到很多问题; look for 寻找，表示过程；find找到，表示结果。本题中找强调的是找到公共汽车站，而不是寻找的过程。所以答案为D。句意：我是新来的，所以找到公共汽车站我遇到很多问题。\n易错提示：动词短语look for ，find的意义分辨不清楚。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0242",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Listen to ________ music of the film.",
+      "options": {
+        "A": "the",
+        "B": "a",
+        "C": "an",
+        "D": "/"
+      },
+      "correct_answer": "A",
+      "explanation": "思路分析：分析句意，横线处缺少了一个冠词。\n名师解析：推测句意：听听这部电影的音乐。可知这里是特指这部电影的音乐，不是泛指，那么横线处需要填the，那么答案为A。B、C都是泛指的冠词，D项不填不对。\n易错提示：误解题意容易误选B, listen to a music是泛指一首音乐，此题这里的特指。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0243",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Jim, please come__________. ( )",
+      "options": {
+        "A": "there",
+        "B": "to here",
+        "C": "to home",
+        "D": "here"
+      },
+      "correct_answer": "D",
+      "explanation": "思路分析：本题考查的是come的搭配。做这种题时，最关键的是弄清楚come的用法。\n名师解析：本句中，come的用法是： come to do sth/ come+ 副词（here/there/home); 来做某事；B.应该为 come here C. Come home 只能选D.come here\n句意：吉姆， 请来这里。\n易错提示: come的用法是： (1) come to do sth  (2) come+ 副词（here/there/home);（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0244",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "— _______ are you doing? ( ) —I’m doing the _________.",
+      "options": {
+        "A": "What; dishes",
+        "B": "What; dishs",
+        "C": "How; dish",
+        "D": "How; dishes"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：—你正在做什么？—我正在洗餐具。本题考查疑问词及动词短语。根据答语可知问句询问做什么，用what提问；do the dishes洗餐具，动词短语，是固定搭配，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0245",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—Where _____ you _____? —I'm from Beijing.",
+      "options": {
+        "A": "are, from",
+        "B": "do, from",
+        "C": "are, come",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "特殊疑问句问答我你互换，you与are连用，故选A。B项do应改为are，排除B；C项come应改为from，排除C。句意：你来自哪里？我来自北京。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0246",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "He ______ any aunts or uncles.",
+      "options": {
+        "A": "doesn't has got",
+        "B": "haven't got",
+        "C": "hasn't got",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "have got=have有，否定式为haven’t got,he为三单，have用三单形式，故选C.A项doesn’t去掉，has变hasn’t,排除A; B项haven’t应改为hasn’t,排除B.句意：他没有姑姑或叔叔。\n规律总结：have got是have的口语形式，否定形式为have not got或haven’t got.（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0247",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Let’s get _________ it and have a look. ( )",
+      "options": {
+        "A": "clos",
+        "B": "be close",
+        "C": "close to",
+        "D": "be close to"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：让我们接近它看一看。本题考查动词短语。get close to接近。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0248",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "We should turn the lights when we leave the room.( )",
+      "options": {
+        "A": "on",
+        "B": "off",
+        "C": "in",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意为“当我们离开房间时应该关掉灯。”turn on 意为“打开”，所以不选A；turn off 意为“关闭”，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0249",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Do you want with me?( )",
+      "options": {
+        "A": "go shopping",
+        "B": "to go shop",
+        "C": "to go shopping",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "想要做某事want to sth，购物是go shopping。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0250",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "The students study _______ school _______ Monday to Friday. ( )",
+      "options": {
+        "A": "in; on",
+        "B": "in; at",
+        "C": "at; from",
+        "D": "at; on"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：学生们从周一到周五在学校学习。本题考查介词的固定搭配。at school在学校，from...to...从……到……，from Monday to Friday从周一到周五，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0251",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "We have sports ________ two ________ the afternoon. ( )",
+      "options": {
+        "A": "at; at",
+        "B": "on; in",
+        "C": "at; in",
+        "D": "on; with"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：我们下午两点有体育课。本题考查时间介词和介词固定搭配，at+时间点，on+具体时间，with和，two是时间点，用介词at，排除选项BD；在下午in the afternoon，符合题意，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0252",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—What do you have _______ breakfast? ( ) —I have ________ bread.",
+      "options": {
+        "A": "for; any",
+        "B": "with; many",
+        "C": "for; some",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：—你早餐吃什么？—我吃一些面包。for+三餐，排除选项B；any用于否定句或疑问句，some用于肯定句，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0253",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Can you _____ a bird ______ the tree? ( )",
+      "options": {
+        "A": "see; in",
+        "B": "look; in",
+        "C": "see; on",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：你/你们可以____一只鸟在树上吗？see看见，强调看的结果，look看，强调看的动作，题目强调看的结果，因此第一空填see，鸟本身不是树的一部分，在树上用in the tree，因此第二空填in，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0254",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "We have no class _______ Saturdays. ( )",
+      "options": {
+        "A": "on",
+        "B": "on the",
+        "C": "in",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：我们周六没有课。在周六on Saturdays，故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0255",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "I usually do my homework the evening. ( )",
+      "options": {
+        "A": "on",
+        "B": "at",
+        "C": "in",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：我通常在晚上做作业。in the evening 在晚上，固定搭配。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0256",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "I met an old friend of mine on my way______home, and she was on her way______the shopping center.",
+      "options": {
+        "A": "to; to",
+        "B": "/; to",
+        "C": "at; in",
+        "D": "to; at"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：在我回家的路上，我遇到一个老朋友，并且她在去购物中心的路上。本题考查介词的固定搭配和副词的用法，on one’s way to是介词的固定搭配，在某人去……的路上。home是副词，介词to要省略，第一个空不填，the shopping center是名词词组，购物中心，第二个空填to，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0257",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Turn right _______ the cinema, then go straight. It’s___ the left. ( )",
+      "options": {
+        "A": "at, for",
+        "B": "at, on",
+        "C": "on, for",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：在电影院处右转，然后直走。它在左边。turn right at… 在……处右转，at+地点；on the left 在左边，固定搭配。故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0258",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "I some noodles lunch yesterday. ( )",
+      "options": {
+        "A": "have; for",
+        "B": "had; for",
+        "C": "has; to",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：昨天午饭我吃了一些面条。yesterday 是过去时标志，动词用过去式 had；\"have… for lunch\" 午餐吃……，固定搭配。故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0259",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "____ would you like _____ breakfast? ( )",
+      "options": {
+        "A": "What, with",
+        "B": "What, for",
+        "C": "What, at",
+        "D": "How, for"
+      },
+      "correct_answer": "B",
+      "explanation": "本题考查疑问词的选择。结合题干可推测句意“你/你们早餐想要什么？”，询问吃的东西，用疑问词What询问。“for breakfast”为固定搭配，译为“作为早餐”，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0260",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "What's that ____ English? ( )",
+      "options": {
+        "A": "for",
+        "B": "in",
+        "C": "on",
+        "D": "under"
+      },
+      "correct_answer": "B",
+      "explanation": "in English为固定用法，in为用的意思。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0261",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "____________, where did he go? ( )",
+      "options": {
+        "A": "By the way",
+        "B": "On the way",
+        "C": "In a way",
+        "D": "In the way"
+      },
+      "correct_answer": "A",
+      "explanation": "句意为顺便说一下，他去哪儿了？顺便说一下by the way。固定搭配。故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0262",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "-- How do you go to work? -- I usually go to work . ( )",
+      "options": {
+        "A": "by a car",
+        "B": "in a taxi",
+        "C": "on a car",
+        "D": "by cars"
+      },
+      "correct_answer": "B",
+      "explanation": "本题主要考查学生对交通方式的表达用法的运用, by taxi = in a taxi, by car = in a car, 故选择B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0263",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "— How did you go there? ( ) — We went there ____ plane.",
+      "options": {
+        "A": "take",
+        "B": "by",
+        "C": "in",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：—你们去怎么去那里的？—我们搭飞机去那里，by+交通工具=take a +交通工具，plane前面没有不定冠词，用by，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0264",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "My mother was angry ______me yesterday.( )",
+      "options": {
+        "A": "on",
+        "B": "with",
+        "C": "for",
+        "D": "in"
+      },
+      "correct_answer": "B",
+      "explanation": "本句句意，我的妈妈昨天生我的气了。be angry with somebody 生某人的气。据句意，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0266",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "There are many apples _________ the tree. ( )",
+      "options": {
+        "A": "in",
+        "B": "to",
+        "C": "of",
+        "D": "on"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：树上有很多苹果。in 在……里，to朝……方，of属于……的，on在……上。注意区别on the tree 和in the tree，on the tree 表示在树上的东西本身是树的一部分东西，如叶子、果实；in the tree 在树上的东西本身不是树的一部分，如鸟、人。故选D。\n思路分析：本题考查的是介词的用法。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0267",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "I often have ______ water when I’m thirsty. ( )",
+      "options": {
+        "A": "a lot",
+        "B": "a few",
+        "C": "a little",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：当我渴的时候，我经常喝点水。本题考查形容词短语，A许多，后接名词时需与of连用；B几个，修饰可数名词复数；C一点，修饰不可数名词。water水，是不可数名词，用a little修饰，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0268",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—What do you think of the book, Shirley? ( ) —______",
+      "options": {
+        "A": "Yes, I do.",
+        "B": "Good idea.",
+        "C": "Very well.",
+        "D": "Very interesting."
+      },
+      "correct_answer": "D",
+      "explanation": "句意：—你觉得这本书怎么样，雪莉？—_____A是的，我做。B好主意。C很好。very well通常表示人的身体很好；D非常有趣。根据句意，可知答语应回答这本书非常有趣，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0269",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "We shouldn't use too ______ plastic bags, because too ______ plastic is bad for the earth. ( )",
+      "options": {
+        "A": "much; much",
+        "B": "much; many",
+        "C": "many; many",
+        "D": "many; much"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：我们不应该使用太多的塑料袋，因为太多的塑料对地球有害。plastic bag是可数名词复数形式，用many修饰，plastic是不可数名词，用much修饰，too many/too much太多，所以D选项符合题意，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0270",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "— There is ___ milk in the fridge. ( ) — Please buy some on your way home.",
+      "options": {
+        "A": "much more",
+        "B": "a little",
+        "C": "a few",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：冰箱里有……牛奶。-请在你回家的路上买一些。根据后文 Please buy some on your way home回答可知冰箱中没有牛奶了，故选B。\n【点评】考查数词的应用。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0271",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—______ is the cola? ( ) —It’s two dollars.",
+      "options": {
+        "A": "How many",
+        "B": "How much",
+        "C": "How old",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：—这可乐_____？—两美元。How many问数量，How much询问价格，How old问年龄。根据答句内容可知是问价格。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0272",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—______ is the book? ( ) —It’s ten yuan.",
+      "options": {
+        "A": "How much",
+        "B": "How many",
+        "C": "What time",
+        "D": "interesting"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：—这本书___？—十元。回答的是价格，对价格提问用how much多少钱，how many对数量提问，what time对时间提问，选项A符合题意。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0273",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "_________ cheese do you want? ( )",
+      "options": {
+        "A": "How many",
+        "B": "How much",
+        "C": "How big",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：你想要___奶酪？How many多少，对可数名词的数量提问；How much多少，对不可数名词的数量提问；How big多大，对事物的大小提问；cheese是不可数名词，用How much。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0274",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "______ go to the zoo tomorrow? ( )",
+      "options": {
+        "A": "Let’s",
+        "B": "Why not",
+        "C": "How about",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：_____明天去动物园？Let’s让我们，Why not为什么不，How about如何。句子是问句，排除选项A，How about后跟动名词形式，Why not后跟动词原形。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0275",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—________ for one pencil case? ( ) — Five dollars.",
+      "options": {
+        "A": "How many",
+        "B": "How much",
+        "C": "How often",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：—一个铅笔盒____？—五美元。How many多少，对可数名词的数量提问；How much多少/多少钱，对不可数名词的数量或者价格提问；How often多久一次，对频率提问；根据答语可知问句是铅笔盒多少钱，How much符合题意。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0276",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—______ are these bananas? ( ) —Five dollars.",
+      "options": {
+        "A": "What color",
+        "B": "How about",
+        "C": "How much",
+        "D": "How many"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：—这些香蕉多少钱？—五美元。本题考查其他固定搭配和特殊疑问句，A询问颜色，B询问怎么样，C询问价钱，D询问数量，答语回答的价格，所以问句问价格，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0277",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—______ is it? ( ) —It’s about six thousand kilometers long.",
+      "options": {
+        "A": "How",
+        "B": "How long",
+        "C": "How about",
+        "D": "How old"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：—它多长？—它大约有6000公里长。本题考查固定搭配和特殊疑问句。A怎样，B多长，C……怎么样，D多大，根据答语可知问句问多长，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0278",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "The cat ______ angry with the mouse. ( )",
+      "options": {
+        "A": "does",
+        "B": "are",
+        "C": "do",
+        "D": "is"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：猫生老鼠的气。本题考查固定搭配和be动词。be angry with生气，主语The cat是第三人称单数，be用is，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0279",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Sam is good _____ sports. He drinks milk every day. It is good _____ his body. ( )",
+      "options": {
+        "A": "for; at",
+        "B": "at; for",
+        "C": "in; for",
+        "D": "interesting"
+      },
+      "correct_answer": "B",
+      "explanation": "句意：萨姆擅长运动。他每天都喝牛奶。它对他的身体很好。本题考查其他固定搭配，be good at擅长，be good for对……好，in不与good搭配，故选B。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0280",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "—Mr Brown is so strong. What does he eat every week? ( ) —He eats _____ meat and _____ eggs.",
+      "options": {
+        "A": "some; a little",
+        "B": "a few; lots of",
+        "C": "some; a few",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：—布朗先生很强壮。他每周吃什么？—他吃____肉和____蛋。本题考查不定代词和其他固定搭配，some修饰可数名词复数和不可数名词，a little修饰不可数名词，a few修饰可数名词复数，lots of修饰可数名词复数和不可数名词。meat不可数名词，用some修饰，排除B，eggs可数名词复数，用a few修饰，排除A，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0281",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "Mary likes coffee very much. She drinks ______ coffee every day. ( )",
+      "options": {
+        "A": "a little",
+        "B": "a few",
+        "C": "a lot of",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：玛丽非常喜欢咖啡。她每天喝_____咖啡。本题考查固定搭配，A一点，B一些，C很多，coffee是不可数名词，B选项排除；再根据句意可知C选项符合。故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0282",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "The storybook is very difficult for me. There are ________ new words in it. ( )",
+      "options": {
+        "A": "a lot",
+        "B": "a little",
+        "C": "lots of",
+        "D": "interesting"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：这本故事书对我来说很难。里面有很多新单词。A很多，不修饰名词；B一点，修饰不可数名词；C许多，修饰可数名词复数或不可数名词。words是可数名词复数，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0283",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "His son goes to a different school ________. ( )",
+      "options": {
+        "A": "to his",
+        "B": "from him",
+        "C": "from he",
+        "D": "from his"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：他儿子上的学校与他不同。本题考查的固定搭配和对名词性物主代词的理解与运用。be different from，与什么不同，his在这边是名词性物主代词，等同于his school，故选D。\n易错提示：确切的理解名词性物主代词。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0284",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "The car is _________ full _______ move. ( )",
+      "options": {
+        "A": "too; too",
+        "B": "to; too",
+        "C": "too; to",
+        "D": "to; to"
+      },
+      "correct_answer": "C",
+      "explanation": "句意：汽车太满了，无法移动。本题考查的是固定短语的意思。在做这种题时，最关键的是翻译句意，根据句子的含义，选择合适的短语。太……而不能too...to，故选C。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0285",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "_________you afraid of _________ late for school? ( )",
+      "options": {
+        "A": "Do; be",
+        "B": "Are; be",
+        "C": "Do; being",
+        "D": "Are; being"
+      },
+      "correct_answer": "D",
+      "explanation": "句意：你害怕上学迟到吗？本题考查的是动词短语和动名词的用法。在做这类题时，最关键的是要掌握be afraid of短语和动名词的用法来判断正确选项。be afraid of doing something是动词短语，害怕做某事，故选D。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    },
+    {
+      "question_id": "EGX-L3-09-0286",
+      "type": "grammar",
+      "realm": "L3",
+      "stage": "09",
+      "question": "I have two good pen friends. One is an American, _________ is in England. ( )",
+      "options": {
+        "A": "the other",
+        "B": "look after",
+        "C": "another",
+        "D": "other"
+      },
+      "correct_answer": "A",
+      "explanation": "句意：我有两个笔友。一个是美国的，_____在英国。one...the other...(两个中的)一个……另一个……，固定搭配。故选A。（来源：111 · 六年级）",
+      "word": "",
+      "play_mode": "语法机关桥",
+      "scene": "阵法峰",
+      "education_stage": "小学",
+      "grade_level": "六年级"
+    }
+  ]
+}

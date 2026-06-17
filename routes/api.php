@@ -10,14 +10,17 @@ use App\Http\Controllers\Api\HeartDemonController;
 use App\Http\Controllers\Api\LeaderboardController;
 use App\Http\Controllers\Api\MallController;
 use App\Http\Controllers\Api\ParentController;
+use App\Http\Controllers\Api\PracticeLevelController;
 use App\Http\Controllers\Api\MijingChallengeController;
 use App\Http\Controllers\Api\ReadingAdventureController;
+use App\Http\Controllers\Api\ReadingBankController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\ShareController;
 use App\Http\Controllers\Api\SkillPracticeController;
 use App\Http\Controllers\Api\SmsController;
 use App\Http\Controllers\Api\StoryController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\VocabAssessmentController;
 use App\Http\Controllers\Api\VocabController;
 use Illuminate\Support\Facades\Route;
 
@@ -55,9 +58,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/redeem-scroll', [CurrencyController::class, 'redeemScroll']);
     });
 
+    Route::get('/practice/levels/{type}', [PracticeLevelController::class, 'show'])
+        ->whereIn('type', ['vocab', 'grammar', 'listening', 'speaking', 'writing']);
+
     Route::prefix('vocab')->group(function () {
         Route::get('/questions', [VocabController::class, 'questions']);
         Route::post('/submit-batch', [VocabController::class, 'submitBatch']);
+    });
+
+    Route::prefix('vocab-assessment')->group(function () {
+        Route::get('/status', [VocabAssessmentController::class, 'status']);
+        Route::post('/start', [VocabAssessmentController::class, 'start']);
+        Route::get('/next-question', [VocabAssessmentController::class, 'nextQuestion']);
+        Route::post('/submit-answer', [VocabAssessmentController::class, 'submitAnswer']);
+        Route::post('/finish', [VocabAssessmentController::class, 'finish']);
     });
 
     Route::prefix('grammar')->group(function () {
@@ -66,6 +80,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('reading')->group(function () {
+        Route::get('/questions', [ReadingBankController::class, 'questions']);
         Route::get('/chapters', [ReadingAdventureController::class, 'chapters']);
         Route::get('/chapters/{chapterId}', [ReadingAdventureController::class, 'chapter']);
         Route::post('/submit-adventure', [ReadingAdventureController::class, 'submit']);

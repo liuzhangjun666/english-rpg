@@ -59,15 +59,18 @@ export class APIClient {
             const refreshed = await this.tryRefresh();
             if (refreshed) {
                 headers.Authorization = `Bearer ${this.token}`;
-                return this.request(method, path, data);
+                return this.request(method, path, data, meta);
             }
 
-            this.clearToken();
-            window.dispatchEvent(new CustomEvent('auth:logout'));
+            if (!meta.skipAuthLogout) {
+                this.clearToken();
+                window.dispatchEvent(new CustomEvent('auth:logout'));
+            }
+
             return {
                 success: false,
                 code: 'TOKEN_EXPIRED',
-                message: '登录已过期，请重新登录',
+                message: result.payload?.message || '登录已过期，请重新登录',
             };
         }
 
@@ -224,20 +227,20 @@ export class APIClient {
         }
     }
 
-    get(path) {
-        return this.request('GET', path);
+    get(path, meta = {}) {
+        return this.request('GET', path, null, meta);
     }
 
-    post(path, data) {
-        return this.request('POST', path, data);
+    post(path, data, meta = {}) {
+        return this.request('POST', path, data, meta);
     }
 
-    put(path, data) {
-        return this.request('PUT', path, data);
+    put(path, data, meta = {}) {
+        return this.request('PUT', path, data, meta);
     }
 
-    patch(path, data) {
-        return this.request('PATCH', path, data);
+    patch(path, data, meta = {}) {
+        return this.request('PATCH', path, data, meta);
     }
 
     delete(path) {
