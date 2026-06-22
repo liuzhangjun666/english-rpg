@@ -126,6 +126,10 @@ watch(() => props.visible, async (val) => {
 
     if (!hallSceneRef.value) return;
 
+    // 等待全部地图建筑 GLB 就绪，避免开图瞬间显示几何占位（橙球/绿柱等）
+    await WorldSceneManager.preload();
+    if (!props.visible || !hallSceneRef.value) return;
+
     const realmStr = userStore.profile?.current_realm || '练气一层';
     if (realmStr.includes('筑基')) userRealmLevel.value = 1;
     else if (realmStr.includes('金丹')) userRealmLevel.value = 2;

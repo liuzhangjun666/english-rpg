@@ -51,7 +51,6 @@
   letter-spacing: 1px;
 }
 
-#vue-app .login-page,
 #vue-app .practice-page,
 #vue-app .legacy-module-page,
 #vue-app .reading-page,
@@ -59,6 +58,15 @@
 #vue-app .mijing-page {
   width: min(1024px, 100%);
   margin: 0 auto;
+}
+
+/* 登录页是全屏启动页，铺满整个视口（不受 shell padding / 限宽影响） */
+#vue-app .login-page {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
 }
 
 #vue-app .practice-page.practice-page-arena {

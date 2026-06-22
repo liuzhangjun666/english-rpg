@@ -58,7 +58,7 @@ export class WorldCameraController {
   }
 
   public update() {
-    if (this.flying) return;
+    if (this.flying || !this.controls.enabled) return;
     this.controls.update();
 
     // 平移边界限制：把 target 夹在岛屿范围内，相机同步位移保持俯角不变
