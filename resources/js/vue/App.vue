@@ -1,11 +1,18 @@
 <template>
-  <div class="vue-shell" :class="{ 'is-login': isLoginRoute, 'is-assessment': isAssessmentRoute }">
+  <div
+    class="vue-shell"
+    :class="{
+      'is-login': isLoginRoute,
+      'is-assessment': isAssessmentRoute,
+      'has-top-hud': showGlobalHeader,
+    }"
+  >
     <div v-if="!auth.bootstrapped" class="boot-splash">
       <div class="boot-text">正在恢复会话...</div>
     </div>
 
     <template v-else>
-      <TopHud v-if="auth.bootstrapped && auth.isAuthenticated" @open-profile="openProfile" @logout="logout" />
+      <TopHud v-if="showGlobalHeader" @open-profile="openProfile" @logout="logout" />
 
       <main class="shell-main">
         <router-view v-slot="{ Component }">
@@ -21,7 +28,8 @@
       <div class="loading-content">{{ ui.loadingText }}</div>
     </el-dialog>
 
-    <ProfilePanel v-model:visible="showProfile" />
+    <ProfilePanel v-model:visible="showProfile" @open-review="openReviewFromProfile" />
+    <ReviewModal v-model:visible="showReviewFromProfile" />
     <DemonEncounter />
 
     <WorldMapOverlay :visible="ui.mapOverlayVisible" @close="ui.hideMapOverlay()" />
@@ -40,6 +48,7 @@ import { resolveProfileRealm } from '../utils/cultivation.js';
 import { useLegacyBridge } from './composables/useLegacyBridge';
 import TopHud from './components/layout/TopHud.vue';
 import ProfilePanel from './components/profile/ProfilePanel.vue';
+import ReviewModal from './views/ReviewModal.vue';
 import DemonEncounter from './components/demons/DemonEncounter.vue';
 import WorldMapOverlay from './views/WorldMapOverlay.vue';
 
@@ -77,9 +86,14 @@ async function logout() {
 }
 
 const showProfile = ref(false);
+const showReviewFromProfile = ref(false);
 
 async function openProfile() {
-  await bridge.openProfilePanel();
+  showProfile.value = true;
+}
+
+function openReviewFromProfile() {
+  showReviewFromProfile.value = true;
 }
 
 const handleProfileUpdate = (e: Event) => {

@@ -22,6 +22,7 @@
   inset: 0;
   z-index: 140;
   pointer-events: auto;
+  --top-hud-height: 76px;
 
   /* 修仙主题设计令牌 */
   --cult-gold: #f4d98a;
@@ -70,9 +71,14 @@
     linear-gradient(180deg, rgba(6, 8, 18, 0.35) 0%, rgba(6, 8, 18, 0.15) 100%);
 }
 
+#vue-app .vue-shell.has-top-hud .shell-main {
+  padding-top: calc(var(--top-hud-height) + 16px);
+}
+
 #vue-app .vue-shell.is-login .shell-main {
   padding: 0;
-  overflow: hidden;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 #vue-app .vue-shell.is-assessment .shell-main {
@@ -128,12 +134,19 @@
 
 #vue-app .shell-main:has(.practice-page.practice-page-arena) {
   padding: 0;
+  padding-top: var(--top-hud-height);
   overflow: hidden;
 }
 
 #vue-app .shell-main:has(.hall-page) {
   padding: 0;
+  padding-top: var(--top-hud-height);
   overflow: hidden;
+}
+
+#vue-app .vue-shell:not(.has-top-hud) .shell-main:has(.practice-page.practice-page-arena),
+#vue-app .vue-shell:not(.has-top-hud) .shell-main:has(.hall-page) {
+  padding-top: 0;
 }
 
 #vue-app .practice-page.practice-page-arena .practice-shell,
@@ -217,12 +230,16 @@ html, body, #app {
 }
 
 #vue-app .hall-page {
-  height: 100vh;
+  height: calc(100vh - var(--top-hud-height));
   width: 100vw;
   background: transparent;
   position: relative;
   overflow: hidden;
   pointer-events: none;
+}
+
+#vue-app .vue-shell:not(.has-top-hud) .hall-page {
+  height: 100vh;
 }
 
 #vue-app .game-stage {
@@ -1985,6 +2002,10 @@ html, body, #app {
     padding: 12px;
   }
 
+  #vue-app .vue-shell.has-top-hud .shell-main {
+    padding-top: calc(var(--top-hud-height) + 12px);
+  }
+
   #vue-app .shell-header {
     height: 54px;
     padding: 0 10px;
@@ -2205,7 +2226,7 @@ html, body, #app {
   }
 }
 
-#vue-app .exp-text {
+#vue-app .cultivator-exp-bar .exp-text {
   position: absolute;
   width: 100%;
   text-align: center;

@@ -1,286 +1,450 @@
 <template>
-  <transition name="slide-right">
-    <div v-if="visible" class="drawer-overlay cultivation-theme" @click.self="closePanel">
-      <div class="drawer-container">
-        <div class="drawer-header">
-          <div class="card-header" style="font-size: 20px;">
-            🪔 个人洞府
+  <Teleport to="body">
+    <transition name="profile-fade">
+      <div v-if="visible" class="profile-backdrop cultivation-theme" @click.self="closePanel">
+        <div class="cultivation-profile-panel" id="profile-panel">
+          <div class="profile-header">
+            <div class="profile-header-title">
+              <div class="avatar-trigger" title="点击更换道影" @click="triggerAvatarUpload">
+                <img :src="profile.avatar_url || defaultAvatar" class="profile-header-avatar" alt="avatar">
+                <div class="avatar-hover-mask">更换</div>
+              </div>
+              <input
+                ref="fileInput"
+                type="file"
+                accept="image/png,image/jpeg,image/gif,image/webp"
+                class="hidden-input"
+                @change="handleAvatarUpload"
+              >
+
+              <div class="profile-header-meta">
+                <div class="nickname-row">
+                  <span
+                    v-if="!isEditingNickname"
+                    class="nickname-display"
+                    title="点击修改道号"
+                    @click="startEditNickname"
+                  >{{ profile.nickname || '匿名前辈' }}</span>
+                  <input
+                    v-else
+                    ref="nicknameInputRef"
+                    v-model="editNicknameValue"
+                    class="nickname-input"
+                    maxlength="50"
+                    @blur="finishEditNickname"
+                    @keyup.enter="finishEditNickname"
+                    @keyup.esc="cancelEditNickname"
+                  >
+                  <span class="profile-subtitle">的仙躯 · 命盘</span>
+                </div>
+                <div class="header-actions">
+                  <span class="header-action-btn" @click="shareInvite">📤 邀请道友</span>
+                  <span class="header-action-btn" @click="openReview">🔄 温故复盘</span>
+                  <span class="header-action-btn" @click="openParentDashboard">📋 护道人</span>
+                  <span class="header-action-btn text-danger" @click="logout">退出登出</span>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="profile-close-btn" @click="closePanel">关闭</button>
           </div>
-          <button class="drawer-close-btn" @click="closePanel">关闭</button>
-        </div>
 
-        <div class="drawer-body">
-          <div class="profile-scroll">
-            <!-- 头部信息区 -->
-            <div class="profile-header">
-              <div class="profile-header-info">
-                <!-- 头像 -->
-                <div class="avatar-wrapper" title="点击更换道影" @click="triggerAvatarUpload">
-                  <img :src="user.avatar_url || defaultAvatar" class="profile-header-avatar" alt="avatar">
-                  <div class="avatar-hover-mask">更换</div>
+          <div class="profile-body">
+            <div class="profile-main-pane">
+              <div class="profile-section-title">仙躯核心</div>
+              <div class="profile-stats-grid">
+                <div class="profile-stat-item">
+                  <span class="profile-stat-label">当前境界</span>
+                  <span class="profile-stat-val">{{ currentRealmLabel }}</span>
                 </div>
-                <input type="file" ref="fileInput" accept="image/png, image/jpeg, image/gif, image/webp" class="hidden-input" @change="handleAvatarUpload">
-                
-                <!-- 昵称与操作 -->
-                <div class="user-meta">
-                  <div class="nickname-row">
-                    <span v-if="!isEditingNickname" class="nickname-display" title="点击修改道号" @click="startEditNickname">
-                      {{ user.nickname || '匿名前辈' }}
+                <div class="profile-stat-item">
+                  <span class="profile-stat-label">道心值</span>
+                  <span class="profile-stat-val text-red">{{ profile.dao_heart || 0 }}</span>
+                </div>
+                <div class="profile-stat-item">
+                  <span class="profile-stat-label">剧情钥匙</span>
+                  <span class="profile-stat-val text-blue">{{ profile.story_keys || 0 }}</span>
+                </div>
+                <div class="profile-stat-item">
+                  <span class="profile-stat-label">修为灵气</span>
+                  <span class="profile-stat-val">⚡ {{ profile.exp || 0 }}</span>
+                </div>
+              </div>
+
+              <div class="profile-section-title">境界进度</div>
+              <div class="realm-profile-progress">
+                <div v-if="progressLoading" class="realm-profile-loading">正在推演境界数据...</div>
+                <template v-else-if="realmProgress">
+                  <div class="realm-profile-topline">{{ realmProgress.currentRealm }}</div>
+                  <div class="realm-profile-meta">
+                    修为值：{{ realmProgress.energy }} · 距离下一层：{{ realmProgress.remain }}
+                  </div>
+                  <div v-for="row in realmProgress.rows" :key="row.label" class="realm-progress-row">
+                    <div class="realm-progress-label">{{ row.label }}</div>
+                    <div class="realm-progress-track">
+                      <div class="realm-progress-fill" :class="row.className" :style="{ width: `${row.percent}%` }"></div>
+                    </div>
+                    <div class="realm-progress-value">{{ row.percent }}%</div>
+                  </div>
+                  <div class="realm-profile-note">{{ realmProgress.note }}</div>
+                  <div class="realm-profile-dimensions">
+                    <span v-for="chip in realmProgress.dimensionChips" :key="chip.key" class="realm-dimension-chip">
+                      <img :src="chip.icon" alt="">
+                      <span>{{ chip.label }} {{ chip.value }}</span>
                     </span>
-                    <input 
-                      v-else 
-                      ref="nicknameInputRef"
-                      type="text" 
-                      v-model="editNicknameValue" 
-                      class="nickname-input" 
-                      maxlength="50"
-                      @blur="finishEditNickname"
-                      @keyup.enter="finishEditNickname"
-                    >
                   </div>
-                  <div class="header-actions">
-                    <span class="header-action-btn">📤 邀请道友</span>
-                    <span class="header-action-btn text-danger">退出登出</span>
+                </template>
+              </div>
+
+              <div class="profile-section-title">英语根骨 (六维)</div>
+              <div class="profile-eng-grid">
+                <div v-for="item in abilityItems" :key="item.key" class="profile-eng-item">
+                  <div class="profile-stat-label">
+                    <img :src="item.icon" alt="" class="ability-icon">
+                    {{ item.label }}
                   </div>
+                  <div class="profile-eng-val">{{ item.value }}</div>
                 </div>
-              </div>
-            </div>
-
-            <!-- 主体内容区 -->
-            <div class="profile-section-title mt-4">仙躯核心</div>
-            <div class="profile-stats-grid">
-              <div class="profile-stat-item">
-                <span class="profile-stat-label">当前境界</span>
-                <span class="profile-stat-val realm-badge">{{ currentRealmLabel }}</span>
-              </div>
-              <div class="profile-stat-item">
-                <span class="profile-stat-label">道心值</span>
-                <span class="profile-stat-val text-red">{{ user.dao_heart || 0 }}</span>
-              </div>
-              <div class="profile-stat-item">
-                <span class="profile-stat-label">剧情钥匙</span>
-                <span class="profile-stat-val text-blue">{{ user.story_keys || 0 }}</span>
-              </div>
-              <div class="profile-stat-item">
-                <span class="profile-stat-label">修为灵气</span>
-                <span class="profile-stat-val">⚡ {{ user.exp || 0 }}</span>
-              </div>
-            </div>
-
-            <div class="profile-section-title">英语根骨 (六维)</div>
-            <div class="profile-eng-grid">
-              <div class="profile-eng-item" v-for="(val, key) in dimensions" :key="key">
-                <div class="profile-stat-label">{{ formatAbilityName(key) }}</div>
-                <div class="profile-eng-val">{{ val }}</div>
-              </div>
-            </div>
-
-            <div class="profile-section-title">命盘图鉴</div>
-            <div class="fate-nodes-list">
-              <div v-if="fateNodes.length === 0" class="fate-node-empty">
-                暂无命盘记录。
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </transition>
+    </transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
+import { ElMessage } from 'element-plus';
+import { resolveProfileRealm } from '../../../utils/cultivation.js';
+import { useApiClient } from '../../services/api';
+import { refreshUserProfileFromApi } from '../../services/profile';
+import { useLegacyBridge } from '../../composables/useLegacyBridge';
+import { useUserStore } from '../../stores/user';
+import { useUiStore } from '../../stores/ui';
+import defaultAvatar from '../../../../assets/images/avatar_default.png';
+import abilityReading from '../../../../assets/images/ui/ability_reading.png';
+import abilityVocab from '../../../../assets/images/ui/ability_vocab.png';
+import abilityGrammar from '../../../../assets/images/ui/ability_grammar.png';
+import abilityListening from '../../../../assets/images/ui/ability_listening.png';
+import abilityWriting from '../../../../assets/images/ui/ability_writing.png';
+import abilitySpeaking from '../../../../assets/images/ui/ability_speaking.png';
 
-const props = defineProps<{
-  visible: boolean;
-}>();
-
+const props = defineProps<{ visible: boolean }>();
 const emit = defineEmits<{
   (e: 'update:visible', value: boolean): void;
+  (e: 'open-review'): void;
 }>();
 
-const user = ref<any>({});
-const isEditingNickname = ref(false);
-const editNicknameValue = ref('');
+const api = useApiClient();
+const user = useUserStore();
+const ui = useUiStore();
+const bridge = useLegacyBridge();
+
 const fileInput = ref<HTMLInputElement | null>(null);
 const nicknameInputRef = ref<HTMLInputElement | null>(null);
-const defaultAvatar = '/images/avatar_default.png';
+const isEditingNickname = ref(false);
+const editNicknameValue = ref('');
+const progressLoading = ref(false);
+const realmProgress = ref<Record<string, any> | null>(null);
 
-onMounted(async () => {
-  if (props.visible) {
-    await fetchProfileData();
+const profile = computed(() => user.profile || {});
+const currentRealmLabel = computed(() => resolveProfileRealm(profile.value) || '练气一层');
+
+const abilityIcons: Record<string, string> = {
+  vocabulary: abilityVocab,
+  grammar: abilityGrammar,
+  reading: abilityReading,
+  listening: abilityListening,
+  speaking: abilitySpeaking,
+  writing: abilityWriting,
+};
+
+const abilityLabels: Record<string, string> = {
+  vocabulary: '词汇',
+  grammar: '语法',
+  reading: '阅读',
+  listening: '听力',
+  speaking: '口语',
+  writing: '写作',
+};
+
+const abilityItems = computed(() =>
+  Object.keys(abilityLabels).map((key) => ({
+    key,
+    label: abilityLabels[key],
+    icon: abilityIcons[key],
+    value: Number(profile.value[key] || 0),
+  }))
+);
+
+watch(() => props.visible, async (val) => {
+  if (!val) return;
+  ui.showLoading('正在推演命盘天机...');
+  try {
+    await refreshUserProfileFromApi();
+    await loadRealmProgress();
+  } finally {
+    ui.hideLoading();
   }
 });
 
-const fetchProfileData = async () => {
-  user.value = {
-    nickname: '修仙狂徒',
-    dao_heart: 100,
-    story_keys: 5,
-    exp: 3000,
-    vocabulary: 120,
-    grammar: 80,
-    reading: 90,
-    listening: 60,
-    speaking: 40,
-    writing: 50
-  };
-};
+async function loadRealmProgress() {
+  progressLoading.value = true;
+  realmProgress.value = null;
+  try {
+    const res = await api.get('/user/learning-progress');
+    const data = res?.success ? (res.data || {}) : {};
+    const fallbackDimensions = {
+      vocabulary: Number(profile.value.vocabulary || 0),
+      grammar: Number(profile.value.grammar || 0),
+      reading: Number(profile.value.reading || 0),
+      listening: Number(profile.value.listening || 0),
+      writing: Number(profile.value.writing || 0),
+      speaking: Number(profile.value.speaking || 0),
+    };
+    const percent = Math.max(0, Math.min(100, Number(data.realm_progress_percent ?? 0)));
+    const currentRealm = resolveProfileRealm({ ...profile.value, current_realm: data.current_realm }) || currentRealmLabel.value;
+    const energy = Number(data.cultivation_energy ?? profile.value.cultivation_energy ?? 0);
+    const remain = Number(data.remaining_energy_to_next_realm ?? 0);
+    const conditions = data.breakthrough_conditions || {};
+    const abilityCondition = conditions.abilities || {};
+    const energyCondition = conditions.energy || {};
+    const dimensions = data.six_dimensions || fallbackDimensions;
+    const requiredAbility = Number(abilityCondition.required_each ?? 0);
+    const abilityAvg = Object.keys(abilityLabels).reduce((acc, key) => acc + Number(dimensions[key] || 0), 0) / 6;
+    const abilityPercent = requiredAbility > 0
+      ? Math.max(0, Math.min(100, Math.round((abilityAvg / requiredAbility) * 100)))
+      : 0;
+    const readyPercent = data.can_breakthrough ? 100 : Math.min(percent, abilityPercent || percent);
+    const remainPercent = Math.max(0, 100 - percent);
+    const abilityRequiredEach = typeof abilityCondition.required_each === 'number'
+      ? abilityCondition.required_each
+      : '按当前境界条件';
 
-const dimensions = computed(() => ({
-  vocabulary: Number(user.value.vocabulary || 0),
-  grammar: Number(user.value.grammar || 0),
-  reading: Number(user.value.reading || 0),
-  listening: Number(user.value.listening || 0),
-  speaking: Number(user.value.speaking || 0),
-  writing: Number(user.value.writing || 0),
-}));
+    realmProgress.value = {
+      currentRealm,
+      energy,
+      remain,
+      note: `突破条件：修为 ${energyCondition.current ?? energy}/${energyCondition.required ?? energy}，六维单项 ≥ ${abilityRequiredEach}`,
+      rows: [
+        { label: '修为进度', percent: Math.round(percent), className: 'realm-progress-gold' },
+        { label: '六维达标', percent: Math.round(abilityPercent), className: 'realm-progress-green' },
+        { label: '突破准备', percent: Math.round(readyPercent), className: 'realm-progress-blue' },
+        { label: '瓶颈压力', percent: Math.round(remainPercent), className: 'realm-progress-red' },
+      ],
+      dimensionChips: Object.keys(abilityLabels).map((key) => ({
+        key,
+        label: abilityLabels[key],
+        icon: abilityIcons[key],
+        value: Number(dimensions[key] || 0),
+      })),
+    };
 
-const currentRealmLabel = computed(() => '筑基中期');
-const fateNodes = computed(() => []);
-
-const closePanel = () => {
-  emit('update:visible', false);
-};
-
-const triggerAvatarUpload = () => {
-  fileInput.value?.click();
-};
-
-const handleAvatarUpload = (e: Event) => {
-  const file = (e.target as HTMLInputElement).files?.[0];
-  if (file) {
-    console.log('上传头像:', file);
+    user.updateProfile({
+      ...(data.current_realm ? { current_realm: data.current_realm } : {}),
+      cultivation_energy: energy,
+      vocabulary: Number(dimensions.vocabulary || 0),
+      grammar: Number(dimensions.grammar || 0),
+      reading: Number(dimensions.reading || 0),
+      listening: Number(dimensions.listening || 0),
+      writing: Number(dimensions.writing || 0),
+      speaking: Number(dimensions.speaking || 0),
+    });
+  } catch {
+    realmProgress.value = null;
+  } finally {
+    progressLoading.value = false;
   }
-};
+}
 
-const startEditNickname = async () => {
-  editNicknameValue.value = user.value.nickname || '';
+function closePanel() {
+  emit('update:visible', false);
+}
+
+function triggerAvatarUpload() {
+  fileInput.value?.click();
+}
+
+async function handleAvatarUpload(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+  const formData = new FormData();
+  formData.append('avatar', file);
+  ui.showLoading('正在凝结道影...');
+  try {
+    const res = await api.post('/user/avatar', formData);
+    if (res?.success) {
+      user.updateProfile({ avatar_url: res.data.avatar_url });
+      ElMessage.success('道影已焕然一新。');
+      window.dispatchEvent(new CustomEvent('profile-updated', { detail: res.data }));
+    } else {
+      ElMessage.error(res?.message || '道影凝结失败');
+    }
+  } catch {
+    ElMessage.error('道影凝结失败');
+  } finally {
+    ui.hideLoading();
+    if (fileInput.value) fileInput.value.value = '';
+  }
+}
+
+async function startEditNickname() {
+  editNicknameValue.value = profile.value.nickname || '';
   isEditingNickname.value = true;
   await nextTick();
   nicknameInputRef.value?.focus();
-};
+  nicknameInputRef.value?.select();
+}
 
-const finishEditNickname = () => {
-  if (!isEditingNickname.value) return;
+function cancelEditNickname() {
   isEditingNickname.value = false;
-  if (editNicknameValue.value.trim() !== '') {
-    user.value.nickname = editNicknameValue.value.trim();
-  }
-};
+  editNicknameValue.value = profile.value.nickname || '';
+}
 
-const formatAbilityName = (key: string) => {
-  const map: Record<string, string> = {
-    vocabulary: '词汇', grammar: '语法', reading: '阅读',
-    listening: '听力', speaking: '口语', writing: '写作'
-  };
-  return map[key] || key;
-};
+async function finishEditNickname() {
+  if (!isEditingNickname.value) return;
+  const next = editNicknameValue.value.trim();
+  isEditingNickname.value = false;
+  if (!next) {
+    ElMessage.warning('请填写道号');
+    return;
+  }
+  if (next === (profile.value.nickname || '')) return;
+  try {
+    const res = await api.put('/user/profile', { nickname: next });
+    if (res?.success) {
+      user.updateProfile({ nickname: res.data.nickname });
+      ElMessage.success('道号已更新。');
+      window.dispatchEvent(new CustomEvent('profile-updated', { detail: res.data }));
+    } else {
+      ElMessage.error('更新失败');
+    }
+  } catch {
+    ElMessage.error('更新失败');
+  }
+}
+
+async function shareInvite() {
+  try {
+    const res = await api.get('/share/info');
+    const code = res?.success ? res.data.invite_code : '';
+    const text = `我用 LevelUp 英语修仙学英语！🎯\n邀请码：${code}\n输入邀请码注册，我们各得灵力奖励！\n👉 一起来修炼吧～`;
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      ElMessage.success('邀请码已复制！分享给好友一起修炼吧 🎁');
+    } else {
+      window.prompt('复制以下内容去分享：', text);
+    }
+  } catch {
+    ElMessage.error('获取邀请码失败');
+  }
+}
+
+function openReview() {
+  closePanel();
+  emit('open-review');
+}
+
+async function openParentDashboard() {
+  closePanel();
+  const game = await bridge.getGame();
+  await game.showParentDashboard();
+}
+
+function logout() {
+  closePanel();
+  window.dispatchEvent(new CustomEvent('auth:logout'));
+}
 </script>
 
 <style scoped>
-.slide-right-enter-active, .slide-right-leave-active { transition: transform 0.3s ease; }
-.slide-right-enter-from, .slide-right-leave-to { transform: translateX(100%); }
-
-.drawer-overlay {
+.profile-backdrop {
   position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(10, 10, 26, 0.6);
-  z-index: 2000;
-  display: flex;
-  justify-content: flex-end;
-  backdrop-filter: blur(3px);
+  inset: 0;
+  z-index: 2100;
+  background: rgba(4, 8, 18, 0.72);
+  backdrop-filter: blur(4px);
 }
 
-.drawer-container {
-  width: 460px;
-  max-width: 100%;
-  height: 100vh;
-  background: #1a1a2e;
-  border-left: 2px solid var(--gold, #d4a843);
-  display: flex;
-  flex-direction: column;
-  box-shadow: -10px 0 30px rgba(0,0,0,0.6);
+.profile-backdrop .cultivation-profile-panel {
+  position: absolute;
+  width: min(520px, 95%);
+  height: auto;
+  max-height: 90vh;
 }
 
-.drawer-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  background: rgba(255,255,255,0.05);
-  border-bottom: 1px solid rgba(212,168,67,0.3);
-  color: var(--gold);
+.profile-main-pane {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
 }
 
-.drawer-close-btn {
-  background: transparent;
-  border: 1px solid var(--gold);
-  color: var(--gold);
-  padding: 6px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.drawer-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
-.profile-scroll { flex: 1; overflow-y: auto; padding: 20px; }
-
-.profile-header { margin-bottom: 20px; }
-.profile-header-info { display: flex; align-items: center; gap: 16px; }
-
-.avatar-wrapper {
+.avatar-trigger {
   position: relative;
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   cursor: pointer;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid var(--gold);
+  flex-shrink: 0;
 }
+
 .profile-header-avatar {
-  width: 100%;
-  height: 100%;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--gold, #d4a843);
   object-fit: cover;
 }
+
 .avatar-hover-mask {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  color: white;
+  color: #fff;
   opacity: 0;
   transition: opacity 0.2s;
 }
-.avatar-wrapper:hover .avatar-hover-mask {
+
+.avatar-trigger:hover .avatar-hover-mask {
   opacity: 1;
 }
+
 .hidden-input {
   display: none;
 }
-.user-meta {
+
+.profile-header-meta {
   display: flex;
   flex-direction: column;
   gap: 6px;
   flex: 1;
+  align-items: flex-start;
+  line-height: 1.2;
 }
+
 .nickname-row {
   display: flex;
   align-items: baseline;
   gap: 8px;
+  flex-wrap: wrap;
 }
+
 .nickname-display {
   font-size: 20px;
   font-weight: bold;
-  color: var(--gold);
+  color: var(--gold, #d4a843);
   cursor: pointer;
-  border-bottom: 1px dashed var(--gold);
+  border-bottom: 1px dashed var(--gold, #d4a843);
 }
+
 .nickname-input {
-  background: rgba(0,0,0,0.5);
-  border: 1px solid var(--gold);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--gold, #d4a843);
   color: #fff;
   padding: 2px 8px;
   border-radius: 4px;
@@ -288,16 +452,20 @@ const formatAbilityName = (key: string) => {
   width: 140px;
   outline: none;
 }
-.sub-title {
+
+.profile-subtitle {
   font-size: 14px;
-  color: var(--parchment);
+  color: var(--parchment, #f7f3e8);
   opacity: 0.8;
 }
+
 .header-actions {
   display: flex;
   gap: 12px;
   font-size: 13px;
+  flex-wrap: wrap;
 }
+
 .header-action-btn {
   color: var(--primary, #8cc5ff);
   cursor: pointer;
@@ -305,168 +473,32 @@ const formatAbilityName = (key: string) => {
   transition: all 0.2s;
   user-select: none;
 }
+
 .header-action-btn:hover {
   opacity: 1;
   text-shadow: 0 0 5px currentColor;
   transform: scale(1.05);
 }
-.text-danger {
-  color: var(--cinnabar, #ff6b6b);
-}
-.profile-close-btn {
-  background: transparent;
-  border: 1px solid var(--gold);
-  color: var(--gold);
-  padding: 6px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.profile-close-btn:hover {
-  background: rgba(212,168,67,0.2);
-}
 
-/* 主体 */
-.profile-body {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-.profile-left-pane {
-  flex: 1;
-  padding: 20px;
-  border-right: 1px solid rgba(212,168,67,0.2);
-  overflow-y: auto;
-}
-.profile-right-pane {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  background: rgba(0,0,0,0.2);
-}
-.profile-section-title {
-  font-size: 16px;
-  font-weight: bold;
-  color: var(--gold-light);
-  margin-bottom: 12px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid rgba(212,168,67,0.2);
-}
-.section-mt {
-  margin-top: 24px;
-}
-
-/* 统计网格 */
-.profile-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 24px;
-}
-.profile-stat-item {
-  background: rgba(255,255,255,0.05);
-  padding: 10px;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.profile-stat-label {
-  font-size: 12px;
-  color: var(--parchment-dark);
-}
-.profile-stat-val {
-  font-size: 16px;
-  font-weight: bold;
-}
 .text-red { color: #ff9e9e; }
 .text-blue { color: #8cc5ff; }
-.realm-badge { color: var(--gold); }
+.text-danger { color: var(--cinnabar, #ff6b6b); }
 
-/* 六维网格 */
-.profile-eng-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 24px;
-}
-.profile-eng-item {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(212,168,67,0.1);
-  padding: 8px;
-  border-radius: 6px;
-  text-align: center;
-}
 .ability-icon {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
   vertical-align: middle;
   margin-right: 4px;
 }
-.profile-eng-val {
-  font-size: 18px;
-  color: var(--gold);
-  margin-top: 4px;
-  font-weight: bold;
+
+.profile-fade-enter-active,
+.profile-fade-leave-active {
+  transition: opacity 0.25s ease;
 }
 
-/* 命盘列表 */
-.fate-nodes-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.fate-node-empty {
-  color: var(--parchment-dark);
-  font-size: 13px;
-  text-align: center;
-  padding: 20px;
-}
-.fate-node-item {
-  background: rgba(255,255,255,0.05);
-  border-left: 3px solid var(--gold);
-  padding: 10px 12px;
-  border-radius: 0 6px 6px 0;
-}
-.fate-node-title {
-  font-size: 14px;
-  color: var(--gold-light);
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-.fate-node-desc {
-  font-size: 12px;
-  color: var(--parchment);
-}
-.hidden-gap-item {
-  padding: 8px 10px;
-  border-left-color: rgba(212,168,67,0.5);
-}
-.hidden-gap-status {
-  padding: 8px 10px;
-  border: 1px solid;
-  border-left-width: 4px;
-}
-.hidden-gap-status.is-ready {
-  background: rgba(78,192,122,0.1);
-  border-color: rgba(78,192,122,0.45);
-}
-.hidden-gap-status.not-ready {
-  background: rgba(212,168,67,0.05);
-  border-color: rgba(212,168,67,0.25);
-}
-
-/* 过渡动画 */
-.slide-right-enter-active,
-.slide-right-leave-active {
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-.slide-right-enter-from,
-.slide-right-leave-to {
+.profile-fade-enter-from,
+.profile-fade-leave-to {
   opacity: 0;
-}
-.slide-right-enter-from .drawer-container,
-.slide-right-leave-to .drawer-container {
-  transform: translateX(100%);
 }
 </style>

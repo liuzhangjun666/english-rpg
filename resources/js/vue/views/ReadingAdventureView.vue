@@ -23,6 +23,7 @@
             <div class="lobby-meta">当前境界：{{ currentRealmLabel }}</div>
             <div class="lobby-meta">当前关卡：{{ currentLevel.levelId }}（{{ currentLevel.index + 1 }}/{{ currentLevel.total }}）</div>
             <div class="lobby-meta">本关题数：{{ totalCount }} ｜ 消耗灵力：{{ spiritCost }} ｜ 当前灵力：{{ currentSpirit }}</div>
+            <div class="lobby-meta">残卷已收集：{{ scrollFragmentCount }} 片</div>
             <div v-if="totalCount <= 0" class="lobby-meta lobby-empty-hint">当前境界暂无阅读题目，请先修炼其他模块。</div>
             <div class="lobby-actions">
               <el-button type="primary" :disabled="totalCount <= 0" @click="startMechanism">进入机关</el-button>
@@ -44,25 +45,39 @@
               <div class="stage-realm">{{ currentRealmLabel }}</div>
             </div>
 
-            <div class="lock-panel">
+            <div class="lock-panel" :class="{ 'lock-burst': verdictFlash === 'correct' }">
               <div class="lock-title">机关锁 {{ solvedCount }}/{{ totalCount }}</div>
               <div class="lock-track"><div class="lock-fill" :style="{ width: `${lockPercent}%` }"></div></div>
               <div class="lantern-row">
                 <div
-                  v-for="n in 3"
-                  :key="`lamp-${n}`"
+                  v-for="(lamp, idx) in lanternDefs"
+                  :key="lamp.key"
                   class="lantern"
-                  :class="{ unlocked: n <= unlockedLampCount }"
+                  :class="{
+                    unlocked: isLampUnlocked(idx),
+                    active: idx === currentQuestionIndex,
+                    pulsing: verdictFlash === 'correct' && idx === currentQuestionIndex,
+                  }"
                 >
-                  <span>{{ n <= unlockedLampCount ? '已解锁' : '待解锁' }}</span>
+                  <span class="lantern-name">{{ lamp.name }}</span>
+                  <span class="lantern-sub">{{ isLampUnlocked(idx) ? '已点亮' : lamp.sub }}</span>
                 </div>
               </div>
             </div>
 
-            <div class="scroll-panel" :style="{ backgroundImage: `url(${questionIcon})` }">
+            <div
+              class="scroll-panel"
+              :class="{
+                'scroll-good': currentChoiceCorrect === true,
+                'scroll-bad': verdictFlash === 'wrong',
+                'scroll-flash-good': verdictFlash === 'correct',
+                'scroll-flash-bad': verdictFlash === 'wrong',
+              }"
+            >
+              <img class="scroll-bg" :src="questionIcon" alt="" aria-hidden="true" />
               <div class="scroll-inner">
                 <div class="scroll-title">经文探秘</div>
-                <div class="scroll-text">{{ passageText }}</div>
+                <div class="scroll-text" v-html="passageDisplayHtml"></div>
                 <div class="scroll-question-block">
                   <div class="scroll-question-head">真伪灵签 {{ currentQuestionIndex + 1 }}/{{ totalCount }}</div>
                   <div class="scroll-question-stem">{{ currentQuestionStem }}</div>
@@ -71,25 +86,50 @@
               </div>
             </div>
 
-            <div class="judge-panel">
+            <div class="judge-panel" :class="{ 'judge-shake': verdictFlash === 'wrong' }">
               <button
                 class="judge-btn judge-true"
-                :class="{ selected: currentChoice === 'T' }"
+                :class="{
+                  selected: currentChoice === 'T' && currentChoiceCorrect === null,
+                  'pick-correct': currentChoice === 'T' && currentChoiceCorrect === true,
+                  'pick-wrong': currentChoice === 'T' && verdictFlash === 'wrong',
+                  'answer-hint': showAnswerHint && correctJudgeChoice === 'T',
+                }"
                 type="button"
-                :style="{ backgroundImage: `url(${optionIcon})` }"
                 @click="selectJudge('T')"
-              >T 正确</button>
+              >
+                <img class="judge-bg" :src="optionIcon" alt="" aria-hidden="true" />
+                <span class="judge-label">T 正确</span>
+                <span v-if="currentChoice === 'T' && currentChoiceCorrect === true" class="judge-verdict-icon">✓</span>
+              </button>
               <button
                 class="judge-btn judge-false"
-                :class="{ selected: currentChoice === 'F' }"
+                :class="{
+                  selected: currentChoice === 'F' && currentChoiceCorrect === null,
+                  'pick-correct': currentChoice === 'F' && currentChoiceCorrect === true,
+                  'pick-wrong': currentChoice === 'F' && verdictFlash === 'wrong',
+                  'answer-hint': showAnswerHint && correctJudgeChoice === 'F',
+                }"
                 type="button"
-                :style="{ backgroundImage: `url(${optionIcon})` }"
                 @click="selectJudge('F')"
-              >F 错误</button>
+              >
+                <img class="judge-bg" :src="optionIcon" alt="" aria-hidden="true" />
+                <span class="judge-label">F 错误</span>
+                <span v-if="currentChoice === 'F' && currentChoiceCorrect === true" class="judge-verdict-icon">✓</span>
+              </button>
             </div>
 
-            <div class="feedback-panel" :class="{ good: currentChoiceCorrect === true, bad: currentChoiceCorrect === false }">
-              {{ feedbackText }}
+            <div
+              class="feedback-panel"
+              :class="{
+                good: currentChoiceCorrect === true,
+                bad: verdictFlash === 'wrong',
+                pop: verdictFlash !== null,
+              }"
+            >
+              <span v-if="currentChoiceCorrect === true" class="feedback-icon good">✓</span>
+              <span v-else-if="verdictFlash === 'wrong'" class="feedback-icon bad">✗</span>
+              <span class="feedback-text">{{ feedbackText }}</span>
             </div>
 
             <div class="nav-panel">
@@ -117,8 +157,8 @@
                 <span class="value">+{{ solvedCount * 4 }}</span>
               </div>
               <div class="reward-item">
-                <span class="label">残卷修复</span>
-                <span class="value">+{{ solvedCount }}</span>
+                <span class="label">残卷收集</span>
+                <span class="value">{{ scrollFragmentCount }} 片</span>
               </div>
               <div class="reward-item">
                 <span class="label">已收集</span>
@@ -127,8 +167,8 @@
             </div>
 
             <div class="bottom-actions">
-              <el-button @click="useHint" :disabled="hintCount <= 0">提示（{{ hintCount }}）</el-button>
-              <el-button type="primary" @click="submitChallenge">提交本关</el-button>
+              <el-button @click="useHint" :disabled="hintCount <= 0">燃香问典（{{ hintCount }}）</el-button>
+              <el-button type="primary" :disabled="!allMechanismsSolved" @click="submitChallenge">收卷破关</el-button>
               <el-button @click="cancelChallenge">退出机关</el-button>
             </div>
           </div>
@@ -144,6 +184,8 @@
               <div class="cult-result-sub">
                 正确率 {{ result.accuracy }}% ｜ 灵气 +{{ result.exp }} ｜ 灵石 +{{ result.stones }}
               </div>
+              <div v-if="result.perfectCombo" class="cult-result-bonus">顿悟连破 · 灵气额外 +20%</div>
+              <div v-if="result.newFragment" class="cult-result-bonus">残卷收录 +1，已藏入经阁</div>
               <div class="cult-actions">
                 <el-button type="primary" @click="retryLevel">再试一次</el-button>
                 <el-button v-if="result.passed" @click="nextLevel">下一关</el-button>
@@ -193,6 +235,13 @@ type JudgeState = {
   wrongValue: string;
 };
 
+const SCROLL_FRAGMENTS_KEY = 'reading_scroll_fragments';
+const lanternDefs = [
+  { key: 'detail', name: '寻物灯', sub: '待寻线索' },
+  { key: 'word', name: '辨意灯', sub: '待辨经义' },
+  { key: 'infer', name: '悟道灯', sub: '待悟道' },
+] as const;
+
 const router = useRouter();
 const api = useApiClient();
 const bridge = useLegacyBridge();
@@ -208,14 +257,22 @@ const hintCount = ref(3);
 const judgeStateCache = ref<Record<string, JudgeState>>({});
 const judgeChoices = reactive<Record<string, JudgeChoice>>({});
 const answers = reactive<Record<string, string>>({});
-const feedbackText = ref('请选择 T/F，破解本题经文机关。');
+const firstTryCorrect = reactive<Record<string, boolean>>({});
+const wrongAttempts = reactive<Record<string, number>>({});
+const clueHighlights = reactive<Record<string, string>>({});
+const feedbackText = ref('细读经文，判断真伪灵签。');
+const verdictFlash = ref<'correct' | 'wrong' | null>(null);
+let verdictFlashTimer: ReturnType<typeof setTimeout> | null = null;
 
 const result = ref({
   passed: false,
   accuracy: 0,
   exp: 0,
   stones: 0,
+  perfectCombo: false,
+  newFragment: false,
 });
+const scrollFragmentTick = ref(0);
 
 const currentRealmLabel = computed(() => {
   const currentRealm = String(user.profile?.current_realm || '').trim();
@@ -237,17 +294,31 @@ const lockPercent = computed(() => {
   if (totalCount.value <= 0) return 0;
   return Math.round((solvedCount.value / totalCount.value) * 100);
 });
-const unlockedLampCount = computed(() => {
-  if (totalCount.value <= 0) return 0;
-  return Math.min(3, Math.max(0, Math.ceil((solvedCount.value / totalCount.value) * 3)));
+const allMechanismsSolved = computed(() => {
+  if (totalCount.value <= 0) return false;
+  return questions.value.every((q) => isQuestionSolved(String(q.question_id || '')));
+});
+const scrollFragmentCount = computed(() => {
+  void scrollFragmentTick.value;
+  return readScrollFragments().length;
 });
 const currentQuestion = computed(() => questions.value[currentQuestionIndex.value] || null);
 const currentQuestionId = computed(() => String(currentQuestion.value?.question_id || ''));
 const currentChoice = computed(() => judgeChoices[currentQuestionId.value] || '');
 const currentChoiceCorrect = computed<boolean | null>(() => {
   const qid = currentQuestionId.value;
-  if (!qid || !judgeChoices[qid]) return null;
-  return isQuestionSolved(qid);
+  if (!qid || !isQuestionSolved(qid)) return null;
+  return true;
+});
+const showAnswerHint = computed(() => {
+  const qid = currentQuestionId.value;
+  if (!qid || isQuestionSolved(qid)) return false;
+  return (wrongAttempts[qid] || 0) >= 2;
+});
+const correctJudgeChoice = computed<JudgeChoice | ''>(() => {
+  const state = getJudgeState(currentQuestion.value);
+  if (!state) return '';
+  return state.claimIsTrue ? 'T' : 'F';
 });
 const currentQuestionStem = computed(() => String(currentQuestion.value?.question || '请判断命题真伪'));
 const passageText = computed(() => getPassageText(currentQuestion.value));
@@ -255,6 +326,12 @@ const currentClaimText = computed(() => {
   const qid = currentQuestionId.value;
   if (!qid) return '';
   return getJudgeState(currentQuestion.value)?.claimText || '';
+});
+const passageDisplayHtml = computed(() => {
+  const text = getPassageText(currentQuestion.value);
+  const qid = currentQuestionId.value;
+  const highlight = clueHighlights[qid] || '';
+  return buildPassageHtml(text, highlight);
 });
 
 onMounted(async () => {
@@ -272,6 +349,8 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
+  if (verdictFlashTimer) clearTimeout(verdictFlashTimer);
+  if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
   void bridge.closeLegacyPanels();
 });
 
@@ -331,6 +410,88 @@ function unlockNextLevel(levelId: string) {
   if (next > unlocked) {
     localStorage.setItem(progressKey(), String(next));
   }
+}
+
+function readScrollFragments(): string[] {
+  try {
+    const raw = localStorage.getItem(SCROLL_FRAGMENTS_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.map(String) : [];
+  } catch {
+    return [];
+  }
+}
+
+function collectScrollFragment(levelId: string): boolean {
+  const list = readScrollFragments();
+  if (list.includes(levelId)) return false;
+  list.push(levelId);
+  localStorage.setItem(SCROLL_FRAGMENTS_KEY, JSON.stringify(list));
+  scrollFragmentTick.value += 1;
+  return true;
+}
+
+function isLampUnlocked(idx: number) {
+  const q = questions.value[idx];
+  if (!q) return false;
+  return isQuestionSolved(String(q.question_id || ''));
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function buildPassageHtml(passage: string, highlight: string) {
+  const safe = escapeHtml(passage);
+  const needle = highlight.trim();
+  if (!needle) return safe;
+  const safeNeedle = escapeHtml(needle);
+  const idx = safe.toLowerCase().indexOf(safeNeedle.toLowerCase());
+  if (idx < 0) return safe;
+  return `${safe.slice(0, idx)}<mark class="clue-mark">${safe.slice(idx, idx + safeNeedle.length)}</mark>${safe.slice(idx + safeNeedle.length)}`;
+}
+
+function splitSentences(passage: string) {
+  return passage.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean);
+}
+
+function findClueSentence(question: Record<string, any> | null) {
+  if (!question) return '';
+  const clue = String(question.clue_sentence || '').trim();
+  if (clue) return clue;
+
+  const passage = getPassageText(question);
+  const sentences = splitSentences(passage);
+  if (sentences.length === 0) return passage;
+
+  const q = String(question.question || '').toLowerCase();
+  if (q.includes('what pet') || q.includes('who') || q.includes('where')) {
+    return sentences.find((s) => /pet|name|have/i.test(s)) || sentences[0];
+  }
+  if (q.includes('play') || q.includes('garden') || q.includes('morning')) {
+    return sentences.find((s) => /garden|play|morning|feed/i.test(s)) || sentences[1] || sentences[0];
+  }
+  if (q.includes('why') || q.includes('friend')) {
+    return sentences.find((s) => /friend|friendly|cute|because/i.test(s)) || sentences[sentences.length - 1];
+  }
+
+  const words = q.split(/\W+/).filter((w) => w.length > 4);
+  for (const word of words) {
+    const hit = sentences.find((s) => s.toLowerCase().includes(word));
+    if (hit) return hit;
+  }
+  return sentences[Math.min(Number(question.question_no || 1) - 1, sentences.length - 1)] || sentences[0];
+}
+
+function lampFeedbackMessage(index: number) {
+  const lamp = lanternDefs[index] || lanternDefs[0];
+  if (lamp.key === 'detail') return '寻物灯亮！细节线索已与经文吻合。';
+  if (lamp.key === 'word') return '辨意灯亮！经义判断无误。';
+  return '悟道灯亮！机关洞开，推理成立。';
 }
 
 function optionEntries(options: unknown): OptionEntry[] {
@@ -426,10 +587,44 @@ function mapJudgeToAnswer(question: Record<string, any>, choice: JudgeChoice) {
 function resetRoundState() {
   Object.keys(judgeChoices).forEach((key) => delete judgeChoices[key]);
   Object.keys(answers).forEach((key) => delete answers[key]);
+  Object.keys(firstTryCorrect).forEach((key) => delete firstTryCorrect[key]);
+  Object.keys(wrongAttempts).forEach((key) => delete wrongAttempts[key]);
+  Object.keys(clueHighlights).forEach((key) => delete clueHighlights[key]);
   judgeStateCache.value = {};
   currentQuestionIndex.value = 0;
   hintCount.value = 3;
-  feedbackText.value = '请选择 T/F，破解本题经文机关。';
+  verdictFlash.value = null;
+  if (verdictFlashTimer) {
+    clearTimeout(verdictFlashTimer);
+    verdictFlashTimer = null;
+  }
+  feedbackText.value = '细读经文，判断真伪灵签。';
+}
+
+function triggerVerdictFlash(type: 'correct' | 'wrong') {
+  verdictFlash.value = type;
+  if (verdictFlashTimer) clearTimeout(verdictFlashTimer);
+  verdictFlashTimer = setTimeout(() => {
+    verdictFlash.value = null;
+    verdictFlashTimer = null;
+  }, 900);
+}
+
+function restoreFeedbackForCurrent() {
+  const qid = currentQuestionId.value;
+  if (!qid) {
+    feedbackText.value = '细读经文，判断真伪灵签。';
+    return;
+  }
+  if (isQuestionSolved(qid)) {
+    feedbackText.value = lampFeedbackMessage(currentQuestionIndex.value);
+    return;
+  }
+  if (judgeChoices[qid]) {
+    feedbackText.value = '机关回弹！线索已在文中标出，请再选 T/F。';
+    return;
+  }
+  feedbackText.value = '细读经文，判断真伪灵签。';
 }
 
 function getPassageText(question: Record<string, any> | null) {
@@ -471,7 +666,7 @@ async function reloadQuestions() {
     currentSpirit.value = Number(res.data.current_spirit_power ?? user.profile?.spirit_power ?? 0);
     user.updateProfile({ spirit_power: currentSpirit.value });
     stage.value = 'lobby';
-    result.value = { passed: false, accuracy: 0, exp: 0, stones: 0 };
+    result.value = { passed: false, accuracy: 0, exp: 0, stones: 0, perfectCombo: false, newFragment: false };
     resetRoundState();
   } finally {
     ui.hideLoading();
@@ -500,50 +695,74 @@ async function startMechanism() {
   }
 
   stage.value = 'answer';
-  feedbackText.value = '请选择 T/F，破解本题经文机关。';
+  feedbackText.value = '细读经文，判断真伪灵签。';
 }
+
+let autoAdvanceTimer: ReturnType<typeof setTimeout> | null = null;
 
 function selectJudge(choice: JudgeChoice) {
   const q = currentQuestion.value;
   if (!q) return;
   const qid = String(q.question_id || '');
   if (!qid) return;
+  if (isQuestionSolved(qid)) return;
 
   judgeChoices[qid] = choice;
-  answers[qid] = mapJudgeToAnswer(q, choice);
   const correct = isQuestionSolved(qid);
-  feedbackText.value = correct
-    ? '回答正确！机关锁 +1，原文线索完全匹配。'
-    : '回答有误，请回看经文线索再判断。';
+
+  if (!(qid in firstTryCorrect)) {
+    firstTryCorrect[qid] = correct;
+  }
+
+  if (correct) {
+    answers[qid] = mapJudgeToAnswer(q, choice);
+    triggerVerdictFlash('correct');
+    feedbackText.value = lampFeedbackMessage(currentQuestionIndex.value);
+    if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+    autoAdvanceTimer = setTimeout(() => {
+      autoAdvanceTimer = null;
+      if (currentQuestionIndex.value < totalCount.value - 1 && allMechanismsSolved.value === false) {
+        nextQuestion();
+      }
+    }, 1100);
+    return;
+  }
+
+  wrongAttempts[qid] = (wrongAttempts[qid] || 0) + 1;
+  clueHighlights[qid] = findClueSentence(q);
+  triggerVerdictFlash('wrong');
+  feedbackText.value = wrongAttempts[qid] >= 2
+    ? '机关回弹！文中线索已标出，正确答案方向也已暗示。'
+    : '机关回弹！线索已在文中标出，请再选 T/F。';
 }
 
 function prevQuestion() {
   currentQuestionIndex.value = Math.max(0, currentQuestionIndex.value - 1);
-  feedbackText.value = '请选择 T/F，破解本题经文机关。';
+  restoreFeedbackForCurrent();
 }
 
 function nextQuestion() {
   currentQuestionIndex.value = Math.min(totalCount.value - 1, currentQuestionIndex.value + 1);
-  feedbackText.value = '请选择 T/F，破解本题经文机关。';
+  restoreFeedbackForCurrent();
 }
 
 function jumpTo(index: number) {
   currentQuestionIndex.value = Math.max(0, Math.min(totalCount.value - 1, index));
-  feedbackText.value = '请选择 T/F，破解本题经文机关。';
+  restoreFeedbackForCurrent();
 }
 
 function useHint() {
   if (hintCount.value <= 0) {
-    ElMessage.warning('提示次数已用尽');
+    ElMessage.warning('燃香已尽，暂无问典之机');
     return;
   }
-  const state = getJudgeState(currentQuestion.value);
-  if (!state) return;
+  const q = currentQuestion.value;
+  if (!q) return;
+  const qid = String(q.question_id || '');
+  if (!qid) return;
   hintCount.value -= 1;
-  const hint = state.claimIsTrue
-    ? '提示：该命题与经文线索一致。'
-    : `提示：命题并非正确答案，留意正确选项方向。`;
-  feedbackText.value = hint;
+  clueHighlights[qid] = findClueSentence(q);
+  feedbackText.value = '燃香问典：文中关键句已标出，请细读再判。';
 }
 
 async function submitChallenge() {
@@ -551,8 +770,8 @@ async function submitChallenge() {
     ElMessage.warning('当前关卡暂无题目');
     return;
   }
-  if (questions.value.some((q) => !judgeChoices[String(q.question_id || '')])) {
-    ElMessage.warning('请完成全部题目后再提交');
+  if (questions.value.some((q) => !isQuestionSolved(String(q.question_id || '')))) {
+    ElMessage.warning('三盏灯未齐亮，请先破解全部机关');
     return;
   }
 
@@ -576,15 +795,24 @@ async function submitChallenge() {
     }
 
     const data = res.data || {};
+    const baseExp = Number(data.total_exp ?? data.exp_gained ?? 0);
+    const perfectCombo = questions.value.every((q) => firstTryCorrect[String(q.question_id || '')] === true);
+    const bonusExp = perfectCombo ? Math.round(baseExp * 0.2) : 0;
+    const totalExp = baseExp + bonusExp;
+    const passed = Boolean(data.passed);
+    const newFragment = passed ? collectScrollFragment(level.levelId) : false;
+
     result.value = {
-      passed: Boolean(data.passed),
+      passed,
       accuracy: Number(data.accuracy || 0),
-      exp: Number(data.total_exp ?? data.exp_gained ?? 0),
+      exp: totalExp,
       stones: Number(data.stones_gained || 0),
+      perfectCombo,
+      newFragment,
     };
 
     user.updateProfile({
-      exp: Number(user.profile?.exp || 0) + result.value.exp,
+      exp: Number(user.profile?.exp || 0) + totalExp,
       spirit_stone: Number(user.profile?.spirit_stone || 0) + result.value.stones,
       spirit_power: currentSpirit.value,
     });
@@ -600,8 +828,9 @@ async function submitChallenge() {
 }
 
 function cancelChallenge() {
+  if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
   stage.value = 'lobby';
-  feedbackText.value = '请选择 T/F，破解本题经文机关。';
+  feedbackText.value = '细读经文，判断真伪灵签。';
 }
 
 async function retryLevel() {
@@ -621,15 +850,16 @@ function backHall() {
 
 <style scoped>
 .cangjing-page {
-  min-height: 100vh;
+  min-height: calc(100vh - var(--top-hud-height, 76px));
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
   padding: 10px;
+  box-sizing: border-box;
 }
 
 .cangjing-shell {
-  min-height: calc(100vh - 20px);
+  min-height: calc(100vh - var(--top-hud-height, 76px) - 20px);
   padding: 10px;
   overflow: hidden;
   border: 1px solid rgba(212, 168, 67, 0.4);
@@ -768,7 +998,25 @@ function backHall() {
   height: 100%;
   background: linear-gradient(90deg, #2be6ff, #ffe59a);
   box-shadow: 0 0 12px rgba(43, 230, 255, 0.35);
-  transition: width 0.2s ease;
+  transition: width 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.lock-panel.lock-burst .lock-fill {
+  animation: lock-glow 0.85s ease;
+}
+
+.lock-panel.lock-burst .lock-title {
+  animation: lock-title-pop 0.85s ease;
+}
+
+@keyframes lock-glow {
+  0%, 100% { box-shadow: 0 0 12px rgba(43, 230, 255, 0.35); }
+  40% { box-shadow: 0 0 28px rgba(43, 255, 196, 0.95), 0 0 48px rgba(255, 229, 154, 0.55); }
+}
+
+@keyframes lock-title-pop {
+  0%, 100% { transform: scale(1); color: #f7dc9d; }
+  35% { transform: scale(1.06); color: #fff4c8; text-shadow: 0 0 16px rgba(255, 236, 160, 0.8); }
 }
 
 .lantern-row {
@@ -786,6 +1034,28 @@ function backHall() {
   color: #bcc7df;
   font-size: 12px;
   background: rgba(6, 12, 24, 0.66);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.lantern-name {
+  font-family: var(--font-title);
+  font-size: 13px;
+}
+
+.lantern-sub {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.lantern.active {
+  border-color: rgba(255, 220, 150, 0.55);
+}
+
+.lantern.pulsing {
+  animation: lantern-pulse 0.85s ease;
 }
 
 .lantern.unlocked {
@@ -795,119 +1065,378 @@ function backHall() {
   box-shadow: 0 0 12px rgba(255, 220, 120, 0.26);
 }
 
+@keyframes lantern-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(255, 220, 120, 0.2); }
+  45% { box-shadow: 0 0 22px rgba(255, 236, 160, 0.75); }
+}
+
 .scroll-panel {
-  border: none;
-  border-radius: 14px;
-  padding: 20px 18px;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  background-position: center;
-  color: #2f2212;
-  min-height: 460px;
+  position: relative;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  line-height: 0;
+  transition: filter 0.25s ease;
+}
+
+.scroll-panel.scroll-good .scroll-bg {
+  filter:
+    drop-shadow(0 0 1px rgba(8, 6, 4, 0.92))
+    drop-shadow(0 0 22px rgba(72, 220, 140, 0.55))
+    drop-shadow(0 10px 28px rgba(0, 0, 0, 0.38));
+}
+
+.scroll-panel.scroll-bad .scroll-bg {
+  filter:
+    drop-shadow(0 0 1px rgba(8, 6, 4, 0.92))
+    drop-shadow(0 0 20px rgba(255, 96, 84, 0.5))
+    drop-shadow(0 10px 28px rgba(0, 0, 0, 0.38));
+}
+
+.scroll-panel.scroll-flash-good::after,
+.scroll-panel.scroll-flash-bad::after {
+  content: '';
+  position: absolute;
+  inset: 8% 10%;
+  border-radius: 18px;
+  pointer-events: none;
+  z-index: 2;
+  animation: scroll-verdict-flash 0.85s ease;
+}
+
+.scroll-panel.scroll-flash-good::after {
+  background: radial-gradient(ellipse at center, rgba(92, 255, 168, 0.42) 0%, transparent 72%);
+  box-shadow: inset 0 0 40px rgba(110, 255, 180, 0.35);
+}
+
+.scroll-panel.scroll-flash-bad::after {
+  background: radial-gradient(ellipse at center, rgba(255, 88, 72, 0.38) 0%, transparent 72%);
+  box-shadow: inset 0 0 36px rgba(255, 72, 58, 0.32);
+}
+
+@keyframes scroll-verdict-flash {
+  0% { opacity: 0; transform: scale(0.96); }
+  25% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.02); }
+}
+
+.scroll-bg {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  /* 1px dark halo masks leftover white matte on transparent edges */
+  filter:
+    drop-shadow(0 0 1px rgba(8, 6, 4, 0.92))
+    drop-shadow(0 10px 28px rgba(0, 0, 0, 0.38));
 }
 
 .scroll-inner {
-  width: 70%;
-  min-height: 100%;
-  padding: 28px 12px 18px 22px;
+  position: absolute;
+  left: 12.5%;
+  right: 12.5%;
+  top: 11%;
+  bottom: 12%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 0 6px;
+  line-height: normal;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(103, 71, 32, 0.45) transparent;
 }
 
 .scroll-title {
-  font-size: 18px;
+  flex: 0 0 auto;
+  font-size: 16px;
   color: #674720;
-  margin-bottom: 8px;
   font-weight: 700;
+  text-align: center;
 }
 
 .scroll-text {
-  font-size: 22px;
-  line-height: 1.56;
-  max-height: 240px;
-  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: clamp(15px, 1.45vw, 18px);
+  line-height: 1.55;
   color: #2f2515;
+  text-align: left;
+  word-break: break-word;
+}
+
+.scroll-text :deep(.clue-mark) {
+  background: rgba(255, 214, 108, 0.55);
+  color: #2a1d08;
+  padding: 0 3px;
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(255, 196, 72, 0.45);
+  animation: clue-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes clue-pulse {
+  0%, 100% { background: rgba(255, 214, 108, 0.45); }
+  50% { background: rgba(255, 232, 156, 0.72); }
 }
 
 .scroll-question-block {
-  margin-top: 10px;
+  flex: 0 0 auto;
+  margin-top: 4px;
   border-top: 1px dashed rgba(121, 79, 27, 0.35);
-  padding-top: 10px;
+  padding-top: 8px;
 }
 
 .scroll-question-head {
   color: #694722;
-  font-size: 22px;
+  font-size: clamp(16px, 1.6vw, 20px);
   font-family: var(--font-title);
+  text-align: center;
 }
 
 .scroll-question-stem {
   margin-top: 6px;
   color: #2d2113;
-  font-size: 21px;
-  line-height: 1.55;
+  font-size: clamp(15px, 1.5vw, 19px);
+  line-height: 1.5;
+  text-align: center;
 }
 
 .scroll-question-claim {
-  margin-top: 8px;
+  margin-top: 6px;
   color: #4b2d16;
-  font-size: 19px;
-  line-height: 1.55;
+  font-size: clamp(14px, 1.35vw, 17px);
+  line-height: 1.45;
+  text-align: center;
 }
 
 .judge-panel {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  padding: 2px;
+  gap: 14px;
+  max-width: 920px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 4px;
+}
+
+.judge-panel.judge-shake {
+  animation: judge-shake 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes judge-shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-8px); }
+  30% { transform: translateX(8px); }
+  45% { transform: translateX(-6px); }
+  60% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
 }
 
 .judge-btn {
+  position: relative;
   border: none;
-  border-radius: 10px;
-  min-height: 110px;
-  padding: 0 18px;
-  color: #f8e9c5;
-  font-size: 34px;
-  font-family: var(--font-title);
+  border-radius: 0;
+  width: 100%;
+  padding: 0;
+  background: transparent;
   cursor: pointer;
+  line-height: 0;
+  transition: transform 0.2s ease;
+  box-shadow: none;
+  outline: none;
+}
+
+.judge-btn:focus,
+.judge-btn:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.judge-btn:active {
+  transform: scale(0.97);
+}
+
+.judge-bg {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  transition: filter 0.25s ease;
+  filter:
+    drop-shadow(0 0 1px rgba(8, 6, 4, 0.9))
+    drop-shadow(0 6px 16px rgba(0, 0, 0, 0.32));
+}
+
+.judge-btn.selected .judge-bg {
+  filter:
+    drop-shadow(0 0 1px rgba(8, 6, 4, 0.9))
+    drop-shadow(0 0 16px rgba(255, 234, 170, 0.5))
+    drop-shadow(0 6px 16px rgba(0, 0, 0, 0.32));
+}
+
+.judge-btn.pick-correct {
+  animation: judge-correct-pop 0.65s ease;
+}
+
+.judge-btn.pick-correct .judge-bg {
+  filter:
+    drop-shadow(0 0 1px rgba(8, 6, 4, 0.9))
+    drop-shadow(0 0 22px rgba(72, 220, 140, 0.72))
+    drop-shadow(0 6px 16px rgba(0, 0, 0, 0.32));
+}
+
+.judge-btn.pick-wrong {
+  animation: judge-wrong-pop 0.55s ease;
+}
+
+.judge-btn.pick-wrong .judge-bg {
+  filter:
+    drop-shadow(0 0 1px rgba(8, 6, 4, 0.9))
+    drop-shadow(0 0 20px rgba(255, 72, 58, 0.62))
+    drop-shadow(0 6px 16px rgba(0, 0, 0, 0.32));
+}
+
+.judge-btn.answer-hint .judge-bg {
+  filter:
+    drop-shadow(0 0 1px rgba(8, 6, 4, 0.9))
+    drop-shadow(0 0 18px rgba(92, 220, 140, 0.48))
+    drop-shadow(0 6px 16px rgba(0, 0, 0, 0.32));
+}
+
+.judge-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f8e9c5;
+  font-size: clamp(22px, 2.4vw, 32px);
+  font-family: var(--font-title);
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
-  background-color: transparent;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 100% 100%;
+  line-height: 1;
+  pointer-events: none;
 }
 
-.judge-btn.selected {
-  box-shadow: 0 0 0 2px rgba(255, 235, 179, 0.72), 0 0 18px rgba(255, 234, 170, 0.48);
+.judge-btn.answer-hint .judge-label {
+  color: #d8ffe8;
 }
 
-.judge-true.selected {
-  box-shadow: 0 0 0 2px rgba(140, 255, 184, 0.75), 0 0 16px rgba(101, 255, 164, 0.45);
+.judge-verdict-icon {
+  position: absolute;
+  top: 8%;
+  right: 10%;
+  width: clamp(28px, 3vw, 38px);
+  height: clamp(28px, 3vw, 38px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(16px, 1.8vw, 22px);
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+  animation: verdict-icon-pop 0.45s cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
-.judge-false.selected {
-  box-shadow: 0 0 0 2px rgba(255, 167, 167, 0.75), 0 0 16px rgba(255, 120, 120, 0.42);
+.pick-correct .judge-verdict-icon {
+  background: rgba(28, 120, 72, 0.92);
+  color: #e8fff2;
+  box-shadow: 0 0 16px rgba(92, 255, 168, 0.8);
+}
+
+.pick-wrong .judge-verdict-icon {
+  background: rgba(140, 28, 24, 0.92);
+  color: #ffe8e6;
+  box-shadow: 0 0 14px rgba(255, 96, 84, 0.75);
+}
+
+@keyframes judge-correct-pop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes judge-wrong-pop {
+  0%, 100% { transform: scale(1); }
+  20% { transform: scale(0.96); }
+  45% { transform: scale(1.02); }
+}
+
+@keyframes verdict-icon-pop {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .feedback-panel {
-  min-height: 22px;
-  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  border-radius: 12px;
   border: 1px solid rgba(212, 168, 67, 0.25);
-  padding: 8px 10px;
+  padding: 10px 14px;
   color: var(--parchment-dark);
   background: rgba(255, 255, 255, 0.04);
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.feedback-panel.pop {
+  animation: feedback-pop 0.55s cubic-bezier(0.34, 1.25, 0.64, 1);
+}
+
+.feedback-icon {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.feedback-icon.good {
+  background: rgba(48, 160, 96, 0.9);
+  color: #eafff3;
+  box-shadow: 0 0 14px rgba(92, 255, 168, 0.65);
+}
+
+.feedback-icon.bad {
+  background: rgba(180, 48, 40, 0.92);
+  color: #ffecea;
+  box-shadow: 0 0 12px rgba(255, 96, 84, 0.6);
+}
+
+.feedback-text {
+  flex: 1 1 auto;
+}
+
+@keyframes feedback-pop {
+  0% { transform: translateY(8px) scale(0.96); opacity: 0.35; }
+  55% { transform: translateY(-2px) scale(1.02); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 .feedback-panel.good {
-  color: #b6f2cd;
-  border-color: rgba(78, 192, 122, 0.45);
-  background: rgba(78, 192, 122, 0.12);
+  color: #d8ffe8;
+  border-color: rgba(78, 192, 122, 0.65);
+  background: linear-gradient(90deg, rgba(48, 130, 82, 0.28), rgba(78, 192, 122, 0.16));
+  box-shadow: 0 0 20px rgba(72, 200, 120, 0.22);
 }
 
 .feedback-panel.bad {
-  color: #ffd6d2;
-  border-color: rgba(231, 76, 60, 0.45);
-  background: rgba(231, 76, 60, 0.12);
+  color: #ffe2de;
+  border-color: rgba(231, 76, 60, 0.65);
+  background: linear-gradient(90deg, rgba(150, 40, 32, 0.3), rgba(231, 76, 60, 0.14));
+  box-shadow: 0 0 18px rgba(255, 88, 72, 0.2);
 }
 
 .nav-panel {
@@ -994,38 +1523,45 @@ function backHall() {
   flex-wrap: wrap;
 }
 
+.cult-result-bonus {
+  margin-top: 8px;
+  color: #ffe9a8;
+  font-size: 14px;
+  text-shadow: 0 0 12px rgba(255, 220, 120, 0.35);
+}
+
 @media (max-width: 900px) {
   .stage-title {
     font-size: 22px;
   }
 
   .scroll-panel {
-    min-height: 360px;
-    padding: 12px;
+    max-width: 100%;
   }
 
   .scroll-inner {
-    width: 76%;
-    padding: 14px 8px 10px 14px;
+    left: 11%;
+    right: 11%;
+    top: 10%;
+    bottom: 11%;
+    padding: 0 4px;
   }
 
   .scroll-text {
-    font-size: 17px;
-    max-height: 150px;
+    font-size: 14px;
   }
 
   .scroll-question-head {
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .scroll-question-stem,
   .scroll-question-claim {
-    font-size: 16px;
+    font-size: 14px;
   }
 
-  .judge-btn {
-    min-height: 78px;
-    font-size: 22px;
+  .judge-label {
+    font-size: 20px;
   }
 
   .nav-panel {

@@ -8,6 +8,7 @@ use App\Models\LearningRecord;
 use App\Services\CurrencyService;
 use App\Services\ExamService;
 use App\Services\HeartDemonService;
+use App\Services\QuestionResolverService;
 use App\Services\RealmService;
 use App\Support\CultivationProfile;
 use Illuminate\Http\JsonResponse;
@@ -24,7 +25,8 @@ class ExamController extends Controller
         ExamService $examService,
         CurrencyService $currencyService,
         RealmService $realmService,
-        HeartDemonService $demonService
+        HeartDemonService $demonService,
+        private readonly QuestionResolverService $questionResolver,
     )
     {
         $this->examService = $examService;
@@ -170,15 +172,17 @@ class ExamController extends Controller
         // 逐题判分
         $results = [];
         foreach ($data['answers'] as $ans) {
-            $question = \App\Models\Question::where('question_id', $ans['question_id'])->first();
-            $correct = $question && $question->correct_answer === $ans['answer'];
-            $results[] = ['question_id' => $ans['question_id'], 'correct' => $correct];
+            $qid = (string) ($ans['question_id'] ?? '');
+            $answerText = isset($ans['answer_text']) ? (string) $ans['answer_text'] : null;
+            $resolved = $this->questionResolver->resolve($qid);
+            $correct = $this->questionResolver->isCorrect($qid, (string) ($ans['answer'] ?? ''), $answerText);
+            $results[] = ['question_id' => $qid, 'correct' => $correct];
 
             LearningRecord::create([
                 'user_id' => $user->id,
                 'activity_type' => 'exam',
                 'activity_id' => $user->realm,
-                'question_id' => $ans['question_id'],
+                'question_id' => $qid,
                 'is_correct' => $correct,
                 'exp_gained' => 0,
                 'spirit_cost' => 0,
@@ -186,16 +190,16 @@ class ExamController extends Controller
                 'answer_data' => $ans,
             ]);
 
-            if ($question) {
+            if ($resolved) {
                 if (!$correct) {
                     $this->demonService->recordWrong(
                         $user->id,
-                        $ans['question_id'],
-                        $question->type,
-                        $question->realm ?? $user->realm
+                        $qid,
+                        (string) ($resolved['type'] ?? 'grammar'),
+                        (string) ($resolved['realm'] ?? $user->realm)
                     );
                 } else {
-                    $this->demonService->recordCorrect($user->id, $ans['question_id']);
+                    $this->demonService->recordCorrect($user->id, $qid);
                 }
             }
         }

@@ -24,6 +24,7 @@ class TimedChallengeService
         private readonly CurrencyService $currencyService,
         private readonly HeartDemonService $demonService,
         private readonly RealmService $realmService,
+        private readonly QuestionResolverService $questionResolver,
     ) {
     }
 
@@ -76,24 +77,24 @@ class TimedChallengeService
             return ['success' => false, 'code' => 'CHALLENGE_ENDED', 'message' => '挑战已结束'];
         }
 
-        $question = $this->pickQuestion($session);
+        $question = $this->pickQuestionPayload($session);
         if (!$question) {
             return ['success' => false, 'code' => 'QUESTION_NOT_FOUND', 'message' => '暂无可用题目'];
         }
 
         $asked = $session->asked_question_ids ?? [];
-        $asked[] = $question->question_id;
+        $asked[] = $question['question_id'];
         $session->asked_question_ids = array_values(array_unique($asked));
         $session->save();
 
         return [
             'success' => true,
             'data' => [
-                'question_id' => $question->question_id,
+                'question_id' => $question['question_id'],
                 'question_type' => 'multiple_choice',
-                'stem' => (string) $question->question,
-                'options' => $question->options,
-                'knowledge_tag' => $this->resolveKnowledgeTag($question),
+                'stem' => (string) ($question['question'] ?? ''),
+                'options' => $question['options'] ?? [],
+                'knowledge_tag' => $this->resolveKnowledgeTagFromResolved($question),
             ],
         ];
     }
@@ -114,13 +115,13 @@ class TimedChallengeService
             return ['success' => false, 'code' => 'CHALLENGE_ENDED', 'message' => '挑战已结束'];
         }
 
-        $question = Question::where('question_id', $questionId)->first();
-        if (!$question) {
+        $resolved = $this->questionResolver->resolve($questionId);
+        if (!$resolved) {
             return ['success' => false, 'code' => 'QUESTION_NOT_FOUND', 'message' => '题目不存在'];
         }
 
-        $correct = $this->normalizeAnswer($question->correct_answer) === $this->normalizeAnswer($answer);
-        $knowledgeTag = $this->resolveKnowledgeTag($question);
+        $correct = $this->questionResolver->isCorrect($questionId, $answer);
+        $knowledgeTag = $this->resolveKnowledgeTagFromResolved($resolved);
 
         $stats = $session->weak_tag_stats ?? [];
         $stats[$knowledgeTag] = $stats[$knowledgeTag] ?? ['total' => 0, 'wrong' => 0];
@@ -134,13 +135,14 @@ class TimedChallengeService
 
         DB::transaction(function () use (
             $session,
-            $question,
+            $questionId,
             $answer,
             $correct,
             $elapsedMs,
             $scoreDelta,
             $combo,
-            $stats
+            $stats,
+            $knowledgeTag
         ) {
             $session->total_answered += 1;
             if ($correct) {
@@ -154,8 +156,8 @@ class TimedChallengeService
 
             TimedChallengeAnswer::create([
                 'session_id' => $session->id,
-                'question_id' => $question->question_id,
-                'knowledge_tag' => $this->resolveKnowledgeTag($question),
+                'question_id' => $questionId,
+                'knowledge_tag' => $knowledgeTag,
                 'user_answer' => $answer,
                 'is_correct' => $correct,
                 'elapsed_ms' => max(0, $elapsedMs),
@@ -164,9 +166,9 @@ class TimedChallengeService
         });
 
         if ($correct) {
-            $this->demonService->recordCorrect($user->id, $question->question_id);
+            $this->demonService->recordCorrect($user->id, $questionId);
         } else {
-            $this->demonService->recordWrong($user->id, $question->question_id, $session->module_type, $session->level);
+            $this->demonService->recordWrong($user->id, $questionId, $session->module_type, $session->level);
         }
 
         $remainSec = $this->remainingSeconds($session);
@@ -302,17 +304,21 @@ class TimedChallengeService
         return false;
     }
 
-    private function pickQuestion(TimedChallengeSession $session): ?Question
+    private function pickQuestionPayload(TimedChallengeSession $session): ?array
     {
         $asked = $session->asked_question_ids ?? [];
         $asked = empty($asked) ? ['__none__'] : $asked;
         $useDemon = random_int(1, 100) <= self::DEMON_RATIO;
 
         if ($useDemon) {
-            $demonQuestion = $this->pickDemonQuestion($session, $asked);
+            $demonQuestion = $this->pickDemonQuestionPayload($session, $asked);
             if ($demonQuestion) {
                 return $demonQuestion;
             }
+        }
+
+        if ($session->module_type === 'vocab') {
+            return $this->pickVocabQuestionPayload($asked);
         }
 
         $normal = Question::where('type', $session->module_type)
@@ -322,7 +328,7 @@ class TimedChallengeService
             ->inRandomOrder()
             ->first();
         if ($normal) {
-            return $normal;
+            return $this->questionResolver->resolve($normal->question_id);
         }
 
         $fallback = Question::where('type', $session->module_type)
@@ -330,15 +336,15 @@ class TimedChallengeService
             ->inRandomOrder()
             ->first();
         if ($fallback) {
-            return $fallback;
+            return $this->questionResolver->resolve($fallback->question_id);
         }
 
-        return Question::where('type', $session->module_type)
-            ->inRandomOrder()
-            ->first();
+        $any = Question::where('type', $session->module_type)->inRandomOrder()->first();
+
+        return $any ? $this->questionResolver->resolve($any->question_id) : null;
     }
 
-    private function pickDemonQuestion(TimedChallengeSession $session, array $asked): ?Question
+    private function pickDemonQuestionPayload(TimedChallengeSession $session, array $asked): ?array
     {
         $demonIds = HeartDemon::where('user_id', $session->user_id)
             ->where('is_mastered', false)
@@ -350,14 +356,27 @@ class TimedChallengeService
             ->limit(30)
             ->pluck('question_id');
 
-        if ($demonIds->isEmpty()) {
-            return null;
+        foreach ($demonIds->shuffle() as $questionId) {
+            $resolved = $this->questionResolver->resolve((string) $questionId);
+            if ($resolved) {
+                return $resolved;
+            }
         }
 
-        return Question::whereIn('question_id', $demonIds)
-            ->where('type', $session->module_type)
+        return null;
+    }
+
+    private function pickVocabQuestionPayload(array $asked): ?array
+    {
+        $word = \App\Models\VocabularyWord::query()
+            ->whereNotIn('id', collect($asked)
+                ->map(fn ($qid) => preg_match('/^VW-(\d+)$/', (string) $qid, $m) ? (int) $m[1] : null)
+                ->filter()
+                ->all())
             ->inRandomOrder()
             ->first();
+
+        return $word ? $this->questionResolver->resolve('VW-' . $word->id) : null;
     }
 
     private function remainingSeconds(TimedChallengeSession $session): int
@@ -372,6 +391,15 @@ class TimedChallengeService
     private function normalizeAnswer(?string $value): string
     {
         return mb_strtolower(trim((string) $value));
+    }
+
+    private function resolveKnowledgeTagFromResolved(array $resolved): string
+    {
+        if (!empty($resolved['word'])) {
+            return (string) $resolved['word'];
+        }
+
+        return (string) ($resolved['type'] ?? 'general');
     }
 
     private function resolveKnowledgeTag(Question $question): string

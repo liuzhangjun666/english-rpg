@@ -1,6 +1,5 @@
 <template>
-  <div
-    class="relative min-h-screen w-full overflow-hidden bg-gray-900 text-white font-sans selection:bg-yellow-500 selection:text-black">
+  <div class="login-view relative w-full min-h-full overflow-x-hidden bg-gray-900 text-white font-sans selection:bg-yellow-500 selection:text-black">
     <!-- 全屏背景 -->
     <div class="absolute inset-0 bg-cover bg-center z-0 animate-slow-zoom"
       style="background-image: url('/images/ui/login_bg_fantasy.png');">
@@ -9,116 +8,96 @@
     </div>
 
     <!-- 顶层交互容器 -->
-    <div class="relative z-10 flex flex-col items-center justify-center min-h-screen p-6">
+    <div class="login-shell relative z-10" :class="{ 'is-form-open': showForm }">
 
       <!-- Logo 区域 -->
-      <div class="text-center mb-16 transform transition-all duration-700"
-        :class="showForm ? 'translate-y-[-2rem] scale-90' : 'translate-y-0'">
-        <h1
-          class="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-500 to-yellow-600 drop-shadow-[0_0_15px_rgba(234,179,8,0.5)] mb-4"
-          style="font-family: 'Ma Shan Zheng', 'STXingkai', serif; letter-spacing: 0.1em;">
+      <div class="login-hero text-center" :class="{ compact: showForm }">
+        <h1 class="login-title">
           英语修仙
         </h1>
-        <p class="text-xl md:text-2xl text-gray-300 tracking-widest font-light drop-shadow-lg">
+        <p class="login-subtitle">
           背单词，修大道
         </p>
       </div>
 
       <!-- 中心交互区 (未展开表单时) -->
       <transition name="fade-slide">
-        <div v-if="!showForm" class="flex flex-col items-center">
-          <button @click="showForm = true"
-            class="relative group px-12 py-5 bg-gradient-to-r from-yellow-600 to-yellow-800 text-yellow-100 text-2xl font-bold rounded-full overflow-hidden shadow-[0_0_40px_rgba(202,138,4,0.6)] hover:shadow-[0_0_60px_rgba(202,138,4,0.9)] hover:scale-105 transition-all duration-300">
+        <div v-if="!showForm" class="login-enter-wrap">
+          <button @click="showForm = true" class="login-enter-btn">
             <span class="relative z-10 tracking-widest">踏入修仙界</span>
-            <div
-              class="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-600 opacity-0 group-hover:opacity-20 transition-opacity duration-300">
-            </div>
-            <!-- 光效流转动画 -->
-            <div
-              class="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover:animate-shine">
-            </div>
+            <div class="login-enter-btn-glow"></div>
+            <div class="login-enter-btn-shine"></div>
           </button>
         </div>
       </transition>
 
       <!-- 登录/注册表单区 (展开时) -->
       <transition name="fade-up">
-        <div v-if="showForm" class="flex flex-col md:flex-row gap-8 max-w-5xl w-full">
+        <div v-if="showForm" class="login-form-stage">
 
           <!-- 左侧：表单面板 -->
-          <div
-            class="flex-1 bg-black/40 backdrop-blur-xl border border-yellow-500/30 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
-            <div
-              class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent opacity-50">
-            </div>
+          <div class="login-form-panel">
+            <div class="login-form-panel-accent"></div>
 
-            <div class="flex justify-between items-center mb-8">
-              <h2 class="text-2xl text-yellow-500 font-bold tracking-wider">{{ isLogin ? '修士登入' : '凝聚仙魂' }}</h2>
-              <button @click="toggleFormType" class="text-sm text-gray-400 hover:text-yellow-400 transition-colors">
+            <div class="login-form-head">
+              <h2 class="login-form-title">{{ isLogin ? '修士登入' : '凝聚仙魂' }}</h2>
+              <button type="button" @click="toggleFormType" class="login-form-switch">
                 {{ isLogin ? '前往注册 →' : '← 返回登入' }}
               </button>
             </div>
 
             <!-- 登录表单 -->
-            <form v-if="isLogin" @submit.prevent="doLogin" class="space-y-6">
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">传音符 (手机号)</label>
-                <input v-model="loginForm.phone" type="tel" maxlength="11"
-                  class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-all"
-                  placeholder="请输入手机号">
+            <form v-if="isLogin" @submit.prevent="doLogin" class="login-form">
+              <div class="login-field">
+                <label class="login-label">手机号</label>
+                <input v-model="loginForm.phone" type="tel" maxlength="11" class="login-input"
+                  placeholder="请输入11位手机号" autocomplete="tel">
               </div>
 
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">灵力印记 (验证码)</label>
-                <div class="flex gap-4">
-                  <input v-model="loginForm.code" type="text" maxlength="6"
-                    class="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-all"
-                    placeholder="输入6位验证码">
-                  <button type="button" @click="sendCode('login')" :disabled="loginCountdown > 0"
-                    class="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-yellow-500 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap">
-                    {{ loginCountdown > 0 ? `${loginCountdown}息后重试` : '获取印记' }}
+              <div class="login-field">
+                <label class="login-label">验证码</label>
+                <div class="login-code-row">
+                  <input v-model="loginForm.code" type="text" maxlength="6" class="login-input"
+                    placeholder="输入6位验证码" autocomplete="one-time-code">
+                  <button type="button" @click="sendCode('login')" :disabled="loginCountdown > 0" class="login-code-btn">
+                    {{ loginCountdown > 0 ? `${loginCountdown}息后重试` : '获取验证码' }}
                   </button>
                 </div>
               </div>
 
-              <div class="pt-4 space-y-4">
-                <button type="submit"
-                  class="w-full py-4 bg-gradient-to-r from-yellow-600 to-yellow-800 hover:from-yellow-500 hover:to-yellow-700 text-white font-bold rounded-lg shadow-lg hover:shadow-yellow-500/25 transition-all">
-                  破关登入
+              <div class="login-actions">
+                <button type="submit" class="login-submit-btn">
+                  确认登入
                 </button>
 
-                <button type="button" @click="guestLogin"
-                  class="w-full py-3 bg-transparent border border-white/20 hover:border-yellow-500/50 hover:bg-white/5 text-gray-300 font-medium rounded-lg transition-all">
-                  神游太虚 (游客体验)
+                <button type="button" @click="guestLogin" class="login-guest-btn">
+                  游客登入（试玩体验）
                 </button>
               </div>
             </form>
 
             <!-- 注册表单 -->
-            <form v-else @submit.prevent="doRegister" class="space-y-4">
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">传音符 (手机号)</label>
-                <input v-model="registerForm.phone" type="tel" maxlength="11"
-                  class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-all"
-                  placeholder="请输入手机号">
+            <form v-else @submit.prevent="doRegister" class="login-form">
+              <div class="login-field">
+                <label class="login-label">手机号</label>
+                <input v-model="registerForm.phone" type="tel" maxlength="11" class="login-input"
+                  placeholder="请输入11位手机号" autocomplete="tel">
               </div>
 
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">灵力印记 (验证码)</label>
-                <div class="flex gap-4">
-                  <input v-model="registerForm.code" type="text" maxlength="6"
-                    class="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-all"
-                    placeholder="输入6位验证码">
-                  <button type="button" @click="sendCode('register')" :disabled="registerCountdown > 0"
-                    class="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-yellow-500 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap">
-                    {{ registerCountdown > 0 ? `${registerCountdown}息后重试` : '获取印记' }}
+              <div class="login-field">
+                <label class="login-label">验证码</label>
+                <div class="login-code-row">
+                  <input v-model="registerForm.code" type="text" maxlength="6" class="login-input"
+                    placeholder="输入6位验证码" autocomplete="one-time-code">
+                  <button type="button" @click="sendCode('register')" :disabled="registerCountdown > 0" class="login-code-btn">
+                    {{ registerCountdown > 0 ? `${registerCountdown}息后重试` : '获取验证码' }}
                   </button>
                 </div>
               </div>
 
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">修炼学段（必选）</label>
-                <p class="text-xs text-gray-500 mb-2">用于匹配灵根试炼起点；初始境界由测试测定，与学段无关。</p>
+              <div class="login-field">
+                <label class="login-label">修炼学段（必选）</label>
+                <p class="login-hint">用于匹配灵根试炼起点；初始境界由测试测定，与学段无关。</p>
                 <div class="school-stage-grid">
                   <button
                     v-for="stage in schoolStages"
@@ -133,16 +112,14 @@
                 </div>
               </div>
 
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">道号 (选填)</label>
-                <input v-model="registerForm.nickname" type="text" maxlength="50"
-                  class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-all"
-                  placeholder="不填则由天道自动生成">
+              <div class="login-field">
+                <label class="login-label">道号（选填）</label>
+                <input v-model="registerForm.nickname" type="text" maxlength="50" class="login-input"
+                  placeholder="不填则由天道自动生成" autocomplete="nickname">
               </div>
 
-              <div class="pt-4">
-                <button type="submit"
-                  class="w-full py-4 bg-gradient-to-r from-yellow-600 to-yellow-800 hover:from-yellow-500 hover:to-yellow-700 text-white font-bold rounded-lg shadow-lg hover:shadow-yellow-500/25 transition-all">
+              <div class="login-actions">
+                <button type="submit" class="login-submit-btn">
                   塑魂注册
                 </button>
               </div>
@@ -150,19 +127,14 @@
           </div>
 
           <!-- 右侧：成长预览 -->
-          <div
-            class="hidden md:flex flex-1 bg-black/30 backdrop-blur-md border border-white/10 rounded-2xl p-8 flex-col justify-center">
+          <div class="login-growth-panel">
             <h3 class="text-xl text-center text-gray-300 font-medium mb-8 tracking-widest">修仙之路预览</h3>
 
-            <div
-              class="relative space-y-8 pl-8 before:absolute before:inset-y-4 before:left-3 before:w-px before:bg-gradient-to-b before:from-yellow-500/80 before:via-yellow-500/30 before:to-transparent">
+            <div class="login-growth-track">
 
-              <div class="relative group" v-for="(stage, index) in growthStages" :key="index">
-                <div
-                  class="absolute -left-[38px] top-2 w-4 h-4 rounded-full bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.8)] border-2 border-black transform group-hover:scale-125 transition-transform">
-                </div>
-                <div
-                  class="bg-white/5 border border-white/10 p-4 rounded-lg group-hover:bg-white/10 group-hover:border-yellow-500/30 transition-all cursor-default">
+              <div class="relative group login-growth-item" v-for="(stage, index) in growthStages" :key="index">
+                <div class="login-growth-dot"></div>
+                <div class="login-growth-card">
                   <div class="flex items-end gap-3 mb-2">
                     <h4 class="text-lg font-bold text-yellow-400">{{ stage.name }}</h4>
                     <span class="text-xs text-yellow-500/70 border border-yellow-500/30 px-2 py-0.5 rounded">{{
@@ -419,6 +391,385 @@ async function promptRegisteredPhoneAndGoLogin(phone: string) {
 </script>
 
 <style scoped>
+.login-view {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.login-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 24px 16px 40px;
+}
+
+.login-shell.is-form-open {
+  justify-content: flex-start;
+  padding-top: 16px;
+  padding-bottom: 48px;
+}
+
+.login-hero {
+  text-align: center;
+  margin-bottom: 48px;
+  transition: all 0.45s ease;
+}
+
+.login-hero.compact {
+  margin-bottom: 20px;
+}
+
+.login-title {
+  margin: 0 0 12px;
+  font-family: 'Ma Shan Zheng', 'STXingkai', serif;
+  font-size: clamp(3.5rem, 12vw, 6rem);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: transparent;
+  background-image: linear-gradient(to right, #fde047, #eab308, #ca8a04);
+  background-clip: text;
+  -webkit-background-clip: text;
+  filter: drop-shadow(0 0 15px rgba(234, 179, 8, 0.5));
+}
+
+.login-hero.compact .login-title {
+  font-size: clamp(2rem, 7vw, 2.75rem);
+  margin-bottom: 6px;
+}
+
+.login-subtitle {
+  margin: 0;
+  font-size: clamp(1rem, 3vw, 1.35rem);
+  color: #d1d5db;
+  letter-spacing: 0.35em;
+  font-weight: 300;
+}
+
+.login-hero.compact .login-subtitle {
+  font-size: 0.95rem;
+  letter-spacing: 0.2em;
+}
+
+.login-enter-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.login-enter-btn {
+  position: relative;
+  overflow: hidden;
+  padding: 18px 48px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(to right, #ca8a04, #854d0e);
+  color: #fef9c3;
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 0 40px rgba(202, 138, 4, 0.6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-enter-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 60px rgba(202, 138, 4, 0.9);
+}
+
+.login-enter-btn-glow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, #facc15, #ca8a04);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.login-enter-btn:hover .login-enter-btn-glow {
+  opacity: 0.2;
+}
+
+.login-enter-btn-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  transform: skewX(-12deg);
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+
+.login-enter-btn:hover .login-enter-btn-shine {
+  animation: shine 2.5s infinite;
+}
+
+.login-form-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: min(1100px, 100%);
+}
+
+@media (min-width: 768px) {
+  .login-form-stage {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 28px;
+  }
+}
+
+.login-form-panel {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  padding: 24px 22px 28px;
+  border-radius: 18px;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+@media (min-width: 768px) {
+  .login-form-panel {
+    padding: 28px 28px 32px;
+  }
+}
+
+.login-form-panel-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, transparent, rgba(234, 179, 8, 0.65), transparent);
+}
+
+.login-form-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.login-form-title {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #eab308;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.login-form-switch {
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.login-form-switch:hover {
+  color: #facc15;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-label {
+  font-size: 0.9rem;
+  color: #d1d5db;
+  line-height: 1.4;
+}
+
+.login-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  line-height: 1.5;
+}
+
+.login-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f9fafb;
+  font-size: 16px;
+  line-height: 1.4;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.login-input::placeholder {
+  color: rgba(156, 163, 175, 0.85);
+}
+
+.login-input:focus {
+  border-color: rgba(234, 179, 8, 0.55);
+  box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.login-code-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.login-code-btn {
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #facc15;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.login-code-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(234, 179, 8, 0.35);
+}
+
+.login-code-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.login-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.login-submit-btn {
+  width: 100%;
+  min-height: 50px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(to right, #ca8a04, #854d0e);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(202, 138, 4, 0.28);
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.login-submit-btn:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.login-guest-btn {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  background: transparent;
+  color: #d1d5db;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.login-guest-btn:hover {
+  border-color: rgba(234, 179, 8, 0.45);
+  background: rgba(255, 255, 255, 0.05);
+  color: #f3f4f6;
+}
+
+.login-growth-panel {
+  display: none;
+  flex: 1;
+  padding: 28px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+}
+
+@media (min-width: 768px) {
+  .login-growth-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+.login-growth-track {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-left: 32px;
+}
+
+.login-growth-track::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 11px;
+  width: 1px;
+  background: linear-gradient(to bottom, rgba(234, 179, 8, 0.8), rgba(234, 179, 8, 0.25), transparent);
+}
+
+.login-growth-item {
+  position: relative;
+}
+
+.login-growth-dot {
+  position: absolute;
+  left: -32px;
+  top: 10px;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #000;
+  border-radius: 50%;
+  background: #eab308;
+  box-shadow: 0 0 10px rgba(234, 179, 8, 0.8);
+  transition: transform 0.2s ease;
+}
+
+.login-growth-item:hover .login-growth-dot {
+  transform: scale(1.15);
+}
+
+.login-growth-card {
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.login-growth-item:hover .login-growth-card {
+  border-color: rgba(234, 179, 8, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .animate-slow-zoom {
   animation: slowZoom 20s infinite alternate linear;
 }
@@ -437,10 +788,6 @@ async function promptRegisteredPhoneAndGoLogin(phone: string) {
   100% {
     left: 125%;
   }
-}
-
-.animate-shine {
-  animation: shine 2.5s infinite;
 }
 
 .fade-slide-enter-active,
@@ -467,17 +814,18 @@ async function promptRegisteredPhoneAndGoLogin(phone: string) {
 
 .school-stage-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
 
-@media (max-width: 640px) {
+@media (min-width: 640px) {
   .school-stage-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 }
 
 .school-stage-btn {
+  min-height: 44px;
   padding: 10px 8px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -499,5 +847,15 @@ async function promptRegisteredPhoneAndGoLogin(phone: string) {
   background: rgba(234, 179, 8, 0.14);
   color: #fde68a;
   box-shadow: 0 0 12px rgba(234, 179, 8, 0.2);
+}
+
+@media (max-width: 420px) {
+  .login-code-row {
+    grid-template-columns: 1fr;
+  }
+
+  .login-code-btn {
+    width: 100%;
+  }
 }
 </style>

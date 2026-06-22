@@ -81,6 +81,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('reading')->group(function () {
         Route::get('/questions', [ReadingBankController::class, 'questions']);
+        Route::post('/submit-batch', [ReadingBankController::class, 'submitBatch']);
         Route::get('/chapters', [ReadingAdventureController::class, 'chapters']);
         Route::get('/chapters/{chapterId}', [ReadingAdventureController::class, 'chapter']);
         Route::post('/submit-adventure', [ReadingAdventureController::class, 'submit']);

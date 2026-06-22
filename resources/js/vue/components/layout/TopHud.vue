@@ -19,7 +19,7 @@
               <div class="exp-flow-light"></div>
             </div>
           </div>
-          <span class="exp-text">修为 {{ animatedExp }} / {{ user.profile?.next_threshold ?? 100 }}</span>
+          <span class="hud-exp-text">修为 {{ animatedExp }} / {{ user.profile?.next_threshold ?? 100 }}</span>
         </div>
       </div>
     </div>
@@ -28,15 +28,24 @@
     <div class="hud-center">
       <div class="resource-item" title="词汇量">
         <span class="res-icon">📚</span>
-        <span class="res-value">{{ animatedVocab }}</span>
+        <div class="res-copy">
+          <span class="res-value">{{ animatedVocab }}</span>
+          <span class="res-label">词汇</span>
+        </div>
       </div>
       <div class="resource-item" title="灵力">
         <span class="res-icon">⚡</span>
-        <span class="res-value">{{ animatedSpiritPower }}/{{ user.profile?.spirit_power_max ?? 100 }}</span>
+        <div class="res-copy">
+          <span class="res-value">{{ animatedSpiritPower }}/{{ user.profile?.spirit_power_max ?? 100 }}</span>
+          <span class="res-label">灵力</span>
+        </div>
       </div>
       <div class="resource-item" title="灵石">
         <span class="res-icon">💎</span>
-        <span class="res-value">{{ animatedSpiritStone }}</span>
+        <div class="res-copy">
+          <span class="res-value">{{ animatedSpiritStone }}</span>
+          <span class="res-label">灵石</span>
+        </div>
       </div>
     </div>
 
@@ -129,7 +138,7 @@ watch(() => ui.isMapDragging, (isDragging) => {
       ease: 'power2.out'
     });
     // 文字淡出
-    gsap.to(hudRef.value.querySelectorAll('.role-name, .exp-text, .realm-text'), {
+    gsap.to(hudRef.value.querySelectorAll('.role-name, .hud-exp-text, .realm-text, .res-label'), {
       opacity: 0,
       duration: 0.3
     });
@@ -141,7 +150,7 @@ watch(() => ui.isMapDragging, (isDragging) => {
       ease: 'power2.out'
     });
     // 文字恢复
-    gsap.to(hudRef.value.querySelectorAll('.role-name, .exp-text, .realm-text'), {
+    gsap.to(hudRef.value.querySelectorAll('.role-name, .hud-exp-text, .realm-text, .res-label'), {
       opacity: 1,
       duration: 0.4,
       delay: 0.1
@@ -256,7 +265,8 @@ watch(() => ui.isMapDragging, (isDragging) => {
 .exp-bar-container {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  flex-wrap: nowrap;
 }
 
 .exp-bar-bg {
@@ -288,10 +298,14 @@ watch(() => ui.isMapDragging, (isDragging) => {
   100% { transform: translateX(100%); }
 }
 
-.exp-text {
+.hud-exp-text {
+  position: static;
+  flex-shrink: 0;
   color: #C8A96A;
   font-size: 11px;
   font-family: monospace;
+  white-space: nowrap;
+  line-height: 1;
 }
 
 /* CENTER 资源区 */
@@ -306,7 +320,7 @@ watch(() => ui.isMapDragging, (isDragging) => {
 .resource-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: rgba(0,0,0,0.4);
   border: 1px solid rgba(200, 169, 106, 0.2);
   padding: 4px 12px;
@@ -314,8 +328,16 @@ watch(() => ui.isMapDragging, (isDragging) => {
   box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
 }
 
+.res-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1;
+}
+
 .res-icon {
   font-size: 16px;
+  flex-shrink: 0;
 }
 
 .res-value {
@@ -324,6 +346,14 @@ watch(() => ui.isMapDragging, (isDragging) => {
   font-weight: bold;
   font-family: monospace;
   text-shadow: 0 1px 2px #000;
+  white-space: nowrap;
+}
+
+.res-label {
+  color: rgba(200, 169, 106, 0.95);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 /* RIGHT 系统区 */
@@ -379,7 +409,9 @@ watch(() => ui.isMapDragging, (isDragging) => {
 @media (max-width: 900px) {
   .exp-bar-bg { width: 100px; }
   .hud-center { gap: 10px; }
-  .exp-text { display: none; }
+  .hud-exp-text { font-size: 10px; }
+  .res-label { font-size: 9px; }
+  .res-value { font-size: 12px; }
 }
 @media (max-width: 600px) {
   .hud-center { display: none; } /* 移动端过小可直接隐藏中央资源，或改变布局 */

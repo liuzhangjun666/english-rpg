@@ -7,9 +7,9 @@
         <div v-if="internalStage === 'intro'" class="demon-intro-container">
           <div class="blood-vignette"></div>
           <div class="intro-content">
-            <h1 class="encounter-title">{{ demonStore.encounterTitle }}</h1>
-            <p class="encounter-desc">{{ demonStore.encounterSubtitle }}</p>
-            <button class="rpg-btn-slay" @click="startBattle">拔剑迎战</button>
+            <h1 class="encounter-title demon-serif">{{ demonStore.encounterTitle }}</h1>
+            <p class="encounter-desc demon-serif">{{ demonStore.encounterSubtitle }}</p>
+            <button class="rpg-btn-slay demon-serif" @click="startBattle">拔剑迎战</button>
           </div>
         </div>
 
@@ -18,7 +18,7 @@
           <div class="blood-vignette pulse"></div>
           
           <div class="battle-header">
-            <div class="battle-progress">
+            <div class="battle-progress demon-serif">
               心魔残影: {{ currentIndex + 1 }} / {{ demonQueue.length }}
             </div>
             <div class="demon-stats" v-if="currentDemonMeta">
@@ -29,7 +29,7 @@
 
           <div class="battle-arena" v-if="currentQuestion">
             <div class="question-box">
-              {{ currentQuestion.question }}
+              {{ currentQuestionText }}
             </div>
 
             <div class="options-grid">
@@ -51,7 +51,7 @@
 
           <div class="battle-footer">
             <transition name="slide-up">
-              <button v-if="feedbackShown" class="rpg-btn-next" @click="nextDemon">
+              <button v-if="feedbackShown" class="rpg-btn-next demon-serif" @click="nextDemon">
                 {{ currentIndex < demonQueue.length - 1 ? '追击下一道残影' : '万剑归宗 (封印)' }}
               </button>
             </transition>
@@ -61,13 +61,13 @@
         <!-- 阶段3: 结算 -->
         <div v-else-if="internalStage === 'result'" class="demon-result-container">
           <div class="result-box" :class="resultData?.passed ? 'success' : 'fail'">
-            <h2 class="result-title">{{ resultData?.passed ? '心魔溃散' : '魔气缠身' }}</h2>
+            <h2 class="result-title demon-serif">{{ resultData?.passed ? '心魔溃散' : '魔气缠身' }}</h2>
             <div class="result-stats">
               <p>斩灭残影: <span class="highlight">{{ resultData?.correct_count }} / {{ resultData?.total }}</span></p>
               <p>封印完美度: <span class="highlight">{{ resultData?.accuracy }}%</span></p>
             </div>
-            <p class="result-tip">同一心魔累计斩杀3次且进度达80%方可彻底超度。</p>
-            <button class="rpg-btn-exit" @click="exitEncounter">收剑回气</button>
+            <p class="result-tip demon-serif">同一心魔累计斩杀3次且进度达80%方可彻底超度。</p>
+            <button class="rpg-btn-exit demon-serif" @click="exitEncounter">收剑回气</button>
           </div>
         </div>
 
@@ -97,21 +97,37 @@ const resultData = ref<any>(null);
 const demonQueue = computed(() => demonStore.encounterQueue || []);
 const currentItem = computed(() => demonQueue.value[currentIndex.value] || null);
 
-// 兼容不同的数据结构: 
-// 手动面板结构是 { demon: {...}, question: {...} }
-// preExam 和 injected 结构是 { question_id, question, options, _is_demon, _demon_wrong_count }
-const currentQuestion = computed(() => {
-  if (!currentItem.value) return null;
-  return currentItem.value.question || currentItem.value; // 后者兼容直接传递的题库结构
+function resolveEncounterQuestion(item: any): Record<string, any> | null {
+  if (!item || typeof item !== 'object') return null;
+
+  const nested = item.question;
+  if (nested && typeof nested === 'object' && !Array.isArray(nested)) {
+    return nested;
+  }
+
+  if (item.question_id || item.options || item.prompt_id) {
+    return item;
+  }
+
+  return null;
+}
+
+// 兼容：{ demon, question: {...} }、练功注入的扁平题、pre-exam 扁平题
+const currentQuestion = computed(() => resolveEncounterQuestion(currentItem.value));
+
+const currentQuestionText = computed(() => {
+  const q = currentQuestion.value;
+  if (!q) return '';
+  return String(q.question || q.stem || q.prompt || q.topic || q.word || '请选择正确答案');
 });
 
 const currentDemonMeta = computed(() => {
   if (!currentItem.value) return null;
   if (currentItem.value.demon) return currentItem.value.demon;
-  // 从 _is_demon 题中提取元数据模拟
+  const q = currentQuestion.value;
   return {
-    wrong_count: currentItem.value._demon_wrong_count || 1,
-    mastery: currentItem.value._demon_mastery // 如果接口没有，可能为 undefined
+    wrong_count: currentItem.value._demon_wrong_count ?? q?._demon_wrong_count ?? 1,
+    mastery: currentItem.value._demon_mastery ?? q?._demon_mastery,
   };
 });
 
@@ -120,7 +136,15 @@ const currentOptions = computed((): [string, string][] => {
   if (!opts) return [];
   if (Array.isArray(opts)) {
     const labels = ['A', 'B', 'C', 'D'];
-    return opts.map((text: string, i: number) => [labels[i] ?? String(i + 1), text]);
+    return opts.map((entry: unknown, i: number) => {
+      if (entry && typeof entry === 'object' && !Array.isArray(entry)) {
+        const row = entry as Record<string, unknown>;
+        const key = String(row.key ?? labels[i] ?? String(i + 1));
+        const text = String(row.text ?? row.label ?? row.value ?? '');
+        return [key, text] as [string, string];
+      }
+      return [labels[i] ?? String(i + 1), String(entry ?? '')] as [string, string];
+    });
   }
   if (typeof opts === 'object') {
     return Object.entries(opts as Record<string, string>);
@@ -231,9 +255,13 @@ function exitEncounter() {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Ma Shan Zheng', 'STXingkai', 'KaiTi', serif;
+  font-family: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   color: #fff;
   overflow: hidden;
+}
+
+.demon-serif {
+  font-family: 'Ma Shan Zheng', 'STXingkai', 'KaiTi', serif;
 }
 
 .blood-vignette {
@@ -301,7 +329,6 @@ function exitEncounter() {
   color: #fca5a5;
   padding: 16px 48px;
   font-size: 24px;
-  font-family: inherit;
   cursor: pointer;
   border-radius: 4px;
   transition: all 0.3s;
@@ -365,9 +392,12 @@ function exitEncounter() {
   background: rgba(0, 0, 0, 0.5);
   border-left: 4px solid #ef4444;
   padding: 24px;
-  font-size: 22px;
-  line-height: 1.8;
-  color: #f3f4f6;
+  font-family: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.65;
+  letter-spacing: 0.02em;
+  color: #f9fafb;
   border-radius: 4px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
 }
@@ -414,7 +444,11 @@ function exitEncounter() {
 }
 
 .slash-text {
-  font-size: 18px;
+  font-family: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
   flex: 1;
   position: relative;
   z-index: 2;
@@ -464,7 +498,6 @@ function exitEncounter() {
   color: #fceea7;
   padding: 12px 32px;
   font-size: 20px;
-  font-family: inherit;
   cursor: pointer;
   border-radius: 4px;
   transition: all 0.3s;
@@ -519,7 +552,6 @@ function exitEncounter() {
   color: #d1d5db;
   padding: 12px 40px;
   font-size: 20px;
-  font-family: inherit;
   cursor: pointer;
   border-radius: 4px;
   transition: all 0.3s;

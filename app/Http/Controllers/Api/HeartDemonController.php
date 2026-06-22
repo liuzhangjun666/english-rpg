@@ -6,13 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\HeartDemon;
 use App\Models\Question;
 use App\Services\HeartDemonService;
+use App\Services\QuestionResolverService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class HeartDemonController extends Controller
 {
     private HeartDemonService $demonService;
-    public function __construct(HeartDemonService $demonService)
+    public function __construct(
+        HeartDemonService $demonService,
+        private readonly QuestionResolverService $questionResolver,
+    )
     {
         $this->demonService = $demonService;
     }
@@ -35,13 +39,17 @@ class HeartDemonController extends Controller
         $items = [];
         $questions = [];
         foreach ($demons as $d) {
-            $q = Question::where('question_id', $d->question_id)->first();
+            $resolved = $this->questionResolver->resolve((string) $d->question_id);
+            if (!$resolved) {
+                $q = Question::where('question_id', $d->question_id)->first();
+                $resolved = $q?->toArray();
+            }
             $items[] = [
                 'demon' => $d->toArray(),
-                'question' => $q?->toArray(),
+                'question' => $resolved,
             ];
-            if ($q) {
-                $qa = $q->toArray();
+            if ($resolved) {
+                $qa = $resolved;
                 $qa['_demon'] = $d->toArray();
                 $questions[] = $qa;
             }
