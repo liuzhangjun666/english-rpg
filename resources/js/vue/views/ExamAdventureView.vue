@@ -131,6 +131,7 @@ import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
 import { useDemonStore } from '../stores/demon';
+import ModuleRulesIntro from '../components/ModuleRulesIntro.vue';
 
 type Stage = 'rules' | 'info' | 'exam' | 'result';
 type ExamSession = {

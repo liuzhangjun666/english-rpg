@@ -13,15 +13,14 @@ class WritingPromptSeeder extends Seeder
 {
     public function run(): void
     {
-        WritingPrompt::query()->delete();
-
-        $realms = ['L1', 'L2', 'L3'];
+        $realms = ['L1', 'L2', 'L3', 'Z1', 'J1', 'Y1', 'H1'];
         $count = 0;
 
         foreach ($realms as $realmIdx => $realm) {
+            $templateRealmIdx = min($realmIdx, 2);
             for ($stageNo = 1; $stageNo <= 9; $stageNo++) {
                 $stage = str_pad((string)$stageNo, 2, '0', STR_PAD_LEFT);
-                $templates = $this->getTemplates($realmIdx, $stageNo);
+                $templates = $this->getTemplates($templateRealmIdx, $stageNo);
 
                 foreach ($templates as $i => $t) {
                     $serial = $i + 1;

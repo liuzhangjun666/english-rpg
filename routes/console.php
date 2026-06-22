@@ -78,7 +78,7 @@ Artisan::command('vocab:import-json {file=database/data/elementary_vocab_questio
     return 0;
 })->purpose('Import elementary vocabulary questions from generated JSON file');
 
-Artisan::command('grammar:import-json {file=database/data/elementary_grammar_questions.json} {--replace= : Delete old questions with matching prefix before import}', function () {
+Artisan::command('grammar:import-json {file=database/data/elementary_grammar_from_xiaoxue_cihuiti.json} {--replace= : Delete old questions with matching prefix before import}', function () {
     $fileArg = (string) $this->argument('file');
     $filePath = base_path($fileArg);
 
@@ -439,3 +439,32 @@ Artisan::command('reading:import-json {file}', function () {
     $this->info("Imported reading questions: {$createdQuestions}");
     return 0;
 })->purpose('Import reading passages/questions from JSON into reading_passages & reading_questions');
+
+Artisan::command('app:bootstrap-content {--fresh : Run migrate:fresh before seeding}', function () {
+    if ($this->option('fresh')) {
+        $this->call('migrate:fresh', ['--force' => true]);
+    } else {
+        $this->call('migrate', ['--force' => true]);
+    }
+
+    $this->call('db:seed', ['--force' => true]);
+
+    $grammarFile = base_path('database/data/elementary_grammar_from_xiaoxue_cihuiti.json');
+    if (File::exists($grammarFile)) {
+        $this->call('grammar:import-json', [
+            'file' => 'database/data/elementary_grammar_from_xiaoxue_cihuiti.json',
+            '--replace' => 'GR',
+        ]);
+    } else {
+        $this->warn('Grammar import skipped: elementary_grammar_from_xiaoxue_cihuiti.json not found.');
+    }
+
+    $this->call('db:seed', [
+        '--class' => 'Database\\Seeders\\VocabAssessmentBankSeeder',
+        '--force' => true,
+    ]);
+
+    $this->info('Content bootstrap complete (L1–H1 realms).');
+    $this->line('See DEPLOY.md for production checklist.');
+    return 0;
+})->purpose('One-shot migrate + seed + import grammar for launch-ready content');

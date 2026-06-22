@@ -1,94 +1,156 @@
 <template>
   <div
-    class="relative min-h-screen w-full overflow-hidden bg-gray-900 text-white font-sans selection:bg-yellow-500 selection:text-black">
-    <!-- 全屏 3D 仙门场景 (Three.js + Bloom) -->
-    <div ref="gateCanvasRef" class="absolute inset-0 z-0 gate-canvas"></div>
-    <!-- 渐变遮罩：让表单/文字始终清晰可读 -->
-    <div class="absolute inset-0 z-0 bg-gradient-to-b from-black/30 via-transparent to-black/70 pointer-events-none"></div>
-
-    <!-- 仙门匾额 -->
-    <h1 class="gate-title" :class="{ entering, 'title-up': showForm }">太虚仙门</h1>
-
-    <!-- 点击门洞的提示（表单未展开时） -->
-    <div v-if="!showForm && !entering" class="gate-hint" @click="showForm = true">
-      <div class="hint-ring"></div>
-      <span class="hint-text">点击仙门 · 踏入修行</span>
+    class="login-view relative w-full min-h-full overflow-x-hidden bg-gray-900 text-white font-sans selection:bg-yellow-500 selection:text-black">
+    <!-- 全屏背景 -->
+    <div class="absolute inset-0 bg-cover bg-center z-0 animate-slow-zoom"
+      style="background-image: url('/images/ui/login_bg_fantasy.png');">
+      <!-- 渐变遮罩 -->
+      <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/80"></div>
     </div>
 
-    <!-- 玻璃拟态登录区 -->
-    <Transition name="portal-reveal">
-      <div v-if="showForm" class="gate-ui" :class="{ entering }">
-        <div class="glass-portal">
-          <span class="portal-glow"></span>
+    <!-- 顶层交互容器 -->
+    <div class="login-shell relative z-10" :class="{ 'is-form-open': showForm }">
 
-          <div class="portal-head">
-            <h2>{{ isLogin ? '修士登入' : '凝聚仙魂' }}</h2>
-            <button class="switch-link" @click="toggleFormType">
-              {{ isLogin ? '前往注册 →' : '← 返回登入' }}
-            </button>
-          </div>
+      <!-- Logo 区域 -->
+      <div class="login-hero text-center" :class="{ compact: showForm }">
+        <h1 class="login-title">
+          英语修仙
+        </h1>
+        <p class="login-subtitle">
+          背单词，修大道
+        </p>
+      </div>
 
-          <!-- 登录 -->
-          <form v-if="isLogin" class="form" @submit.prevent="doLogin">
-            <div class="field">
-              <span class="field-ico">📡</span>
-              <input v-model="loginForm.phone" type="tel" maxlength="11" placeholder="传音符（手机号）" />
-            </div>
-            <div class="field code-field">
-              <span class="field-ico">✦</span>
-              <input v-model="loginForm.code" type="text" maxlength="6" placeholder="灵力印记（验证码）" />
-              <button type="button" class="code-btn" :disabled="loginCountdown > 0" @click="sendCode('login')">
-                {{ loginCountdown > 0 ? `${loginCountdown}息` : '获取印记' }}
-              </button>
-            </div>
-            <button type="submit" class="jade-btn"><span>破 关 登 入</span></button>
-            <button type="button" class="ghost-btn" @click="guestLogin">神游太虚（游客体验）</button>
-          </form>
+      <!-- 中心交互区 (未展开表单时) -->
+      <transition name="fade-slide">
+        <div v-if="!showForm" class="login-enter-wrap">
+          <button @click="showForm = true" class="login-enter-btn">
+            <span class="relative z-10 tracking-widest">踏入修仙界</span>
+            <div class="login-enter-btn-glow"></div>
+            <div class="login-enter-btn-shine"></div>
+          </button>
+        </div>
+      </transition>
 
-          <!-- 注册 -->
-          <form v-else class="form" @submit.prevent="doRegister">
-            <div class="field">
-              <span class="field-ico">📡</span>
-              <input v-model="registerForm.phone" type="tel" maxlength="11" placeholder="传音符（手机号）" />
-            </div>
-            <div class="field code-field">
-              <span class="field-ico">✦</span>
-              <input v-model="registerForm.code" type="text" maxlength="6" placeholder="灵力印记（验证码）" />
-              <button type="button" class="code-btn" :disabled="registerCountdown > 0" @click="sendCode('register')">
-                {{ registerCountdown > 0 ? `${registerCountdown}息` : '获取印记' }}
+      <!-- 登录/注册表单区 (展开时) -->
+      <transition name="fade-up">
+        <div v-if="showForm" class="login-form-stage">
+
+          <!-- 左侧：表单面板 -->
+          <div class="login-form-panel">
+            <div class="login-form-panel-accent"></div>
+
+            <div class="login-form-head">
+              <h2 class="login-form-title">{{ isLogin ? '修士登入' : '凝聚仙魂' }}</h2>
+              <button type="button" @click="toggleFormType" class="login-form-switch">
+                {{ isLogin ? '前往注册 →' : '← 返回登入' }}
               </button>
             </div>
 
-            <!-- 修炼学段 -->
-            <div class="stage-block">
-              <div class="stage-label">
-                <span class="field-ico">⛰</span>
-                <span>修炼学段（用于匹配灵根试炼起点）</span>
+            <!-- 登录表单 -->
+            <form v-if="isLogin" @submit.prevent="doLogin" class="login-form">
+              <div class="login-field">
+                <label class="login-label">手机号</label>
+                <input v-model="loginForm.phone" type="tel" maxlength="11" class="login-input" placeholder="请输入11位手机号"
+                  autocomplete="tel">
               </div>
-              <div class="stage-grid">
-                <button
-                  v-for="stage in schoolStages"
-                  :key="stage.value"
-                  type="button"
-                  class="stage-chip"
-                  :class="{ 'is-active': registerForm.school_grade === stage.value }"
-                  @click="registerForm.school_grade = stage.value"
-                >
-                  {{ stage.label }}
+
+              <div class="login-field">
+                <label class="login-label">验证码</label>
+                <div class="login-code-row">
+                  <input v-model="loginForm.code" type="text" maxlength="6" class="login-input" placeholder="输入6位验证码"
+                    autocomplete="one-time-code">
+                  <button type="button" @click="sendCode('login')" :disabled="loginCountdown > 0"
+                    class="login-code-btn">
+                    {{ loginCountdown > 0 ? `${loginCountdown}息后重试` : '获取验证码' }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="login-actions">
+                <button type="submit" class="login-submit-btn">
+                  确认登入
+                </button>
+
+                <button type="button" @click="guestLogin" class="login-guest-btn">
+                  游客登入（试玩体验）
                 </button>
               </div>
-            </div>
+            </form>
 
-            <div class="field">
-              <span class="field-ico">⚝</span>
-              <input v-model="registerForm.nickname" type="text" maxlength="50" placeholder="道号（选填，不填由天道赐名）" />
-            </div>
+            <!-- 注册表单 -->
+            <form v-else @submit.prevent="doRegister" class="login-form">
+              <div class="login-field">
+                <label class="login-label">手机号</label>
+                <input v-model="registerForm.phone" type="tel" maxlength="11" class="login-input"
+                  placeholder="请输入11位手机号" autocomplete="tel">
+              </div>
 
-            <button type="submit" class="jade-btn"><span>塑 魂 注 册</span></button>
+              <div class="login-field">
+                <label class="login-label">验证码</label>
+                <div class="login-code-row">
+                  <input v-model="registerForm.code" type="text" maxlength="6" class="login-input" placeholder="输入6位验证码"
+                    autocomplete="one-time-code">
+                  <button type="button" @click="sendCode('register')" :disabled="registerCountdown > 0"
+                    class="login-code-btn">
+                    {{ registerCountdown > 0 ? `${registerCountdown}息后重试` : '获取验证码' }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="login-field">
+                <label class="login-label">修炼学段（必选）</label>
+                <p class="login-hint">用于匹配灵根试炼起点；初始境界由测试测定，与学段无关。</p>
+                <div class="school-stage-grid">
+                  <button v-for="stage in schoolStages" :key="stage.value" type="button" class="school-stage-btn"
+                    :class="{ 'is-active': registerForm.school_grade === stage.value }"
+                    @click="registerForm.school_grade = stage.value">
+                    {{ stage.label }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="login-field">
+                <label class="login-label">道号（选填）</label>
+                <input v-model="registerForm.nickname" type="text" maxlength="50" class="login-input"
+                  placeholder="不填则由天道自动生成" autocomplete="nickname">
+              </div>
+
+              <div class="login-actions">
+                <button type="submit" class="login-submit-btn">
+                  塑魂注册
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- 右侧：成长预览 -->
+          <div class="login-growth-panel">
+            <h3 class="text-xl text-center text-gray-300 font-medium mb-8 tracking-widest">修仙之路预览</h3>
+
+            <div class="login-growth-track">
+
+              <div class="relative group login-growth-item" v-for="(stage, index) in growthStages" :key="index">
+                <div class="login-growth-dot"></div>
+                <div class="login-growth-card">
+                  <div class="flex items-end gap-3 mb-2">
+                    <h4 class="text-lg font-bold text-yellow-400">{{ stage.name }}</h4>
+                    <span class="text-xs text-yellow-500/70 border border-yellow-500/30 px-2 py-0.5 rounded">{{
+                      stage.desc }}</span>
+                  </div>
+                  <p class="text-sm text-gray-400">掌握 <span class="text-yellow-500 font-bold mx-1">{{ stage.words
+                  }}</span> 个核心词汇</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <button type="submit" class="jade-btn"><span>塑 魂 注 册</span></button>
           </form>
         </div>
         <p class="brand-sub">英语修仙 · 背单词，修大道</p>
-      </div>
+    </div>
     </Transition>
 
     <!-- 开门白光过场 -->
@@ -237,12 +299,12 @@ function navigateAfterAuth(needsAssessment: boolean, options?: { fromRegister?: 
   const redirect = String(route.query.redirect || '/hall');
   const target = needsAssessment
     ? {
-        path: '/vocab-assessment/intro',
-        query: {
-          ...(options?.fromRegister ? { from: 'register' } : {}),
-          ...(redirect && redirect !== '/hall' ? { redirect } : {}),
-        },
-      }
+      path: '/vocab-assessment/intro',
+      query: {
+        ...(options?.fromRegister ? { from: 'register' } : {}),
+        ...(redirect && redirect !== '/hall' ? { redirect } : {}),
+      },
+    }
     : (redirect as any);
 
   // 仙门开门过场：放大推镜穿门白光 → 跳转目标路由。
@@ -369,146 +431,539 @@ async function promptRegisteredPhoneAndGoLogin(phone: string) {
 </script>
 
 <style scoped>
-/* === 仙门匾额 === */
-.gate-title {
-  position: absolute;
-  top: 8%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  margin: 0;
-  font-family: 'Ma Shan Zheng', 'STXingkai', serif;
-  font-size: clamp(40px, 6vw, 80px);
-  letter-spacing: 0.25em;
-  color: #f3d98a;
-  text-shadow:
-    0 0 18px rgba(243, 201, 90, 0.7),
-    0 4px 18px rgba(0, 0, 0, 0.6);
-  pointer-events: none;
-  transition: transform 0.7s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.6s;
-}
-.gate-title.title-up {
-  top: 4%;
-  font-size: clamp(28px, 4vw, 48px);
-}
-.gate-title.entering {
-  opacity: 0;
-  transform: translateX(-50%) scale(1.4);
+.login-view {
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
-/* === 点击门洞提示 === */
-.gate-hint {
-  position: absolute;
-  bottom: 22%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
+.login-shell {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 24px 16px 40px;
+}
+
+.login-shell.is-form-open {
+  justify-content: flex-start;
+  padding-top: 16px;
+  padding-bottom: 48px;
+}
+
+.login-hero {
+  text-align: center;
+  margin-bottom: 48px;
+  transition: all 0.45s ease;
+}
+
+.login-hero.compact {
+  margin-bottom: 20px;
+}
+
+.login-title {
+  margin: 0 0 12px;
+  font-family: 'Ma Shan Zheng', 'STXingkai', serif;
+  font-size: clamp(3.5rem, 12vw, 6rem);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: transparent;
+  background-image: linear-gradient(to right, #fde047, #eab308, #ca8a04);
+  background-clip: text;
+  -webkit-background-clip: text;
+  filter: drop-shadow(0 0 15px rgba(234, 179, 8, 0.5));
+}
+
+.login-hero.compact .login-title {
+  font-size: clamp(2rem, 7vw, 2.75rem);
+  margin-bottom: 6px;
+}
+
+.login-subtitle {
+  margin: 0;
+  font-size: clamp(1rem, 3vw, 1.35rem);
+  color: #d1d5db;
+  letter-spacing: 0.35em;
+  font-weight: 300;
+}
+
+.login-hero.compact .login-subtitle {
+  font-size: 0.95rem;
+  letter-spacing: 0.2em;
+}
+
+.login-enter-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.login-enter-btn {
+  position: relative;
+  overflow: hidden;
+  padding: 18px 48px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(to right, #ca8a04, #854d0e);
+  color: #fef9c3;
+  font-size: 1.5rem;
+  font-weight: 700;
   cursor: pointer;
-  padding: 24px 36px;
-}
-.hint-ring {
-  width: 64px;
-  height: 64px;
-  border: 2px solid rgba(243, 201, 90, 0.6);
-  border-radius: 50%;
-  box-shadow:
-    0 0 24px rgba(243, 201, 90, 0.4),
-    inset 0 0 12px rgba(243, 201, 90, 0.2);
-  animation: ringPulse 2.4s ease-in-out infinite;
-  margin-bottom: 14px;
-}
-@keyframes ringPulse {
-  0%, 100% { transform: scale(1); opacity: 0.85; }
-  50%      { transform: scale(1.15); opacity: 1; }
-}
-.hint-text {
-  color: #f3d98a;
-  font-size: 16px;
-  letter-spacing: 0.3em;
-  font-family: 'Ma Shan Zheng', serif;
-  text-shadow: 0 0 12px rgba(243, 201, 90, 0.6), 0 2px 6px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 40px rgba(202, 138, 4, 0.6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* === 表单弹出过渡 === */
-.portal-reveal-enter-active { transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-.portal-reveal-leave-active { transition: all 0.3s ease-in; }
-.portal-reveal-enter-from   { opacity: 0; transform: scale(0.85) translateY(30px); }
-.portal-reveal-leave-to     { opacity: 0; transform: scale(0.9); }
+.login-enter-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 60px rgba(202, 138, 4, 0.9);
+}
 
-/* === 玻璃拟态登录区 === */
-.gate-ui {
+.login-enter-btn-glow {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  background: linear-gradient(to right, #facc15, #ca8a04);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.login-enter-btn:hover .login-enter-btn-glow {
+  opacity: 0.2;
+}
+
+.login-enter-btn-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  transform: skewX(-12deg);
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+
+.login-enter-btn:hover .login-enter-btn-shine {
+  animation: shine 2.5s infinite;
+}
+
+.login-form-stage {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  transition: opacity 0.6s, transform 0.8s cubic-bezier(0.7, 0, 0.84, 0);
+  gap: 24px;
+  width: min(1100px, 100%);
 }
-.gate-ui.entering { opacity: 0; transform: scale(1.25); }
 
-.glass-portal {
-  pointer-events: auto;
-  position: relative;
-  width: min(380px, 88vw);
-  margin-top: 40px;
-  padding: 26px 26px 22px;
-  border-radius: 20px;
-  background: rgba(14, 28, 52, 0.5);
-  border: 1px solid rgba(150, 210, 255, 0.3);
-  box-shadow: 0 0 50px rgba(40, 90, 160, 0.3), inset 0 0 40px rgba(30, 70, 130, 0.25);
-  backdrop-filter: blur(18px) saturate(120%);
-  -webkit-backdrop-filter: blur(18px) saturate(120%);
-  animation: breathe 4s ease-in-out infinite;
+@media (min-width: 768px) {
+  .login-form-stage {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 28px;
+  }
 }
+
+.login-form-panel {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  padding: 24px 22px 28px;
+  border-radius: 18px;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+@media (min-width: 768px) {
+  .login-form-panel {
+    padding: 28px 28px 32px;
+  }
+}
+
+.login-form-panel-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, transparent, rgba(234, 179, 8, 0.65), transparent);
+}
+
+.login-form-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.login-form-title {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #eab308;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.login-form-switch {
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.login-form-switch:hover {
+  color: #facc15;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-label {
+  font-size: 0.9rem;
+  color: #d1d5db;
+  line-height: 1.4;
+}
+
+.login-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  line-height: 1.5;
+}
+
+.login-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f9fafb;
+  font-size: 16px;
+  line-height: 1.4;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.login-input::placeholder {
+  color: rgba(156, 163, 175, 0.85);
+}
+
+.login-input:focus {
+  border-color: rgba(234, 179, 8, 0.55);
+  box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.login-code-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.login-code-btn {
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #facc15;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.login-code-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(234, 179, 8, 0.35);
+}
+
+.login-code-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.login-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.login-submit-btn {
+  width: 100%;
+  min-height: 50px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(to right, #ca8a04, #854d0e);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(202, 138, 4, 0.28);
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.login-submit-btn:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.login-guest-btn {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  background: transparent;
+  color: #d1d5db;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.login-guest-btn:hover {
+  border-color: rgba(234, 179, 8, 0.45);
+  background: rgba(255, 255, 255, 0.05);
+  color: #f3f4f6;
+}
+
+.login-growth-panel {
+  display: none;
+  flex: 1;
+  padding: 28px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+}
+
+@media (min-width: 768px) {
+  .login-growth-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+.login-growth-track {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-left: 32px;
+}
+
+.login-growth-track::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 11px;
+  width: 1px;
+  background: linear-gradient(to bottom, rgba(234, 179, 8, 0.8), rgba(234, 179, 8, 0.25), transparent);
+}
+
+.login-growth-item {
+  position: relative;
+}
+
+.login-growth-dot {
+  position: absolute;
+  left: -32px;
+  top: 10px;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #000;
+  border-radius: 50%;
+  background: #eab308;
+  box-shadow: 0 0 10px rgba(234, 179, 8, 0.8);
+  transition: transform 0.2s ease;
+}
+
+.login-growth-item:hover .login-growth-dot {
+  transform: scale(1.15);
+}
+
+.login-growth-card {
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.login-growth-item:hover .login-growth-card {
+  border-color: rgba(234, 179, 8, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.animate-slow-zoom {
+  animation: slowZoom 20s infinite alternate linear;
+}
+
+@keyframes ringPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes shine {
+  100% {
+    left: 125%;
+  }
+}
+
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.5s ease;
+}
+
 .portal-glow {
-  position: absolute; inset: -1px; border-radius: 20px; pointer-events: none;
+  position: absolute;
+  inset: -1px;
+  border-radius: 20px;
+  pointer-events: none;
   box-shadow: 0 0 0 1px rgba(243, 201, 90, 0.4);
   animation: glowPulse 3.2s ease-in-out infinite;
 }
+
 @keyframes glowPulse {
-  0%, 100% { box-shadow: 0 0 18px rgba(243, 201, 90, 0.25), 0 0 0 1px rgba(243, 201, 90, 0.35); }
-  50%      { box-shadow: 0 0 40px rgba(243, 201, 90, 0.5),  0 0 0 1px rgba(243, 201, 90, 0.7); }
-}
-@keyframes breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
-.portal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  0%,
+  100% {
+    box-shadow: 0 0 18px rgba(243, 201, 90, 0.25), 0 0 0 1px rgba(243, 201, 90, 0.35);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(243, 201, 90, 0.5), 0 0 0 1px rgba(243, 201, 90, 0.7);
+  }
+}
+
+@keyframes breathe {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.portal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .portal-head h2 {
-  margin: 0; font-size: 20px; letter-spacing: 0.15em; color: #f3d98a;
-  font-family: 'Ma Shan Zheng', serif; text-shadow: 0 0 14px rgba(243, 201, 90, 0.5);
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 0.15em;
+  color: #f3d98a;
+  font-family: 'Ma Shan Zheng', serif;
+  text-shadow: 0 0 14px rgba(243, 201, 90, 0.5);
 }
-.switch-link { background: none; border: none; color: #8fbfe6; font-size: 13px; cursor: pointer; transition: color 0.2s; }
-.switch-link:hover { color: #f3d98a; }
 
-.form { display: flex; flex-direction: column; gap: 14px; }
+.switch-link {
+  background: none;
+  border: none;
+  color: #8fbfe6;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.switch-link:hover {
+  color: #f3d98a;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 .field {
-  display: flex; align-items: center; gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(150, 210, 255, 0.2);
   border-radius: 12px;
   padding: 0 14px;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
-.field:focus-within { border-color: rgba(243, 201, 90, 0.6); box-shadow: 0 0 0 3px rgba(243, 201, 90, 0.12); }
-.field-ico { color: #7fc8ff; font-size: 15px; flex-shrink: 0; }
-.field input {
-  flex: 1; background: transparent; border: none; outline: none;
-  color: #eaf2ff; font-size: 15px; padding: 13px 0;
+
+.field:focus-within {
+  border-color: rgba(243, 201, 90, 0.6);
+  box-shadow: 0 0 0 3px rgba(243, 201, 90, 0.12);
 }
-.field input::placeholder { color: #6f93b8; }
+
+.field-ico {
+  color: #7fc8ff;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.field input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #eaf2ff;
+  font-size: 15px;
+  padding: 13px 0;
+}
+
+.field input::placeholder {
+  color: #6f93b8;
+}
 
 .code-field .code-btn {
-  white-space: nowrap; flex-shrink: 0;
-  background: rgba(243, 201, 90, 0.12); border: 1px solid rgba(243, 201, 90, 0.4);
-  color: #f3d98a; font-size: 13px; padding: 6px 12px; border-radius: 9px; cursor: pointer; transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: rgba(243, 201, 90, 0.12);
+  border: 1px solid rgba(243, 201, 90, 0.4);
+  color: #f3d98a;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.2s;
 }
-.code-field .code-btn:hover:not(:disabled) { background: rgba(243, 201, 90, 0.22); }
-.code-field .code-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.code-field .code-btn:hover:not(:disabled) {
+  background: rgba(243, 201, 90, 0.22);
+}
+
+.code-field .code-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 
 /* === 修炼学段 === */
 .stage-block {
@@ -517,6 +972,7 @@ async function promptRegisteredPhoneAndGoLogin(phone: string) {
   gap: 8px;
   padding: 4px 2px 0;
 }
+
 .stage-label {
   display: flex;
   align-items: center;
@@ -525,16 +981,28 @@ async function promptRegisteredPhoneAndGoLogin(phone: string) {
   color: #9fc4e6;
   letter-spacing: 0.05em;
 }
-.stage-label .field-ico { font-size: 14px; }
+
+.stage-label .field-ico {
+  font-size: 14px;
+}
+
 .stage-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
-.stage-chip {
-  padding: 8px 4px;
-  border-radius: 9px;
-  border: 1px solid rgba(150, 210, 255, 0.22);
+
+@media (min-width: 640px) {
+  .school-stage-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.school-stage-btn {
+  min-height: 44px;
+  padding: 10px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.04);
   color: #c8dcec;
   font-size: 12px;
@@ -543,54 +1011,32 @@ async function promptRegisteredPhoneAndGoLogin(phone: string) {
   cursor: pointer;
   transition: all 0.2s ease;
 }
+
 .stage-chip:hover {
   border-color: rgba(243, 201, 90, 0.55);
   color: #f3d98a;
 }
+
 .stage-chip.is-active {
   border-color: rgba(243, 201, 90, 0.85);
   background: rgba(243, 201, 90, 0.16);
   color: #fde68a;
-  box-shadow: 0 0 14px rgba(243, 201, 90, 0.3);
-}
-@media (max-width: 480px) {
-  .stage-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
-/* === 玉牌主按钮 === */
-.jade-btn {
-  position: relative; margin-top: 6px; padding: 15px; border: none; border-radius: 12px; cursor: pointer;
-  font-size: 17px; font-weight: bold; letter-spacing: 0.25em; color: #3a2606; overflow: hidden;
-  background: linear-gradient(135deg, #ffe6a0 0%, #f0c45e 45%, #cf9a34 100%);
-  box-shadow: 0 6px 24px rgba(207, 154, 52, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.6);
-  transition: transform 0.15s, box-shadow 0.2s;
-}
-.jade-btn span { position: relative; z-index: 2; padding-left: 0.25em; }
-.jade-btn::after {
-  content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.75), transparent);
-  transform: skewX(-20deg); animation: shine 3s infinite;
-}
-.jade-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(207, 154, 52, 0.65); }
-@keyframes shine { 0% { left: -60%; } 60%, 100% { left: 150%; } }
-
-.ghost-btn {
-  padding: 11px; border-radius: 12px; background: transparent;
-  border: 1px solid rgba(150, 210, 255, 0.25); color: #9fc4e6; font-size: 14px; cursor: pointer; transition: all 0.2s;
-}
-.ghost-btn:hover { border-color: rgba(243, 201, 90, 0.5); color: #f3d98a; background: rgba(255, 255, 255, 0.04); }
-
-.brand-sub {
-  pointer-events: none;
-  margin-top: 22px; font-size: 13px; letter-spacing: 0.3em; color: rgba(200, 220, 245, 0.7);
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+.school-stage-btn.is-active {
+  border-color: rgba(234, 179, 8, 0.75);
+  background: rgba(234, 179, 8, 0.14);
+  color: #fde68a;
+  box-shadow: 0 0 12px rgba(234, 179, 8, 0.2);
 }
 
-/* === 开门白光 === */
-.enter-flash {
-  position: absolute; inset: 0; z-index: 3; pointer-events: none;
-  background: radial-gradient(circle at 50% 42%, #ffffff, rgba(255, 255, 255, 0) 60%);
-  opacity: 0; transition: opacity 1.4s ease-in;
+@media (max-width: 420px) {
+  .login-code-row {
+    grid-template-columns: 1fr;
+  }
+
+  .login-code-btn {
+    width: 100%;
+  }
 }
-.enter-flash.on { opacity: 1; }
 </style>

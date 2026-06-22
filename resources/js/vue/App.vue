@@ -1,41 +1,36 @@
 <template>
-  <div class="vue-shell" :class="{ 'is-login': isLoginRoute, 'is-assessment': isAssessmentRoute }">
+  <div class="vue-shell" :class="{
+    'is-login': isLoginRoute,
+    'is-assessment': isAssessmentRoute,
+    'has-top-hud': showGlobalHeader,
+  }">
     <div v-if="!auth.bootstrapped" class="boot-splash">
       <div class="boot-text">正在恢复会话...</div>
     </div>
 
     <template v-else>
-    <!-- 资源预热遮罩：登录后到进入游戏之间承载 GLB 下载 + 解码 -->
-    <LoadingSplash
-      :visible="showAssetSplash"
-      :progress="preloadProgress"
-      :done="preloadCounts.done"
-      :total="preloadCounts.total"
-    />
+      <!-- 资源预热遮罩：登录后到进入游戏之间承载 GLB 下载 + 解码 -->
+      <LoadingSplash :visible="showAssetSplash" :progress="preloadProgress" :done="preloadCounts.done"
+        :total="preloadCounts.total" />
 
-    <TopHud
-      v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash"
-      @open-profile="openProfile"
-      @logout="logout"
-    />
+      <TopHud v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash" @open-profile="openProfile"
+        @logout="logout" />
 
-    <main class="shell-main" v-show="!showAssetSplash">
-      <router-view v-slot="{ Component }">
-        <transition name="scene-fade" mode="out-in">
-          <component :is="Component" :key="$route.path" />
-        </transition>
-      </router-view>
-    </main>
+      <main class="shell-main" v-show="!showAssetSplash">
+        <router-view v-slot="{ Component }">
+          <transition name="scene-fade" mode="out-in">
+            <component :is="Component" :key="$route.path" />
+          </transition>
+        </router-view>
+      </main>
 
-    <!-- 全局侧边栏：登录后所有路由可见，hide 由用户偏好控制（ui.sidebarVisible） -->
-    <GlobalHud
-      v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash && !isLoginRoute && ui.sidebarVisible"
-      @open-review="showGlobalReview = true"
-      @open-achievements="showGlobalAchievements = true"
-      @open-profile="openProfile"
-    />
-    <ReviewModal v-model:visible="showGlobalReview" />
-    <AchievementsModal v-model:visible="showGlobalAchievements" />
+      <!-- 全局侧边栏：登录后所有路由可见，hide 由用户偏好控制（ui.sidebarVisible） -->
+      <GlobalHud
+        v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash && !isLoginRoute && ui.sidebarVisible"
+        @open-review="showGlobalReview = true" @open-achievements="showGlobalAchievements = true"
+        @open-profile="openProfile" />
+      <ReviewModal v-model:visible="showGlobalReview" />
+      <AchievementsModal v-model:visible="showGlobalAchievements" />
     </template>
 
     <el-dialog :model-value="ui.loading" width="280px" :show-close="false" :close-on-click-modal="false"
@@ -43,7 +38,8 @@
       <div class="loading-content">{{ ui.loadingText }}</div>
     </el-dialog>
 
-    <ProfilePanel v-model:visible="showProfile" />
+    <ProfilePanel v-model:visible="showProfile" @open-review="openReviewFromProfile" />
+    <ReviewModal v-model:visible="showReviewFromProfile" />
     <DemonEncounter />
 
     <WorldMapOverlay :visible="ui.mapOverlayVisible" @close="ui.hideMapOverlay()" />
@@ -51,22 +47,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useApiClient } from './services/api';
 import { useAuthStore } from './stores/auth';
 import { useUserStore } from './stores/user';
 import { useUiStore } from './stores/ui';
-import { signOut } from './services/session';
+import { useStoryStore } from './stores/story';
 import { resolveProfileRealm } from '../utils/cultivation.js';
 import { useLegacyBridge } from './composables/useLegacyBridge';
-// 废弃的辅助函数 getMajorRealmText 已移动/不再使用
+import TopHud from './components/layout/TopHud.vue';
+import ProfilePanel from './components/profile/ProfilePanel.vue';
+import ReviewModal from './views/ReviewModal.vue';
+import DemonEncounter from './components/demons/DemonEncounter.vue';
+import WorldMapOverlay from './views/WorldMapOverlay.vue';
 
 const router = useRouter();
 const route = useRoute();
 const auth = useAuthStore();
 const user = useUserStore();
 const ui = useUiStore();
+const story = useStoryStore();
 const api = useApiClient();
 const bridge = useLegacyBridge();
 

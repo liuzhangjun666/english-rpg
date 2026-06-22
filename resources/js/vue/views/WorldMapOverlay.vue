@@ -39,7 +39,7 @@
         <ReviewModal      v-model:visible="showReview" />
         <HeartDemonRecord v-model:visible="showDemons" />
         <AchievementsModal v-model:visible="showAchievements" />
-        <ProfilePanel     v-model:visible="showProfile" />
+        <ProfilePanel     v-model:visible="showProfile" @open-review="openReviewFromProfile" />
         <DailyQuestPanel  v-model:visible="showDailyQuest" />
         <InnerDemonPanel  v-model:visible="showInnerDemon" :auto-challenge="innerDemonAutoChallenge" />
       </div>
@@ -49,27 +49,13 @@
 
 <script setup lang="ts">
 import { onUnmounted, ref, watch, nextTick } from 'vue';
-import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
+import { useMapBuildings, findMapBuilding, getSceneBuildingImages } from '../composables/useMapBuildings';
+import { useMapNavigation } from '../composables/useMapNavigation';
 import { WorldSceneManager } from '../core/sect/WorldSceneManager';
-
-import hallPractice     from '../../../assets/images/ui/hall_practice.png';
-import hallShilianchang from '../../../assets/images/ui/hall_shilianchang.png';
-import hallReading      from '../../../assets/images/ui/hall_reading.png';
-import hallWriting      from '../../../assets/images/ui/hall_writing.png';
-import hallMijing       from '../../../assets/images/ui/hall_mijing.png';
-import hallDemons       from '../../../assets/images/ui/hall_demons.png';
-import hallProfile      from '../../../assets/images/ui/hall_profile.png';
-
-import abilityReading   from '../../../assets/images/ui/ability_reading.png';
-import abilityVocab     from '../../../assets/images/ui/ability_vocab.png';
-import abilityGrammar   from '../../../assets/images/ui/ability_grammar.png';
-import abilityListening from '../../../assets/images/ui/ability_listening.png';
-import abilityWriting   from '../../../assets/images/ui/ability_writing.png';
-import abilitySpeaking  from '../../../assets/images/ui/ability_speaking.png';
 
 import RadialMenu       from '../components/map/RadialMenu.vue';
 import GlobalHud        from '../components/map/GlobalHud.vue';
@@ -83,7 +69,6 @@ import InnerDemonPanel  from '../components/demons/InnerDemonPanel.vue';
 const props = defineProps<{ visible: boolean }>();
 const emit  = defineEmits<{ (e: 'close'): void }>();
 
-const router    = useRouter();
 const bridge    = useLegacyBridge();
 const ui        = useUiStore();
 const userStore = useUserStore();
@@ -102,6 +87,28 @@ const showProfile     = ref(false);
 const showDailyQuest  = ref(false);
 const showInnerDemon  = ref(false);
 const innerDemonAutoChallenge = ref(false);
+
+function openReviewFromProfile() {
+  showReview.value = true;
+}
+
+const { goPractice, goReading, goExam, goMijing, goMall } = useMapNavigation({ beforeNavigate: close });
+const { mapBuildings } = useMapBuildings({
+  goPractice,
+  goReading,
+  goExam,
+  goMijing,
+  goMall,
+  showDailyQuest: () => { showDailyQuest.value = true; },
+  showAchievements: () => { showAchievements.value = true; },
+  showProfile: () => { showProfile.value = true; },
+  showReview: () => { showReview.value = true; },
+  showDemons: () => { showDemons.value = true; },
+  showInnerDemon: (autoChallenge) => {
+    innerDemonAutoChallenge.value = autoChallenge;
+    showInnerDemon.value = true;
+  },
+});
 
 // 当 overlay 变为可见时初始化 3D 场景
 watch(() => props.visible, async (val) => {
@@ -133,21 +140,12 @@ watch(() => props.visible, async (val) => {
 
     worldManager = new WorldSceneManager(hallSceneRef.value, {
       userRealmLevel: userRealmLevel.value,
-      buildingImages: {
-        practice: hallPractice,
-        reading:  hallReading,
-        writing:  hallWriting,
-        exam:     hallShilianchang,
-        demons:   hallDemons,
-        profile:  hallProfile,
-        mijing:   hallMijing,
-      },
+      buildingImages: getSceneBuildingImages(),
     });
 
     worldManager.onBuildingClick = (nodeDef, screenX, screenY) => {
-      // 镜头飞行已完成（onBuildingClick 在 fly 结束后触发）
       radialPos.value = { x: screenX + 'px', y: screenY + 'px' };
-      const building = mapBuildings.value.find(b => b.key === nodeDef.id);
+      const building = findMapBuilding(mapBuildings.value, nodeDef.id);
       if (building) handleBuildingClick(building);
     };
 
@@ -171,12 +169,10 @@ function close() {
   emit('close');
 }
 
-// 返回全景：关闭环形菜单 → watch 触发相机飞回俯视
 function closeFocus() {
   activeRadialBuilding.value = null;
 }
 
-// 智能 ESC：先退出建筑特写，无特写时才关闭整个地图
 function handleEsc() {
   if (activeRadialBuilding.value) {
     closeFocus();
@@ -185,15 +181,9 @@ function handleEsc() {
   }
 }
 
-function navigate(path: string, query?: Record<string, string>) {
-  close();
-  router.push(query ? { path, query } : path);
-}
-
 function handleBuildingClick(building: any) {
   if (building.unlockRealm !== undefined && userRealmLevel.value < building.unlockRealm) {
     ElMessage.warning('道友境界不足，还需努力修行');
-    // 境界不足时飞回全景
     worldManager?.flyToOverview();
     return;
   }
@@ -209,65 +199,6 @@ function handleBuildingClick(building: any) {
 watch(activeRadialBuilding, (val) => {
   if (!val) worldManager?.flyToOverview();
 });
-
-const mapBuildings = ref([
-  {
-    key: 'sectHall', title: '宗门大殿', unlockRealm: 0,
-    subNodes: [
-      { key: 'daily',    title: '每日修炼', icon: abilityVocab,     onClick: () => { showDailyQuest.value = true } },
-      { key: 'achieve',  title: '成就殿堂', icon: abilityReading,   onClick: () => { showAchievements.value = true } },
-      { key: 'profile',  title: '个人洞府', icon: abilityGrammar,   onClick: () => { showProfile.value = true } },
-      { key: 'review',   title: '天机回顾', icon: abilityListening, onClick: () => { showReview.value = true } },
-    ],
-  },
-  {
-    key: 'swordHall', title: '剑阁', unlockRealm: 0,
-    subNodes: [
-      { key: 'vocab',    title: '词汇修炼', icon: abilityVocab,     onClick: () => navigate('/practice', { mode: 'vocab' }) },
-      { key: 'grammar',  title: '语法剑诀', icon: abilityGrammar,   onClick: () => navigate('/practice', { mode: 'grammar' }) },
-      { key: 'speaking', title: '口诵心法', icon: abilitySpeaking,  onClick: () => navigate('/practice', { mode: 'speaking' }) },
-      { key: 'writing',  title: '符文刻印', icon: abilityWriting,   onClick: () => navigate('/practice', { mode: 'writing' }) },
-    ],
-  },
-  {
-    key: 'scriptureHall', title: '藏经阁', unlockRealm: 0,
-    subNodes: [
-      { key: 'reading',   title: '阅读秘典', icon: abilityReading,   onClick: () => navigate('/reading') },
-      { key: 'listening', title: '听音辨道', icon: abilityListening, onClick: () => navigate('/practice', { mode: 'listening' }) },
-      { key: 'vocab2',    title: '单词碑林', icon: abilityVocab,     onClick: () => navigate('/practice', { mode: 'vocab' }) },
-    ],
-  },
-  {
-    key: 'alchemyHall', title: '炼丹殿', unlockRealm: 0,
-    subNodes: [
-      { key: 'exam',    title: '试炼大厅', icon: abilityWriting,  onClick: () => navigate('/exam') },
-      { key: 'rank',    title: '丹道排行', icon: abilityReading,  onClick: () => ElMessage.info('天机阁榜单更新中...') },
-      { key: 'break',   title: '境界突破', icon: abilityGrammar,  onClick: () => ElMessage.info('雷劫尚未凝聚...') },
-    ],
-  },
-  {
-    key: 'innerDemonHall', title: '心魔殿', unlockRealm: 0,
-    subNodes: [
-      { key: 'seal',      title: '镇魔封印', icon: abilitySpeaking, onClick: () => { innerDemonAutoChallenge.value = false; showInnerDemon.value = true } },
-      { key: 'challenge', title: '心魔试炼', icon: abilityVocab,    onClick: () => { innerDemonAutoChallenge.value = true;  showInnerDemon.value = true } },
-    ],
-  },
-  {
-    key: 'beastGarden', title: '灵兽园', unlockRealm: 2,
-    subNodes: [
-      { key: 'tame',  title: '驯兽修行', icon: abilityGrammar,   onClick: () => ElMessage.info('灵兽沉睡中...') },
-      { key: 'guide', title: '图鉴秘录', icon: abilityListening, onClick: () => ElMessage.info('图鉴尚未开放') },
-    ],
-  },
-  {
-    key: 'farm', title: '灵田', unlockRealm: 0,
-    subNodes: [
-      { key: 'harvest', title: '灵植收割', icon: abilityVocab,    onClick: () => ElMessage.info('灵田正在生长...') },
-      { key: 'expand',  title: '扩建灵田', icon: abilityWriting,  onClick: () => ElMessage.info('扩建方案推演中...') },
-      { key: 'market',  title: '灵市交易', icon: abilityReading,  onClick: () => navigate('/mall') },
-    ],
-  },
-]);
 </script>
 
 <style scoped>

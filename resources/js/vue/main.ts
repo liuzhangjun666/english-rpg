@@ -66,7 +66,7 @@ function applyVueButtonSkins(root?: ParentNode) {
   const scope = root && 'querySelectorAll' in root ? root : document;
   const buttons = Array.from(scope.querySelectorAll('button.el-button'));
   buttons.forEach((btn) => {
-    if (btn.classList.contains('nav-portal-btn')) return;
+    if (btn.classList.contains('nav-portal-btn') || btn.closest('.review-modal-overlay')) return;
     const forcedSkin = String(btn.getAttribute('data-btn-skin') || '').trim();
     const skinKey = forcedSkin || resolveSkinKey(btn.textContent || '');
     BUTTON_SKIN_CLASSES.forEach((cls) => btn.classList.remove(cls));

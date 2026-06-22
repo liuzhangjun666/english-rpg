@@ -32,6 +32,7 @@
             </div>
             <span class="exp-text">{{ animatedExp }} / {{ user.profile?.next_threshold ?? 100 }}</span>
           </div>
+          <span class="hud-exp-text">修为 {{ animatedExp }} / {{ user.profile?.next_threshold ?? 100 }}</span>
         </div>
       </div>
     </div>
@@ -40,22 +41,26 @@
 
     <!-- CENTER 资源区 -->
     <div class="hud-center">
-      <div class="resource-item res-vocab" title="词汇量">
-        <span class="res-icon-circle"><img class="res-icon-img" :src="'/images/hud-icons/vocab.png'" alt="词汇" /></span>
-        <span class="res-value">{{ animatedVocab }}</span>
-      </div>
-      <div class="resource-item res-power" title="灵力">
-        <span class="res-icon-circle"><img class="res-icon-img" :src="'/images/hud-icons/power.png'" alt="灵力" /></span>
-        <div class="res-power-stack">
-          <span class="res-value">{{ animatedSpiritPower }}<span class="res-max">/{{ user.profile?.spirit_power_max ?? 100 }}</span></span>
-          <div class="res-mini-bar">
-            <div class="res-mini-fill" :style="{ width: powerPercent + '%' }"></div>
-          </div>
+      <div class="resource-item" title="词汇量">
+        <span class="res-icon">📚</span>
+        <div class="res-copy">
+          <span class="res-value">{{ animatedVocab }}</span>
+          <span class="res-label">词汇</span>
         </div>
       </div>
-      <div class="resource-item res-stone" title="灵石">
-        <span class="res-icon-circle"><img class="res-icon-img" :src="'/images/hud-icons/stone.png'" alt="灵石" /></span>
-        <span class="res-value">{{ animatedSpiritStone }}</span>
+      <div class="resource-item" title="灵力">
+        <span class="res-icon">⚡</span>
+        <div class="res-copy">
+          <span class="res-value">{{ animatedSpiritPower }}/{{ user.profile?.spirit_power_max ?? 100 }}</span>
+          <span class="res-label">灵力</span>
+        </div>
+      </div>
+      <div class="resource-item" title="灵石">
+        <span class="res-icon">💎</span>
+        <div class="res-copy">
+          <span class="res-value">{{ animatedSpiritStone }}</span>
+          <span class="res-label">灵石</span>
+        </div>
       </div>
     </div>
 
@@ -72,12 +77,7 @@
           <img class="sys-icon-img" :src="'/images/hud-icons/mail.png'" alt="邮件" />
           <span class="sys-badge">3</span>
         </button>
-        <el-popover
-          placement="bottom-end"
-          :width="160"
-          trigger="click"
-          popper-class="hud-settings-popover"
-        >
+        <el-popover placement="bottom-end" :width="160" trigger="click" popper-class="hud-settings-popover">
           <template #reference>
             <button class="sys-btn" title="设置">
               <img class="sys-icon-img" :src="'/images/hud-icons/settings.png'" alt="设置" />
@@ -157,7 +157,8 @@ watch(() => ui.isMapDragging, (isDragging) => {
       duration: 0.4,
       ease: 'power2.out'
     });
-    gsap.to(hudRef.value.querySelectorAll('.role-name, .exp-text, .realm-text, .map-btn-label'), {
+    // 文字淡出
+    gsap.to(hudRef.value.querySelectorAll('.role-name, .hud-exp-text, .realm-text, .res-label'), {
       opacity: 0,
       duration: 0.3
     });
@@ -168,7 +169,8 @@ watch(() => ui.isMapDragging, (isDragging) => {
       duration: 0.4,
       ease: 'power2.out'
     });
-    gsap.to(hudRef.value.querySelectorAll('.role-name, .exp-text, .realm-text, .map-btn-label'), {
+    // 文字恢复
+    gsap.to(hudRef.value.querySelectorAll('.role-name, .hud-exp-text, .realm-text, .res-label'), {
       opacity: 1,
       duration: 0.4,
       delay: 0.1
@@ -207,10 +209,36 @@ watch(() => ui.isMapDragging, (isDragging) => {
   height: 14px;
   pointer-events: none;
 }
-.corner-tl { top: 4px; left: 4px; border-top: 2px solid #FFD700; border-left: 2px solid #FFD700; }
-.corner-tr { top: 4px; right: 4px; border-top: 2px solid #FFD700; border-right: 2px solid #FFD700; }
-.corner-bl { bottom: 4px; left: 4px; border-bottom: 2px solid #C8A96A; border-left: 2px solid #C8A96A; opacity: 0.6; }
-.corner-br { bottom: 4px; right: 4px; border-bottom: 2px solid #C8A96A; border-right: 2px solid #C8A96A; opacity: 0.6; }
+
+.corner-tl {
+  top: 4px;
+  left: 4px;
+  border-top: 2px solid #FFD700;
+  border-left: 2px solid #FFD700;
+}
+
+.corner-tr {
+  top: 4px;
+  right: 4px;
+  border-top: 2px solid #FFD700;
+  border-right: 2px solid #FFD700;
+}
+
+.corner-bl {
+  bottom: 4px;
+  left: 4px;
+  border-bottom: 2px solid #C8A96A;
+  border-left: 2px solid #C8A96A;
+  opacity: 0.6;
+}
+
+.corner-br {
+  bottom: 4px;
+  right: 4px;
+  border-bottom: 2px solid #C8A96A;
+  border-right: 2px solid #C8A96A;
+  opacity: 0.6;
+}
 
 /* 分隔线 */
 .hud-divider {
@@ -237,7 +265,10 @@ watch(() => ui.isMapDragging, (isDragging) => {
   flex-shrink: 0;
   transition: transform 0.2s;
 }
-.avatar-box:hover { transform: scale(1.05); }
+
+.avatar-box:hover {
+  transform: scale(1.05);
+}
 
 .avatar-frame {
   width: 100%;
@@ -269,6 +300,7 @@ watch(() => ui.isMapDragging, (isDragging) => {
   animation: rotateRing 10s linear infinite;
   pointer-events: none;
 }
+
 .avatar-ring.outer {
   inset: -7px;
   border: 1px solid rgba(200, 169, 106, 0.2);
@@ -277,8 +309,13 @@ watch(() => ui.isMapDragging, (isDragging) => {
 }
 
 @keyframes rotateRing {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .avatar-level {
@@ -331,6 +368,7 @@ watch(() => ui.isMapDragging, (isDragging) => {
   box-shadow: inset 0 0 6px rgba(255, 215, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.6);
   position: relative;
 }
+
 .realm-plaque::before,
 .realm-plaque::after {
   content: '';
@@ -341,8 +379,14 @@ watch(() => ui.isMapDragging, (isDragging) => {
   background: #FFD700;
   transform: translateY(-50%) rotate(45deg);
 }
-.realm-plaque::before { left: -2px; }
-.realm-plaque::after { right: -2px; }
+
+.realm-plaque::before {
+  left: -2px;
+}
+
+.realm-plaque::after {
+  right: -2px;
+}
 
 .realm-text {
   color: #FFF6D5;
@@ -355,6 +399,8 @@ watch(() => ui.isMapDragging, (isDragging) => {
 .exp-bar-container {
   display: flex;
   align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
 }
 
 .exp-bar-bg {
@@ -378,30 +424,32 @@ watch(() => ui.isMapDragging, (isDragging) => {
 
 .exp-flow-light {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
   animation: flowLight 2.4s infinite;
 }
 
 @keyframes flowLight {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }
 
-.exp-text {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #FFF6D5;
-  font-size: 10px;
-  font-weight: bold;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 0.5px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 0 4px rgba(0, 0, 0, 0.9);
-  pointer-events: none;
-  z-index: 2;
+.hud-exp-text {
+  position: static;
+  flex-shrink: 0;
+  color: #C8A96A;
+  font-size: 11px;
+  font-family: monospace;
+  white-space: nowrap;
+  line-height: 1;
 }
 
 /* CENTER 资源区 */
@@ -418,62 +466,23 @@ watch(() => ui.isMapDragging, (isDragging) => {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(180deg, rgba(20, 28, 50, 0.85), rgba(8, 12, 24, 0.95));
-  border: 1px solid rgba(200, 169, 106, 0.35);
-  padding: 4px 12px 4px 4px;
-  border-radius: 22px;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 215, 0, 0.12),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.6),
-    0 2px 4px rgba(0, 0, 0, 0.5);
-  transition: all 0.2s;
-  position: relative;
-}
-.resource-item:hover {
-  border-color: rgba(255, 215, 0, 0.6);
-  transform: translateY(-1px);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(200, 169, 106, 0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
 }
 
-.res-icon-circle {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+.res-copy {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at 30% 30%, rgba(255, 215, 0, 0.25), rgba(0, 0, 0, 0.8));
-  border: 1px solid rgba(200, 169, 106, 0.5);
-  flex-shrink: 0;
-}
-
-/* 每种资源独立配色光晕 */
-.res-vocab .res-icon-circle {
-  background: radial-gradient(circle at 30% 30%, rgba(80, 200, 160, 0.45), rgba(0, 20, 15, 0.9));
-  border-color: rgba(120, 220, 180, 0.5);
-  box-shadow: 0 0 8px rgba(80, 200, 160, 0.4);
-}
-.res-power .res-icon-circle {
-  background: radial-gradient(circle at 30% 30%, rgba(140, 120, 255, 0.5), rgba(15, 10, 40, 0.9));
-  border-color: rgba(170, 150, 255, 0.55);
-  box-shadow: 0 0 8px rgba(140, 120, 255, 0.45);
-}
-.res-stone .res-icon-circle {
-  background: radial-gradient(circle at 30% 30%, rgba(255, 215, 0, 0.5), rgba(40, 25, 0, 0.9));
-  border-color: rgba(255, 215, 0, 0.6);
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1;
 }
 
 .res-icon {
-  font-size: 15px;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
-}
-
-.res-icon-img {
-  width: 26px;
-  height: 26px;
-  object-fit: contain;
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.85));
-  pointer-events: none;
+  font-size: 16px;
+  flex-shrink: 0;
 }
 
 .res-value {
@@ -482,32 +491,14 @@ watch(() => ui.isMapDragging, (isDragging) => {
   font-weight: bold;
   font-family: 'Courier New', monospace;
   text-shadow: 0 1px 2px #000;
-  letter-spacing: 0.5px;
-}
-.res-max {
-  color: rgba(247, 243, 232, 0.55);
-  font-size: 11px;
-  font-weight: normal;
+  white-space: nowrap;
 }
 
-.res-power-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 64px;
-}
-.res-mini-bar {
-  width: 100%;
-  height: 3px;
-  background: rgba(0, 0, 0, 0.7);
-  border-radius: 2px;
-  overflow: hidden;
-}
-.res-mini-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #8c78ff, #c8b8ff);
-  box-shadow: 0 0 4px rgba(140, 120, 255, 0.7);
-  transition: width 0.3s;
+.res-label {
+  color: rgba(200, 169, 106, 0.95);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 /* RIGHT 系统区 */
@@ -535,6 +526,7 @@ watch(() => ui.isMapDragging, (isDragging) => {
     0 2px 4px rgba(0, 0, 0, 0.5);
   position: relative;
 }
+
 .map-btn::before,
 .map-btn::after {
   content: '';
@@ -545,8 +537,14 @@ watch(() => ui.isMapDragging, (isDragging) => {
   background: #FFD700;
   transform: translateY(-50%) rotate(45deg);
 }
-.map-btn::before { left: -3px; }
-.map-btn::after { right: -3px; }
+
+.map-btn::before {
+  left: -3px;
+}
+
+.map-btn::after {
+  right: -3px;
+}
 
 .map-btn:hover {
   border-color: #FFD700;
@@ -555,6 +553,7 @@ watch(() => ui.isMapDragging, (isDragging) => {
     inset 0 1px 0 rgba(255, 215, 0, 0.4),
     0 2px 12px rgba(255, 215, 0, 0.4);
 }
+
 .map-btn-icon {
   width: 22px;
   height: 22px;
@@ -562,6 +561,7 @@ watch(() => ui.isMapDragging, (isDragging) => {
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.85));
   pointer-events: none;
 }
+
 .map-btn-label {
   font-size: 13px;
   font-weight: bold;
@@ -595,6 +595,7 @@ watch(() => ui.isMapDragging, (isDragging) => {
   justify-content: center;
   position: relative;
 }
+
 .sys-btn:hover {
   background: rgba(200, 169, 106, 0.2);
   color: #FFD700;
@@ -609,6 +610,7 @@ watch(() => ui.isMapDragging, (isDragging) => {
   pointer-events: none;
   transition: filter 0.2s;
 }
+
 .sys-btn:hover .sys-icon-img {
   filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.7));
 }
@@ -634,23 +636,41 @@ watch(() => ui.isMapDragging, (isDragging) => {
 
 /* 响应式 */
 @media (max-width: 1100px) {
-  .exp-bar-bg { width: 130px; }
+  .exp-bar-bg {
+    width: 130px;
+  }
 }
+
 @media (max-width: 900px) {
-  .exp-bar-bg { width: 100px; }
-  .hud-center { gap: 6px; }
-  .exp-text { display: none; }
-  .map-btn-label { display: none; }
-  .map-btn { padding: 7px 10px; }
-  .res-power-stack { min-width: 50px; }
+  .exp-bar-bg {
+    width: 100px;
+  }
+
+  .hud-center {
+    gap: 10px;
+  }
+
+  .hud-exp-text {
+    font-size: 10px;
+  }
+
+  .res-label {
+    font-size: 9px;
+  }
+
+  .res-value {
+    font-size: 12px;
+  }
 }
-@media (max-width: 700px) {
-  .res-vocab, .res-power-stack .res-mini-bar { display: none; }
-  .hud-divider { display: none; }
-}
+
 @media (max-width: 600px) {
-  .hud-center { display: none; }
-  .realm-plaque { display: none; }
+  .hud-center {
+    display: none;
+  }
+
+  .realm-plaque {
+    display: none;
+  }
 }
 </style>
 
@@ -664,16 +684,19 @@ watch(() => ui.isMapDragging, (isDragging) => {
   backdrop-filter: blur(10px);
   border-radius: 4px !important;
 }
+
 .el-popper[data-popper-placement^="bottom"] .el-popper__arrow::before {
   background: rgba(11, 16, 32, 0.97) !important;
   border-top-color: rgba(200, 169, 106, 0.5) !important;
   border-left-color: rgba(200, 169, 106, 0.5) !important;
 }
+
 .settings-menu {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
+
 .settings-item {
   display: flex;
   align-items: center;
@@ -685,6 +708,7 @@ watch(() => ui.isMapDragging, (isDragging) => {
   color: #F7F3E8;
   font-size: 13px;
 }
+
 .settings-item:hover {
   background: linear-gradient(90deg, rgba(200, 169, 106, 0.25), transparent);
   color: #FFD700;
