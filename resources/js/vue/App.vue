@@ -184,8 +184,8 @@ watch(
   { immediate: true },
 );
 
-async function openProfile() {
-  await bridge.openProfilePanel();
+function openProfile() {
+  showProfile.value = true;
 }
 
 const handleProfileUpdate = (e: Event) => {

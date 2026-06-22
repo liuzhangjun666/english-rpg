@@ -1,189 +1,104 @@
 <template>
   <div
     class="relative min-h-screen w-full overflow-hidden bg-gray-900 text-white font-sans selection:bg-yellow-500 selection:text-black">
-    <!-- 全屏背景 -->
-    <div class="absolute inset-0 bg-cover bg-center z-0 animate-slow-zoom"
-      style="background-image: url('/images/ui/login_bg_fantasy.png');">
-      <!-- 渐变遮罩 -->
-      <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/80"></div>
+    <!-- 全屏 3D 仙门场景 (Three.js + Bloom) -->
+    <div ref="gateCanvasRef" class="absolute inset-0 z-0 gate-canvas"></div>
+    <!-- 渐变遮罩：让表单/文字始终清晰可读 -->
+    <div class="absolute inset-0 z-0 bg-gradient-to-b from-black/30 via-transparent to-black/70 pointer-events-none"></div>
+
+    <!-- 仙门匾额 -->
+    <h1 class="gate-title" :class="{ entering, 'title-up': showForm }">太虚仙门</h1>
+
+    <!-- 点击门洞的提示（表单未展开时） -->
+    <div v-if="!showForm && !entering" class="gate-hint" @click="showForm = true">
+      <div class="hint-ring"></div>
+      <span class="hint-text">点击仙门 · 踏入修行</span>
     </div>
 
-    <!-- 顶层交互容器 -->
-    <div class="relative z-10 flex flex-col items-center justify-center min-h-screen p-6">
+    <!-- 玻璃拟态登录区 -->
+    <Transition name="portal-reveal">
+      <div v-if="showForm" class="gate-ui" :class="{ entering }">
+        <div class="glass-portal">
+          <span class="portal-glow"></span>
 
-      <!-- Logo 区域 -->
-      <div class="text-center mb-16 transform transition-all duration-700"
-        :class="showForm ? 'translate-y-[-2rem] scale-90' : 'translate-y-0'">
-        <h1
-          class="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-500 to-yellow-600 drop-shadow-[0_0_15px_rgba(234,179,8,0.5)] mb-4"
-          style="font-family: 'Ma Shan Zheng', 'STXingkai', serif; letter-spacing: 0.1em;">
-          英语修仙
-        </h1>
-        <p class="text-xl md:text-2xl text-gray-300 tracking-widest font-light drop-shadow-lg">
-          背单词，修大道
-        </p>
-      </div>
+          <div class="portal-head">
+            <h2>{{ isLogin ? '修士登入' : '凝聚仙魂' }}</h2>
+            <button class="switch-link" @click="toggleFormType">
+              {{ isLogin ? '前往注册 →' : '← 返回登入' }}
+            </button>
+          </div>
 
-      <!-- 中心交互区 (未展开表单时) -->
-      <transition name="fade-slide">
-        <div v-if="!showForm" class="flex flex-col items-center">
-          <button @click="showForm = true"
-            class="relative group px-12 py-5 bg-gradient-to-r from-yellow-600 to-yellow-800 text-yellow-100 text-2xl font-bold rounded-full overflow-hidden shadow-[0_0_40px_rgba(202,138,4,0.6)] hover:shadow-[0_0_60px_rgba(202,138,4,0.9)] hover:scale-105 transition-all duration-300">
-            <span class="relative z-10 tracking-widest">踏入修仙界</span>
-            <div
-              class="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-600 opacity-0 group-hover:opacity-20 transition-opacity duration-300">
+          <!-- 登录 -->
+          <form v-if="isLogin" class="form" @submit.prevent="doLogin">
+            <div class="field">
+              <span class="field-ico">📡</span>
+              <input v-model="loginForm.phone" type="tel" maxlength="11" placeholder="传音符（手机号）" />
             </div>
-            <!-- 光效流转动画 -->
-            <div
-              class="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover:animate-shine">
+            <div class="field code-field">
+              <span class="field-ico">✦</span>
+              <input v-model="loginForm.code" type="text" maxlength="6" placeholder="灵力印记（验证码）" />
+              <button type="button" class="code-btn" :disabled="loginCountdown > 0" @click="sendCode('login')">
+                {{ loginCountdown > 0 ? `${loginCountdown}息` : '获取印记' }}
+              </button>
             </div>
-          </button>
-        </div>
-      </transition>
+            <button type="submit" class="jade-btn"><span>破 关 登 入</span></button>
+            <button type="button" class="ghost-btn" @click="guestLogin">神游太虚（游客体验）</button>
+          </form>
 
-      <!-- 登录/注册表单区 (展开时) -->
-      <transition name="fade-up">
-        <div v-if="showForm" class="flex flex-col md:flex-row gap-8 max-w-5xl w-full">
-
-          <!-- 左侧：表单面板 -->
-          <div
-            class="flex-1 bg-black/40 backdrop-blur-xl border border-yellow-500/30 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
-            <div
-              class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent opacity-50">
+          <!-- 注册 -->
+          <form v-else class="form" @submit.prevent="doRegister">
+            <div class="field">
+              <span class="field-ico">📡</span>
+              <input v-model="registerForm.phone" type="tel" maxlength="11" placeholder="传音符（手机号）" />
             </div>
-
-            <div class="flex justify-between items-center mb-8">
-              <h2 class="text-2xl text-yellow-500 font-bold tracking-wider">{{ isLogin ? '修士登入' : '凝聚仙魂' }}</h2>
-              <button @click="toggleFormType" class="text-sm text-gray-400 hover:text-yellow-400 transition-colors">
-                {{ isLogin ? '前往注册 →' : '← 返回登入' }}
+            <div class="field code-field">
+              <span class="field-ico">✦</span>
+              <input v-model="registerForm.code" type="text" maxlength="6" placeholder="灵力印记（验证码）" />
+              <button type="button" class="code-btn" :disabled="registerCountdown > 0" @click="sendCode('register')">
+                {{ registerCountdown > 0 ? `${registerCountdown}息` : '获取印记' }}
               </button>
             </div>
 
-            <!-- 登录表单 -->
-            <form v-if="isLogin" @submit.prevent="doLogin" class="space-y-6">
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">传音符 (手机号)</label>
-                <input v-model="loginForm.phone" type="tel" maxlength="11"
-                  class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-all"
-                  placeholder="请输入手机号">
+            <!-- 修炼学段 -->
+            <div class="stage-block">
+              <div class="stage-label">
+                <span class="field-ico">⛰</span>
+                <span>修炼学段（用于匹配灵根试炼起点）</span>
               </div>
-
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">灵力印记 (验证码)</label>
-                <div class="flex gap-4">
-                  <input v-model="loginForm.code" type="text" maxlength="6"
-                    class="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-all"
-                    placeholder="输入6位验证码">
-                  <button type="button" @click="sendCode('login')" :disabled="loginCountdown > 0"
-                    class="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-yellow-500 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap">
-                    {{ loginCountdown > 0 ? `${loginCountdown}息后重试` : '获取印记' }}
-                  </button>
-                </div>
-              </div>
-
-              <div class="pt-4 space-y-4">
-                <button type="submit"
-                  class="w-full py-4 bg-gradient-to-r from-yellow-600 to-yellow-800 hover:from-yellow-500 hover:to-yellow-700 text-white font-bold rounded-lg shadow-lg hover:shadow-yellow-500/25 transition-all">
-                  破关登入
-                </button>
-
-                <button type="button" @click="guestLogin"
-                  class="w-full py-3 bg-transparent border border-white/20 hover:border-yellow-500/50 hover:bg-white/5 text-gray-300 font-medium rounded-lg transition-all">
-                  神游太虚 (游客体验)
+              <div class="stage-grid">
+                <button
+                  v-for="stage in schoolStages"
+                  :key="stage.value"
+                  type="button"
+                  class="stage-chip"
+                  :class="{ 'is-active': registerForm.school_grade === stage.value }"
+                  @click="registerForm.school_grade = stage.value"
+                >
+                  {{ stage.label }}
                 </button>
               </div>
-            </form>
-
-            <!-- 注册表单 -->
-            <form v-else @submit.prevent="doRegister" class="space-y-4">
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">传音符 (手机号)</label>
-                <input v-model="registerForm.phone" type="tel" maxlength="11"
-                  class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-all"
-                  placeholder="请输入手机号">
-              </div>
-
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">灵力印记 (验证码)</label>
-                <div class="flex gap-4">
-                  <input v-model="registerForm.code" type="text" maxlength="6"
-                    class="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-all"
-                    placeholder="输入6位验证码">
-                  <button type="button" @click="sendCode('register')" :disabled="registerCountdown > 0"
-                    class="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-yellow-500 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap">
-                    {{ registerCountdown > 0 ? `${registerCountdown}息后重试` : '获取印记' }}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">修炼学段（必选）</label>
-                <p class="text-xs text-gray-500 mb-2">用于匹配灵根试炼起点；初始境界由测试测定，与学段无关。</p>
-                <div class="school-stage-grid">
-                  <button
-                    v-for="stage in schoolStages"
-                    :key="stage.value"
-                    type="button"
-                    class="school-stage-btn"
-                    :class="{ 'is-active': registerForm.school_grade === stage.value }"
-                    @click="registerForm.school_grade = stage.value"
-                  >
-                    {{ stage.label }}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">道号 (选填)</label>
-                <input v-model="registerForm.nickname" type="text" maxlength="50"
-                  class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-all"
-                  placeholder="不填则由天道自动生成">
-              </div>
-
-              <div class="pt-4">
-                <button type="submit"
-                  class="w-full py-4 bg-gradient-to-r from-yellow-600 to-yellow-800 hover:from-yellow-500 hover:to-yellow-700 text-white font-bold rounded-lg shadow-lg hover:shadow-yellow-500/25 transition-all">
-                  塑魂注册
-                </button>
-              </div>
-            </form>
-          </div>
-
-          <!-- 右侧：成长预览 -->
-          <div
-            class="hidden md:flex flex-1 bg-black/30 backdrop-blur-md border border-white/10 rounded-2xl p-8 flex-col justify-center">
-            <h3 class="text-xl text-center text-gray-300 font-medium mb-8 tracking-widest">修仙之路预览</h3>
-
-            <div
-              class="relative space-y-8 pl-8 before:absolute before:inset-y-4 before:left-3 before:w-px before:bg-gradient-to-b before:from-yellow-500/80 before:via-yellow-500/30 before:to-transparent">
-
-              <div class="relative group" v-for="(stage, index) in growthStages" :key="index">
-                <div
-                  class="absolute -left-[38px] top-2 w-4 h-4 rounded-full bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.8)] border-2 border-black transform group-hover:scale-125 transition-transform">
-                </div>
-                <div
-                  class="bg-white/5 border border-white/10 p-4 rounded-lg group-hover:bg-white/10 group-hover:border-yellow-500/30 transition-all cursor-default">
-                  <div class="flex items-end gap-3 mb-2">
-                    <h4 class="text-lg font-bold text-yellow-400">{{ stage.name }}</h4>
-                    <span class="text-xs text-yellow-500/70 border border-yellow-500/30 px-2 py-0.5 rounded">{{
-                      stage.desc }}</span>
-                  </div>
-                  <p class="text-sm text-gray-400">掌握 <span class="text-yellow-500 font-bold mx-1">{{ stage.words
-                      }}</span> 个核心词汇</p>
-                </div>
-              </div>
-
             </div>
-          </div>
 
+            <div class="field">
+              <span class="field-ico">⚝</span>
+              <input v-model="registerForm.nickname" type="text" maxlength="50" placeholder="道号（选填，不填由天道赐名）" />
+            </div>
+
+            <button type="submit" class="jade-btn"><span>塑 魂 注 册</span></button>
+          </form>
         </div>
-      </transition>
-    </div>
+        <p class="brand-sub">英语修仙 · 背单词，修大道</p>
+      </div>
+    </Transition>
+
+    <!-- 开门白光过场 -->
+    <div class="enter-flash" :class="{ on: entering }"></div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useApiClient } from '../services/api';
@@ -194,6 +109,7 @@ import { useUiStore } from '../stores/ui';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { resolveAssessmentDone } from '../router';
 import { refreshUserProfileFromApi } from '../services/profile';
+import { LoginGateScene } from '../core/login/LoginGateScene';
 
 const router = useRouter();
 const route = useRoute();
@@ -206,6 +122,24 @@ const bridge = useLegacyBridge();
 
 const showForm = ref(false);
 const isLogin = ref(true);
+
+const gateCanvasRef = ref<HTMLDivElement | null>(null);
+let gateScene: LoginGateScene | null = null;
+
+onMounted(() => {
+  if (gateCanvasRef.value) {
+    try {
+      gateScene = new LoginGateScene(gateCanvasRef.value);
+    } catch (err) {
+      console.error('[LoginView] LoginGateScene 初始化失败：', err);
+    }
+  }
+});
+
+onBeforeUnmount(() => {
+  gateScene?.dispose();
+  gateScene = null;
+});
 
 const loginCountdown = ref(0);
 const registerCountdown = ref(0);
@@ -237,13 +171,6 @@ function toggleFormType() {
     registerForm.school_grade = '';
   }
 }
-
-const growthStages = [
-  { name: '炼气期', desc: '初窥门径', words: 100 },
-  { name: '筑基期', desc: '融会贯通', words: 500 },
-  { name: '金丹期', desc: '过目不忘', words: 2000 },
-  { name: '元婴期', desc: '出口成章', words: 5000 },
-];
 
 function startCountdown(target: 'login' | 'register', seconds = 60) {
   const refTarget = target === 'login' ? loginCountdown : registerCountdown;
@@ -304,16 +231,28 @@ async function applyProfile(profile: Record<string, any>) {
   await bridge.applySessionFromProfile(profile);
 }
 
+const entering = ref(false);
+
 function navigateAfterAuth(needsAssessment: boolean, options?: { fromRegister?: boolean }) {
   const redirect = String(route.query.redirect || '/hall');
-  if (needsAssessment) {
-    const query: Record<string, string> = {};
-    if (options?.fromRegister) query.from = 'register';
-    if (redirect && redirect !== '/hall') query.redirect = redirect;
-    router.replace({ path: '/vocab-assessment/intro', query });
-    return;
+  const target = needsAssessment
+    ? {
+        path: '/vocab-assessment/intro',
+        query: {
+          ...(options?.fromRegister ? { from: 'register' } : {}),
+          ...(redirect && redirect !== '/hall' ? { redirect } : {}),
+        },
+      }
+    : (redirect as any);
+
+  // 仙门开门过场：放大推镜穿门白光 → 跳转目标路由。
+  // 没有 3D 场景（初始化失败）时直接跳转，避免卡死。
+  if (gateScene && !entering.value) {
+    entering.value = true;
+    gateScene.openGate(() => router.replace(target));
+  } else {
+    router.replace(target);
   }
-  router.replace(redirect);
 }
 
 async function doLogin() {
@@ -430,85 +369,228 @@ async function promptRegisteredPhoneAndGoLogin(phone: string) {
 </script>
 
 <style scoped>
-.animate-slow-zoom {
-  animation: slowZoom 20s infinite alternate linear;
+/* === 仙门匾额 === */
+.gate-title {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  margin: 0;
+  font-family: 'Ma Shan Zheng', 'STXingkai', serif;
+  font-size: clamp(40px, 6vw, 80px);
+  letter-spacing: 0.25em;
+  color: #f3d98a;
+  text-shadow:
+    0 0 18px rgba(243, 201, 90, 0.7),
+    0 4px 18px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  transition: transform 0.7s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.6s;
 }
-
-@keyframes slowZoom {
-  0% {
-    transform: scale(1);
-  }
-
-  100% {
-    transform: scale(1.05);
-  }
+.gate-title.title-up {
+  top: 4%;
+  font-size: clamp(28px, 4vw, 48px);
 }
-
-@keyframes shine {
-  100% {
-    left: 125%;
-  }
-}
-
-.animate-shine {
-  animation: shine 2.5s infinite;
-}
-
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-  transition: all 0.5s ease;
-}
-
-.fade-slide-enter-from,
-.fade-slide-leave-to {
+.gate-title.entering {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateX(-50%) scale(1.4);
 }
 
-.fade-up-enter-active,
-.fade-up-leave-active {
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+/* === 点击门洞提示 === */
+.gate-hint {
+  position: absolute;
+  bottom: 22%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 24px 36px;
+}
+.hint-ring {
+  width: 64px;
+  height: 64px;
+  border: 2px solid rgba(243, 201, 90, 0.6);
+  border-radius: 50%;
+  box-shadow:
+    0 0 24px rgba(243, 201, 90, 0.4),
+    inset 0 0 12px rgba(243, 201, 90, 0.2);
+  animation: ringPulse 2.4s ease-in-out infinite;
+  margin-bottom: 14px;
+}
+@keyframes ringPulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50%      { transform: scale(1.15); opacity: 1; }
+}
+.hint-text {
+  color: #f3d98a;
+  font-size: 16px;
+  letter-spacing: 0.3em;
+  font-family: 'Ma Shan Zheng', serif;
+  text-shadow: 0 0 12px rgba(243, 201, 90, 0.6), 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
-.fade-up-enter-from,
-.fade-up-leave-to {
-  opacity: 0;
-  transform: translateY(40px);
-}
+/* === 表单弹出过渡 === */
+.portal-reveal-enter-active { transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+.portal-reveal-leave-active { transition: all 0.3s ease-in; }
+.portal-reveal-enter-from   { opacity: 0; transform: scale(0.85) translateY(30px); }
+.portal-reveal-leave-to     { opacity: 0; transform: scale(0.9); }
 
-.school-stage-grid {
+/* === 玻璃拟态登录区 === */
+.gate-ui {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: opacity 0.6s, transform 0.8s cubic-bezier(0.7, 0, 0.84, 0);
+}
+.gate-ui.entering { opacity: 0; transform: scale(1.25); }
+
+.glass-portal {
+  pointer-events: auto;
+  position: relative;
+  width: min(380px, 88vw);
+  margin-top: 40px;
+  padding: 26px 26px 22px;
+  border-radius: 20px;
+  background: rgba(14, 28, 52, 0.5);
+  border: 1px solid rgba(150, 210, 255, 0.3);
+  box-shadow: 0 0 50px rgba(40, 90, 160, 0.3), inset 0 0 40px rgba(30, 70, 130, 0.25);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  animation: breathe 4s ease-in-out infinite;
+}
+.portal-glow {
+  position: absolute; inset: -1px; border-radius: 20px; pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(243, 201, 90, 0.4);
+  animation: glowPulse 3.2s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(243, 201, 90, 0.25), 0 0 0 1px rgba(243, 201, 90, 0.35); }
+  50%      { box-shadow: 0 0 40px rgba(243, 201, 90, 0.5),  0 0 0 1px rgba(243, 201, 90, 0.7); }
+}
+@keyframes breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+.portal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.portal-head h2 {
+  margin: 0; font-size: 20px; letter-spacing: 0.15em; color: #f3d98a;
+  font-family: 'Ma Shan Zheng', serif; text-shadow: 0 0 14px rgba(243, 201, 90, 0.5);
+}
+.switch-link { background: none; border: none; color: #8fbfe6; font-size: 13px; cursor: pointer; transition: color 0.2s; }
+.switch-link:hover { color: #f3d98a; }
+
+.form { display: flex; flex-direction: column; gap: 14px; }
+.field {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(150, 210, 255, 0.2);
+  border-radius: 12px;
+  padding: 0 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.field:focus-within { border-color: rgba(243, 201, 90, 0.6); box-shadow: 0 0 0 3px rgba(243, 201, 90, 0.12); }
+.field-ico { color: #7fc8ff; font-size: 15px; flex-shrink: 0; }
+.field input {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: #eaf2ff; font-size: 15px; padding: 13px 0;
+}
+.field input::placeholder { color: #6f93b8; }
+
+.code-field .code-btn {
+  white-space: nowrap; flex-shrink: 0;
+  background: rgba(243, 201, 90, 0.12); border: 1px solid rgba(243, 201, 90, 0.4);
+  color: #f3d98a; font-size: 13px; padding: 6px 12px; border-radius: 9px; cursor: pointer; transition: all 0.2s;
+}
+.code-field .code-btn:hover:not(:disabled) { background: rgba(243, 201, 90, 0.22); }
+.code-field .code-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* === 修炼学段 === */
+.stage-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 2px 0;
+}
+.stage-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #9fc4e6;
+  letter-spacing: 0.05em;
+}
+.stage-label .field-ico { font-size: 14px; }
+.stage-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
+  gap: 6px;
 }
-
-@media (max-width: 640px) {
-  .school-stage-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-.school-stage-btn {
-  padding: 10px 8px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+.stage-chip {
+  padding: 8px 4px;
+  border-radius: 9px;
+  border: 1px solid rgba(150, 210, 255, 0.22);
   background: rgba(255, 255, 255, 0.04);
-  color: #d1d5db;
-  font-size: 13px;
+  color: #c8dcec;
+  font-size: 12px;
   font-weight: 600;
+  letter-spacing: 0.05em;
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
-.school-stage-btn:hover {
-  border-color: rgba(234, 179, 8, 0.45);
+.stage-chip:hover {
+  border-color: rgba(243, 201, 90, 0.55);
+  color: #f3d98a;
+}
+.stage-chip.is-active {
+  border-color: rgba(243, 201, 90, 0.85);
+  background: rgba(243, 201, 90, 0.16);
   color: #fde68a;
+  box-shadow: 0 0 14px rgba(243, 201, 90, 0.3);
+}
+@media (max-width: 480px) {
+  .stage-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
-.school-stage-btn.is-active {
-  border-color: rgba(234, 179, 8, 0.75);
-  background: rgba(234, 179, 8, 0.14);
-  color: #fde68a;
-  box-shadow: 0 0 12px rgba(234, 179, 8, 0.2);
+/* === 玉牌主按钮 === */
+.jade-btn {
+  position: relative; margin-top: 6px; padding: 15px; border: none; border-radius: 12px; cursor: pointer;
+  font-size: 17px; font-weight: bold; letter-spacing: 0.25em; color: #3a2606; overflow: hidden;
+  background: linear-gradient(135deg, #ffe6a0 0%, #f0c45e 45%, #cf9a34 100%);
+  box-shadow: 0 6px 24px rgba(207, 154, 52, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+  transition: transform 0.15s, box-shadow 0.2s;
 }
+.jade-btn span { position: relative; z-index: 2; padding-left: 0.25em; }
+.jade-btn::after {
+  content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+  transform: skewX(-20deg); animation: shine 3s infinite;
+}
+.jade-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(207, 154, 52, 0.65); }
+@keyframes shine { 0% { left: -60%; } 60%, 100% { left: 150%; } }
+
+.ghost-btn {
+  padding: 11px; border-radius: 12px; background: transparent;
+  border: 1px solid rgba(150, 210, 255, 0.25); color: #9fc4e6; font-size: 14px; cursor: pointer; transition: all 0.2s;
+}
+.ghost-btn:hover { border-color: rgba(243, 201, 90, 0.5); color: #f3d98a; background: rgba(255, 255, 255, 0.04); }
+
+.brand-sub {
+  pointer-events: none;
+  margin-top: 22px; font-size: 13px; letter-spacing: 0.3em; color: rgba(200, 220, 245, 0.7);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* === 开门白光 === */
+.enter-flash {
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: radial-gradient(circle at 50% 42%, #ffffff, rgba(255, 255, 255, 0) 60%);
+  opacity: 0; transition: opacity 1.4s ease-in;
+}
+.enter-flash.on { opacity: 1; }
 </style>

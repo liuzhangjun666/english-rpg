@@ -75,6 +75,16 @@ return new class extends Migration
 
     private function hasIndex(string $table, string $indexName): bool
     {
+        $driver = DB::getDriverName();
+        if ($driver === 'sqlite') {
+            $rows = DB::select(
+                "SELECT name FROM sqlite_master WHERE type = 'index' AND tbl_name = ? AND name = ?",
+                [$table, $indexName]
+            );
+            return !empty($rows);
+        }
+
+        // MySQL / MariaDB
         $rows = DB::select(sprintf('SHOW INDEX FROM `%s` WHERE Key_name = ?', $table), [$indexName]);
         return !empty($rows);
     }
