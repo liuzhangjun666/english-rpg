@@ -106,6 +106,14 @@ const registerForm = reactive({ phone: '', code: '', nickname: '', birth_year: '
 
 onMounted(() => {
   if (canvasRef.value) gate = new LoginGateScene(canvasRef.value);
+  // 邀请码持久化：用户从招募链接 /login?ref=ABC 进来时落到 localStorage，
+  // 即便他先逛了别的页面、刷新、关浏览器再来，注册时仍能带上邀请方信息。
+  const refInUrl = String(route.query.ref || '').trim().toUpperCase();
+  if (refInUrl && /^[A-Z0-9]{4,12}$/.test(refInUrl)) {
+    try { localStorage.setItem('levelup_pending_invite_ref', refInUrl); } catch { /* ignore */ }
+    // 切换到注册 tab——从邀请链接进来通常是新用户
+    isLogin.value = false;
+  }
 });
 onBeforeUnmount(() => { gate?.dispose(); gate = null; });
 
@@ -172,10 +180,22 @@ async function doRegister() {
   }
   const payload: Record<string, any> = { phone: registerForm.phone.trim(), code: registerForm.code.trim() };
   if (registerForm.nickname.trim()) payload.nickname = registerForm.nickname.trim();
+
+  // 邀请码：URL ?ref=XXX 直接用；否则尝试 localStorage（兜底之前访问时缓存的码）
+  // 字段名必须是 invite_code（后端 AuthController::register validator 里期望的字段）。
+  const refFromUrl = String(route.query.ref || '').trim().toUpperCase();
+  const refFromLs = (() => {
+    try { return localStorage.getItem('levelup_pending_invite_ref') || ''; } catch { return ''; }
+  })();
+  const inviteCode = refFromUrl || refFromLs;
+  if (inviteCode) payload.invite_code = inviteCode;
+
   const res = await api.post('/auth/register', payload);
   if (!res?.success || !res?.data?.token) { ElMessage.error(res?.message || '注册失败'); return; }
   api.setToken(res.data.token);
   await applyProfile(res.data.user);
+  // 注册成功后清掉本地缓存的邀请码，避免下次注册再次带上
+  try { localStorage.removeItem('levelup_pending_invite_ref'); } catch { /* ignore */ }
   enterWorld('/practice');
 }
 

@@ -14,9 +14,18 @@
             <!-- 头部信息区 -->
             <div class="profile-header">
               <div class="profile-header-info">
-                <!-- 头像 -->
+                <!-- 头像：图片加载失败时降级为渐变 + 首字符，避免破图占位 -->
                 <div class="avatar-wrapper" title="点击更换道影" @click="triggerAvatarUpload">
-                  <img :src="user.avatar_url || defaultAvatar" class="profile-header-avatar" alt="avatar">
+                  <img
+                    v-if="user.avatar_url && !avatarBroken"
+                    :src="user.avatar_url"
+                    class="profile-header-avatar"
+                    alt=""
+                    @error="avatarBroken = true"
+                  >
+                  <div v-else class="profile-header-avatar avatar-fallback">
+                    {{ avatarInitial }}
+                  </div>
                   <div class="avatar-hover-mask">更换</div>
                 </div>
                 <input type="file" ref="fileInput" accept="image/png, image/jpeg, image/gif, image/webp" class="hidden-input" @change="handleAvatarUpload">
@@ -39,8 +48,7 @@
                     >
                   </div>
                   <div class="header-actions">
-                    <span class="header-action-btn">📤 邀请道友</span>
-                    <span class="header-action-btn text-danger">退出登出</span>
+                    <span class="header-action-btn" @click="showInvite = true">📤 邀请道友</span>
                   </div>
                 </div>
               </div>
@@ -84,12 +92,18 @@
           </div>
         </div>
       </div>
+
+      <!-- 招募道友（嵌在 ProfilePanel 内的居中模态） -->
+      <InviteFriendsPanel v-model:visible="showInvite" />
     </div>
   </transition>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
+import { ElMessage } from 'element-plus';
+import { useUserStore } from '../../stores/user';
+import InviteFriendsPanel from './InviteFriendsPanel.vue';
 
 const props = defineProps<{
   visible: boolean;
@@ -99,33 +113,34 @@ const emit = defineEmits<{
   (e: 'update:visible', value: boolean): void;
 }>();
 
-const user = ref<any>({});
+const userStore = useUserStore();
+// 唯一数据源：Pinia user store。本组件不再持有副本，避免和 TopHud 显示不一致。
+const user = computed(() => userStore.profile || {});
+// 本地持久化 key：未接后端时把头像 dataURL 存进来，刷新后可还原
+const AVATAR_LS_KEY = 'levelup_user_avatar';
+
 const isEditingNickname = ref(false);
 const editNicknameValue = ref('');
 const fileInput = ref<HTMLInputElement | null>(null);
 const nicknameInputRef = ref<HTMLInputElement | null>(null);
-const defaultAvatar = '/images/avatar_default.png';
+const avatarBroken = ref(false);
+const showInvite = ref(false);
 
-onMounted(async () => {
-  if (props.visible) {
-    await fetchProfileData();
-  }
+// 面板打开时重置头像错误标记，避免一次加载失败后永远显示降级
+watch(
+  () => props.visible,
+  (v) => {
+    if (v) avatarBroken.value = false;
+  },
+);
+
+const avatarInitial = computed(() => {
+  const name = String(user.value?.nickname || '匿名前辈').trim();
+  return name.charAt(0) || '道';
 });
 
-const fetchProfileData = async () => {
-  user.value = {
-    nickname: '修仙狂徒',
-    dao_heart: 100,
-    story_keys: 5,
-    exp: 3000,
-    vocabulary: 120,
-    grammar: 80,
-    reading: 90,
-    listening: 60,
-    speaking: 40,
-    writing: 50
-  };
-};
+// 测试数据 fetchProfileData 已移除：本组件不再持有副本数据，
+// 真实数据由 auth bootstrap 写入 userStore.profile，本组件 reactive 读取。
 
 const dimensions = computed(() => ({
   vocabulary: Number(user.value.vocabulary || 0),
@@ -136,8 +151,9 @@ const dimensions = computed(() => ({
   writing: Number(user.value.writing || 0),
 }));
 
-const currentRealmLabel = computed(() => '筑基中期');
-const fateNodes = computed(() => []);
+// 与 TopHud 同源：读 userStore.profile.current_realm；缺失时显示占位
+const currentRealmLabel = computed(() => String(user.value?.current_realm || '凡人').trim());
+const fateNodes = computed(() => Array.isArray(user.value?.fate_nodes) ? user.value.fate_nodes : []);
 
 const closePanel = () => {
   emit('update:visible', false);
@@ -148,10 +164,44 @@ const triggerAvatarUpload = () => {
 };
 
 const handleAvatarUpload = (e: Event) => {
-  const file = (e.target as HTMLInputElement).files?.[0];
-  if (file) {
-    console.log('上传头像:', file);
+  const input = e.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+
+  // 类型校验：accept 属性只是建议，用户改后缀也能绕过，必须代码层兜底
+  if (!/^image\/(png|jpe?g|gif|webp)$/i.test(file.type)) {
+    ElMessage.error('请选择 PNG / JPG / GIF / WebP 格式的图片');
+    input.value = '';
+    return;
   }
+  // 大小限制 5MB —— 头像图通常远小于此，超大基本是误选
+  if (file.size > 5 * 1024 * 1024) {
+    ElMessage.error('图片不能超过 5MB');
+    input.value = '';
+    return;
+  }
+
+  // 本地预览：FileReader → dataURL → 写入 Pinia store（TopHud 同步更新）+ localStorage（刷新保留）
+  const reader = new FileReader();
+  reader.onload = () => {
+    const dataUrl = String(reader.result || '');
+    userStore.updateProfile({ avatar_url: dataUrl });
+    try { localStorage.setItem(AVATAR_LS_KEY, dataUrl); } catch { /* 超 5MB 配额则放弃持久化，内存里仍生效 */ }
+    avatarBroken.value = false;
+    ElMessage.success('头像已更换');
+    // TODO: 后端接口就绪后，这里改为：
+    //   const fd = new FormData(); fd.append('avatar', file);
+    //   const res = await api.post('/user/avatar', fd);
+    //   userStore.updateProfile({ avatar_url: res.data.url });
+    //   localStorage.removeItem(AVATAR_LS_KEY); // 不再需要本地持久化
+  };
+  reader.onerror = () => {
+    ElMessage.error('读取图片失败，请换一张试试');
+  };
+  reader.readAsDataURL(file);
+
+  // 清空 input.value，避免选同一张图时 @change 不触发
+  input.value = '';
 };
 
 const startEditNickname = async () => {
@@ -164,8 +214,11 @@ const startEditNickname = async () => {
 const finishEditNickname = () => {
   if (!isEditingNickname.value) return;
   isEditingNickname.value = false;
-  if (editNicknameValue.value.trim() !== '') {
-    user.value.nickname = editNicknameValue.value.trim();
+  const next = editNicknameValue.value.trim();
+  if (next && next !== user.value.nickname) {
+    // 写到 store —— TopHud 等所有引用方都会同步刷新
+    userStore.updateProfile({ nickname: next });
+    // TODO: 后端就绪后 await api.post('/user/nickname', { nickname: next })
   }
 };
 
@@ -223,7 +276,8 @@ const formatAbilityName = (key: string) => {
 }
 
 .drawer-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
-.profile-scroll { flex: 1; overflow-y: auto; padding: 20px; }
+/* 底部留出 40px 安全区，避免最后一行（暂无命盘记录）贴着视口边缘被裁 */
+.profile-scroll { flex: 1; overflow-y: auto; padding: 20px 20px 40px; }
 
 .profile-header { margin-bottom: 20px; }
 .profile-header-info { display: flex; align-items: center; gap: 16px; }
@@ -241,6 +295,19 @@ const formatAbilityName = (key: string) => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+}
+.avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #3a2a5a 0%, #1a3a5a 60%, #0e2440 100%);
+  color: #f3d481;
+  font-family: 'Ma Shan Zheng', 'STXingkai', 'KaiTi', serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-shadow: 0 0 8px rgba(243, 212, 129, 0.6);
 }
 .avatar-hover-mask {
   position: absolute;

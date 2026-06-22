@@ -1,6 +1,4 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
@@ -86,31 +84,9 @@ const LEY_FRAG = /* glsl */`
   }
 `;
 
-// ─── GLB 模块级缓存：加载一次、解析一次，之后开图直接克隆（瞬间出现） ──────────────
+// ─── GLB 加载：委托给全局 AssetPreloader（共享缓存 + 全局进度追踪）──────────────
 
-let _sharedDraco: DRACOLoader | null = null;
-function getSharedDraco(): DRACOLoader {
-  if (!_sharedDraco) {
-    _sharedDraco = new DRACOLoader();
-    _sharedDraco.setDecoderPath('/draco/gltf/');
-  }
-  return _sharedDraco;
-}
-
-const _glbCache = new Map<string, Promise<THREE.Group>>();
-/** 加载 GLB（带缓存）；返回的是缓存场景的克隆，可安全独立变换 */
-function loadGLBCached(path: string): Promise<THREE.Group> {
-  let p = _glbCache.get(path);
-  if (!p) {
-    const loader = new GLTFLoader();
-    loader.setDRACOLoader(getSharedDraco());
-    p = new Promise<THREE.Group>((resolve, reject) => {
-      loader.load(path, (g) => resolve(g.scene), undefined, reject);
-    });
-    _glbCache.set(path, p);
-  }
-  return p.then((scene) => scene.clone(true));
-}
+import { loadGLB as loadGLBCached } from '../../services/assetPreloader';
 
 /** 全部地图模型路径（用于预加载） */
 const ALL_MAP_MODELS = [
@@ -150,7 +126,7 @@ export class WorldSceneManager {
   private petals: THREE.Points | null = null;  // 飘落灵气花瓣
   private spiritDust: THREE.Points | null = null; // 全局漂浮灵尘
   private buildingFx: Array<(t: number) => void> = []; // 建筑动态特效更新闭包
-  private dracoLoader: DRACOLoader | null = null; // Draco 解码器，dispose 时释放 worker
+  // Draco 解码器现在由全局 AssetPreloader 持有，本类不再自管 worker 生命周期
   private starField: THREE.Points | null = null;
   private terrainMesh: THREE.Mesh | null = null;
 
@@ -1900,7 +1876,6 @@ export class WorldSceneManager {
     this.container.removeEventListener('click', this.onClick);
     this.renderer.dispose();
     this.composer.dispose();
-    this.dracoLoader?.dispose();
     this.scene.clear();
     if (this.renderer.domElement.parentNode) this.renderer.domElement.remove();
     if (this.css2dRenderer.domElement.parentNode) this.css2dRenderer.domElement.remove();

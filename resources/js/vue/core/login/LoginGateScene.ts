@@ -1,11 +1,10 @@
 import * as THREE from 'three';
 import gsap from 'gsap';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
+import { loadGLB } from '../../services/assetPreloader';
 
 /**
  * 悬浮仙门登录场景
@@ -237,9 +236,16 @@ export class LoginGateScene {
 
   private buildGate() {
     this.scene.add(this.gate);
+    // GLB 仙门异步加载（~4.5MB + Draco 解码），同步创建的光晕会比模型早出现 ~200ms，
+    // 视觉上变成「光晕先来、门后到」。先把整个 gate group 藏起来，等 GLB 落地后一起淡入。
+    this.gate.visible = false;
 
     // 加载 GLB 仙门作为主体
     this.loadGateModel();
+    // 安全兜底：若 GLB 加载失败/超时，3s 后强制显示（至少光晕+法阵能看到）
+    setTimeout(() => {
+      if (!this.disposed && !this.gate.visible) this.revealGate();
+    }, 3000);
 
     // 中心传送门：灵气流动 shader
     this.portalMat = new THREE.ShaderMaterial({
@@ -277,12 +283,8 @@ export class LoginGateScene {
   }
 
   private loadGateModel() {
-    const loader = new GLTFLoader();
-    const draco = new DRACOLoader();
-    draco.setDecoderPath('/draco/gltf/');
-    loader.setDRACOLoader(draco);
-    loader.load('/models/xianmen.glb', (gltf) => {
-      const model = gltf.scene;
+    loadGLB('/models/xianmen.glb').then((model) => {
+      if (this.disposed) return;
       // 归一化：目标高度 ~420，底部坐在法阵(y=-18)，水平居中
       const box = new THREE.Box3().setFromObject(model);
       const size = box.getSize(new THREE.Vector3());
@@ -293,10 +295,43 @@ export class LoginGateScene {
       model.position.x -= c.x;
       model.position.z -= c.z;
       model.position.y = -18 - b2.min.y;
-      model.traverse(o => { if (o instanceof THREE.Mesh) { o.castShadow = true; } });
+      model.traverse((o) => { if (o instanceof THREE.Mesh) { o.castShadow = true; } });
       this.gate.add(model);
       this.gateModel = model;
-    }, undefined, (e) => console.warn('仙门模型加载失败', e));
+      this.revealGate();
+    }).catch((e) => {
+      console.warn('仙门模型加载失败', e);
+      // GLB 失败也要把光晕显示出来，否则用户看不到任何门
+      this.revealGate();
+    });
+  }
+
+  /** 仙门 + 光晕一起从透明淡入，避免「光晕先到、门后到」的视觉违和 */
+  private revealGate() {
+    if (this.gate.visible) return;
+    this.gate.visible = true;
+    this.gate.scale.setScalar(0.94);
+    // GSAP 同时驱动：缩放回弹 + 光晕 alpha 起步压低再恢复
+    gsap.to(this.gate.scale, { x: 1, y: 1, z: 1, duration: 0.55, ease: 'back.out(1.6)' });
+    // shader 没有显式 alpha uniform，用 portal mesh 的 material.opacity 控制不灵（shader 自己算 a）；
+    // 改为对整个 gate group 做"压暗→恢复"以营造淡入感（透过 traverse 暂调 material.opacity）
+    const mats: { mat: THREE.Material; baseOp: number }[] = [];
+    this.gate.traverse(o => {
+      const mesh = o as any;
+      if (mesh.material) {
+        const list = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        list.forEach((m: any) => {
+          if (m && typeof m.opacity === 'number') {
+            mats.push({ mat: m, baseOp: m.opacity });
+            m.transparent = true;
+            m.opacity = 0;
+          }
+        });
+      }
+    });
+    mats.forEach(({ mat, baseOp }) => {
+      gsap.to(mat, { opacity: baseOp, duration: 0.5, ease: 'power2.out' });
+    });
   }
 
   // ─── 地面太极法阵 ──────────────────────────────────────────
@@ -409,23 +444,25 @@ export class LoginGateScene {
   }
 
   private loadFlyingSwordsman() {
-    const loader = new GLTFLoader();
-    const draco = new DRACOLoader();
-    draco.setDecoderPath('/draco/gltf/');
-    loader.setDRACOLoader(draco);
     const paths = [
       { y: 380, z: -240, vx: 1.2, facingRight: true },
       { y: 260, z: -520, vx: -0.8, facingRight: false },
     ];
-    loader.load('/models/jianxiu.glb', (gltf) => {
-      const box0 = new THREE.Box3().setFromObject(gltf.scene);
-      const h0 = box0.getSize(new THREE.Vector3()).y || 1;
-      const targetH = 55;
-      const s = targetH / h0;
-
-      paths.forEach((ln, i) => {
-        const raw = i === 0 ? gltf.scene : gltf.scene.clone();
-        raw.scale.setScalar(s);
+    // 两条飞行轨迹各自独立 loadGLB（共享缓存内部只会解码一次，第二次拿到的是克隆）
+    paths.forEach((ln, i) => {
+      loadGLB('/models/jianxiu.glb').then((raw) => {
+        if (this.disposed) return;
+        if (i === 0) {
+          const box0 = new THREE.Box3().setFromObject(raw);
+          const h0 = box0.getSize(new THREE.Vector3()).y || 1;
+          const targetH = 55;
+          raw.scale.setScalar(targetH / h0);
+        } else {
+          // 第二个用相同比例（第一个尚未必先完成，但 box 只取当前 raw 即可）
+          const box0 = new THREE.Box3().setFromObject(raw);
+          const h0 = box0.getSize(new THREE.Vector3()).y || 1;
+          raw.scale.setScalar(55 / h0);
+        }
         // 模型默认正面朝 +Z（面向镜头），转 90° 变侧面飞行
         raw.rotation.y = ln.facingRight ? -Math.PI / 2 : Math.PI / 2;
         // 微微前倾增加飞行感
@@ -438,8 +475,8 @@ export class LoginGateScene {
         wrapper.userData = { vx: ln.vx, baseY: ln.y, phase: Math.random() * 6.28, maxX: 1800 };
         this.scene.add(wrapper);
         this.flyers.push(wrapper);
-      });
-    }, undefined, (e) => console.warn('剑修模型加载失败', e));
+      }).catch((e) => console.warn('剑修模型加载失败', e));
+    });
   }
 
   // ─── 悬浮灵灯（动态点光源） ──────────────────────────────

@@ -25,6 +25,7 @@ class AchievementService
         '100_questions'   => ['title'=>'百战修士', 'desc'=>'累计修炼100题'],
         '1000_questions'  => ['title'=>'千锤百炼', 'desc'=>'累计修炼1000题'],
         'invite_friend'   => ['title'=>'传道授业', 'desc'=>'成功邀请一位好友'],
+        'invite_master_10'=> ['title'=>'渡人无量', 'desc'=>'累计渡化十位道友入门'],
     ];
 
     public static function getAchievementMeta(string $type): array
@@ -83,11 +84,41 @@ class AchievementService
 
         // 首次通过
         $hasPassed = LearningRecord::where('user_id', $user->id)->where('is_correct', true)->exists();
-        if ($hasPassed) { $a = $this->checkAndAward($user, 'first_pass'); if ($a) $new[] = $a; }
+        if ($hasPassed) {
+            $a = $this->checkAndAward($user, 'first_pass');
+            if ($a) {
+                $new[] = $a;
+                // first_pass 是**首次**发放（已存在则 checkAndAward 返回 null），
+                // 此时如果该用户是被邀请来的，触发邀请方追加奖励 +150 灵力
+                try {
+                    app(\App\Services\ShareRewardService::class)->handleInviteeFirstClear($user);
+                } catch (\Throwable $e) {
+                    \Log::warning('邀请首通奖励触发失败: ' . $e->getMessage(), ['user_id' => $user->id]);
+                }
+            }
+        }
 
         // 完美通关
         if ($accuracy === 100) { $a = $this->checkAndAward($user, 'full_mark', ['accuracy'=>$accuracy]); if ($a) $new[] = $a; }
 
+        return $new;
+    }
+
+    /**
+     * 邀请里程碑成就：在 ShareRewardService 处理完邀请关系后调用。
+     * 累计 1 人 → 传道授业，10 人 → 渡人无量。
+     */
+    public function checkInviteMilestones(User $inviter, int $totalInvited): array
+    {
+        $new = [];
+        if ($totalInvited >= 1) {
+            $a = $this->checkAndAward($inviter, 'invite_friend', ['count' => $totalInvited]);
+            if ($a) $new[] = $a;
+        }
+        if ($totalInvited >= 10) {
+            $a = $this->checkAndAward($inviter, 'invite_master_10', ['count' => $totalInvited]);
+            if ($a) $new[] = $a;
+        }
         return $new;
     }
 

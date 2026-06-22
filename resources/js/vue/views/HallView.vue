@@ -10,11 +10,7 @@
         <span class="daily-quest-label">每日修炼</span>
       </button>
     </div>
-    <GlobalHud 
-      @open-review="showReview = true"
-      @open-achievements="showAchievements = true"
-      @open-profile="showProfile = true"
-    />
+    <!-- GlobalHud 已提升至 App.vue 全局挂载，此处不再重复实例 -->
 
     <!-- 环形菜单 -->
     <RadialMenu

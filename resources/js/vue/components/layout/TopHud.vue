@@ -1,10 +1,22 @@
 <template>
   <header ref="hudRef" class="top-hud cultivation-theme">
+    <!-- 角饰 -->
+    <span class="hud-corner corner-tl"></span>
+    <span class="hud-corner corner-tr"></span>
+    <span class="hud-corner corner-bl"></span>
+    <span class="hud-corner corner-br"></span>
+
     <!-- LEFT 角色区 -->
     <div class="hud-left">
       <div class="avatar-box" @click="emit('open-profile')">
-        <img :src="user.profile?.avatar_url || defaultAvatar" class="avatar-img" alt="头像" />
+        <div class="avatar-frame">
+          <img :src="user.profile?.avatar_url || defaultAvatar" class="avatar-img" alt="头像" />
+        </div>
         <div class="avatar-ring"></div>
+        <div class="avatar-ring outer"></div>
+        <div class="avatar-level" :title="`修为 ${animatedExp}`">
+          <span>{{ levelNumber }}</span>
+        </div>
       </div>
       <div class="role-info">
         <div class="name-realm-row">
@@ -18,56 +30,67 @@
             <div class="exp-bar-fill" :style="{ width: expPercent + '%' }">
               <div class="exp-flow-light"></div>
             </div>
+            <span class="exp-text">{{ animatedExp }} / {{ user.profile?.next_threshold ?? 100 }}</span>
           </div>
-          <span class="exp-text">修为 {{ animatedExp }} / {{ user.profile?.next_threshold ?? 100 }}</span>
         </div>
       </div>
     </div>
 
+    <span class="hud-divider"></span>
+
     <!-- CENTER 资源区 -->
     <div class="hud-center">
-      <div class="resource-item" title="词汇量">
-        <span class="res-icon">📚</span>
+      <div class="resource-item res-vocab" title="词汇量">
+        <span class="res-icon-circle"><img class="res-icon-img" :src="'/images/hud-icons/vocab.png'" alt="词汇" /></span>
         <span class="res-value">{{ animatedVocab }}</span>
       </div>
-      <div class="resource-item" title="灵力">
-        <span class="res-icon">⚡</span>
-        <span class="res-value">{{ animatedSpiritPower }}/{{ user.profile?.spirit_power_max ?? 100 }}</span>
+      <div class="resource-item res-power" title="灵力">
+        <span class="res-icon-circle"><img class="res-icon-img" :src="'/images/hud-icons/power.png'" alt="灵力" /></span>
+        <div class="res-power-stack">
+          <span class="res-value">{{ animatedSpiritPower }}<span class="res-max">/{{ user.profile?.spirit_power_max ?? 100 }}</span></span>
+          <div class="res-mini-bar">
+            <div class="res-mini-fill" :style="{ width: powerPercent + '%' }"></div>
+          </div>
+        </div>
       </div>
-      <div class="resource-item" title="灵石">
-        <span class="res-icon">💎</span>
+      <div class="resource-item res-stone" title="灵石">
+        <span class="res-icon-circle"><img class="res-icon-img" :src="'/images/hud-icons/stone.png'" alt="灵石" /></span>
         <span class="res-value">{{ animatedSpiritStone }}</span>
       </div>
     </div>
 
+    <span class="hud-divider"></span>
+
     <!-- RIGHT 系统区 -->
     <div class="hud-right">
-      <button class="sys-btn map-btn" title="打开宗门地图" @click="ui.showMapOverlay()">
-        <span class="sys-icon">🗺</span>
-        <span class="map-btn-label">地图</span>
+      <button class="map-btn" title="打开宗门地图" @click="ui.showMapOverlay()">
+        <img class="map-btn-icon" :src="'/images/hud-icons/map.png'" alt="地图" />
+        <span class="map-btn-label">宗门地图</span>
       </button>
-      <button class="sys-btn" title="邮件">
-        <span class="sys-icon">📬</span>
-      </button>
-      <el-popover
-        placement="bottom-end"
-        :width="150"
-        trigger="click"
-        popper-class="hud-settings-popover"
-      >
-        <template #reference>
-          <button class="sys-btn" title="设置">
-            <span class="sys-icon">⚙</span>
-          </button>
-        </template>
-        <!-- 弹窗内容 -->
-        <div class="settings-menu">
-          <div class="settings-item" @click="emit('logout')">
-            <span class="item-icon">🚪</span>
-            <span>退出宗门</span>
+      <div class="sys-group">
+        <button class="sys-btn" title="邮件">
+          <img class="sys-icon-img" :src="'/images/hud-icons/mail.png'" alt="邮件" />
+          <span class="sys-badge">3</span>
+        </button>
+        <el-popover
+          placement="bottom-end"
+          :width="160"
+          trigger="click"
+          popper-class="hud-settings-popover"
+        >
+          <template #reference>
+            <button class="sys-btn" title="设置">
+              <img class="sys-icon-img" :src="'/images/hud-icons/settings.png'" alt="设置" />
+            </button>
+          </template>
+          <div class="settings-menu">
+            <div class="settings-item" @click="emit('logout')">
+              <span class="item-icon">🚪</span>
+              <span>退出宗门</span>
+            </div>
           </div>
-        </div>
-      </el-popover>
+        </el-popover>
+      </div>
     </div>
   </header>
 </template>
@@ -78,7 +101,6 @@ import { useUserStore } from '../../stores/user';
 import { useUiStore } from '../../stores/ui';
 import { useCountUp } from '../../composables/useCountUp';
 import gsap from 'gsap';
-import { ElMessage } from 'element-plus';
 import defaultAvatarImg from '../../../../assets/images/avatar_default.png';
 
 const emit = defineEmits<{
@@ -102,9 +124,17 @@ const expPercent = computed(() => {
   return Math.min(100, Math.max(0, (current / max) * 100));
 });
 
+const powerPercent = computed(() => {
+  const current = user.profile?.spirit_power ?? 0;
+  const max = user.profile?.spirit_power_max ?? 100;
+  if (max <= 0) return 0;
+  return Math.min(100, Math.max(0, (current / max) * 100));
+});
+
+const levelNumber = computed(() => user.profile?.level ?? 1);
+
 const hudRef = ref<HTMLElement | null>(null);
 
-// 监听拖拽状态
 const onMapDragEvent = (e: Event) => {
   const customEvent = e as CustomEvent;
   ui.setMapDragging(customEvent.detail);
@@ -118,38 +148,33 @@ onUnmounted(() => {
   window.removeEventListener('map-drag', onMapDragEvent);
 });
 
-// GSAP 动画：根据拖拽状态调整 HUD 大小
 watch(() => ui.isMapDragging, (isDragging) => {
   if (!hudRef.value) return;
   if (isDragging) {
     gsap.to(hudRef.value, {
-      height: 48,
-      backgroundColor: 'rgba(11, 16, 32, 0.7)', // #0B1020 70% opacity
+      height: 52,
+      backgroundColor: 'rgba(11, 16, 32, 0.7)',
       duration: 0.4,
       ease: 'power2.out'
     });
-    // 文字淡出
-    gsap.to(hudRef.value.querySelectorAll('.role-name, .exp-text, .realm-text'), {
+    gsap.to(hudRef.value.querySelectorAll('.role-name, .exp-text, .realm-text, .map-btn-label'), {
       opacity: 0,
       duration: 0.3
     });
   } else {
     gsap.to(hudRef.value, {
-      height: 76,
+      height: 80,
       backgroundColor: 'rgba(11, 16, 32, 0.95)',
       duration: 0.4,
       ease: 'power2.out'
     });
-    // 文字恢复
-    gsap.to(hudRef.value.querySelectorAll('.role-name, .exp-text, .realm-text'), {
+    gsap.to(hudRef.value.querySelectorAll('.role-name, .exp-text, .realm-text, .map-btn-label'), {
       opacity: 1,
       duration: 0.4,
       delay: 0.1
     });
   }
 });
-
-
 </script>
 
 <style scoped>
@@ -158,42 +183,75 @@ watch(() => ui.isMapDragging, (isDragging) => {
   top: 0;
   left: 0;
   width: 100%;
-  height: 76px;
-  background-color: rgba(11, 16, 32, 0.95); /* #0B1020 */
-  border-bottom: 2px solid rgba(200, 169, 106, 0.6); /* #C8A96A */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), inset 0 -1px 0 rgba(255, 215, 0, 0.15);
+  height: 80px;
+  background:
+    linear-gradient(180deg, rgba(11, 16, 32, 0.98) 0%, rgba(11, 16, 32, 0.92) 100%);
+  border-bottom: 1px solid rgba(200, 169, 106, 0.7);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.6),
+    inset 0 -1px 0 rgba(255, 215, 0, 0.18),
+    inset 0 1px 0 rgba(255, 215, 0, 0.12);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0 24px;
+  padding: 0 20px;
   z-index: 1000;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
   pointer-events: auto;
   user-select: none;
+}
+
+/* 角饰：四角的小金色三角点缀 */
+.hud-corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+}
+.corner-tl { top: 4px; left: 4px; border-top: 2px solid #FFD700; border-left: 2px solid #FFD700; }
+.corner-tr { top: 4px; right: 4px; border-top: 2px solid #FFD700; border-right: 2px solid #FFD700; }
+.corner-bl { bottom: 4px; left: 4px; border-bottom: 2px solid #C8A96A; border-left: 2px solid #C8A96A; opacity: 0.6; }
+.corner-br { bottom: 4px; right: 4px; border-bottom: 2px solid #C8A96A; border-right: 2px solid #C8A96A; opacity: 0.6; }
+
+/* 分隔线 */
+.hud-divider {
+  width: 1px;
+  height: 48px;
+  background: linear-gradient(180deg, transparent, rgba(200, 169, 106, 0.6), transparent);
+  margin: 0 8px;
+  flex-shrink: 0;
 }
 
 /* LEFT 角色区 */
 .hud-left {
   display: flex;
   align-items: center;
-  gap: 16px;
-  flex: 1;
+  gap: 14px;
+  flex-shrink: 0;
 }
 
 .avatar-box {
   position: relative;
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
+  width: 56px;
+  height: 56px;
   cursor: pointer;
-  border: 2px solid #C8A96A;
-  background: #000;
   flex-shrink: 0;
   transition: transform 0.2s;
 }
+.avatar-box:hover { transform: scale(1.05); }
 
-.avatar-box:hover {
-  transform: scale(1.05);
+.avatar-frame {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid #C8A96A;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 215, 0, 0.15), transparent 60%),
+    #000;
+  padding: 2px;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.6),
+    0 0 12px rgba(255, 215, 0, 0.35),
+    inset 0 0 8px rgba(0, 0, 0, 0.8);
 }
 
 .avatar-img {
@@ -205,11 +263,17 @@ watch(() => ui.isMapDragging, (isDragging) => {
 
 .avatar-ring {
   position: absolute;
-  inset: -4px;
+  inset: -3px;
   border-radius: 50%;
-  border: 1px dashed rgba(255, 215, 0, 0.4);
+  border: 1px dashed rgba(255, 215, 0, 0.5);
   animation: rotateRing 10s linear infinite;
   pointer-events: none;
+}
+.avatar-ring.outer {
+  inset: -7px;
+  border: 1px solid rgba(200, 169, 106, 0.2);
+  border-top-color: rgba(255, 215, 0, 0.6);
+  animation: rotateRing 6s linear infinite reverse;
 }
 
 @keyframes rotateRing {
@@ -217,70 +281,106 @@ watch(() => ui.isMapDragging, (isDragging) => {
   100% { transform: rotate(360deg); }
 }
 
+.avatar-level {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #FFD700, #C8A96A);
+  border: 1.5px solid #0B1020;
+  color: #1a0d00;
+  font-size: 12px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7), 0 0 8px rgba(255, 215, 0, 0.5);
+  font-family: 'Times New Roman', serif;
+}
+
 .role-info {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 4px;
+  gap: 5px;
 }
 
 .name-realm-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .role-name {
   color: #FFD700;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: bold;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 6px rgba(255, 215, 0, 0.3);
   white-space: nowrap;
+  letter-spacing: 0.5px;
 }
 
 .realm-plaque {
-  background: linear-gradient(135deg, rgba(200, 169, 106, 0.2), rgba(11, 16, 32, 0.8));
-  border: 1px solid #C8A96A;
-  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(200, 169, 106, 0.35), rgba(80, 60, 30, 0.6));
+  border: 1px solid rgba(255, 215, 0, 0.5);
+  border-radius: 3px;
   padding: 2px 8px;
-  box-shadow: inset 0 0 8px rgba(200, 169, 106, 0.2);
+  box-shadow: inset 0 0 6px rgba(255, 215, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.6);
+  position: relative;
 }
+.realm-plaque::before,
+.realm-plaque::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  background: #FFD700;
+  transform: translateY(-50%) rotate(45deg);
+}
+.realm-plaque::before { left: -2px; }
+.realm-plaque::after { right: -2px; }
 
 .realm-text {
-  color: #F7F3E8;
-  font-size: 12px;
+  color: #FFF6D5;
+  font-size: 11px;
   font-weight: bold;
   letter-spacing: 1px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .exp-bar-container {
   display: flex;
   align-items: center;
-  gap: 10px;
 }
 
 .exp-bar-bg {
-  width: 160px;
-  height: 8px;
-  background: rgba(0,0,0,0.6);
-  border: 1px solid rgba(200, 169, 106, 0.3);
-  border-radius: 4px;
+  width: 200px;
+  height: 14px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(200, 169, 106, 0.5);
+  border-radius: 7px;
   overflow: hidden;
   position: relative;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
 .exp-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #C8A96A, #FFD700);
+  background: linear-gradient(90deg, #C8A96A 0%, #FFD700 60%, #FFF3A0 100%);
   transition: width 0.3s ease-out;
   position: relative;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
 }
 
 .exp-flow-light {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  animation: flowLight 2s infinite;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  animation: flowLight 2.4s infinite;
 }
 
 @keyframes flowLight {
@@ -289,41 +389,125 @@ watch(() => ui.isMapDragging, (isDragging) => {
 }
 
 .exp-text {
-  color: #C8A96A;
-  font-size: 11px;
-  font-family: monospace;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFF6D5;
+  font-size: 10px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 0 4px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+  z-index: 2;
 }
 
 /* CENTER 资源区 */
 .hud-center {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 10px;
   flex: 1;
   justify-content: center;
+  min-width: 0;
 }
 
 .resource-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(0,0,0,0.4);
-  border: 1px solid rgba(200, 169, 106, 0.2);
-  padding: 4px 12px;
-  border-radius: 20px;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+  gap: 8px;
+  background: linear-gradient(180deg, rgba(20, 28, 50, 0.85), rgba(8, 12, 24, 0.95));
+  border: 1px solid rgba(200, 169, 106, 0.35);
+  padding: 4px 12px 4px 4px;
+  border-radius: 22px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 215, 0, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s;
+  position: relative;
+}
+.resource-item:hover {
+  border-color: rgba(255, 215, 0, 0.6);
+  transform: translateY(-1px);
+}
+
+.res-icon-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 215, 0, 0.25), rgba(0, 0, 0, 0.8));
+  border: 1px solid rgba(200, 169, 106, 0.5);
+  flex-shrink: 0;
+}
+
+/* 每种资源独立配色光晕 */
+.res-vocab .res-icon-circle {
+  background: radial-gradient(circle at 30% 30%, rgba(80, 200, 160, 0.45), rgba(0, 20, 15, 0.9));
+  border-color: rgba(120, 220, 180, 0.5);
+  box-shadow: 0 0 8px rgba(80, 200, 160, 0.4);
+}
+.res-power .res-icon-circle {
+  background: radial-gradient(circle at 30% 30%, rgba(140, 120, 255, 0.5), rgba(15, 10, 40, 0.9));
+  border-color: rgba(170, 150, 255, 0.55);
+  box-shadow: 0 0 8px rgba(140, 120, 255, 0.45);
+}
+.res-stone .res-icon-circle {
+  background: radial-gradient(circle at 30% 30%, rgba(255, 215, 0, 0.5), rgba(40, 25, 0, 0.9));
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
 }
 
 .res-icon {
-  font-size: 16px;
+  font-size: 15px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+}
+
+.res-icon-img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.85));
+  pointer-events: none;
 }
 
 .res-value {
   color: #F7F3E8;
   font-size: 14px;
   font-weight: bold;
-  font-family: monospace;
+  font-family: 'Courier New', monospace;
   text-shadow: 0 1px 2px #000;
+  letter-spacing: 0.5px;
+}
+.res-max {
+  color: rgba(247, 243, 232, 0.55);
+  font-size: 11px;
+  font-weight: normal;
+}
+
+.res-power-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 64px;
+}
+.res-mini-bar {
+  width: 100%;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.res-mini-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8c78ff, #c8b8ff);
+  box-shadow: 0 0 4px rgba(140, 120, 255, 0.7);
+  transition: width 0.3s;
 }
 
 /* RIGHT 系统区 */
@@ -331,81 +515,164 @@ watch(() => ui.isMapDragging, (isDragging) => {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 16px;
-  flex: 1;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.map-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 4px;
+  border: 1px solid #C8A96A;
+  background: linear-gradient(180deg, rgba(200, 169, 106, 0.25), rgba(80, 60, 30, 0.4));
+  color: #FFD700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 215, 0, 0.25),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+.map-btn::before,
+.map-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  background: #FFD700;
+  transform: translateY(-50%) rotate(45deg);
+}
+.map-btn::before { left: -3px; }
+.map-btn::after { right: -3px; }
+
+.map-btn:hover {
+  border-color: #FFD700;
+  background: linear-gradient(180deg, rgba(255, 215, 0, 0.35), rgba(120, 90, 40, 0.5));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 215, 0, 0.4),
+    0 2px 12px rgba(255, 215, 0, 0.4);
+}
+.map-btn-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.85));
+  pointer-events: none;
+}
+.map-btn-label {
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.sys-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(200, 169, 106, 0.3);
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7);
 }
 
 .sys-btn {
   background: transparent;
   border: none;
   color: #C8A96A;
-  font-size: 20px;
+  font-size: 16px;
   cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  transition: all 0.2s;
+  width: 32px;
+  height: 32px;
+  border-radius: 3px;
+  transition: all 0.15s;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
-
 .sys-btn:hover {
-  background: rgba(200, 169, 106, 0.15);
+  background: rgba(200, 169, 106, 0.2);
   color: #FFD700;
-  transform: scale(1.1);
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
 }
 
-.map-btn {
+.sys-icon-img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.85));
+  pointer-events: none;
+  transition: filter 0.2s;
+}
+.sys-btn:hover .sys-icon-img {
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.7));
+}
+
+.sys-badge {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #ff4d4d, #c41a1a);
+  color: #fff;
+  font-size: 9px;
+  font-weight: bold;
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: 1px solid rgba(200, 169, 106, 0.4);
-  background: rgba(0,0,0,0.3);
-}
-.map-btn:hover {
-  border-color: #FFD700;
-  transform: scale(1.05);
-}
-.map-btn-label {
-  font-size: 13px;
-  font-weight: bold;
-  color: #C8A96A;
-  letter-spacing: 1px;
+  justify-content: center;
+  border: 1px solid #0B1020;
+  box-shadow: 0 0 6px rgba(255, 80, 80, 0.7);
 }
 
-/* 响应式调整 */
+/* 响应式 */
+@media (max-width: 1100px) {
+  .exp-bar-bg { width: 130px; }
+}
 @media (max-width: 900px) {
   .exp-bar-bg { width: 100px; }
-  .hud-center { gap: 10px; }
+  .hud-center { gap: 6px; }
   .exp-text { display: none; }
+  .map-btn-label { display: none; }
+  .map-btn { padding: 7px 10px; }
+  .res-power-stack { min-width: 50px; }
+}
+@media (max-width: 700px) {
+  .res-vocab, .res-power-stack .res-mini-bar { display: none; }
+  .hud-divider { display: none; }
 }
 @media (max-width: 600px) {
-  .hud-center { display: none; } /* 移动端过小可直接隐藏中央资源，或改变布局 */
+  .hud-center { display: none; }
   .realm-plaque { display: none; }
 }
 </style>
 
 <style>
-/* 全局样式覆盖 el-popover，实现暗金修仙风 */
 .el-popover.hud-settings-popover {
-  background: rgba(11, 16, 32, 0.95) !important;
-  border: 1px solid rgba(200, 169, 106, 0.4) !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8) !important;
-  padding: 8px !important;
+  background: rgba(11, 16, 32, 0.97) !important;
+  border: 1px solid rgba(200, 169, 106, 0.5) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.8), 0 0 12px rgba(255, 215, 0, 0.15) !important;
+  padding: 6px !important;
   color: #F7F3E8 !important;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
+  border-radius: 4px !important;
 }
 .el-popper[data-popper-placement^="bottom"] .el-popper__arrow::before {
-  background: rgba(11, 16, 32, 0.95) !important;
-  border-top-color: rgba(200, 169, 106, 0.4) !important;
-  border-left-color: rgba(200, 169, 106, 0.4) !important;
+  background: rgba(11, 16, 32, 0.97) !important;
+  border-top-color: rgba(200, 169, 106, 0.5) !important;
+  border-left-color: rgba(200, 169, 106, 0.5) !important;
 }
 .settings-menu {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 .settings-item {
   display: flex;
@@ -413,13 +680,14 @@ watch(() => ui.isMapDragging, (isDragging) => {
   gap: 10px;
   padding: 10px 14px;
   cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s;
+  border-radius: 3px;
+  transition: all 0.15s;
   color: #F7F3E8;
-  font-size: 14px;
+  font-size: 13px;
 }
 .settings-item:hover {
-  background: rgba(200, 169, 106, 0.2);
+  background: linear-gradient(90deg, rgba(200, 169, 106, 0.25), transparent);
   color: #FFD700;
+  text-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
 }
 </style>

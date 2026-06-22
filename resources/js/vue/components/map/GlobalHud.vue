@@ -1,7 +1,7 @@
 <template>
   <div class="global-hud" :class="{ expanded: isExpanded }">
     <!-- 折叠触发按钮 -->
-    <button class="toggle-btn" @click="isExpanded = !isExpanded" :title="isExpanded ? '收起' : '展开功能'">
+    <button class="toggle-btn" @click="toggleExpanded" :title="isExpanded ? '收起' : '展开功能'">
       <span class="toggle-arrow">{{ isExpanded ? '›' : '‹' }}</span>
     </button>
 
@@ -26,8 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useUiStore } from '../../stores/ui';
 import hallMall from '../../../../assets/images/ui/hall_mall.png';
 import hallLeaderboard from '../../../../assets/images/ui/hall_leaderboard.png';
 import hallReview from '../../../../assets/images/ui/hall_review.png';
@@ -35,6 +36,7 @@ import hallAchievements from '../../../../assets/images/ui/hall_achievements.png
 import hallProfile from '../../../../assets/images/ui/hall_profile.png';
 
 const router = useRouter();
+const ui = useUiStore();
 
 const emit = defineEmits<{
   (e: 'open-review'): void;
@@ -42,7 +44,11 @@ const emit = defineEmits<{
   (e: 'open-profile'): void;
 }>();
 
-const isExpanded = ref(false);
+// 展开/收起状态由 ui store 持有，跨路由 + 跨会话保留
+const isExpanded = computed(() => ui.sidebarExpanded);
+function toggleExpanded() {
+  ui.setSidebarExpanded(!ui.sidebarExpanded);
+}
 
 const dockItems = ref([
   { id: 'mall', name: '坊市', iconUrl: hallMall, onClick: () => router.push('/mall') },
@@ -52,7 +58,8 @@ const dockItems = ref([
   { id: 'review', name: '复盘', iconUrl: hallReview, onClick: () => emit('open-review') },
   { id: 'achievements', name: '成就碑', iconUrl: hallAchievements, onClick: () => emit('open-achievements') },
   { id: 'profile', name: '洞府', iconUrl: hallProfile, onClick: () => emit('open-profile') },
-  { id: 'settings', name: '设置', emoji: '⚙️', onClick: () => console.log('Settings clicked') },
+  // 设置入口：直接关闭整个侧边栏（"隐藏看个人"），用户可以从 TopHud 设置菜单重新打开
+  { id: 'hide', name: '隐藏侧边栏', emoji: '⚙️', onClick: () => ui.setSidebarVisible(false) },
 ]);
 </script>
 

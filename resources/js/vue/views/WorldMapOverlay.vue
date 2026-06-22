@@ -33,11 +33,7 @@
           @close="activeRadialBuilding = null"
         />
 
-        <GlobalHud
-          @open-review="showReview = true"
-          @open-achievements="showAchievements = true"
-          @open-profile="showProfile = true"
-        />
+        <!-- GlobalHud 已提升至 App.vue 全局挂载，此处不再重复实例 -->
 
         <!-- 弹窗 -->
         <ReviewModal      v-model:visible="showReview" />
