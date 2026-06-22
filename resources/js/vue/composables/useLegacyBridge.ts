@@ -1,3 +1,5 @@
+import { useApiClient } from '../services/api';
+
 function modeFromPracticeType(type: string): string {
   if (type === 'listening') return 'listening';
   if (type === 'speaking') return 'speaking';
@@ -12,9 +14,12 @@ class LegacyBridge {
   private pendingProfile: Record<string, any> | null = null;
 
   private applySessionToGame(game: any, profile: Record<string, any> | null) {
-    const token = game.api.getStoredToken();
+    const api = useApiClient();
+    const token = api.getStoredToken();
     if (token) {
+      api.setToken(token);
       game.api.setToken(token);
+      game.isLoggedIn = true;
     }
 
     if (!profile) return;
@@ -66,7 +71,10 @@ class LegacyBridge {
 
   async clearSession() {
     this.pendingProfile = null;
+    useApiClient().clearToken();
+
     if (!this.game) return;
+
     const game = await this.getGame();
     game.isLoggedIn = false;
     game.store.setUser(null);
@@ -87,22 +95,6 @@ class LegacyBridge {
     game.ui.hideAllPanels();
   }
 
-  async openPracticePanel(type = 'vocab') {
-    const game = await this.getGame();
-    this.applySessionToGame(game, this.pendingProfile);
-    game.ensureSceneInitialized();
-    const mode = modeFromPracticeType(type);
-    let sceneName = 'practice';
-    if (mode === 'listening') sceneName = 'listening';
-    else if (mode === 'speaking') sceneName = 'speaking';
-    else if (mode === 'writing') sceneName = 'writing';
-    
-    await game.scene.switchTo(sceneName, { mode });
-    game.ui.hideAllPanels();
-    const panel = await game.loadPanel('practice');
-    panel.showLevelSelect(type);
-  }
-
   async switchToPracticeScene(type = 'vocab') {
     const game = await this.getGame();
     this.applySessionToGame(game, this.pendingProfile);
@@ -114,6 +106,14 @@ class LegacyBridge {
     else if (mode === 'writing') sceneName = 'writing';
 
     await game.scene.switchTo(sceneName, { mode });
+    game.ui.hideAllPanels();
+  }
+
+  async switchToGrammarScene() {
+    const game = await this.getGame();
+    this.applySessionToGame(game, this.pendingProfile);
+    game.ensureSceneInitialized();
+    await game.scene.switchTo('grammar');
     game.ui.hideAllPanels();
   }
 
@@ -129,12 +129,6 @@ class LegacyBridge {
     game.ensureSceneInitialized();
     await game.scene.switchTo('cangjingge');
     game.ui.hideAllPanels();
-  }
-
-  async openExam() {
-    const game = await this.getGame();
-    this.applySessionToGame(game, this.pendingProfile);
-    game.goToScene('shilianchang');
   }
 
   async switchToExamScene() {
@@ -162,6 +156,12 @@ class LegacyBridge {
   async closeLegacyPanels() {
     const game = await this.getGame();
     game.ui.hideAllPanels();
+  }
+
+  async openProfilePanel() {
+    const game = await this.getGame();
+    this.applySessionToGame(game, this.pendingProfile);
+    game.ui.openProfileCenter();
   }
 }
 

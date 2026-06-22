@@ -10,6 +10,9 @@ let gameInstance = null;
 export function ensureLegacyGame({ autoInit = false } = {}) {
     if (!gameInstance) {
         gameInstance = new Game();
+        if (migrationMode && window.__VUE_API_CLIENT__) {
+            gameInstance.api = window.__VUE_API_CLIENT__;
+        }
         window.__legacyGame = gameInstance;
     }
     if (autoInit) {

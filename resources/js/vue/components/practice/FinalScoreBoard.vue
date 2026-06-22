@@ -6,8 +6,12 @@
       
       <div class="reward-details">
         <div class="reward-row">
-          <span>准确率</span>
-          <span :class="score >= 80 ? 'text-gold' : score >= 60 ? 'text-green' : 'text-red'">{{ score }}%</span>
+          <span>{{ scoreLabel }}</span>
+          <span :class="score >= 80 ? 'text-gold' : score >= 60 ? 'text-green' : 'text-red'">{{ score }}{{ isWriting ? ' 分' : '%' }}</span>
+        </div>
+        <div v-if="isWriting && maxCombo && maxCombo > 1" class="reward-row">
+          <span>最高连符</span>
+          <span class="text-gold">×{{ maxCombo }}</span>
         </div>
         <div class="reward-row">
           <span>完成题数</span>
@@ -41,11 +45,20 @@ const props = defineProps<{
   total: number;
   expGained: number;
   stonesGained: number;
+  moduleType?: string;
+  maxCombo?: number;
 }>();
 
 defineEmits(['restart', 'exit']);
 
+const isWriting = computed(() => props.moduleType === 'writing');
+
 const score = computed(() => {
+  if (isWriting.value) {
+    if (!props.results.length) return 0;
+    const sum = props.results.reduce((acc, r) => acc + Number(r.score || 0), 0);
+    return Math.round(sum / props.results.length);
+  }
   if (props.total === 0) return 0;
   const passed = props.results.filter(r => r.isCorrect).length;
   return Math.round((passed / props.total) * 100);
@@ -54,14 +67,23 @@ const score = computed(() => {
 const passed = computed(() => score.value >= 60);
 
 const title = computed(() => {
+  if (isWriting.value) return passed.value ? '炼符圆满' : '符力未足';
   return passed.value ? '修炼圆满' : '需再精进';
 });
 
 const hermesMessage = computed(() => {
+  if (isWriting.value) {
+    if (score.value >= 90) return '天符降世，英文通神！';
+    if (score.value >= 75) return '地符稳固，灵力充沛，继续笔耕不辍。';
+    if (score.value >= 60) return '人符初成，道基已立。';
+    return '残符涣散，温故知新后再来符篆台。';
+  }
   if (score.value >= 90) return '完美！你的仙道根基极其扎实！';
   if (score.value >= 60) return '干得不错，但仍有提升空间，继续加油。';
   return '失败乃兵家常事，回去翻翻古籍再来挑战吧。';
 });
+
+const scoreLabel = computed(() => (isWriting.value ? '平均符品分' : '准确率'));
 </script>
 
 <style scoped>

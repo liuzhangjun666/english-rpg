@@ -1,103 +1,110 @@
 <template>
   <div class="mijing-page">
-    <el-card class="mijing-shell" shadow="hover">
-      <template #header>
-        <div class="card-header">
+    <div class="cult-panel mijing-panel" :class="{ 'is-challenge': stage === 'challenge' }">
+      <header v-if="stage !== 'challenge'" class="cult-panel-header">
+        <div class="cult-panel-title">
+          <span class="cult-panel-icon">✧</span>
           <span>秘境试炼 · 限时挑战</span>
-          <button class="mijing-close-btn" @click="backHall" title="返回大厅">✕</button>
         </div>
-      </template>
+        <button class="cult-panel-back" type="button" @click="backHall" title="返回大厅">✕</button>
+      </header>
 
-      <div class="mijing-toolbar" v-if="stage === 'entry'">
-        <el-space wrap>
-          <el-button @click="backHall">返回大厅</el-button>
-        </el-space>
-      </div>
+      <div class="cult-panel-body">
+        <template v-if="stage === 'rules'">
+          <ModuleRulesIntro module-key="mijing" @confirm="stage = 'entry'" @back="backHall" />
+        </template>
 
-      <template v-if="stage === 'entry'">
-        <el-alert
-          v-if="resumeCandidate"
-          type="warning"
-          :closable="false"
-          show-icon
-          title="检测到上次秘境进度"
-          description="请选择继续上次挑战，或重新开始新的限时挑战。"
-          style="margin-bottom: 10px;"
-        />
-        <el-alert
-          type="info"
-          :closable="false"
-          show-icon
-          title="60 秒限时挑战"
-          description="答题越快、连对越高，得分越高。每次挑战消耗灵力 5 点。"
-        />
-        <div class="mijing-entry-grid">
-          <el-form-item label="试炼类型">
-            <el-select v-model="entry.moduleType" placeholder="选择类型">
-              <el-option label="采药识灵" value="vocab" />
-              <el-option label="基础功法" value="grammar" />
-              <el-option label="听风谷" value="listening" />
-              <el-option label="阅读副本" value="reading" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="境界">
-            <el-input v-model="entry.level" maxlength="3" />
-          </el-form-item>
-          <el-form-item label="关卡">
-            <el-input v-model="entry.stage" maxlength="2" />
-          </el-form-item>
-        </div>
-        <div v-if="resumeCandidate" class="module-actions">
-          <el-button type="primary" @click="continueChallenge">继续上次进度</el-button>
-          <el-button type="danger" @click="restartChallenge">重新开始挑战</el-button>
-        </div>
-        <div v-else class="module-actions">
-          <el-button type="primary" @click="startChallenge">开始限时挑战</el-button>
-        </div>
-      </template>
-
-      <template v-else-if="stage === 'challenge'">
-        <div class="mijing-hud">
-          <div class="hud-item hud-timer" :class="{ 'hud-urgent': remainSec <= 10 }">
-            <span class="hud-icon">⏳</span>
-            <span class="hud-val">{{ remainSec }}s</span>
+        <template v-else-if="stage === 'entry'">
+          <div v-if="resumeCandidate" class="cult-notice warning">
+            <span class="cult-notice-icon">⟳</span>
+            <div class="cult-notice-body">
+              <div class="cult-notice-title">检测到上次秘境进度</div>
+              <div class="cult-notice-desc">请选择继续上次挑战，或重新开始新的限时挑战。</div>
+            </div>
           </div>
-          <div class="hud-item hud-score">
-            <span class="hud-icon">✦</span>
-            <span class="hud-val">{{ score }}</span>
+
+          <div class="cult-notice info mijing-intro">
+            <span class="cult-notice-icon">⏳</span>
+            <div class="cult-notice-body">
+              <div class="cult-notice-title">60 秒限时挑战</div>
+              <div class="cult-notice-desc">答题越快、连对越高，得分越高。每次挑战消耗灵力 5 点。</div>
+            </div>
           </div>
-          <div class="hud-item hud-combo" v-if="combo > 0">
-            <span class="hud-icon">🔥</span>
-            <span class="hud-val">×{{ combo }}</span>
+
+          <div class="cult-form-section">
+            <div class="cult-section-title">试炼配置</div>
+            <div class="cult-form-grid">
+              <div class="cult-field full">
+                <label class="cult-field-label">试炼类型</label>
+                <el-select v-model="entry.moduleType" placeholder="选择类型" class="cult-select">
+                  <el-option label="采药识灵" value="vocab" />
+                  <el-option label="基础功法" value="grammar" />
+                  <el-option label="听风谷" value="listening" />
+                  <el-option label="阅读副本" value="reading" />
+                </el-select>
+              </div>
+              <div class="cult-field">
+                <label class="cult-field-label">境界</label>
+                <el-input v-model="entry.level" maxlength="3" placeholder="L1" />
+              </div>
+              <div class="cult-field">
+                <label class="cult-field-label">关卡</label>
+                <el-input v-model="entry.stage" maxlength="2" placeholder="01" />
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div class="mijing-quest-scroll">
-          <div class="quest-ornament left">✧</div>
-          <div class="quest-text">{{ currentQuestion?.stem || '正在加载题目...' }}</div>
-          <div class="quest-ornament right">✧</div>
-        </div>
+          <div v-if="resumeCandidate" class="cult-actions">
+            <el-button type="primary" @click="continueChallenge">继续上次进度</el-button>
+            <el-button type="danger" @click="restartChallenge">重新开始挑战</el-button>
+          </div>
+          <div v-else class="cult-actions center">
+            <el-button type="primary" @click="startChallenge">开始限时挑战</el-button>
+          </div>
+        </template>
 
-        <div class="mijing-bottom-bar">
-          <button class="mijing-settle-btn" @click="finishChallenge">提前结算</button>
-        </div>
-      </template>
+        <template v-else-if="stage === 'challenge'">
+          <div class="mijing-hud">
+            <div class="hud-item hud-timer" :class="{ 'hud-urgent': remainSec <= 10 }">
+              <span class="hud-icon">⏳</span>
+              <span class="hud-val">{{ remainSec }}s</span>
+            </div>
+            <div class="hud-item hud-score">
+              <span class="hud-icon">✦</span>
+              <span class="hud-val">{{ score }}</span>
+            </div>
+            <div class="hud-item hud-combo" v-if="combo > 0">
+              <span class="hud-icon">🔥</span>
+              <span class="hud-val">×{{ combo }}</span>
+            </div>
+          </div>
 
-      <template v-else-if="stage === 'result' && resultData">
-        <el-result
-          icon="success"
-          title="限时试炼结算"
-          :sub-title="`得分 ${resultData.final_score || 0} ｜ 正确率 ${resultData.accuracy || 0}%`"
-        >
-          <template #extra>
-            <el-space>
+          <div class="mijing-quest-scroll">
+            <div class="quest-ornament left">✧</div>
+            <div class="quest-text">{{ currentQuestion?.stem || '正在加载题目...' }}</div>
+            <div class="quest-ornament right">✧</div>
+          </div>
+
+          <div class="mijing-bottom-bar">
+            <button class="mijing-settle-btn" type="button" @click="finishChallenge">提前结算</button>
+          </div>
+        </template>
+
+        <template v-else-if="stage === 'result' && resultData">
+          <div class="cult-result success mijing-result">
+            <div class="cult-result-icon">✦</div>
+            <div class="cult-result-title">限时试炼结算</div>
+            <div class="cult-result-sub">
+              得分 {{ resultData.final_score || 0 }} ｜ 正确率 {{ resultData.accuracy || 0 }}%
+            </div>
+            <div class="cult-actions">
               <el-button type="primary" @click="retry">再闯一局</el-button>
               <el-button @click="backHall">返回大厅</el-button>
-            </el-space>
-          </template>
-        </el-result>
-      </template>
-    </el-card>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -110,8 +117,9 @@ import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
 import { useStoryStore } from '../stores/story';
+import ModuleRulesIntro from '../components/ModuleRulesIntro.vue';
 
-type Stage = 'entry' | 'challenge' | 'result';
+type Stage = 'rules' | 'entry' | 'challenge' | 'result';
 type MijingSession = {
   stage: Stage;
   challengeId: string;
@@ -132,7 +140,7 @@ const ui = useUiStore();
 const user = useUserStore();
 const story = useStoryStore();
 
-const stage = ref<Stage>('entry');
+const stage = ref<Stage>('rules');
 const challengeId = ref('');
 const durationSec = ref(60);
 const startedAtMs = ref(0);
@@ -609,31 +617,5 @@ function backHall() {
   background: rgba(255, 255, 255, 0.15);
   color: #fff;
   border-color: rgba(255, 255, 255, 0.4);
-}
-
-/* ===== 卡片头部 ===== */
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.mijing-close-btn {
-  width: 32px;
-  height: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.mijing-close-btn:hover {
-  background: rgba(255, 80, 80, 0.3);
-  border-color: rgba(255, 80, 80, 0.5);
-  color: #ff6b6b;
 }
 </style>

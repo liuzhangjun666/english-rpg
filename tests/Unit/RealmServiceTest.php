@@ -16,7 +16,7 @@ class RealmServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new RealmService();
+        $this->service = app(RealmService::class);
     }
 
     public function test_get_realm_index()
@@ -61,5 +61,32 @@ class RealmServiceTest extends TestCase
         $result = $this->service->breakthrough($user);
 
         $this->assertEquals('maxed', $result['type']);
+    }
+
+    public function test_resolve_current_realm_does_not_downgrade_assessed_label(): void
+    {
+        $user = User::factory()->make([
+            'realm' => 'L1',
+            'realm_stage' => 1,
+            'current_realm' => '练气五层',
+        ]);
+
+        $this->assertSame('练气五层', $this->service->resolveCurrentRealm($user));
+    }
+
+    public function test_apply_realm_label_syncs_code_and_stage(): void
+    {
+        $user = User::factory()->create([
+            'realm' => 'L1',
+            'realm_stage' => 1,
+            'current_realm' => '练气一层',
+        ]);
+
+        $this->service->applyRealmLabelToUser($user, '练气五层');
+        $user->refresh();
+
+        $this->assertSame('L1', $user->realm);
+        $this->assertSame(5, (int) $user->realm_stage);
+        $this->assertSame('练气五层', $user->current_realm);
     }
 }

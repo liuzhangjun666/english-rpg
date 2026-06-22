@@ -4,9 +4,16 @@ namespace App\Services;
 
 use App\Models\HeartDemon;
 use App\Models\Question;
+use App\Models\User;
+use App\Models\VocabularyWord;
 
 class HeartDemonService
 {
+    public function __construct(
+        private readonly PracticeLevelService $levelService
+    ) {
+    }
+
     // Base ratio of injected demon questions in each practice batch.
     public const INJECTION_RATIO = 0.2;
     // Clear a demon after this many correct answers.
@@ -21,11 +28,17 @@ class HeartDemonService
             ->where('question_id', $questionId)
             ->first();
 
+        $wordLemma = $question?->word;
+        if (!$wordLemma && $type === 'vocab' && preg_match('/^VW-(\d+)$/', $questionId, $m)) {
+            $vw = VocabularyWord::query()->find((int) $m[1]);
+            $wordLemma = $vw?->lemma;
+        }
+
         if (!$demon) {
             HeartDemon::create([
                 'user_id' => $userId,
                 'question_id' => $questionId,
-                'word' => $question?->word,
+                'word' => $wordLemma,
                 'realm' => $realm ?? $question?->realm,
                 'type' => $type,
                 'wrong_count' => 1,
@@ -37,7 +50,7 @@ class HeartDemonService
             return;
         }
 
-        $demon->word = $question?->word ?? $demon->word;
+        $demon->word = $wordLemma ?? $demon->word;
         $demon->realm = $realm ?? $question?->realm ?? $demon->realm;
         $demon->type = $type ?: $demon->type;
         $demon->wrong_count = (int) $demon->wrong_count + 1;
@@ -101,20 +114,26 @@ class HeartDemonService
             ->toArray();
     }
 
-    public function getInjectedQuestions(int $userId, string $type, string $realm, string $stage, int $normalCount): array
+    public function getInjectedQuestions(int $userId, string $type, int $stageNo, int $normalCount): array
     {
-        $normalQuestions = Question::where('type', $type)
-            ->where('realm', $realm)
-            ->where('stage', $stage)
-            ->get()
-            ->keyBy('question_id')
-            ->toArray();
+        $user = User::query()->find($userId);
+        if (!$user) {
+            return [];
+        }
 
-        $demonCount = (int) round($normalCount * $this->dynamicInjectionRatio($userId, $type, $realm));
+        $realmCode = (string) ($user->realm ?? 'L1');
+        $stageQuestions = $this->levelService->getStageQuestions($user, $type, $stageNo);
+        if ($stageQuestions->isEmpty()) {
+            return [];
+        }
+
+        $normalQuestions = $stageQuestions->keyBy('question_id')->toArray();
+
+        $demonCount = (int) round($normalCount * $this->dynamicInjectionRatio($userId, $type, $realmCode));
         if ($demonCount > 0) {
             $demonCount = max(1, $demonCount);
         }
-        $demons = $this->getPendingDemons($userId, $demonCount, $type, $realm);
+        $demons = $this->getPendingDemons($userId, $demonCount, $type, $realmCode);
 
         $injected = [];
         foreach ($demons as $demon) {

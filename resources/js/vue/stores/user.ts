@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { mergeRealmPatch, normalizeUserProfile } from '../../utils/cultivation.js';
 
 export type UserProfile = Record<string, any> | null;
 
@@ -12,11 +13,12 @@ export const useUserStore = defineStore('user', {
   },
   actions: {
     setProfile(profile: Record<string, any>) {
-      this.profile = profile;
+      this.profile = normalizeUserProfile(profile);
     },
     updateProfile(updates: Record<string, any>) {
       if (!this.profile) return;
-      this.profile = { ...this.profile, ...updates };
+      const patch = mergeRealmPatch(this.profile, updates);
+      this.profile = normalizeUserProfile({ ...this.profile, ...patch });
     },
     clearProfile() {
       this.profile = null;

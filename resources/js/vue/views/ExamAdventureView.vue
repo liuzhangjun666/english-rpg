@@ -1,103 +1,124 @@
 <template>
   <div class="exam-page">
-    <el-card class="exam-shell" shadow="hover">
-      <template #header>
-        <div class="card-header">试炼场 · 渡劫检测</div>
-      </template>
-
-      <div class="exam-toolbar">
-        <el-space wrap>
-          <el-button type="warning" plain @click="openLegacy">经典模式</el-button>
-          <el-button @click="backHall">返回大厅</el-button>
-        </el-space>
-      </div>
-
-      <template v-if="stage === 'info'">
-        <el-alert
-          v-if="resumeCandidate"
-          type="warning"
-          :closable="false"
-          show-icon
-          title="检测到上次渡劫进度"
-          description="请选择继续上次渡劫，或重新开始本轮试炼。"
-          style="margin-bottom: 10px;"
-        />
-        <el-alert
-          type="info"
-          :closable="false"
-          show-icon
-          :title="`${examInfo.current_realm || '-'} → ${examInfo.next_realm || '-'}`"
-          :description="examInfo.breakthrough_status?.message || '请先完成突破条件。'"
-        />
-
-        <div class="exam-meta">
-          <div>灵力：{{ examInfo.spirit_power ?? 0 }} / 渡劫消耗 {{ examInfo.spirit_cost ?? 30 }}</div>
-          <div>当前境界：{{ examInfo.current_realm || '-' }}</div>
-          <div>下一境界：{{ examInfo.next_realm || '-' }}</div>
+    <div class="cult-panel exam-panel">
+      <header class="cult-panel-header">
+        <div class="cult-panel-title">
+          <span class="cult-panel-icon">⚡</span>
+          <span>试炼场 · 渡劫检测</span>
         </div>
+        <button class="cult-panel-back" type="button" @click="backHall">返回大厅</button>
+      </header>
 
-        <div class="exam-conditions" v-if="dimensionRows.length">
-          <div v-for="item in dimensionRows" :key="item.key" class="exam-condition" :class="{ met: item.met, unmet: !item.met }">
-            <span>{{ item.label }} {{ item.current }}/{{ item.required }}</span>
-            <span>{{ item.met ? '✓' : `差 ${item.gap}` }}</span>
+      <div class="cult-panel-body">
+        <template v-if="stage === 'rules'">
+          <ModuleRulesIntro module-key="exam" @confirm="stage = 'info'" @back="backHall" />
+        </template>
+
+        <template v-else-if="stage === 'info'">
+          <div v-if="resumeCandidate" class="cult-notice warning">
+            <span class="cult-notice-icon">⟳</span>
+            <div class="cult-notice-body">
+              <div class="cult-notice-title">检测到上次渡劫进度</div>
+              <div class="cult-notice-desc">请选择继续上次渡劫，或重新开始本轮试炼。</div>
+            </div>
           </div>
-        </div>
 
-        <div v-if="resumeCandidate" class="module-actions">
-          <el-button type="primary" @click="continueExam">继续上次进度</el-button>
-          <el-button type="danger" @click="restartExam">重新开始渡劫</el-button>
-          <el-button @click="loadCurrent">刷新状态</el-button>
-        </div>
-        <div v-else class="module-actions">
-          <el-button type="primary" :disabled="!canBreakthrough" @click="manualBreakthrough">手动突破</el-button>
-          <el-button type="danger" :disabled="!canTakeExam" @click="startExam">开始渡劫</el-button>
-          <el-button @click="loadCurrent">刷新状态</el-button>
-        </div>
-      </template>
+          <div class="cult-realm-banner" :class="{ ready: canBreakthrough }">
+            <div class="cult-realm-side">
+              <span class="cult-realm-label">当前</span>
+              <span class="cult-realm-name">{{ examInfo.current_realm || '-' }}</span>
+            </div>
+            <div class="cult-realm-arrow">⟹</div>
+            <div class="cult-realm-side highlight">
+              <span class="cult-realm-label">下一境界</span>
+              <span class="cult-realm-name">{{ examInfo.next_realm || '-' }}</span>
+            </div>
+            <p class="cult-realm-msg">{{ examInfo.breakthrough_status?.message || '请先完成突破条件。' }}</p>
+          </div>
 
-      <template v-else-if="stage === 'exam' && questions.length > 0">
-        <div class="exam-header">
-          <el-tag type="danger">渡劫 {{ currentIndex + 1 }}/{{ questions.length }}</el-tag>
-          <el-tag type="warning">剩余 {{ formatTime(timeLeft) }}</el-tag>
-          <el-tag type="info">已答 {{ answeredCount }}/{{ questions.length }}</el-tag>
-        </div>
+          <div class="cult-stat-grid">
+            <div class="cult-stat-card">
+              <span class="cult-stat-label">灵力储备</span>
+              <span class="cult-stat-value">{{ examInfo.spirit_power ?? 0 }}</span>
+              <span class="cult-stat-sub">渡劫消耗 {{ examInfo.spirit_cost ?? 30 }}</span>
+            </div>
+            <div class="cult-stat-card">
+              <span class="cult-stat-label">当前境界</span>
+              <span class="cult-stat-value sm">{{ examInfo.current_realm || '-' }}</span>
+            </div>
+            <div class="cult-stat-card">
+              <span class="cult-stat-label">突破目标</span>
+              <span class="cult-stat-value sm">{{ examInfo.next_realm || '-' }}</span>
+            </div>
+          </div>
 
-        <div class="exam-question">{{ currentQuestion.question }}</div>
+          <div v-if="dimensionRows.length" class="cult-progress-section">
+            <div class="cult-section-title">六维修行进度</div>
+            <div class="cult-progress-list">
+              <div v-for="item in dimensionRows" :key="item.key" class="cult-progress-item"
+                :class="{ met: item.met, unmet: !item.met }">
+                <div class="cult-progress-head">
+                  <span class="cult-progress-label">{{ item.label }}</span>
+                  <span class="cult-progress-value">{{ item.current }} / {{ item.required }}</span>
+                  <span class="cult-progress-status">{{ item.met ? '已达标' : `差 ${item.gap}` }}</span>
+                </div>
+                <div class="cult-progress-track">
+                  <div class="cult-progress-fill" :style="{ width: `${dimensionPercent(item)}%` }"></div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-        <el-radio-group v-model="answers[currentQuestion.question_id]" class="exam-option-group">
-          <el-radio
-            v-for="opt in optionEntries"
-            :key="`${currentQuestion.question_id}-${opt.key}`"
-            :label="opt.key"
-            border
-            class="option-item"
-          >
-            {{ opt.key }}. {{ opt.text }}
-          </el-radio>
-        </el-radio-group>
+          <div v-if="resumeCandidate" class="cult-actions">
+            <el-button type="primary" @click="continueExam">继续上次进度</el-button>
+            <el-button type="danger" @click="restartExam">重新开始渡劫</el-button>
+            <el-button @click="loadCurrent">刷新状态</el-button>
+          </div>
+          <div v-else class="cult-actions">
+            <el-button type="primary" :disabled="!canBreakthrough" @click="manualBreakthrough">手动突破</el-button>
+            <el-button type="danger" :disabled="!canTakeExam" @click="startExam">开始渡劫</el-button>
+            <el-button @click="loadCurrent">刷新状态</el-button>
+          </div>
+        </template>
 
-        <div class="module-actions">
-          <el-button :disabled="currentIndex === 0" @click="prevQuestion">上一题</el-button>
-          <el-button :disabled="currentIndex >= questions.length - 1" @click="nextQuestion">下一题</el-button>
-          <el-button type="primary" @click="submitExam">提交应劫</el-button>
-        </div>
-      </template>
+        <template v-else-if="stage === 'exam' && questions.length > 0">
+          <div class="cult-tag-row">
+            <span class="cult-tag danger">渡劫 {{ currentIndex + 1 }}/{{ questions.length }}</span>
+            <span class="cult-tag warning">剩余 {{ formatTime(timeLeft) }}</span>
+            <span class="cult-tag info">已答 {{ answeredCount }}/{{ questions.length }}</span>
+          </div>
 
-      <template v-else-if="stage === 'result' && resultData">
-        <el-result
-          :icon="resultData.grade_result?.passed ? 'success' : 'warning'"
-          :title="resultData.grade_result?.passed ? '渡劫成功' : '渡劫未过'"
-          :sub-title="`评级 ${resultData.grade_result?.grade || '-'} ｜ 得分 ${resultData.grade_result?.score || 0}`"
-        >
-          <template #extra>
-            <el-space>
+          <div class="cult-question-stem">{{ currentQuestion.question }}</div>
+
+          <el-radio-group v-model="answers[currentQuestion.question_id]" class="cult-option-group">
+            <el-radio v-for="opt in optionEntries" :key="`${currentQuestion.question_id}-${opt.key}`" :label="opt.key"
+              border class="cult-option-item">
+              {{ opt.key }}. {{ opt.text }}
+            </el-radio>
+          </el-radio-group>
+
+          <div class="cult-actions">
+            <el-button :disabled="currentIndex === 0" @click="prevQuestion">上一题</el-button>
+            <el-button :disabled="currentIndex >= questions.length - 1" @click="nextQuestion">下一题</el-button>
+            <el-button type="primary" @click="submitExam">提交应劫</el-button>
+          </div>
+        </template>
+
+        <template v-else-if="stage === 'result' && resultData">
+          <div class="cult-result" :class="resultData.grade_result?.passed ? 'success' : 'warning'">
+            <div class="cult-result-icon">{{ resultData.grade_result?.passed ? '✦' : '☁' }}</div>
+            <div class="cult-result-title">{{ resultData.grade_result?.passed ? '渡劫成功' : '渡劫未过' }}</div>
+            <div class="cult-result-sub">
+              评级 {{ resultData.grade_result?.grade || '-' }} ｜ 得分 {{ resultData.grade_result?.score || 0 }}
+            </div>
+            <div class="cult-actions">
               <el-button type="primary" @click="afterResult">返回试炼信息</el-button>
               <el-button @click="backHall">返回大厅</el-button>
-            </el-space>
-          </template>
-        </el-result>
-      </template>
-    </el-card>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -111,7 +132,7 @@ import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
 import { useDemonStore } from '../stores/demon';
 
-type Stage = 'info' | 'exam' | 'result';
+type Stage = 'rules' | 'info' | 'exam' | 'result';
 type ExamSession = {
   stage: Stage;
   questions: Array<Record<string, any>>;
@@ -127,7 +148,7 @@ const bridge = useLegacyBridge();
 const ui = useUiStore();
 const user = useUserStore();
 
-const stage = ref<Stage>('info');
+const stage = ref<Stage>('rules');
 const examInfo = ref<Record<string, any>>({});
 const questions = ref<Array<Record<string, any>>>([]);
 const currentIndex = ref(0);
@@ -245,13 +266,13 @@ async function loadCurrent() {
 
 async function manualBreakthrough() {
   const demonStore = useDemonStore();
-  
+
   ui.showLoading('探查道心...');
   try {
     // 1. 突破前置心魔劫检查
     const preRes = await api.get('/demons/pre-exam');
     const demonQuestions = preRes?.data?.questions || [];
-    
+
     if (demonQuestions.length > 0) {
       ui.hideLoading();
       // 2. 触发天劫主题心魔战
@@ -261,13 +282,13 @@ async function manualBreakthrough() {
         title: '天劫临身',
         subtitle: '欲破此境，先斩心魔。道心有漏，雷劫不容！'
       });
-      
+
       // 3. 结果判定
       if (!encounterResult || !encounterResult.passed) {
         ElMessage.warning('未能斩却心魔，突破失败，修为震荡。');
         return;
       }
-      
+
       ui.showLoading('心魔尽散，冲击瓶颈...');
     } else {
       ui.showLoading('冲击瓶颈中...');
@@ -372,6 +393,11 @@ function formatTime(seconds: number) {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
+function dimensionPercent(item: { current: number; required: number }) {
+  const required = Math.max(1, Number(item.required || 0));
+  return Math.min(100, Math.round((Number(item.current || 0) / required) * 100));
+}
+
 function hasMissingAnswers() {
   return questions.value.some((q) => !String(answers[String(q.question_id)] || '').trim());
 }
@@ -421,17 +447,6 @@ async function afterResult() {
   stage.value = 'info';
   resultData.value = null;
   await loadCurrent();
-}
-
-async function openLegacy() {
-  ui.showLoading('切换经典试炼...');
-  try {
-    await bridge.openExam();
-  } catch {
-    ElMessage.error('经典模式加载失败');
-  } finally {
-    ui.hideLoading();
-  }
 }
 
 function backHall() {

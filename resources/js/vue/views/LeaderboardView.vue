@@ -11,13 +11,8 @@
       <div class="profile-body" style="flex-direction: column; padding: 30px;">
         <!-- Tabs -->
         <div class="lb-tabs">
-          <button 
-            v-for="(title, key) in tabs" 
-            :key="key"
-            class="lb-tab-btn"
-            :class="{ 'is-active': currentTab === key }"
-            @click="switchTab(key as keyof typeof tabs)"
-          >
+          <button v-for="(title, key) in tabs" :key="key" class="lb-tab-btn"
+            :class="{ 'is-active': currentTab === key }" @click="switchTab(key as keyof typeof tabs)">
             {{ title }}
           </button>
         </div>
@@ -34,12 +29,8 @@
             暂无数据
           </div>
           <transition-group name="list" tag="div" v-else class="lb-grid">
-            <div 
-              v-for="(item, index) in leaderboard" 
-              :key="item.nickname + index" 
-              class="lb-item"
-              :class="{ 'is-top3': index < 3 }"
-            >
+            <div v-for="(item, index) in leaderboard" :key="item.nickname + index" class="lb-item"
+              :class="{ 'is-top3': index < 3 }">
               <div class="lb-rank" :class="'rank-' + index">
                 {{ index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}` }}
               </div>
@@ -139,17 +130,19 @@ const fetchLeaderboard = async (tab: string) => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
 }
+
 .profile-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 16px;
-  background: rgba(255,255,255,0.05);
-  border-bottom: 1px solid rgba(212,168,67,0.3);
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(212, 168, 67, 0.3);
 }
+
 .profile-close-btn {
   background: transparent;
   border: 1px solid var(--gold, #d4a843);
@@ -165,6 +158,7 @@ const fetchLeaderboard = async (tab: string) => {
   gap: 8px;
   margin-bottom: 16px;
 }
+
 .lb-tab-btn {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(212, 168, 67, 0.2);
@@ -175,9 +169,11 @@ const fetchLeaderboard = async (tab: string) => {
   cursor: pointer;
   transition: all 0.2s;
 }
+
 .lb-tab-btn:hover {
   background: rgba(212, 168, 67, 0.1);
 }
+
 .lb-tab-btn.is-active {
   background: rgba(212, 168, 67, 0.2);
   border-color: #d4a843;
@@ -187,33 +183,36 @@ const fetchLeaderboard = async (tab: string) => {
 
 .lb-my-rank {
   font-size: 13px;
-  color: #c8b685;
+  color: var(--cult-parchment-dim, #c8b685);
   margin-bottom: 12px;
   text-align: center;
 }
+
 .text-gold {
-  color: #d4a843;
-  font-weight: bold;
+  color: var(--cult-gold, #f4d98a);
+  font-weight: 700;
 }
 
 .lb-list {
-  flex: 1;
   max-height: 400px;
   overflow-y: auto;
   position: relative;
   min-height: 150px;
 }
+
 .lb-empty {
   text-align: center;
   color: #c8b685;
   padding: 40px 0;
 }
+
 .lb-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
   padding: 10px;
 }
+
 .lb-item {
   display: flex;
   align-items: center;
@@ -224,53 +223,85 @@ const fetchLeaderboard = async (tab: string) => {
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: all 0.3s;
 }
+
 .lb-item.is-top3 {
   background: rgba(212, 168, 67, 0.08);
   border-color: rgba(212, 168, 67, 0.25);
   box-shadow: inset 0 0 15px rgba(212, 168, 67, 0.1);
 }
+
 .lb-item:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(212, 168, 67, 0.4);
   transform: translateY(-2px);
 }
+
 .lb-rank {
-  width: 32px;
+  width: 36px;
   text-align: center;
-  font-weight: bold;
+  font-weight: 700;
 }
-.rank-0 { color: #d4a843; font-size: 18px; }
-.rank-1 { color: #f4d98a; font-size: 18px; }
-.rank-2 { color: #c8b685; font-size: 18px; }
-.rank-3, .rank-4, .rank-5, .rank-6, .rank-7, .rank-8, .rank-9 { color: #8a8a8a; }
+
+.lb-rank.rank-0,
+.lb-rank.rank-1,
+.lb-rank.rank-2 {
+  font-size: 18px;
+}
+
+.lb-rank.rank-0 {
+  color: var(--cult-gold-dim, #d4a843);
+}
+
+.lb-rank.rank-1 {
+  color: var(--cult-gold, #f4d98a);
+}
+
+.lb-rank.rank-2 {
+  color: var(--cult-parchment-dim, #c8b685);
+}
+
+.lb-rank.rank-3,
+.lb-rank.rank-4,
+.lb-rank.rank-5,
+.lb-rank.rank-6,
+.lb-rank.rank-7,
+.lb-rank.rank-8,
+.lb-rank.rank-9 {
+  color: var(--cult-parchment-muted, #9a8f6e);
+}
 
 .lb-name {
   flex: 1;
   font-size: 14px;
-  color: #f7f3e8;
+  color: var(--cult-parchment, #f7f3e8);
 }
+
 .lb-metric {
   font-size: 13px;
-  color: #d4a843;
-  font-weight: bold;
+  color: var(--cult-gold-dim, #d4a843);
+  font-weight: 700;
 }
 
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.4s ease;
+  transition: all 0.35s ease;
 }
+
 .list-enter-from {
   opacity: 0;
-  transform: translateX(30px);
+  transform: translateX(16px);
 }
+
 .list-leave-to {
   opacity: 0;
-  transform: translateX(-30px);
+  transform: translateX(-16px);
 }
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;

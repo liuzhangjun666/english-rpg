@@ -28,11 +28,8 @@
               </div>
               <div class="mall-item-action">
                 <div class="mall-price">💎 {{ item.price || 0 }}</div>
-                <button 
-                  class="mall-buy-btn" 
-                  :disabled="stones < (item.price || 0) || buyingId === item.id"
-                  @click="buyItem(item)"
-                >
+                <button class="mall-buy-btn" :disabled="stones < (item.price || 0) || buyingId === item.id"
+                  @click="buyItem(item)">
                   {{ buyingId === item.id ? '兑换中...' : '兑换' }}
                 </button>
               </div>
@@ -122,7 +119,7 @@ const buyItem = async (item: any) => {
       successMsg.value = '';
       errorMsg.value = '';
     }, 3000);
-}
+  }
 };
 
 </script>
@@ -148,17 +145,19 @@ const buyItem = async (item: any) => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
 }
+
 .profile-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 16px;
-  background: rgba(255,255,255,0.05);
-  border-bottom: 1px solid rgba(212,168,67,0.3);
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(212, 168, 67, 0.3);
 }
+
 .profile-close-btn {
   background: transparent;
   border: 1px solid var(--gold, #d4a843);
@@ -170,33 +169,36 @@ const buyItem = async (item: any) => {
 
 .mall-stones {
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   font-size: 14px;
-  color: #f4d98a;
+  color: var(--cult-parchment-dim, #c8b685);
 }
+
 .text-gold {
-  color: #d4a843;
-  font-weight: bold;
+  color: var(--cult-gold, #f4d98a);
+  font-weight: 700;
 }
 
 .mall-list {
-  flex: 1;
   max-height: 400px;
   overflow-y: auto;
   position: relative;
   min-height: 150px;
 }
+
 .mall-empty {
   text-align: center;
   color: #c8b685;
   padding: 40px 0;
 }
+
 .mall-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
   padding: 10px;
 }
+
 .mall-item {
   display: flex;
   flex-direction: column;
@@ -207,6 +209,7 @@ const buyItem = async (item: any) => {
   border: 1px solid rgba(255, 255, 255, 0.06);
   transition: all 0.3s;
 }
+
 .mall-item:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(212, 168, 67, 0.4);
@@ -217,17 +220,20 @@ const buyItem = async (item: any) => {
   font-size: 40px;
   text-align: center;
 }
+
 .mall-item-info {
   flex: 1;
 }
+
 .mall-item-name {
   font-size: 14px;
-  color: #f7f3e8;
-  font-weight: bold;
+  color: var(--cult-parchment, #f7f3e8);
+  font-weight: 700;
 }
+
 .mall-item-desc {
   font-size: 12px;
-  color: #c8b685;
+  color: var(--cult-parchment-dim, #c8b685);
   margin-top: 4px;
 }
 
@@ -239,60 +245,55 @@ const buyItem = async (item: any) => {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 12px;
 }
+
 .mall-price {
   font-size: 13px;
-  color: #d4a843;
-  font-weight: bold;
+  color: var(--cult-gold-dim, #d4a843);
+  font-weight: 700;
   margin-bottom: 6px;
 }
+
 .mall-buy-btn {
   background: rgba(212, 168, 67, 0.1);
-  border: 1px solid rgba(212, 168, 67, 0.5);
-  color: #f4d98a;
-  padding: 4px 12px;
-  border-radius: 4px;
+  border: 1px solid rgba(212, 168, 67, 0.45);
+  color: var(--cult-gold, #f4d98a);
+  padding: 5px 12px;
+  border-radius: 8px;
   font-size: 12px;
   cursor: pointer;
   transition: all 0.2s;
 }
+
 .mall-buy-btn:hover:not(:disabled) {
-  background: rgba(212, 168, 67, 0.2);
-  box-shadow: 0 0 8px rgba(212, 168, 67, 0.3);
-}
-.mall-buy-btn:disabled {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.3);
-  cursor: not-allowed;
+  background: rgba(212, 168, 67, 0.18);
+  box-shadow: 0 0 10px rgba(212, 168, 67, 0.2);
 }
 
-.mall-msg {
-  text-align: center;
-  font-size: 13px;
-  min-height: 20px;
-  margin-top: 12px;
-  color: #4ec07a;
-}
-.mall-msg.is-error {
-  color: #ff6b6b;
+.mall-buy-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.4s ease;
+  transition: all 0.35s ease;
 }
+
 .list-enter-from {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(12px);
 }
+
 .list-leave-to {
   opacity: 0;
-  transform: translateY(-20px);
+  transform: translateY(-12px);
 }
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;

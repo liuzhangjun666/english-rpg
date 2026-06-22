@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\RealmService;
 use App\Services\ShareRewardService;
 use App\Services\SmsService;
+use App\Support\CultivationProfile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -14,19 +16,21 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
     private SmsService $smsService;
+    private RealmService $realmService;
 
-    public function __construct(SmsService $smsService)
+    public function __construct(SmsService $smsService, RealmService $realmService)
     {
         $this->smsService = $smsService;
+        $this->realmService = $realmService;
     }
 
     private const CHINESE_MESSAGES = [
         'phone.required' => '请输入手机号',
         'phone.size' => '请输入11位手机号',
-        'phone.unique' => '该手机号已注册',
         'code.required' => '请输入验证码',
         'code.size' => '验证码为6位数字',
         'nickname.max' => '道号最长50个字符',
+        'school_grade.required' => '请选择学段',
         'school_grade.max' => '年级信息过长',
         'birth_year.integer' => '出生年份格式错误',
         'birth_year.min' => '出生年份不早于1950年',
@@ -61,10 +65,10 @@ class AuthController extends Controller
         RateLimiter::hit($ipKey, 3600); // 计数器存活 1 小时
 
         $validator = Validator::make($request->all(), [
-            'phone' => 'required|string|size:11|unique:levelup_users,phone',
+            'phone' => 'required|string|size:11',
             'code'  => 'required|string|size:6',
             'nickname' => 'nullable|string|max:50',
-            'school_grade' => 'nullable|string|max:32',
+            'school_grade' => 'required|string|max:32',
             'birth_year' => 'nullable|integer|min:1950|max:' . date('Y'),
             'invite_code' => 'nullable|string|max:20',
         ], self::CHINESE_MESSAGES);
@@ -75,6 +79,17 @@ class AuthController extends Controller
                 'code' => 'VALIDATION_ERROR',
                 'message' => $validator->errors()->first(),
             ], 422);
+        }
+
+        if (User::where('phone', $request->phone)->exists()) {
+            return response()->json([
+                'success' => false,
+                'code' => 'PHONE_ALREADY_REGISTERED',
+                'message' => '该手机号已被注册，请返回登录页面进行登录',
+                'data' => [
+                    'next_action' => 'login',
+                ],
+            ]);
         }
 
         // 验证短信验证码
@@ -94,15 +109,18 @@ class AuthController extends Controller
         }
 
         $today = date('Y-m-d');
+        // 注册时仅写入占位境界（练气一层），真实初始境界在灵根测试完成后写入
+        $initialRealm = CultivationProfile::defaultInitialRealm();
+        $currentRealmName = $this->realmService->composeCurrentRealm($initialRealm['realm'], $initialRealm['realm_stage']);
 
         $user = User::create([
             'phone' => $request->phone,
             'nickname' => $request->nickname ?: ('道友' . substr($request->phone, -4)),
-            'school_grade' => $request->school_grade ?: null,
-            'realm' => 'L1',
-            'realm_stage' => 1,
+            'school_grade' => $request->school_grade,
+            'realm' => $initialRealm['realm'],
+            'realm_stage' => $initialRealm['realm_stage'],
             'exp' => 0,
-            'current_realm' => '练气一层',
+            'current_realm' => $currentRealmName,
             'cultivation_energy' => 0,
             'vocabulary' => 0,
             'grammar' => 0,
@@ -150,12 +168,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'phone' => 'required|string|size:11',
             'code'  => 'required|string|size:6',
-        ], [
-            'phone.required' => '请输入手机号',
-            'phone.size' => '请输入11位手机号',
-            'code.required' => '请输入验证码',
-            'code.size' => '验证码为6位数字',
-        ]);
+        ], self::CHINESE_MESSAGES);
 
         if ($validator->fails()) {
             return response()->json([
@@ -165,7 +178,6 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // 验证短信验证码
         if (!$this->verifyCode($request, 'login')) {
             return response()->json([
                 'success' => false,

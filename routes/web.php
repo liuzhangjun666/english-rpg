@@ -7,7 +7,7 @@ Route::get('/', function () {
 });
 
 Route::get('/login', function () {
-    return redirect('/');
+    return view('welcome');
 })->name('login');
 
 Route::get('/{path?}', function () {

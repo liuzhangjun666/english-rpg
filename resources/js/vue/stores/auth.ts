@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { useApiClient } from '../services/api';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -10,10 +11,15 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     setToken(token: string) {
-      this.token = token || '';
+      const normalized = String(token || '').trim();
+      this.token = normalized;
+      if (normalized) {
+        useApiClient().setToken(normalized);
+      }
     },
     clearToken() {
       this.token = '';
+      useApiClient().clearToken();
     },
     markBootstrapped() {
       this.bootstrapped = true;

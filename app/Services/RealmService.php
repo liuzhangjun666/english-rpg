@@ -10,6 +10,11 @@ use App\Support\CultivationProfile;
  */
 class RealmService
 {
+    public function __construct(
+        private readonly PracticeLevelService $levelService,
+    ) {
+    }
+
     private const CULTIVATION_REALM_GROUPS = ['练气', '筑基', '金丹', '元婴', '化神', '炼虚', '合体', '大乘', '渡劫'];
 
     private const REALM_CODE_PREFIXES = ['L', 'Z', 'J', 'Y', 'H', 'X', 'T', 'D', 'U'];
@@ -79,37 +84,77 @@ class RealmService
 
     public function resolveCurrentRealm(User $user): string
     {
-        $currentRealm = (string) ($user->current_realm ?? '');
+        $currentRealm = trim((string) ($user->current_realm ?? ''));
         $derivedRealm = $this->buildCurrentRealmName(
             (string) ($user->realm ?? 'L1'),
             max(1, min(9, (int) ($user->realm_stage ?? 1)))
         );
+
+        $currentIndex = $this->getCultivationRealmIndex($currentRealm);
         $derivedIndex = $this->getCultivationRealmIndex($derivedRealm);
 
-        if ($this->getCultivationRealmIndex($currentRealm) >= 0) {
-            if ($derivedIndex >= 0 && $currentRealm !== $derivedRealm) {
-                return $derivedRealm;
-            }
+        if ($currentIndex >= 0 && $derivedIndex >= 0) {
+            return $currentIndex >= $derivedIndex ? $currentRealm : $derivedRealm;
+        }
+
+        if ($currentIndex >= 0) {
             return $currentRealm;
         }
 
         return $derivedRealm;
     }
 
-    private function getRealmRequirements(string $realmName): array
+    /**
+     * 将「练气五层」类展示名解析为 realm 代码与层数。
+     *
+     * @return array{realm: string, realm_stage: int, current_realm: string}|null
+     */
+    public function decomposeRealmLabel(string $realmLabel): ?array
     {
-        $index = max(0, $this->getCultivationRealmIndex($realmName));
-        $layer = $index + 1;
+        $realmLabel = trim($realmLabel);
+        if (!preg_match('/^(练气|筑基|金丹|元婴|化神|炼虚|合体|大乘|渡劫)([一二三四五六七八九]|[1-9])层$/u', $realmLabel, $matched)) {
+            return null;
+        }
+
+        $group = (string) ($matched[1] ?? '');
+        $groupIndex = array_search($group, self::CULTIVATION_REALM_GROUPS, true);
+        if ($groupIndex === false) {
+            return null;
+        }
+
+        $layer = $this->parseLayerToken((string) ($matched[2] ?? ''));
+        if ($layer < 1) {
+            return null;
+        }
+
+        $realmCode = (self::REALM_CODE_PREFIXES[$groupIndex] ?? 'L') . '1';
+        $currentRealm = $group . (self::CHINESE_LAYER_MAP[$layer] ?? ($layer . '层'));
 
         return [
-            'vocabulary' => 20 * $layer,
-            'grammar' => 10 * $layer,
-            'reading' => 10 * $layer,
-            'listening' => 10 * $layer,
-            'writing' => 5 * $layer,
-            'speaking' => 5 * $layer,
-            'requiredEnergy' => 100 * $layer,
+            'realm' => $realmCode,
+            'realm_stage' => $layer,
+            'current_realm' => $currentRealm,
         ];
+    }
+
+    public function applyRealmLabelToUser(User $user, string $realmLabel): User
+    {
+        $parts = $this->decomposeRealmLabel($realmLabel);
+        if (!$parts) {
+            return $user;
+        }
+
+        $user->realm = $parts['realm'];
+        $user->realm_stage = $parts['realm_stage'];
+        $user->current_realm = $parts['current_realm'];
+        $user->save();
+
+        return $user->refresh();
+    }
+
+    private function getRealmRequirements(User $user): array
+    {
+        return $this->levelService->getBreakthroughRequirements($user);
     }
 
     public function getBreakthroughStatus(User $user): array
@@ -123,7 +168,8 @@ class RealmService
 
         $nextRealm = $this->getRealmNameByIndex($realmIndex + 1);
         $isMaxRealm = $nextRealm === null;
-        $requirements = $this->getRealmRequirements($currentRealm);
+        $requirements = $this->getRealmRequirements($user);
+        $totalCurriculum = (int) ($requirements['total_curriculum'] ?? 0);
         $energyCurrent = max(0, (int) ($user->cultivation_energy ?? 0));
         $energyRequired = (int) ($requirements['requiredEnergy'] ?? 0);
         $energyGap = max(0, $energyRequired - $energyCurrent);
@@ -158,20 +204,28 @@ class RealmService
         if ($energyGap > 0) {
             $missingRequirements[] = [
                 'key' => 'cultivation_energy',
-                'label' => '修为',
+                'label' => '突破修为',
                 'current' => $energyCurrent,
                 'required' => $energyRequired,
                 'gap' => $energyGap,
             ];
         }
 
-        $canBreakthrough = !$isMaxRealm && empty($missingRequirements);
+        $canBreakthrough = !$isMaxRealm && $totalCurriculum > 0 && empty($missingRequirements);
         $message = $isMaxRealm
             ? '当前已达 MVP 最高境界'
-            : ($canBreakthrough ? '突破条件已满足，可开始突破' : '突破条件未满足');
+            : ($totalCurriculum <= 0
+                ? '当前境界暂无修炼题库，无法突破'
+                : ($canBreakthrough ? '突破条件已满足，可开始突破' : '突破条件未满足'));
+        $progressTotal = $energyRequired;
+        $progressCurrent = min($energyCurrent, $energyRequired);
+        foreach ($dimensionStatus as $item) {
+            $progressTotal += (int) ($item['required'] ?? 0);
+            $progressCurrent += min((int) ($item['current'] ?? 0), (int) ($item['required'] ?? 0));
+        }
         $progressPercent = $isMaxRealm
             ? 100
-            : max(0, min(100, (int) round(($energyCurrent / max(1, $energyRequired)) * 100)));
+            : max(0, min(100, (int) round(($progressCurrent / max(1, $progressTotal)) * 100)));
 
         return [
             'current_realm' => $currentRealm,
@@ -181,6 +235,7 @@ class RealmService
             'message' => $message,
             'can_breakthrough' => $canBreakthrough,
             'requirements' => $requirements,
+            'curriculum_total' => $totalCurriculum,
             'dimensions' => $dimensionStatus,
             'cultivation_energy' => [
                 'current' => $energyCurrent,
@@ -239,6 +294,10 @@ class RealmService
         $user->current_realm = $toRealm;
         $user->realm = $nextRealmCode;
         $user->realm_stage = $nextStage;
+        foreach (self::DIMENSION_KEYS as $key) {
+            $user->{$key} = 0;
+        }
+        $user->cultivation_energy = 0;
         $user->save();
 
         return [
@@ -259,23 +318,23 @@ class RealmService
     {
         $normalizedCount = max(0, $correctCount);
         if ($normalizedCount === 0) {
-            return $this->getCultivationProgress($user);
+            return array_merge($this->getCultivationProgress($user), ['energy_gained' => 0]);
         }
 
         if (!in_array($dimension, self::DIMENSION_KEYS, true)) {
-            return $this->getCultivationProgress($user);
+            return array_merge($this->getCultivationProgress($user), ['energy_gained' => 0]);
         }
 
         $user->{$dimension} = max(0, (int) ($user->{$dimension} ?? 0)) + $normalizedCount;
         $energyPerCorrect = (int) (self::ENERGY_PER_CORRECT_BY_DIMENSION[$dimension] ?? self::ENERGY_PER_CORRECT);
-        $user->cultivation_energy = max(0, (int) ($user->cultivation_energy ?? 0))
-            + ($normalizedCount * $energyPerCorrect);
+        $energyGained = $normalizedCount * $energyPerCorrect;
+        $user->cultivation_energy = max(0, (int) ($user->cultivation_energy ?? 0)) + $energyGained;
 
         $snapshot = $this->getCultivationProgress($user);
         $user->current_realm = $this->resolveCurrentRealm($user);
         $user->save();
 
-        return $snapshot;
+        return array_merge($snapshot, ['energy_gained' => $energyGained]);
     }
 
     public function getCultivationProgress(User $user): array

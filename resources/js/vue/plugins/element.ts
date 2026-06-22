@@ -26,6 +26,8 @@ import 'element-plus/es/components/dialog/style/css';
 import 'element-plus/es/components/form/style/css';
 import 'element-plus/es/components/form-item/style/css';
 import 'element-plus/es/components/input/style/css';
+import 'element-plus/es/components/message/style/css';
+import 'element-plus/es/components/message-box/style/css';
 import 'element-plus/es/components/radio/style/css';
 import 'element-plus/es/components/radio-group/style/css';
 import 'element-plus/es/components/result/style/css';

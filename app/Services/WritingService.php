@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Log;
 class WritingService
 {
     public function __construct(
-        private readonly RealmService $realmService
+        private readonly RealmService $realmService,
+        private readonly PracticeLevelService $levelService,
     ) {
     }
 
@@ -29,7 +30,25 @@ class WritingService
     const PERFECT_SCORE_LINE = 90;
 
     /**
-     * 获取一关的写作题目（命题+续写各1题）
+     * 按用户当前境界划分写作关卡，获取指定关题目。
+     */
+    public function getPromptsForUser(User $user, int $stageNo): array
+    {
+        $perSession = PracticeLevelService::PER_SESSION['writing'];
+        $pool = $this->levelService->getWritingPromptPool($user);
+
+        $index = max(1, $stageNo) - 1;
+        $chunk = $pool->slice($index * $perSession, $perSession);
+
+        if ($chunk->isEmpty()) {
+            return [];
+        }
+
+        return $chunk->map(fn ($p) => $this->formatPrompt($p))->values()->toArray();
+    }
+
+    /**
+     * @deprecated 使用 getPromptsForUser
      */
     public function getPrompts(string $realm, string $stage): array
     {
