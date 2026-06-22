@@ -14,6 +14,10 @@ class DatabaseSeeder extends Seeder
         $this->call(QuestionSeeder::class);
         $this->call(QuestionExpansionSeeder::class);
         $this->call(SkillModuleTestDataSeeder::class);
+        $this->call(WritingPromptSeeder::class);
+        $this->call(VocabularyWordsSeeder::class);
+        $this->call(ReadingBankSeeder::class);
+        $this->call(VocabAssessmentBankSeeder::class);
     }
 
     private function seedLevelConfig(): void
@@ -63,7 +67,10 @@ class DatabaseSeeder extends Seeder
         }
 
         foreach ($levels as $level) {
-            LevelConfig::create($level);
+            LevelConfig::updateOrCreate(
+                ['level_id' => $level['level_id']],
+                $level
+            );
         }
 
         echo "Seeded " . count($levels) . " level configs.\n";

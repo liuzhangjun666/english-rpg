@@ -28,22 +28,15 @@ class ExamService
     // 渡劫灵力消耗
     const SPIRIT_COST = 30;
 
+    public function __construct(
+        private readonly QuestionResolverService $questionResolver
+    ) {
+    }
+
     /** 抽题：从已学关卡中混合抽取30题 */
     public function pickQuestions(string $realm): array
     {
-        // L1渡劫：从L1-01~L1-09所有题中随机抽
-        $questions = Question::where('realm', $realm)
-            ->inRandomOrder()
-            ->limit(30)
-            ->get(['id', 'question_id', 'type', 'question', 'options', 'word']);
-
-        if ($questions->count() < 10) {
-            // 题不够时补充
-            $fallback = Question::where('realm', $realm)->limit(30)->get(['id', 'question_id', 'type', 'question', 'options', 'word']);
-            return $fallback->toArray();
-        }
-
-        return $questions->toArray();
+        return $this->questionResolver->buildExamQuestionPool($realm, 30);
     }
 
     /** 判分评级 */

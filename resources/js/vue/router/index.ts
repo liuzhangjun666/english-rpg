@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { useApiClient } from '../services/api';
 import { useUserStore } from '../stores/user';
@@ -108,7 +108,9 @@ const routes = [
   },
   {
     path: '/hall',
-    redirect: '/practice',
+    name: 'hall',
+    component: () => import('../views/HallView.vue'),
+    meta: { requiresAuth: true },
   },
   {
     path: '/practice',
@@ -188,8 +190,8 @@ const routes = [
     component: () => import('../views/SectWorldView.vue'),
     meta: { requiresAuth: true },
   },
-  { path: '/', redirect: '/practice' },
-  { path: '/:pathMatch(.*)*', redirect: '/practice' },
+  { path: '/', redirect: '/hall' },
+  { path: '/:pathMatch(.*)*', name: 'not-found', redirect: '/hall' },
 ];
 
 export const router = createRouter({

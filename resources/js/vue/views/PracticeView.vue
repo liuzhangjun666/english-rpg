@@ -52,42 +52,56 @@
       </div>
 
       <div v-else-if="isGrammarModule" class="grammar-arena">
-        <img class="zf-bg" :src="zfSceneBg" alt="阵法峰场景" />
-        <div class="zf-mask"></div>
-
-        <div class="zf-top">
-          <button class="zf-back-btn" type="button" @click="backHall">
-            <img :src="zfTopBack" alt="返回" />
-          </button>
-          <img class="zf-title" :src="zfTopTitlePlate" alt="阵法峰·语法机关桥" />
-          <div class="zf-level-chip">{{ currentLevel.realm }} · 第{{ String(currentLevel.stageNo).padStart(2, '0') }}关
+        <div class="zf-scene-frame">
+          <div class="zf-scene-stage">
+            <img class="zf-bg" :src="zfSceneBg" alt="阵法峰场景" />
+            <div class="zf-scene-mask"></div>
           </div>
-          <div class="zf-progress-chip">
-            <div class="zf-progress-text">{{ currentIndex + 1 }}/{{ questions.length }}</div>
-            <div class="zf-progress-track">
-              <div class="zf-progress-fill" :style="{ width: `${progressPercent}%` }"></div>
+        </div>
+        <div class="zf-bridge-frame">
+          <div
+            class="zf-bridge-wrap"
+            :class="{
+              'is-bridge-active': grammarBridgeVisible,
+              'is-bridge-success': grammarFeedbackType === 'success',
+              'is-bridge-error': grammarFeedbackType === 'error',
+            }"
+          >
+            <img v-if="grammarBridgeVisible" class="zf-bridge" :src="grammarBridgeImage" alt="机关桥" />
+          </div>
+        </div>
+        <div class="zf-arena-mask"></div>
+
+        <div class="zf-ui-layer">
+          <div class="zf-top">
+            <button class="zf-back-btn" type="button" @click="backHall">
+              <img :src="zfTopBack" alt="返回" />
+            </button>
+            <img class="zf-title" :src="zfTopTitlePlate" alt="阵法峰·语法机关桥" />
+            <div class="zf-level-chip">{{ currentLevel.realm }} · 第{{ String(currentLevel.stageNo).padStart(2, '0') }}关
+            </div>
+            <div class="zf-progress-chip">
+              <div class="zf-progress-text">{{ currentIndex + 1 }}/{{ questions.length }}</div>
+              <div class="zf-progress-track">
+                <div class="zf-progress-fill" :style="{ width: `${progressPercent}%` }"></div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="zf-question-wrap">
-          <img class="zf-question-bg" :src="zfQuestionPanel" alt="" />
-          <div ref="zfQuestionRef" class="zf-question-text">{{ currentQuestionText }}</div>
-        </div>
+          <div class="zf-question-wrap">
+            <img class="zf-question-bg" :src="zfQuestionPanel" alt="" />
+            <div ref="zfQuestionRef" class="zf-question-text">{{ currentQuestionText }}</div>
+          </div>
 
-        <div class="zf-bridge-wrap" :class="{ 'is-bridge-active': grammarBridgeVisible }">
-          <img v-if="grammarBridgeVisible" class="zf-bridge" :src="grammarBridgeImage" alt="机关桥" />
+          <div class="zf-options">
+            <button v-for="option in grammarOptions" :key="option.key" class="zf-option-btn"
+              :class="getGrammarOptionClass(option.key)" :disabled="grammarAnswerLocked"
+              @click="selectGrammarOption(option.key)">
+              <img class="zf-option-stone" :src="resolveGrammarStone(option.key)" alt="" />
+              <span :ref="(el) => setGrammarOptionTextRef(option.key, el)" class="zf-option-text">{{ option.text }}</span>
+            </button>
+          </div>
         </div>
-
-        <div class="zf-options">
-          <button v-for="option in grammarOptions" :key="option.key" class="zf-option-btn"
-            :class="getGrammarOptionClass(option.key)" :disabled="grammarAnswerLocked"
-            @click="selectGrammarOption(option.key)">
-            <img class="zf-option-stone" :src="resolveGrammarStone(option.key)" alt="" />
-            <span :ref="(el) => setGrammarOptionTextRef(option.key, el)" class="zf-option-text">{{ option.text }}</span>
-          </button>
-        </div>
-
       </div>
 
       <div v-else-if="sessionState === 'answering' && isWritingModule" class="writing-arena">
@@ -271,11 +285,11 @@
               <el-button type="primary" @click="retryLevel">再试一次</el-button>
               <el-button v-if="resultPassed" @click="nextLevel">下一关</el-button>
               <el-button @click="backHall">返回大厅</el-button>
-              </el-space>
+            </div>
+          </div>
         </template>
-        </el-result>
-</template>
-  </el-card>
+      </div>
+    </div>
 
   <DemonTransition :visible="showDemonTransition" @update:visible="showDemonTransition = $event"
     @enter-encounter="handleEnterEncounter" />
@@ -323,6 +337,7 @@ import {
   triggerWritingSceneEffect,
   type WritingValidation,
 } from '../utils/writingTalisman';
+import { resolveProfileRealm } from '../../utils/cultivation.js';
 
 type PracticeType = 'vocab' | 'grammar' | 'listening' | 'speaking' | 'reading' | 'writing';
 
@@ -409,6 +424,21 @@ const ui = useUiStore();
 const user = useUserStore();
 const demonStore = useDemonStore();
 
+const levelLayout = ref<PracticeLevelLayout | null>(null);
+const sceneType = computed<'practice' | 'grammar'>(() => (route.path === '/grammar' ? 'grammar' : 'practice'));
+const modules = [
+  { type: 'vocab' as const, label: '词汇' },
+  { type: 'grammar' as const, label: '语法' },
+  { type: 'listening' as const, label: '听力' },
+  { type: 'speaking' as const, label: '口语' },
+  { type: 'writing' as const, label: '写作' },
+];
+const displayRealm = computed(() => resolveProfileRealm(user.profile));
+const venueTitle = computed(() => {
+  if (sceneType.value === 'grammar') return VENUE_TITLES.grammar;
+  return VENUE_TITLES[currentType.value] || '练功房';
+});
+
 const currentType = ref<PracticeType>('vocab');
 const sessionState = ref<'rules' | 'idle' | 'confirm' | 'answering' | 'result'>('rules');
 const questions = ref<Array<Record<string, any>>>([]);
@@ -449,6 +479,17 @@ const autoAdvanceTimer = ref<number | null>(null);
 const vocabCombo = ref(0);
 const wsWordRef = ref<HTMLElement | null>(null);
 const optionTextRefs = reactive<Record<string, HTMLElement | null>>({});
+const grammarAnswerLocked = ref(false);
+const grammarFeedbackType = ref<'idle' | 'success' | 'error'>('idle');
+const grammarAutoAdvanceTimer = ref<number | null>(null);
+const grammarOptionTextRefs = reactive<Record<string, HTMLElement | null>>({});
+const zfQuestionRef = ref<HTMLElement | null>(null);
+const grammarBridgeVisible = computed(() => grammarFeedbackType.value !== 'idle');
+const grammarBridgeImage = computed(() => {
+  if (grammarFeedbackType.value === 'success') return zfBridgeCorrect;
+  if (grammarFeedbackType.value === 'error') return zfBridgeError;
+  return zfBridgeCorrect;
+});
 
 const showDemonTransition = ref(false);
 
@@ -493,25 +534,53 @@ const listeningQuestion = computed(() => {
   const q = currentQuestion.value;
   const opts = q?.options;
   let options: Array<{ key: string; text: string }> = [];
+  let windSeal: Record<string, unknown> | undefined;
   if (Array.isArray(opts)) {
     options = opts.map((item: Record<string, unknown>) => ({
       key: String(item.key ?? ''),
       text: String(item.text ?? ''),
     }));
   } else if (opts && typeof opts === 'object') {
-    options = Object.entries(opts).map(([key, value]) => ({ key: String(key), text: String(value ?? '') }));
+    options = Object.entries(opts)
+      .filter(([key]) => key !== '__wind_seal')
+      .map(([key, value]) => ({ key: String(key), text: String(value ?? '') }));
+    const meta = (opts as Record<string, unknown>).__wind_seal;
+    if (meta && typeof meta === 'object') {
+      windSeal = meta as Record<string, unknown>;
+    }
   }
   return {
     ...q,
     audioUrl: String(q.audio_url || q.audioUrl || ''),
-    options,
+    listening_text: String(q.listening_text || ''),
+    question: String(q.question || q.stem || ''),
+    word: String(q.word || ''),
+    correct_answer: String(q.correct_answer || ''),
+    wind_seal: windSeal,
+    options: opts,
   };
 });
 const speakingQuestion = computed(() => {
   const q = currentQuestion.value;
+  const opts = q?.options;
+  const correctKey = String(q?.correct_answer || 'A').trim().toUpperCase();
+  let correctText = '';
+  if (opts && typeof opts === 'object' && !Array.isArray(opts)) {
+    correctText = String((opts as Record<string, string>)[correctKey] || '');
+  }
+  const content = String(
+    q.speaking_text ||
+    q.listening_text ||
+    correctText ||
+    q.question ||
+    q.stem ||
+    ''
+  );
   return {
     ...q,
-    content: String(q.speaking_text || q.listening_text || q.question || q.stem || ''),
+    content,
+    expectedText: correctText || content,
+    correctAnswerKey: correctKey,
   };
 });
 const woodStakeOptions = computed(() => optionEntries.value.slice(0, 4));
@@ -640,12 +709,14 @@ function checkDemonTrigger() {
 }
 
 async function handleEnterEncounter() {
+  const q = currentQuestion.value;
   const demonPayload = {
-    ...currentQuestion.value,
+    question: { ...q },
     demon: {
-      wrong_count: currentQuestion.value._demon_wrong_count,
-      last_wrong_at: currentQuestion.value._last_wrong_at
-    }
+      wrong_count: q?._demon_wrong_count,
+      last_wrong_at: q?._last_wrong_at,
+      mastery: q?._demon_mastery,
+    },
   };
 
   const result = await demonStore.triggerEncounter([demonPayload], {
@@ -889,6 +960,15 @@ function restorePracticeSession(session: PracticeSession) {
   if (sessionState.value === 'answering' && (isVocabModule.value || isGrammarModule.value)) {
     fitArenaTexts();
   }
+}
+
+function isWritingUnlocked(): boolean {
+  const realmCode = String(user.profile?.realm || 'L1').toUpperCase();
+  const layer = Math.max(1, Math.min(9, Number(user.profile?.realm_stage || 1)));
+  if (realmCode.startsWith('L')) {
+    return layer >= 7;
+  }
+  return true;
 }
 
 function parseMode(raw: unknown): PracticeType {
@@ -1555,11 +1635,23 @@ async function onListeningSubmit(payload: { answer: string }) {
   persistPracticeSession();
 }
 
-async function onSpeakingSubmit() {
+async function onSpeakingSubmit(payload?: {
+  transcript?: string;
+  similarity?: number;
+  passed?: boolean;
+  skipped?: boolean;
+}) {
   const q = currentQuestion.value;
   const qid = String(q?.question_id || '');
   if (!qid) return;
-  answers[qid] = String(q.correct_answer || 'FOLLOWED');
+
+  const correctKey = String(q.correct_answer || 'A').trim().toUpperCase();
+  const optionKeys = ['A', 'B', 'C', 'D'];
+  const wrongKey = optionKeys.find((key) => key !== correctKey) || 'B';
+  const passed = Boolean(payload?.passed ?? payload?.skipped);
+
+  answers[qid] = passed ? correctKey : wrongKey;
+
   if (isLastQuestion.value) {
     await submitChallenge();
     return;
@@ -2025,8 +2117,33 @@ function backHall() {
   overflow: hidden;
   border-radius: 0;
   color: #e9f4ff;
-  --zf-bridge-top: 58%;
-  --zf-bridge-width: min(58vw, 760px);
+  background: #010816;
+  /* background.png 941×1672，桥段锚点 y=860 x≈50.5% */
+  --zf-bg-w: 941;
+  --zf-bg-h: 1672;
+  --zf-bridge-x: 50.5%;
+  --zf-bridge-y: 51.45%;
+  --zf-bridge-w: 58%;
+  --zf-bridge-tilt-x: 24deg;
+  --zf-bridge-scale-y: 0.68;
+}
+
+.zf-scene-frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* 与 object-fit: cover 等价：铺满视口，桥段仍按原图百分比锚定 */
+.zf-scene-stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  aspect-ratio: var(--zf-bg-w) / var(--zf-bg-h);
+  width: max(100vw, calc(100vh * var(--zf-bg-w) / var(--zf-bg-h)));
+  height: max(100vh, calc(100vw * var(--zf-bg-h) / var(--zf-bg-w)));
 }
 
 .zf-bg {
@@ -2034,20 +2151,54 @@ function backHall() {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
 }
 
-.zf-mask {
+.zf-scene-mask {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(1, 8, 22, 0.36), rgba(1, 8, 22, 0.7));
+  background: linear-gradient(180deg, rgba(1, 8, 22, 0.12), rgba(1, 8, 22, 0.28));
+  pointer-events: none;
+}
+
+.zf-bridge-frame {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  aspect-ratio: var(--zf-bg-w) / var(--zf-bg-h);
+  width: max(100vw, calc(100vh * var(--zf-bg-w) / var(--zf-bg-h)));
+  height: max(100vh, calc(100vw * var(--zf-bg-h) / var(--zf-bg-w)));
+  z-index: 2;
+  pointer-events: none;
+}
+
+.zf-arena-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(1, 8, 22, 0.22) 0%, rgba(1, 8, 22, 0.04) 38%, rgba(1, 8, 22, 0.32) 100%);
+}
+
+.zf-ui-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.zf-ui-layer .zf-top,
+.zf-ui-layer .zf-question-wrap,
+.zf-ui-layer .zf-options,
+.zf-ui-layer .zf-back-btn {
+  pointer-events: auto;
 }
 
 .zf-top,
 .zf-subtitle,
 .zf-reward,
 .zf-question-wrap,
-.zf-bridge-wrap,
 .zf-options,
 .zf-actions {
   position: relative;
@@ -2190,21 +2341,21 @@ function backHall() {
 
 .zf-bridge-wrap {
   position: absolute;
-  left: 50%;
-  top: var(--zf-bridge-top);
-  width: var(--zf-bridge-width);
+  left: var(--zf-bridge-x);
+  top: var(--zf-bridge-y);
+  width: var(--zf-bridge-w);
   margin: 0;
-  transform: translate(-50%, -50%) scale(0.96);
+  transform: translate(-50%, -50%) perspective(760px) rotateX(var(--zf-bridge-tilt-x)) scaleY(var(--zf-bridge-scale-y)) scale(0.76);
+  transform-origin: center center;
   opacity: 0;
   pointer-events: none;
   z-index: 2;
-  transition: opacity 0.22s ease, transform 0.22s ease;
-  filter: drop-shadow(0 6px 16px rgba(255, 69, 69, 0.35));
+  transition: opacity 0.28s ease, transform 0.38s cubic-bezier(0.22, 0.85, 0.3, 1);
 }
 
 .zf-bridge-wrap.is-bridge-active {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  transform: translate(-50%, -50%) perspective(760px) rotateX(var(--zf-bridge-tilt-x)) scaleY(var(--zf-bridge-scale-y)) scale(1);
 }
 
 .zf-bridge {
@@ -2212,6 +2363,16 @@ function backHall() {
   height: auto;
   object-fit: contain;
   display: block;
+}
+
+.zf-bridge-wrap.is-bridge-error .zf-bridge {
+  opacity: 0.82;
+  filter: saturate(0.72) brightness(0.9) contrast(1.02);
+}
+
+.zf-bridge-wrap.is-bridge-success .zf-bridge {
+  opacity: 0.9;
+  filter: saturate(0.95) brightness(1.02);
 }
 
 .zf-options {
@@ -2475,9 +2636,11 @@ function backHall() {
     font-size: 26px;
   }
 
-  .zf-bridge-wrap {
-    --zf-bridge-top: 60%;
-    --zf-bridge-width: min(86vw, 520px);
+  .zf-scene-stage {
+    --zf-bridge-y: 51.8%;
+    --zf-bridge-w: 62%;
+    --zf-bridge-tilt-x: 20deg;
+    --zf-bridge-scale-y: 0.72;
   }
 
   .zf-options {

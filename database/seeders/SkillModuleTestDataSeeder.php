@@ -26,7 +26,7 @@ class SkillModuleTestDataSeeder extends Seeder
             'writing' => $this->writingTemplates(),
         ];
 
-        $realms = ['L1', 'L2', 'L3'];
+        $realms = ['L1', 'L2', 'L3', 'Z1', 'J1', 'Y1', 'H1'];
         $count = 0;
 
         foreach ($realms as $realm) {
@@ -37,6 +37,11 @@ class SkillModuleTestDataSeeder extends Seeder
                     foreach ($templates as $index => $t) {
                         $questionId = $this->buildQuestionId($type, $realm, $stage, $index + 1);
 
+                        $options = $t['options'];
+                        if (!empty($t['wind_seal'])) {
+                            $options['__wind_seal'] = $t['wind_seal'];
+                        }
+
                         Question::updateOrCreate(
                             ['question_id' => $questionId],
                             [
@@ -46,7 +51,7 @@ class SkillModuleTestDataSeeder extends Seeder
                                 'word' => $t['word'],
                                 'listening_text' => $t['listening_text'] ?? null,
                                 'question' => $t['question'],
-                                'options' => $t['options'],
+                                'options' => $options,
                                 'correct_answer' => $t['correct_answer'],
                                 'explanation' => $t['explanation'],
                             ]
@@ -86,6 +91,11 @@ class SkillModuleTestDataSeeder extends Seeder
                 'options' => ['A' => '7:00', 'B' => '7:15', 'C' => '7:30', 'D' => '8:00'],
                 'correct_answer' => 'C',
                 'explanation' => 'The speaker says "eat breakfast at seven thirty."',
+                'wind_seal' => [
+                    'template' => 'I ___ up at seven and eat ___ at seven ___.',
+                    'answers' => ['get', 'breakfast', 'thirty'],
+                    'distractors' => ['go', 'lunch', 'fifteen'],
+                ],
             ],
             [
                 'word' => 'location',
@@ -94,6 +104,11 @@ class SkillModuleTestDataSeeder extends Seeder
                 'options' => ['A' => 'Behind the bank', 'B' => 'Next to the bank', 'C' => 'Across from the bank', 'D' => 'Inside the bank'],
                 'correct_answer' => 'B',
                 'explanation' => '"Next to" means beside.',
+                'wind_seal' => [
+                    'template' => 'The ___ is ___ to the ___.',
+                    'answers' => ['library', 'next', 'bank'],
+                    'distractors' => ['school', 'far', 'shop'],
+                ],
             ],
             [
                 'word' => 'weather',
@@ -102,6 +117,11 @@ class SkillModuleTestDataSeeder extends Seeder
                 'options' => ['A' => 'It is sunny', 'B' => 'It is windy', 'C' => 'It is raining', 'D' => 'It is snowing'],
                 'correct_answer' => 'C',
                 'explanation' => 'Umbrella is used because it is raining.',
+                'wind_seal' => [
+                    'template' => 'It is ___, so take an ___.',
+                    'answers' => ['raining', 'umbrella'],
+                    'distractors' => ['snowing', 'jacket'],
+                ],
             ],
             [
                 'word' => 'number',
@@ -110,6 +130,11 @@ class SkillModuleTestDataSeeder extends Seeder
                 'options' => ['A' => '842', 'B' => '824', 'C' => '284', 'D' => '428'],
                 'correct_answer' => 'B',
                 'explanation' => 'The sequence spoken is 8-2-4.',
+                'wind_seal' => [
+                    'template' => 'My phone number ends with ___ ___ ___.',
+                    'answers' => ['eight', 'two', 'four'],
+                    'distractors' => ['five', 'nine', 'one'],
+                ],
             ],
             [
                 'word' => 'preference',
@@ -118,6 +143,11 @@ class SkillModuleTestDataSeeder extends Seeder
                 'options' => ['A' => 'The speaker', 'B' => 'The brother', 'C' => 'Both of them', 'D' => 'Neither of them'],
                 'correct_answer' => 'B',
                 'explanation' => 'The sentence says the brother prefers coffee.',
+                'wind_seal' => [
+                    'template' => 'I like ___, but my brother prefers ___.',
+                    'answers' => ['tea', 'coffee'],
+                    'distractors' => ['milk', 'juice'],
+                ],
             ],
             [
                 'word' => 'direction',
@@ -126,6 +156,11 @@ class SkillModuleTestDataSeeder extends Seeder
                 'options' => ['A' => 'Turn right', 'B' => 'Go back', 'C' => 'Turn left', 'D' => 'Stop and wait'],
                 'correct_answer' => 'C',
                 'explanation' => 'Instruction is "turn left at the second light."',
+                'wind_seal' => [
+                    'template' => 'Go straight and turn ___ at the second ___.',
+                    'answers' => ['left', 'light'],
+                    'distractors' => ['right', 'corner'],
+                ],
             ],
             [
                 'word' => 'schedule',
@@ -134,6 +169,11 @@ class SkillModuleTestDataSeeder extends Seeder
                 'options' => ['A' => '9:10', 'B' => '9:50', 'C' => '10:00', 'D' => '10:10'],
                 'correct_answer' => 'C',
                 'explanation' => 'Finish time is explicitly 10:00.',
+                'wind_seal' => [
+                    'template' => 'The class starts at 9:10 and finishes at ___.',
+                    'answers' => ['10:00'],
+                    'distractors' => ['9:50', '10:10'],
+                ],
             ],
             [
                 'word' => 'action',
@@ -142,6 +182,11 @@ class SkillModuleTestDataSeeder extends Seeder
                 'options' => ['A' => 'Open the window', 'B' => 'Close the window', 'C' => 'Clean the window', 'D' => 'Paint the window'],
                 'correct_answer' => 'B',
                 'explanation' => 'The key verb is "close".',
+                'wind_seal' => [
+                    'template' => 'Please ___ the window before you ___.',
+                    'answers' => ['close', 'leave'],
+                    'distractors' => ['open', 'arrive'],
+                ],
             ],
             [
                 'word' => 'food',
@@ -150,6 +195,11 @@ class SkillModuleTestDataSeeder extends Seeder
                 'options' => ['A' => 'Banana', 'B' => 'Orange', 'C' => 'Apple', 'D' => 'Grape'],
                 'correct_answer' => 'C',
                 'explanation' => 'The only fruit mentioned is apple.',
+                'wind_seal' => [
+                    'template' => 'For lunch, I had rice, chicken, and an ___.',
+                    'answers' => ['apple'],
+                    'distractors' => ['orange', 'banana'],
+                ],
             ],
             [
                 'word' => 'transport',
@@ -158,6 +208,11 @@ class SkillModuleTestDataSeeder extends Seeder
                 'options' => ['A' => 'By bike', 'B' => 'By bus', 'C' => 'On foot', 'D' => 'By train'],
                 'correct_answer' => 'B',
                 'explanation' => 'The speaker contrasts bus with bike and says bus.',
+                'wind_seal' => [
+                    'template' => 'I usually go to school by ___, not by ___.',
+                    'answers' => ['bus', 'bike'],
+                    'distractors' => ['car', 'train'],
+                ],
             ],
         ];
     }

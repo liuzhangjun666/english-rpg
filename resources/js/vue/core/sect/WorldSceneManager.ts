@@ -95,6 +95,22 @@ const ALL_MAP_MODELS = [
   '/models/farm.glb', '/models/fuyan.glb', '/models/shucong.glb',
   '/models/liangting.glb', '/models/lingjing.glb',
 ];
+const CRITICAL_MAP_MODELS = [
+  '/models/sectHall.glb',
+  '/models/swordHall.glb',
+  '/models/scriptureHall.glb',
+];
+
+type PerfTier = 'low' | 'balanced' | 'high';
+type PreloadMode = 'critical' | 'all';
+
+type ScenePerfProfile = {
+  tier: PerfTier;
+  pixelRatioCap: number;
+  enablePostProcessing: boolean;
+  enableShadowsInitially: boolean;
+  delayEnhancedEffectsMs: number;
+};
 
 // ─── WorldSceneManager ────────────────────────────────────────────────────────
 
@@ -124,9 +140,10 @@ export class WorldSceneManager {
   private birds: THREE.Sprite[] = [];          // 飞鸟群
   private flyers: THREE.Sprite[] = [];         // 御剑仙人
   private petals: THREE.Points | null = null;  // 飘落灵气花瓣
-  private spiritDust: THREE.Points | null = null; // 全局漂浮灵尘
-  private buildingFx: Array<(t: number) => void> = []; // 建筑动态特效更新闭包
-  // Draco 解码器现在由全局 AssetPreloader 持有，本类不再自管 worker 生命周期
+  private dracoLoader: DRACOLoader | null = null; // Draco 解码器，dispose 时释放 worker
+  private perfProfile: ScenePerfProfile;
+  private bloomPass: UnrealBloomPass | null = null;
+  private delayedEffectsTimer: number | null = null;
   private starField: THREE.Points | null = null;
   private terrainMesh: THREE.Mesh | null = null;
 
@@ -162,18 +179,17 @@ export class WorldSceneManager {
   public onBuildingHover?: (node: SectNodeDef | null) => void;
   public onFocusedMove?: (screenX: number, screenY: number) => void; // 特写时每帧更新菜单坐标
 
-  /** 预加载全部地图模型到缓存——在进入地图前调用，让首次开图也能瞬间显示真实模型。
-   *  返回 Promise，调用方可 await 以确保所有 GLB 就绪后再实例化场景。 */
-  public static preload(): Promise<void> {
-    return Promise.all(
-      ALL_MAP_MODELS.map((p) => loadGLBCached(p).catch(() => null)),
-    ).then(() => undefined);
+  /** 预加载地图模型到缓存。critical 只加载首屏关键建筑，all 加载全部。 */
+  public static preload(mode: PreloadMode = 'all') {
+    const list = mode === 'critical' ? CRITICAL_MAP_MODELS : ALL_MAP_MODELS;
+    list.forEach((p) => loadGLBCached(p).catch(() => {}));
   }
 
   constructor(container: HTMLElement, options: WorldSceneOptions = {}) {
     this.container = container;
     this.userRealmLevel = options.userRealmLevel ?? 0;
     this.buildingImages = options.buildingImages ?? {};
+    this.perfProfile = this.resolvePerfProfile();
 
     const w = container.offsetWidth || window.innerWidth;
     const h = container.offsetHeight || window.innerHeight;
@@ -184,12 +200,10 @@ export class WorldSceneManager {
     this.scene.fog = new THREE.FogExp2(0x061020, 0.000095);
 
     // ── WebGL 渲染器 ──
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
-    // HiDPI 屏不再翻倍：Bloom 全屏后处理在 2× 像素率下开销翻 4 倍，1.5× 视觉差异肉眼几乎不可察。
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.perfProfile.pixelRatioCap));
     this.renderer.setSize(w, h);
-    // 关掉阴影映射：本场景为云海浮岛，没有承接阴影的平面，PCFSoftShadow 是纯粹的浪费。
-    this.renderer.shadowMap.enabled = false;
+    this.renderer.shadowMap.enabled = this.perfProfile.enableShadowsInitially;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     // ACES Filmic 色调映射：高光柔和滚降，根治加色内容硬裁成白（OutputPass 会据此做最终色调映射）
@@ -217,6 +231,7 @@ export class WorldSceneManager {
 
     // ── 构建场景 ──
     this.buildScene();
+    this.scheduleEnhancedEffects();
 
     // ── 事件 ──
     window.addEventListener('resize', this.onResize);
@@ -232,9 +247,10 @@ export class WorldSceneManager {
   private setupPostProcessing(w: number, h: number) {
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.cameraController.camera));
-
-    const bloom = new UnrealBloomPass(new THREE.Vector2(w, h), 0.42, 0.45, 0.9);
-    this.composer.addPass(bloom);
+    if (this.perfProfile.enablePostProcessing) {
+      this.bloomPass = new UnrealBloomPass(new THREE.Vector2(w, h), 0.42, 0.45, 0.9);
+      this.composer.addPass(this.bloomPass);
+    }
     this.composer.addPass(new OutputPass());
   }
 
@@ -260,8 +276,9 @@ export class WorldSceneManager {
 
     const sun = new THREE.DirectionalLight(0xfff0cc, 1.3);
     sun.position.set(1800, 3000, 1200);
-    sun.castShadow = true;
-    sun.shadow.mapSize.set(1024, 1024);
+    sun.castShadow = this.renderer.shadowMap.enabled;
+    const shadowMapSize = this.perfProfile.tier === 'high' ? 2048 : 1024;
+    sun.shadow.mapSize.set(shadowMapSize, shadowMapSize);
     sun.shadow.camera.near = 10;
     sun.shadow.camera.far = 8000;
     sun.shadow.camera.left = sun.shadow.camera.bottom = -2000;
@@ -1579,10 +1596,12 @@ export class WorldSceneManager {
     const dx = e.clientX - this.mouseDownPos.x;
     const dy = e.clientY - this.mouseDownPos.y;
     if (Math.sqrt(dx * dx + dy * dy) > 5) return;
-    if (!this.hoveredBuilding || !this.onBuildingClick) return;
+    if (!this.onBuildingClick) return;
 
-    const def   = this.hoveredBuilding.userData.def as SectNodeDef;
-    const bldGp = this.hoveredBuilding;
+    // 点击时再做一次命中测试，避免“没有先触发 hover 就点中无效”的情况
+    const bldGp = this.pickBuildingAt(e.clientX, e.clientY) || this.hoveredBuilding;
+    if (!bldGp) return;
+    const def = bldGp.userData.def as SectNodeDef;
 
     // ─ 第四层：镜头飞行 ─
     this.cameraController.flyToBuilding(bldGp.position, () => {
@@ -1593,6 +1612,17 @@ export class WorldSceneManager {
       this.onBuildingClick!(def, sx, sy);
     });
   };
+
+  private pickBuildingAt(clientX: number, clientY: number): THREE.Group | null {
+    const rect = this.container.getBoundingClientRect();
+    this.mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    this.mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+    this.raycaster.setFromCamera(this.mouse, this.cameraController.camera);
+    const meshes: THREE.Object3D[] = [];
+    this.buildings.forEach((b) => b.traverse((c) => { if (c instanceof THREE.Mesh) meshes.push(c); }));
+    const hit = this.raycaster.intersectObjects(meshes, false)[0];
+    return hit ? this.findBuildingGroup(hit.object) : null;
+  }
 
   private projectToScreen(worldPos: THREE.Vector3): { sx: number; sy: number } {
     const p = worldPos.clone().project(this.cameraController.camera);
@@ -1849,8 +1879,12 @@ export class WorldSceneManager {
       this.onFocusedMove(sx, sy);
     }
 
-    // 使用后处理 composer 渲染（内含 WebGL + Bloom）
-    this.composer.render();
+    // 使用后处理 composer 渲染（内含 Bloom）；低配档直接走 renderer 减少开销
+    if (this.perfProfile.enablePostProcessing) {
+      this.composer.render();
+    } else {
+      this.renderer.render(this.scene, this.cameraController.camera);
+    }
     // CSS2D 标签单独渲染
     this.css2dRenderer.render(this.scene, this.cameraController.camera);
   };
@@ -1866,10 +1900,59 @@ export class WorldSceneManager {
     this.cameraController.resize(w, h);
   };
 
+  private resolvePerfProfile(): ScenePerfProfile {
+    const nav = navigator as Navigator & { deviceMemory?: number };
+    const cores = Number(nav.hardwareConcurrency || 4);
+    const memory = Number(nav.deviceMemory || 4);
+    const mobileUA = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
+    const smallScreen = Math.min(window.innerWidth, window.innerHeight) < 820;
+
+    if (cores <= 4 || memory <= 4 || mobileUA || smallScreen) {
+      return {
+        tier: 'low',
+        pixelRatioCap: 1.2,
+        enablePostProcessing: false,
+        enableShadowsInitially: false,
+        delayEnhancedEffectsMs: 0,
+      };
+    }
+
+    if (cores <= 8 || memory <= 8) {
+      return {
+        tier: 'balanced',
+        pixelRatioCap: 1.5,
+        enablePostProcessing: true,
+        enableShadowsInitially: false,
+        delayEnhancedEffectsMs: 2200,
+      };
+    }
+
+    return {
+      tier: 'high',
+      pixelRatioCap: 2,
+      enablePostProcessing: true,
+      enableShadowsInitially: false,
+      delayEnhancedEffectsMs: 1600,
+    };
+  }
+
+  private scheduleEnhancedEffects() {
+    if (!this.perfProfile.enablePostProcessing) return;
+    if (this.perfProfile.delayEnhancedEffectsMs <= 0) return;
+    this.delayedEffectsTimer = window.setTimeout(() => {
+      this.renderer.shadowMap.enabled = true;
+      this.delayedEffectsTimer = null;
+    }, this.perfProfile.delayEnhancedEffectsMs);
+  }
+
   // ─── 销毁 ─────────────────────────────────────────────────────────────────────
 
   public dispose() {
     cancelAnimationFrame(this.animFrameId);
+    if (this.delayedEffectsTimer !== null) {
+      clearTimeout(this.delayedEffectsTimer);
+      this.delayedEffectsTimer = null;
+    }
     window.removeEventListener('resize', this.onResize);
     this.container.removeEventListener('mousedown', this.onMouseDown);
     this.container.removeEventListener('mousemove', this.onMouseMove);

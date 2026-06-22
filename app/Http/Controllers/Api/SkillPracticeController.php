@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\LearningRecord;
-use App\Models\Question;
 use App\Services\AchievementService;
 use App\Services\CurrencyService;
 use App\Services\HeartDemonService;
 use App\Services\PracticeLevelService;
+use App\Services\QuestionResolverService;
 use App\Services\RealmService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,7 +34,8 @@ class SkillPracticeController extends Controller
         HeartDemonService $demonService,
         AchievementService $achievementService,
         RealmService $realmService,
-        PracticeLevelService $levelService
+        PracticeLevelService $levelService,
+        private readonly QuestionResolverService $questionResolver,
     ) {
         $this->currencyService = $currencyService;
         $this->demonService = $demonService;
@@ -124,11 +125,13 @@ class SkillPracticeController extends Controller
         $results = [];
 
         foreach ($data['answers'] as $ans) {
-            $question = Question::where('question_id', $ans['question_id'])->first();
-            $correct = $question && $question->correct_answer === $ans['answer'];
+            $qid = (string) ($ans['question_id'] ?? '');
+            $answerText = isset($ans['answer_text']) ? (string) $ans['answer_text'] : null;
+            $resolved = $this->questionResolver->resolve($qid);
+            $correct = $this->questionResolver->isCorrect($qid, (string) ($ans['answer'] ?? ''), $answerText);
 
             $results[] = [
-                'question_id' => $ans['question_id'],
+                'question_id' => $qid,
                 'correct' => $correct,
             ];
 
@@ -136,7 +139,7 @@ class SkillPracticeController extends Controller
                 'user_id' => $user->id,
                 'activity_type' => $type,
                 'activity_id' => $data['level'] . '-' . $data['stage'],
-                'question_id' => $ans['question_id'],
+                'question_id' => $qid,
                 'is_correct' => $correct,
                 'exp_gained' => $correct ? CurrencyService::EXP_PER_CORRECT : 0,
                 'spirit_cost' => CurrencyService::SPIRIT_COST_PER_QUESTION,
@@ -144,12 +147,19 @@ class SkillPracticeController extends Controller
                 'answer_data' => $ans,
             ]);
 
-            if (!$correct) {
-                if (!isset($reportedWrongIds[$ans['question_id']])) {
-                    $this->demonService->recordWrong($user->id, $ans['question_id'], $type, (string) ($user->realm ?? 'L1'));
+            if ($resolved) {
+                if (!$correct) {
+                    if (!isset($reportedWrongIds[$qid])) {
+                        $this->demonService->recordWrong(
+                            $user->id,
+                            $qid,
+                            $type,
+                            (string) ($resolved['realm'] ?? $user->realm ?? 'L1')
+                        );
+                    }
+                } else {
+                    $this->demonService->recordCorrect($user->id, $qid);
                 }
-            } else {
-                $this->demonService->recordCorrect($user->id, $ans['question_id']);
             }
         }
 

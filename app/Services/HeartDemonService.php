@@ -10,7 +10,8 @@ use App\Models\VocabularyWord;
 class HeartDemonService
 {
     public function __construct(
-        private readonly PracticeLevelService $levelService
+        private readonly PracticeLevelService $levelService,
+        private readonly QuestionResolverService $questionResolver,
     ) {
     }
 
@@ -173,13 +174,13 @@ class HeartDemonService
 
         $questions = [];
         foreach ($demons as $demon) {
-            $q = Question::where('question_id', $demon['question_id'])->first();
-            if ($q) {
-                $qArr = $q->toArray();
-                $qArr['_is_demon'] = true;
-                $qArr['_demon_wrong_count'] = $demon['wrong_count'];
-                $questions[] = $qArr;
+            $qArr = $this->questionResolver->resolve((string) $demon->question_id);
+            if (!$qArr) {
+                continue;
             }
+            $qArr['_is_demon'] = true;
+            $qArr['_demon_wrong_count'] = (int) $demon->wrong_count;
+            $questions[] = $qArr;
         }
 
         return $questions;
@@ -197,11 +198,10 @@ class HeartDemonService
 
         $questions = [];
         foreach ($demons as $demon) {
-            $q = Question::where('question_id', $demon->question_id)->first();
-            if (!$q) {
+            $arr = $this->questionResolver->resolve((string) $demon->question_id);
+            if (!$arr) {
                 continue;
             }
-            $arr = $q->toArray();
             $arr['_is_demon'] = true;
             $arr['_demon_wrong_count'] = (int) $demon->wrong_count;
             $arr['_last_wrong_at'] = optional($demon->last_wrong_at)?->toIso8601String();
@@ -231,12 +231,13 @@ class HeartDemonService
                 continue;
             }
             $answer = trim((string) ($item['answer'] ?? ''));
-            $question = Question::where('question_id', $questionId)->first();
-            if (!$question) {
+            $answerText = isset($item['answer_text']) ? trim((string) $item['answer_text']) : null;
+            $resolved = $this->questionResolver->resolve($questionId);
+            if (!$resolved) {
                 continue;
             }
 
-            $correct = $this->isAnswerCorrect($question->correct_answer, $answer);
+            $correct = $this->questionResolver->isCorrect($questionId, $answer, $answerText);
             
             // 查询心魔记录以获取 wrong_count (用于埋点) 和更新 V1.2 字段
             $demon = HeartDemon::where('user_id', $userId)->where('question_id', $questionId)->first();
@@ -247,7 +248,7 @@ class HeartDemonService
                 $correctCount++;
                 $this->recordCorrect($userId, $questionId);
             } else {
-                $this->recordWrong($userId, $questionId, (string) $question->type, (string) $question->realm);
+                $this->recordWrong($userId, $questionId, (string) ($resolved['type'] ?? 'vocab'), (string) ($resolved['realm'] ?? null));
             }
             
             // 重新获取心魔记录以更新遭遇次数、得到 mastery_after

@@ -4,16 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\LearningRecord;
-use App\Models\Question;
 use App\Models\VocabProgress;
 use App\Services\HeartDemonService;
+use App\Services\QuestionResolverService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
-    public function __construct(private readonly HeartDemonService $demonService)
-    {
+    public function __construct(
+        private readonly HeartDemonService $demonService,
+        private readonly QuestionResolverService $questionResolver,
+    ) {
     }
 
     /**
@@ -24,7 +26,6 @@ class ReviewController extends Controller
     {
         $userId = $request->user()->id;
 
-        // 获取最近答错的题目ID（去重，取最新记录）
         $wrongQids = LearningRecord::where('user_id', $userId)
             ->where('is_correct', false)
             ->whereIn('activity_type', ['vocab', 'grammar', 'listening', 'speaking', 'reading', 'writing', 'exam'])
@@ -41,14 +42,13 @@ class ReviewController extends Controller
             ]);
         }
 
-        $questions = Question::whereIn('question_id', $wrongQids)
-            ->get(['id', 'question_id', 'type', 'question', 'options', 'correct_answer', 'word', 'explanation']);
+        $questions = $this->questionResolver->resolveMany($wrongQids);
 
         return response()->json([
             'success' => true,
             'data' => [
                 'questions' => $questions,
-                'total' => $questions->count(),
+                'total' => count($questions),
             ],
         ]);
     }
@@ -63,24 +63,28 @@ class ReviewController extends Controller
             'answers' => 'required|array',
             'answers.*.question_id' => 'required|string',
             'answers.*.answer' => 'required|string',
+            'answers.*.answer_text' => 'nullable|string|max:255',
         ]);
 
         $userId = $request->user()->id;
         $results = [];
 
         foreach ($data['answers'] as $ans) {
-            $question = Question::where('question_id', $ans['question_id'])->first();
-            $correct = $question && $question->correct_answer === $ans['answer'];
+            $qid = (string) ($ans['question_id'] ?? '');
+            $answerText = isset($ans['answer_text']) ? (string) $ans['answer_text'] : null;
+            $resolved = $this->questionResolver->resolve($qid);
+            $correct = $this->questionResolver->isCorrect($qid, (string) ($ans['answer'] ?? ''), $answerText);
+
             $results[] = [
-                'question_id' => $ans['question_id'],
+                'question_id' => $qid,
                 'correct' => $correct,
-                'explanation' => $question?->explanation,
+                'explanation' => $resolved['explanation'] ?? null,
             ];
 
-            // 更新词汇进度
-            if ($question) {
+            if ($resolved) {
+                $wordKey = (string) ($resolved['word'] ?? $qid);
                 VocabProgress::updateOrCreate(
-                    ['user_id' => $userId, 'word' => $question->word ?? $question->question_id],
+                    ['user_id' => $userId, 'word' => $wordKey],
                     [
                         'status' => $correct ? 'learning' : 'forgotten',
                         'mastery_score' => $correct
@@ -93,19 +97,19 @@ class ReviewController extends Controller
                 );
 
                 if ($correct) {
-                    $this->demonService->recordCorrect($userId, $ans['question_id']);
+                    $this->demonService->recordCorrect($userId, $qid);
                 } else {
                     $this->demonService->recordWrong(
                         $userId,
-                        $ans['question_id'],
-                        $question->type,
-                        $question->realm
+                        $qid,
+                        (string) ($resolved['type'] ?? 'vocab'),
+                        (string) ($resolved['realm'] ?? null)
                     );
                 }
             }
         }
 
-        $correctCount = count(array_filter($results, fn($r) => $r['correct']));
+        $correctCount = count(array_filter($results, fn ($r) => $r['correct']));
         $accuracy = count($results) > 0 ? round(($correctCount / count($results)) * 100) : 0;
 
         return response()->json([

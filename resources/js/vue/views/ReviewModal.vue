@@ -1,32 +1,30 @@
 <template>
-  <transition name="slide-right">
-    <div v-if="visible" class="drawer-overlay cultivation-theme" @click.self="closePanel">
-      <div class="drawer-container">
-        <div class="drawer-header">
-          <span class="cultivation-title">🔄 温故复盘</span>
-          <button class="drawer-close-btn" @click="closePanel">关闭</button>
-        </div>
-
-        <div class="drawer-body">
-          <!-- idle / loading -->
-          <div v-if="stage === 'idle'" class="cultivation-loading">
-            <div class="cultivation-tip">提取错题灵脉中...</div>
+  <Teleport to="body">
+    <transition name="fade">
+      <div v-if="visible" class="review-modal-overlay cultivation-theme" @click.self="closePanel">
+        <div class="review-modal-container" :style="{ maxWidth: containerWidth }">
+          <div class="review-modal-header">
+            <span class="cultivation-title">🔄 温故复盘</span>
+            <button class="review-close-btn" @click="closePanel">关闭</button>
           </div>
 
-            <!-- intro -->
+          <div class="review-modal-body">
+            <div v-if="stage === 'idle'" class="cultivation-loading">
+              <div class="cultivation-tip">提取错题灵脉中...</div>
+            </div>
+
             <template v-else-if="stage === 'intro'">
               <div class="review-intro">
                 <p class="review-intro-count">共 <strong>{{ questions.length }}</strong> 道待复习错题</p>
                 <p class="review-intro-tip">💡 复习不消耗灵力</p>
                 <p class="review-intro-sub">每道题答对后掌握度 +20</p>
               </div>
-              <div class="cult-actions">
-                <el-button type="primary" @click="startQuestions">开始复习</el-button>
-                <el-button @click="closePanel">返回宗门</el-button>
+              <div class="review-actions">
+                <button type="button" class="review-btn review-btn-primary" @click="startQuestions">开始复习</button>
+                <button type="button" class="review-btn" @click="closePanel">返回宗门</button>
               </div>
             </template>
 
-            <!-- question -->
             <template v-else-if="stage === 'question' && currentQuestion">
               <div class="review-progress-bar">
                 <div class="review-progress-header">
@@ -40,10 +38,11 @@
 
               <div class="cult-question-text">{{ currentQuestion.question }}</div>
 
-              <div class="cult-options">
+              <div v-if="optionEntries.length" class="cult-options">
                 <button
                   v-for="[key, text] in optionEntries"
                   :key="key"
+                  type="button"
                   class="cult-option-btn"
                   :class="{ selected: selectedAnswer === key }"
                   :disabled="!!selectedAnswer"
@@ -53,16 +52,21 @@
                   <span class="option-text">{{ text }}</span>
                 </button>
               </div>
+              <div v-else class="review-empty-options">该题暂无选项，请返回后重试。</div>
 
-              <div class="cult-actions">
-                <el-button @click="closePanel">返回宗门</el-button>
-                <el-button type="primary" :disabled="!selectedAnswer" @click="confirmAnswer">
+              <div class="review-actions">
+                <button type="button" class="review-btn" @click="closePanel">返回宗门</button>
+                <button
+                  type="button"
+                  class="review-btn review-btn-primary"
+                  :disabled="!selectedAnswer"
+                  @click="confirmAnswer"
+                >
                   {{ currentIndex < questions.length - 1 ? '下一题 →' : '完成复习' }}
-                </el-button>
+                </button>
               </div>
             </template>
 
-            <!-- feedback -->
             <template v-else-if="stage === 'feedback' && lastQuestion">
               <div class="review-feedback" :class="lastCorrect ? 'feedback-correct' : 'feedback-wrong'">
                 <div class="feedback-icon">{{ lastCorrect ? '✅' : '❌' }}</div>
@@ -74,15 +78,14 @@
                   <div v-if="lastQuestion.explanation" class="explanation-text">{{ lastQuestion.explanation }}</div>
                 </div>
               </div>
-              <div class="cult-actions">
-                <el-button @click="closePanel">返回宗门</el-button>
-                <el-button type="primary" @click="nextAfterFeedback">
+              <div class="review-actions">
+                <button type="button" class="review-btn" @click="closePanel">返回宗门</button>
+                <button type="button" class="review-btn review-btn-primary" @click="nextAfterFeedback">
                   {{ currentIndex < questions.length - 1 ? '继续下一题' : '查看复习成果' }}
-                </el-button>
+                </button>
               </div>
             </template>
 
-            <!-- result -->
             <template v-else-if="stage === 'result' && resultData">
               <div class="review-result">
                 <div class="result-icon">{{ resultData.accuracy >= 60 ? '📘' : '🔁' }}</div>
@@ -113,15 +116,16 @@
                   {{ resultData.accuracy >= 80 ? '善！错题已基本掌握。' : resultData.accuracy >= 50 ? '尚可，仍有部分错题需巩固。' : '错题较多，建议多复习几次。' }}
                 </div>
               </div>
-              <div class="cult-actions">
-                <el-button @click="closePanel">返回宗门</el-button>
-                <el-button type="primary" @click="restart">再来一轮</el-button>
+              <div class="review-actions">
+                <button type="button" class="review-btn" @click="closePanel">返回宗门</button>
+                <button type="button" class="review-btn review-btn-primary" @click="restart">再来一轮</button>
               </div>
             </template>
+          </div>
         </div>
       </div>
-    </div>
-  </transition>
+    </transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -149,16 +153,38 @@ const lastQuestion = ref<Record<string, any> | null>(null);
 const lastCorrect = ref(false);
 const resultData = ref<Record<string, any> | null>(null);
 
+const containerWidth = computed(() => {
+  if (stage.value === 'result') return '480px';
+  if (stage.value === 'feedback') return '460px';
+  return '520px';
+});
+
 const currentQuestion = computed(() => questions.value[currentIndex.value] ?? null);
+
+function normalizeOptions(raw: unknown): Record<string, string> | string[] | null {
+  if (!raw) return null;
+  if (typeof raw === 'string') {
+    try {
+      return normalizeOptions(JSON.parse(raw));
+    } catch {
+      return null;
+    }
+  }
+  if (Array.isArray(raw)) return raw.map(String);
+  if (typeof raw === 'object') return raw as Record<string, string>;
+  return null;
+}
+
 const optionEntries = computed(() => {
-  const opts = currentQuestion.value?.options;
-  if (!opts || typeof opts !== 'object') return [];
+  const opts = normalizeOptions(currentQuestion.value?.options);
+  if (!opts) return [];
   if (Array.isArray(opts)) {
     const labels = ['A', 'B', 'C', 'D'];
     return opts.map((text: string, i: number) => [labels[i] ?? String(i + 1), text] as [string, string]);
   }
   return Object.entries(opts) as [string, string][];
 });
+
 const answeredCount = computed(() => Object.keys(answers).length);
 const progressPercent = computed(() =>
   questions.value.length ? Math.round((answeredCount.value / questions.value.length) * 100) : 0
@@ -317,33 +343,35 @@ function closePanel() {
 </script>
 
 <style scoped>
-.drawer-overlay {
-  position: absolute;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(10, 10, 26, 0.4);
-  z-index: 2000;
+.review-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2100;
   display: flex;
-  justify-content: flex-end;
-  backdrop-filter: blur(3px);
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 26, 0.85);
+  backdrop-filter: blur(5px);
+  padding: 16px;
 }
 
-.drawer-container {
-  width: 520px;
-  max-width: 100%;
-  height: 100vh;
-  background: rgba(26, 26, 46, 0.95);
-  border-left: 2px solid var(--gold, #d4a843);
+.review-modal-container {
+  width: min(520px, 100%);
+  max-height: min(90vh, 860px);
+  background: #1a1a2e;
+  border: 2px solid var(--gold, #d4a843);
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  box-shadow: -10px 0 30px rgba(0,0,0,0.6);
-  backdrop-filter: blur(10px);
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
-.drawer-header {
+.review-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  padding: 16px 20px;
   background: rgba(255, 255, 255, 0.05);
   border-bottom: 1px solid rgba(212, 168, 67, 0.3);
   flex-shrink: 0;
@@ -355,7 +383,7 @@ function closePanel() {
   font-weight: 700;
 }
 
-.drawer-close-btn {
+.review-close-btn {
   background: transparent;
   border: 1px solid var(--gold, #d4a843);
   color: var(--gold, #d4a843);
@@ -364,15 +392,17 @@ function closePanel() {
   cursor: pointer;
   transition: all 0.2s;
 }
-.drawer-close-btn:hover {
+
+.review-close-btn:hover {
   background: rgba(212, 168, 67, 0.2);
 }
 
-.drawer-body {
+.review-modal-body {
   flex: 1;
   overflow-y: auto;
-  padding: 24px;
+  padding: 20px 24px 24px;
 }
+
 .cultivation-loading,
 .cultivation-tip {
   text-align: center;
@@ -385,11 +415,57 @@ function closePanel() {
   padding: 16px 0;
   line-height: 1.9;
 }
+
 .review-intro-count { font-size: 16px; color: #f7f3e8; }
 .review-intro-tip { color: #55efc4; margin-top: 8px; }
 .review-intro-sub { font-size: 13px; color: #c8b685; margin-top: 4px; }
 
+.review-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(212, 168, 67, 0.12);
+}
+
+.review-btn {
+  width: 100%;
+  min-height: 42px;
+  border-radius: 8px;
+  border: 1px solid rgba(212, 168, 67, 0.35);
+  background: rgba(212, 168, 67, 0.08);
+  color: #f4d98a;
+  font-size: 15px;
+  font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.review-btn:hover:not(:disabled) {
+  background: rgba(212, 168, 67, 0.16);
+  border-color: rgba(212, 168, 67, 0.65);
+}
+
+.review-btn-primary {
+  background: linear-gradient(135deg, #d4a843 0%, #a17816 100%);
+  border-color: rgba(255, 236, 184, 0.3);
+  color: #0c1222;
+  font-weight: 700;
+}
+
+.review-btn-primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+  box-shadow: 0 4px 14px rgba(212, 168, 67, 0.25);
+}
+
+.review-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .review-progress-bar { margin-bottom: 16px; }
+
 .review-progress-header {
   display: flex;
   justify-content: space-between;
@@ -397,12 +473,14 @@ function closePanel() {
   color: #c8b685;
   margin-bottom: 6px;
 }
+
 .progress-track {
   height: 6px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
 }
+
 .progress-fill {
   height: 100%;
   background: linear-gradient(90deg, #55efc4, #00b894);
@@ -422,6 +500,7 @@ function closePanel() {
 }
 
 .cult-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+
 .cult-option-btn {
   display: flex;
   align-items: center;
@@ -436,15 +515,19 @@ function closePanel() {
   transition: all 0.15s;
   width: 100%;
 }
+
 .cult-option-btn:hover:not(:disabled) {
   background: rgba(212, 168, 67, 0.1);
   border-color: rgba(212, 168, 67, 0.4);
 }
+
 .cult-option-btn.selected {
   background: rgba(212, 168, 67, 0.12);
   border-color: rgba(212, 168, 67, 0.7);
 }
+
 .cult-option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+
 .option-label {
   min-width: 22px;
   height: 22px;
@@ -458,7 +541,18 @@ function closePanel() {
   font-weight: 700;
   flex-shrink: 0;
 }
+
 .option-text { font-size: 14px; }
+
+.review-empty-options {
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(231, 76, 60, 0.08);
+  color: #e74c3c;
+  font-size: 13px;
+  text-align: center;
+}
 
 .review-feedback {
   text-align: center;
@@ -466,8 +560,10 @@ function closePanel() {
   border-radius: 10px;
   margin-bottom: 16px;
 }
+
 .feedback-icon { font-size: 40px; margin-bottom: 10px; }
 .feedback-verdict { font-size: 17px; font-weight: 700; margin-bottom: 12px; }
+
 .feedback-explanation {
   margin-top: 12px;
   padding: 12px;
@@ -475,6 +571,7 @@ function closePanel() {
   border-radius: 8px;
   text-align: left;
 }
+
 .explanation-label { font-size: 13px; color: #d4a843; margin-bottom: 4px; }
 .explanation-text { font-size: 13px; color: #c8b685; }
 
@@ -482,6 +579,7 @@ function closePanel() {
 .result-icon { font-size: 40px; margin-bottom: 8px; }
 .result-title { font-size: 18px; color: #d4a843; font-weight: 700; margin-bottom: 14px; }
 .result-rows { text-align: left; margin-bottom: 14px; }
+
 .result-row {
   display: flex;
   justify-content: space-between;
@@ -490,29 +588,20 @@ function closePanel() {
   font-size: 14px;
   color: #c8b685;
 }
-.result-verdict { font-size: 13px; color: #c8b685; margin-top: 10px; }
 
-.cult-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 16px;
-}
+.result-verdict { font-size: 13px; color: #c8b685; margin-top: 10px; }
 
 .text-gold { color: #d4a843; font-weight: 700; }
 .text-jade { color: #55efc4; font-weight: 700; }
 .text-cinnabar { color: #e74c3c; font-weight: 700; }
 
-.slide-right-enter-active,
-.slide-right-leave-active {
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
 }
-.slide-right-enter-from,
-.slide-right-leave-to {
+
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
-}
-.slide-right-enter-from .drawer-container,
-.slide-right-leave-to .drawer-container {
-  transform: translateX(100%);
 }
 </style>
