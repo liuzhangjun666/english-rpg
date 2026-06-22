@@ -58,8 +58,6 @@ const dockItems = ref([
   { id: 'review', name: '复盘', iconUrl: hallReview, onClick: () => emit('open-review') },
   { id: 'achievements', name: '成就碑', iconUrl: hallAchievements, onClick: () => emit('open-achievements') },
   { id: 'profile', name: '洞府', iconUrl: hallProfile, onClick: () => emit('open-profile') },
-  // 设置入口：直接关闭整个侧边栏（"隐藏看个人"），用户可以从 TopHud 设置菜单重新打开
-  { id: 'hide', name: '隐藏侧边栏', emoji: '⚙️', onClick: () => ui.setSidebarVisible(false) },
 ]);
 </script>
 
