@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\StoryController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VocabAssessmentController;
 use App\Http\Controllers\Api\VocabController;
+use App\Http\Controllers\Api\WanyaoTowerController;
 use Illuminate\Support\Facades\Route;
 
 // 短信验证码（无需认证）
@@ -119,6 +120,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/review-submit', [HeartDemonController::class, 'reviewSubmit']);
         Route::post('/report-wrong', [HeartDemonController::class, 'reportWrong']);
         Route::post('/clear', [HeartDemonController::class, 'clearMastered']);
+    });
+
+    Route::prefix('wanyao-tower')->group(function () {
+        Route::get('/status',    [WanyaoTowerController::class, 'status']);
+        Route::post('/start',    [WanyaoTowerController::class, 'start']);
+        Route::post('/answer',   [WanyaoTowerController::class, 'answer']);
+        Route::post('/settle',   [WanyaoTowerController::class, 'settle']);
+        Route::post('/abandon',  [WanyaoTowerController::class, 'abandon']);
     });
 
     Route::prefix('parent')->group(function () {
