@@ -32,6 +32,7 @@ export const useTowerStore = defineStore('tower', () => {
       const api = useApiClient();
       const data = (await api.post('/wanyao-tower/start', null)) as TowerRunPayload;
       currentRun.value = data;
+      inProgressRunId.value = data.run_id;
       answerIndex.value = 0;
       correctMap.value = {};
       status.value = 'answering';
@@ -66,19 +67,26 @@ export const useTowerStore = defineStore('tower', () => {
     if (!currentRun.value) {
       throw new Error('No active tower run');
     }
+    const previousStatus = status.value;
     status.value = 'settling';
-    const api = useApiClient();
-    const data = (await api.post('/wanyao-tower/settle', {
-      run_id: currentRun.value.run_id,
-      boss_text: bossText,
-    })) as SettleResult;
-    lastSettle.value = data;
-    status.value = data.cleared ? 'reward' : 'failed';
-    if (data.cleared) {
-      currentFloor.value = data.new_floor;
-      highestFloor.value = data.highest_floor;
+    try {
+      const api = useApiClient();
+      const data = (await api.post('/wanyao-tower/settle', {
+        run_id: currentRun.value.run_id,
+        boss_text: bossText,
+      })) as SettleResult;
+      lastSettle.value = data;
+      status.value = data.cleared ? 'reward' : 'failed';
+      if (data.cleared) {
+        currentFloor.value = data.new_floor;
+        highestFloor.value = data.highest_floor;
+      }
+      currentRun.value = null;
+      inProgressRunId.value = null;
+    } catch (e) {
+      status.value = previousStatus;
+      throw e;
     }
-    currentRun.value = null;
   }
 
   async function abandon(): Promise<void> {
