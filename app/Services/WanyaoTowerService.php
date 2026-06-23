@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 
 class WanyaoTowerService
 {
+    private const QUESTION_TYPE_VOCAB = 'vocab';
+
     public function __construct(
         private readonly VocabQuestionBuilder $vocabBuilder,
     ) {}
@@ -161,8 +163,8 @@ class WanyaoTowerService
 
             if ($result['cleared']) {
                 $stones = TowerRewardConfig::computeStones($run->floor, $isFirstClear, $result['perfect']);
-                // CurrencyService 没有 addStones：直接 increment spirit_stone
-                User::where('id', $run->user_id)->increment('spirit_stone', $stones);
+                $user = User::findOrFail($run->user_id);
+                $currency->addStones($user, $stones, "tower_clear_floor_{$run->floor}");
                 $progress->current_floor = $run->floor + 1;
                 if ($run->floor > $progress->highest_floor) {
                     $progress->highest_floor = $run->floor;
@@ -170,9 +172,9 @@ class WanyaoTowerService
                 $run->status = 'cleared';
             } else {
                 foreach ($run->questions_json['questions'] ?? [] as $q) {
-                    $given = $run->questions_json['answered'][$q['id']]['correct'] ?? null;
-                    if ($given !== true) {
-                        $heartDemon->recordWrong($run->user_id, (string)$q['id'], 'vocab');
+                    $wasCorrect = $run->questions_json['answered'][$q['id']]['correct'] ?? null;
+                    if ($wasCorrect !== true) {
+                        $heartDemon->recordWrong($run->user_id, (string)$q['id'], self::QUESTION_TYPE_VOCAB);
                         $demonsAdded++;
                     }
                 }

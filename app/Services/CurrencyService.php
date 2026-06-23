@@ -141,6 +141,11 @@ class CurrencyService
         return $user->spirit_power >= $required;
     }
 
+    public function addStones(User $user, int $amount, string $reason): void
+    {
+        $user->increment('spirit_stone', $amount);
+    }
+
     public function consumeSpirit(User $user, int $amount): bool
     {
         $this->recoverSpiritPower($user);
