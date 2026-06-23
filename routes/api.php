@@ -124,7 +124,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('wanyao-tower')->group(function () {
         Route::get('/status',    [WanyaoTowerController::class, 'status']);
-        Route::post('/start',    [WanyaoTowerController::class, 'start']);
+        Route::post('/start',    [WanyaoTowerController::class, 'start'])->middleware('throttle:3,1');
         Route::post('/answer',   [WanyaoTowerController::class, 'answer']);
         Route::post('/settle',   [WanyaoTowerController::class, 'settle']);
         Route::post('/abandon',  [WanyaoTowerController::class, 'abandon']);
