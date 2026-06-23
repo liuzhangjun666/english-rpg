@@ -16,6 +16,8 @@ class TimedChallengeService
 {
     public const DURATION_SEC = 60;
     public const SPIRIT_COST = 5;
+    public const BOSS_DURATION_SEC = 90;
+    public const BOSS_SPIRIT_COST = 8;
     public const DEMON_RATIO = 40;
 
     private const MODULE_TYPES = ['vocab', 'grammar', 'listening', 'speaking', 'reading', 'writing'];
@@ -28,17 +30,25 @@ class TimedChallengeService
     ) {
     }
 
-    public function start(User $user, string $moduleType, string $level, string $stage): array
+    public function start(User $user, string $moduleType, string $level, string $stage, string $mode = 'normal'): array
     {
+        $isBoss = $mode === 'boss';
+        if ($isBoss) {
+            $moduleType = self::MODULE_TYPES[array_rand(self::MODULE_TYPES)];
+        }
+
         if (!in_array($moduleType, self::MODULE_TYPES, true)) {
             return ['success' => false, 'code' => 'MODULE_NOT_SUPPORTED', 'message' => '不支持的挑战类型'];
         }
 
-        if (!$this->currencyService->hasEnoughSpirit($user, self::SPIRIT_COST)) {
+        $spiritCost = $isBoss ? self::BOSS_SPIRIT_COST : self::SPIRIT_COST;
+        $durationSec = $isBoss ? self::BOSS_DURATION_SEC : self::DURATION_SEC;
+
+        if (!$this->currencyService->hasEnoughSpirit($user, $spiritCost)) {
             return ['success' => false, 'code' => 'INSUFFICIENT_SPIRIT', 'message' => '学习精力不足'];
         }
 
-        $this->currencyService->consumeSpirit($user, self::SPIRIT_COST);
+        $this->currencyService->consumeSpirit($user, $spiritCost);
 
         $session = TimedChallengeSession::create([
             'challenge_id' => 'tc_' . Str::lower(Str::random(20)),
@@ -46,8 +56,8 @@ class TimedChallengeService
             'module_type' => $moduleType,
             'level' => $level,
             'stage' => $stage,
-            'duration_sec' => self::DURATION_SEC,
-            'spirit_cost' => self::SPIRIT_COST,
+            'duration_sec' => $durationSec,
+            'spirit_cost' => $spiritCost,
             'status' => 'running',
             'started_at' => now(),
             'asked_question_ids' => [],

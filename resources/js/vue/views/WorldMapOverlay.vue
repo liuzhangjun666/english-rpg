@@ -18,7 +18,7 @@
         <div v-if="activeRadialBuilding" class="radial-backdrop" @click="closeFocus"></div>
 
         <!-- 每日修炼悬浮按钮 -->
-        <button class="daily-quest-fab" @click="showDailyQuest = true" title="今日修炼任务">
+        <button class="daily-quest-fab" @click="panels.showDailyQuest = true" title="今日修炼任务">
           <span class="daily-quest-icon">📅</span>
           <span class="daily-quest-label">每日修炼</span>
         </button>
@@ -34,18 +34,19 @@
         />
 
         <GlobalHud
-          @open-review="showReview = true"
-          @open-achievements="showAchievements = true"
-          @open-profile="showProfile = true"
+          @open-review="panels.showReview = true"
+          @open-achievements="panels.showAchievements = true"
+          @open-profile="panels.showProfile = true"
+          @open-events="panels.showEvents = true"
+          @open-mail="panels.showMail = true"
+          @open-settings="panels.showSettings = true"
         />
 
-        <!-- 弹窗 -->
-        <ReviewModal      v-model:visible="showReview" />
-        <HeartDemonRecord v-model:visible="showDemons" />
-        <AchievementsModal v-model:visible="showAchievements" />
-        <ProfilePanel     v-model:visible="showProfile" @open-review="openReviewFromProfile" />
-        <DailyQuestPanel  v-model:visible="showDailyQuest" />
-        <InnerDemonPanel  v-model:visible="showInnerDemon" :auto-challenge="innerDemonAutoChallenge" />
+        <HallModals
+          :panels="panels"
+          @go-mijing="navigation.goMijing()"
+          @go-world-boss="navigation.goWorldBoss()"
+        />
       </div>
     </Transition>
   </Teleport>
@@ -57,18 +58,13 @@ import { ElMessage } from 'element-plus';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
-import { useMapBuildings, findMapBuilding, getSceneBuildingImages } from '../composables/useMapBuildings';
-import { useMapNavigation } from '../composables/useMapNavigation';
+import { findMapBuilding, getSceneBuildingImages } from '../composables/useMapBuildings';
+import { useHallPanels } from '../composables/useHallPanels';
 import { WorldSceneManager } from '../core/sect/WorldSceneManager';
 
-import RadialMenu       from '../components/map/RadialMenu.vue';
-import GlobalHud        from '../components/map/GlobalHud.vue';
-import ReviewModal      from './ReviewModal.vue';
-import HeartDemonRecord from '../components/demons/HeartDemonRecord.vue';
-import AchievementsModal from './AchievementsModal.vue';
-import ProfilePanel     from '../components/profile/ProfilePanel.vue';
-import DailyQuestPanel  from './DailyQuestPanel.vue';
-import InnerDemonPanel  from '../components/demons/InnerDemonPanel.vue';
+import RadialMenu from '../components/map/RadialMenu.vue';
+import GlobalHud from '../components/map/GlobalHud.vue';
+import HallModals from '../components/features/HallModals.vue';
 
 const props = defineProps<{ visible: boolean }>();
 const emit  = defineEmits<{ (e: 'close'): void }>();
@@ -84,35 +80,8 @@ const userRealmLevel = ref(0);
 const radialPos      = ref({ x: '50%', y: '50%' });
 
 const activeRadialBuilding = ref<any>(null);
-const showReview      = ref(false);
-const showDemons      = ref(false);
-const showAchievements = ref(false);
-const showProfile     = ref(false);
-const showDailyQuest  = ref(false);
-const showInnerDemon  = ref(false);
-const innerDemonAutoChallenge = ref(false);
 
-function openReviewFromProfile() {
-  showReview.value = true;
-}
-
-const { goPractice, goReading, goExam, goMijing, goMall } = useMapNavigation({ beforeNavigate: close });
-const { mapBuildings } = useMapBuildings({
-  goPractice,
-  goReading,
-  goExam,
-  goMijing,
-  goMall,
-  showDailyQuest: () => { showDailyQuest.value = true; },
-  showAchievements: () => { showAchievements.value = true; },
-  showProfile: () => { showProfile.value = true; },
-  showReview: () => { showReview.value = true; },
-  showDemons: () => { showDemons.value = true; },
-  showInnerDemon: (autoChallenge) => {
-    innerDemonAutoChallenge.value = autoChallenge;
-    showInnerDemon.value = true;
-  },
-});
+const { mapBuildings, panels, navigation } = useHallPanels({ beforeNavigate: close });
 
 // 当 overlay 变为可见时初始化 3D 场景
 watch(() => props.visible, async (val) => {

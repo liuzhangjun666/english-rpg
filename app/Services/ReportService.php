@@ -192,15 +192,44 @@ class ReportService
         return CultivationProfile::realmName($realm);
     }
 
-    private function getStreakDays(User $user): int
+    public function getStreakDays(User $user): int
     {
         $dates = LearningRecord::where('user_id', $user->id)
-            ->selectRaw('DATE(created_at) as d')->groupBy('d')->orderByDesc('d')->pluck('d');
-        $streak = 0; $check = now()->format('Y-m-d');
-        foreach ($dates as $d) {
-            if ($d === $check) { $streak++; $check = date('Y-m-d', strtotime($check.' -1 day')); }
-            else break;
+            ->selectRaw('DATE(created_at) as d')
+            ->groupBy('d')
+            ->orderByDesc('d')
+            ->pluck('d')
+            ->all();
+        $dateSet = array_flip($dates);
+
+        $currency = is_array($user->progress_currency) ? $user->progress_currency : [];
+        $freezeAvailable = !empty($currency['streak_freeze']);
+        $freezeUsed = false;
+
+        $streak = 0;
+        $check = now()->format('Y-m-d');
+
+        while (true) {
+            if (isset($dateSet[$check])) {
+                $streak++;
+                $check = date('Y-m-d', strtotime($check . ' -1 day'));
+                continue;
+            }
+
+            if ($freezeAvailable && !$freezeUsed && $streak > 0) {
+                $freezeAvailable = false;
+                $freezeUsed = true;
+                $currency['streak_freeze'] = false;
+                $user->progress_currency = $currency;
+                $user->save();
+                $streak++;
+                $check = date('Y-m-d', strtotime($check . ' -1 day'));
+                continue;
+            }
+
+            break;
         }
+
         return $streak;
     }
 

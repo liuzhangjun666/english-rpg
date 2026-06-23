@@ -15,14 +15,18 @@ class AchievementController extends Controller
     /** GET /api/achievements */
     public function index(Request $request): JsonResponse
     {
-        $achievements = $this->achievementService->getUserAchievements($request->user()->id);
+        $user = $request->user();
+        $this->achievementService->checkAll($user);
+        $achievements = $this->achievementService->getUserAchievements($user->id);
+        $unlockedIds = $this->achievementService->toFrontendIds($achievements);
         $allTypes = AchievementService::TYPES;
 
         return response()->json([
             'success' => true,
             'data' => [
                 'unlocked' => $achievements,
-                'total_unlocked' => count($achievements),
+                'unlocked_ids' => $unlockedIds,
+                'total_unlocked' => count($unlockedIds),
                 'total_possible' => count($allTypes),
                 'all_types' => $allTypes,
             ],

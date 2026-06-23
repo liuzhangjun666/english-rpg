@@ -40,6 +40,9 @@ const emit = defineEmits<{
   (e: 'open-review'): void;
   (e: 'open-achievements'): void;
   (e: 'open-profile'): void;
+  (e: 'open-events'): void;
+  (e: 'open-mail'): void;
+  (e: 'open-settings'): void;
 }>();
 
 const isExpanded = ref(false);
@@ -47,12 +50,12 @@ const isExpanded = ref(false);
 const dockItems = ref([
   { id: 'mall', name: '坊市', iconUrl: hallMall, onClick: () => router.push('/mall') },
   { id: 'leaderboard', name: '排行榜', iconUrl: hallLeaderboard, onClick: () => router.push('/leaderboard') },
-  { id: 'activities', name: '活动', emoji: '🎁', onClick: () => console.log('Activities clicked') },
-  { id: 'mail', name: '邮件', emoji: '✉️', onClick: () => console.log('Mail clicked') },
+  { id: 'activities', name: '活动', emoji: '🎁', onClick: () => emit('open-events') },
+  { id: 'mail', name: '邮件', emoji: '✉️', onClick: () => emit('open-mail') },
   { id: 'review', name: '复盘', iconUrl: hallReview, onClick: () => emit('open-review') },
   { id: 'achievements', name: '成就碑', iconUrl: hallAchievements, onClick: () => emit('open-achievements') },
   { id: 'profile', name: '洞府', iconUrl: hallProfile, onClick: () => emit('open-profile') },
-  { id: 'settings', name: '设置', emoji: '⚙️', onClick: () => console.log('Settings clicked') },
+  { id: 'settings', name: '设置', emoji: '⚙️', onClick: () => emit('open-settings') },
 ]);
 </script>
 

@@ -45,8 +45,9 @@ export class APIClient {
 
         const maxAttempt = this.shouldRetry(method, path) ? this.maxRetry : 1;
         let result = null;
+        const timeoutMs = Number(meta.timeoutMs) > 0 ? Number(meta.timeoutMs) : this.timeoutMs;
         for (let attempt = 1; attempt <= maxAttempt; attempt++) {
-            result = await this.fetchOnce(url, options);
+            result = await this.fetchOnce(url, options, timeoutMs);
             const networkLike = ['NETWORK_ERROR', 'REQUEST_TIMEOUT'].includes(result.payload?.code);
             if (!networkLike || attempt >= maxAttempt) {
                 break;
@@ -88,9 +89,9 @@ export class APIClient {
         return result.payload;
     }
 
-    async fetchOnce(url, options) {
+    async fetchOnce(url, options, timeoutMs = this.timeoutMs) {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), this.timeoutMs);
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
         try {
             const response = await fetch(url, { ...options, signal: controller.signal });
             const payload = await this.safeJson(response);

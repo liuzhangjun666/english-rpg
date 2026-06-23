@@ -4,18 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\ReportService;
+use App\Services\SmsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ParentController extends Controller
 {
-    private ReportService $reportService;
-
-    public function __construct(ReportService $reportService)
-    {
-        $this->reportService = $reportService;
-    }
+    public function __construct(
+        private readonly ReportService $reportService,
+        private readonly SmsService $smsService,
+    ) {}
 
     /**
      * 家长绑定
@@ -34,14 +33,18 @@ class ParentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['success'=>false,'code'=>'VALIDATION_ERROR','message'=>$validator->errors()->first()], 422);
-        }
-
-        if ($request->phone === $request->parent_phone) {
-            return response()->json(['success'=>false,'code'=>'SAME_AS_SELF','message'=>'家长手机号不能与本人相同'], 422);
+            return response()->json(['success' => false, 'code' => 'VALIDATION_ERROR', 'message' => $validator->errors()->first()], 422);
         }
 
         $user = $request->user();
+        if ($user->phone === $request->parent_phone) {
+            return response()->json(['success' => false, 'code' => 'SAME_AS_SELF', 'message' => '家长手机号不能与本人相同'], 422);
+        }
+
+        if (!$this->smsService->verify($request->parent_phone, $request->code, 'bind')) {
+            return response()->json(['success' => false, 'code' => 'INVALID_CODE', 'message' => '验证码错误或已过期'], 422);
+        }
+
         $user->update([
             'parent_phone' => $request->parent_phone,
             'parent_verified' => true,
@@ -51,7 +54,7 @@ class ParentController extends Controller
             $user->update(['spirit_power_max' => 100, 'spirit_power' => 100]);
         }
 
-        return response()->json(['success'=>true,'data'=>$user]);
+        return response()->json(['success' => true, 'data' => $user->fresh()]);
     }
 
     /**

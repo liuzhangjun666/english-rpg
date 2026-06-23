@@ -40,13 +40,23 @@ export interface MapBuildingHandlers {
   goReading: () => void;
   goExam: () => void;
   goMijing: () => void;
+  goWorldBoss: () => void;
+  goLeaderboard: () => void;
   goMall?: () => void;
   showDailyQuest: () => void;
+  showSignIn: () => void;
+  showEvents: () => void;
   showAchievements: () => void;
   showProfile: () => void;
   showReview: () => void;
   showDemons: () => void;
   showInnerDemon: (autoChallenge: boolean) => void;
+  showAskHeart: () => void;
+  showAiAsk: () => void;
+  showPets: () => void;
+  showStorage: () => void;
+  showMail: () => void;
+  showSettings: () => void;
 }
 
 function resolveAction(action: MapBuildingAction, handlers: MapBuildingHandlers) {
@@ -63,11 +73,23 @@ function resolveAction(action: MapBuildingAction, handlers: MapBuildingHandlers)
     case 'mijing':
       handlers.goMijing();
       break;
+    case 'worldBoss':
+      handlers.goWorldBoss();
+      break;
+    case 'leaderboard':
+      handlers.goLeaderboard();
+      break;
     case 'mall':
       handlers.goMall?.();
       break;
     case 'dailyQuest':
       handlers.showDailyQuest();
+      break;
+    case 'signin':
+      handlers.showSignIn();
+      break;
+    case 'events':
+      handlers.showEvents();
       break;
     case 'achievements':
       handlers.showAchievements();
@@ -84,8 +106,23 @@ function resolveAction(action: MapBuildingAction, handlers: MapBuildingHandlers)
     case 'innerDemon':
       handlers.showInnerDemon(action.autoChallenge);
       break;
-    case 'message':
-      ElMessage.info(action.text);
+    case 'askHeart':
+      handlers.showAskHeart();
+      break;
+    case 'aiAsk':
+      handlers.showAiAsk();
+      break;
+    case 'pets':
+      handlers.showPets();
+      break;
+    case 'storage':
+      handlers.showStorage();
+      break;
+    case 'mail':
+      handlers.showMail();
+      break;
+    case 'settings':
+      handlers.showSettings();
       break;
     default:
       break;

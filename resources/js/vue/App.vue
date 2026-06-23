@@ -28,8 +28,9 @@
       <div class="loading-content">{{ ui.loadingText }}</div>
     </el-dialog>
 
-    <ProfilePanel v-model:visible="showProfile" @open-review="openReviewFromProfile" />
+    <ProfilePanel v-model:visible="showProfile" @open-review="openReviewFromProfile" @open-parent="showParentDashboard = true" />
     <ReviewModal v-model:visible="showReviewFromProfile" />
+    <ParentDashboardPanel v-model:visible="showParentDashboard" />
     <DemonEncounter />
 
     <WorldMapOverlay :visible="ui.mapOverlayVisible" @close="ui.hideMapOverlay()" />
@@ -46,9 +47,11 @@ import { useUiStore } from './stores/ui';
 import { useStoryStore } from './stores/story';
 import { resolveProfileRealm } from '../utils/cultivation.js';
 import { useLegacyBridge } from './composables/useLegacyBridge';
+import { initGameSoundSettings } from './composables/useGameSound';
 import TopHud from './components/layout/TopHud.vue';
 import ProfilePanel from './components/profile/ProfilePanel.vue';
 import ReviewModal from './views/ReviewModal.vue';
+import ParentDashboardPanel from './components/features/ParentDashboardPanel.vue';
 import DemonEncounter from './components/demons/DemonEncounter.vue';
 import WorldMapOverlay from './views/WorldMapOverlay.vue';
 
@@ -87,6 +90,7 @@ async function logout() {
 
 const showProfile = ref(false);
 const showReviewFromProfile = ref(false);
+const showParentDashboard = ref(false);
 
 async function openProfile() {
   showProfile.value = true;
@@ -104,6 +108,7 @@ const handleProfileUpdate = (e: Event) => {
 };
 
 onMounted(() => {
+  initGameSoundSettings();
   window.addEventListener('profile-updated', handleProfileUpdate);
   router.afterEach(() => { ui.hideMapOverlay(); });
 

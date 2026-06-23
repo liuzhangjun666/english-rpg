@@ -21,14 +21,23 @@ export type MapBuildingAction =
   | { type: 'reading' }
   | { type: 'exam' }
   | { type: 'mijing' }
+  | { type: 'worldBoss' }
   | { type: 'mall' }
+  | { type: 'leaderboard' }
   | { type: 'dailyQuest' }
+  | { type: 'signin' }
+  | { type: 'events' }
   | { type: 'achievements' }
   | { type: 'profile' }
   | { type: 'review' }
   | { type: 'demons' }
   | { type: 'innerDemon'; autoChallenge: boolean }
-  | { type: 'message'; text: string };
+  | { type: 'askHeart' }
+  | { type: 'aiAsk' }
+  | { type: 'pets' }
+  | { type: 'storage' }
+  | { type: 'mail' }
+  | { type: 'settings' };
 
 export interface MapSubNodeDef {
   key: string;
@@ -52,9 +61,9 @@ export const MAP_BUILDING_DEFS: MapBuildingDef[] = [
     unlockRealm: 0,
     subNodes: [
       { key: 'practice-act', title: '修炼', iconKey: 'vocab', action: { type: 'practice', mode: 'vocab' } },
-      { key: 'breakthrough', title: '突破', iconKey: 'reading', action: { type: 'message', text: '暂无心魔，无需突破！' } },
+      { key: 'demon-record', title: '心魔录', iconKey: 'vocab', action: { type: 'demons' } },
       { key: 'quest', title: '任务', iconKey: 'grammar', action: { type: 'dailyQuest' } },
-      { key: 'signin', title: '签到', iconKey: 'listening', action: { type: 'dailyQuest' } },
+      { key: 'signin', title: '签到', iconKey: 'listening', action: { type: 'signin' } },
     ],
   },
   {
@@ -75,7 +84,7 @@ export const MAP_BUILDING_DEFS: MapBuildingDef[] = [
     subNodes: [
       { key: 'writing-game', title: '写作', iconKey: 'writing', action: { type: 'practice', mode: 'writing' } },
       { key: 'speaking', title: '口语', iconKey: 'speaking', action: { type: 'practice', mode: 'speaking' } },
-      { key: 'ai', title: 'AI问道', iconKey: 'reading', action: { type: 'message', text: '通灵玉简连接中...' } },
+      { key: 'ai', title: 'AI问道', iconKey: 'reading', action: { type: 'aiAsk' } },
     ],
   },
   {
@@ -83,9 +92,8 @@ export const MAP_BUILDING_DEFS: MapBuildingDef[] = [
     title: '天道峰',
     unlockRealm: 1,
     subNodes: [
-      { key: 'exam-act', title: '考试', iconKey: 'writing', action: { type: 'exam' } },
-      { key: 'rank', title: '排行榜', iconKey: 'reading', action: { type: 'message', text: '天机阁榜单更新中...' } },
-      { key: 'dujie', title: '渡劫', iconKey: 'listening', action: { type: 'message', text: '雷劫尚未凝聚...' } },
+      { key: 'dujie', title: '渡劫', iconKey: 'writing', action: { type: 'exam' } },
+      { key: 'rank', title: '排行榜', iconKey: 'reading', action: { type: 'leaderboard' } },
     ],
   },
   {
@@ -96,7 +104,7 @@ export const MAP_BUILDING_DEFS: MapBuildingDef[] = [
       { key: 'demon-record', title: '心魔录', iconKey: 'vocab', action: { type: 'demons' } },
       { key: 'challenge', title: '心魔试炼', iconKey: 'speaking', action: { type: 'innerDemon', autoChallenge: true } },
       { key: 'seal', title: '镇魔封印', iconKey: 'grammar', action: { type: 'innerDemon', autoChallenge: false } },
-      { key: 'ask-heart', title: '问心崖', iconKey: 'listening', action: { type: 'message', text: '问心阵法推演中...' } },
+      { key: 'ask-heart', title: '问心崖', iconKey: 'listening', action: { type: 'askHeart' } },
     ],
   },
   {
@@ -106,8 +114,8 @@ export const MAP_BUILDING_DEFS: MapBuildingDef[] = [
     subNodes: [
       { key: 'info', title: '个人信息', iconKey: 'vocab', action: { type: 'profile' } },
       { key: 'achieve', title: '成就碑', iconKey: 'reading', action: { type: 'achievements' } },
-      { key: 'pets', title: '灵宠园', iconKey: 'grammar', action: { type: 'message', text: '灵宠园修建中...' } },
-      { key: 'storage', title: '仓库', iconKey: 'listening', action: { type: 'message', text: '储物袋整理中...' } },
+      { key: 'pets', title: '灵宠园', iconKey: 'grammar', action: { type: 'pets' } },
+      { key: 'storage', title: '仓库', iconKey: 'listening', action: { type: 'storage' } },
     ],
   },
   {
@@ -116,8 +124,14 @@ export const MAP_BUILDING_DEFS: MapBuildingDef[] = [
     unlockRealm: 3,
     subNodes: [
       { key: 'dungeon', title: '副本', iconKey: 'writing', action: { type: 'mijing' } },
-      { key: 'event', title: '活动', iconKey: 'speaking', action: { type: 'message', text: '秘境异象尚未开启' } },
-      { key: 'world-boss', title: '世界挑战', iconKey: 'reading', action: { type: 'message', text: '上古大妖沉睡中...' } },
+      { key: 'event', title: '活动', iconKey: 'speaking', action: { type: 'events' } },
+      { key: 'world-boss', title: '世界挑战', iconKey: 'reading', action: { type: 'worldBoss' } },
     ],
   },
 ];
+
+/** 3D 场景悬浮标签：与径向菜单共用名称与解锁境界 */
+export const SCENE_NODE_META: Record<SceneBuildingId, { name: string; unlockRealm: number }> =
+  Object.fromEntries(
+    MAP_BUILDING_DEFS.map((def) => [def.sceneId, { name: def.title, unlockRealm: def.unlockRealm }]),
+  ) as Record<SceneBuildingId, { name: string; unlockRealm: number }>;

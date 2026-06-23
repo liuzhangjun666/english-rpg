@@ -1,65 +1,102 @@
 <template>
-  <div class="speaking-module">
-    <div v-if="!asrSupported" class="beta-banner warn">
-      当前浏览器不支持语音识别，请使用 Chrome / Edge，或点下方按钮手动继续。
-    </div>
-    <div v-else class="beta-banner">
-      按住按钮朗读英文句子，松开后自动识别并判分（相似度 ≥ {{ Math.round(passThreshold * 100) }}% 为通过）
-    </div>
+  <div class="echo-cliff" :class="`state-${echoState}`">
+    <img class="deco-mist deco-mist-l" :src="assets.decoMist" alt="" aria-hidden="true" />
+    <img class="deco-mist deco-mist-r" :src="assets.decoMist" alt="" aria-hidden="true" />
 
-    <div class="question-display">
-      <div class="title">请朗读以下句子：</div>
-      <div class="sentence">{{ question.content }}</div>
-    </div>
-
-    <div class="recorder-container">
-      <button
-        class="record-btn"
-        :class="{ 'is-recording': isListening }"
-        :disabled="isJudging"
-        @mousedown="handleStart"
-        @mouseup="handleStop"
-        @mouseleave="handleStop"
-        @touchstart.prevent="handleStart"
-        @touchend.prevent="handleStop"
-      >
-        {{ isListening ? '松开识别' : '按住朗读' }}
-      </button>
-
-      <button class="skip-btn" type="button" :disabled="isJudging" @click="handleSkip">
-        已完成朗读，继续（免识别）
-      </button>
-
-      <div v-if="isJudging" class="status-text">识别中...</div>
-      <div v-if="displayError" class="error-text">{{ displayError }}</div>
-
-      <div v-if="lastResult" class="result-box" :class="lastResult.passed ? 'pass' : 'fail'">
-        <div class="result-line">识别：{{ lastResult.transcript || '（未识别到内容）' }}</div>
-        <div class="result-line">相似度：{{ Math.round(lastResult.similarity * 100) }}%</div>
-        <div class="result-verdict">{{ lastResult.passed ? '诵读通过' : '尚未达标，可再试一次' }}</div>
-        <button
-          v-if="!lastResult.passed"
-          class="skip-btn fail-next"
-          type="button"
-          @click="handleContinueAfterFail"
-        >
-          继续下一题（记为未通过）
-        </button>
+    <div v-if="questionStem" class="scene-bubble">
+      <img class="scene-bg" :src="assets.contextBubble" alt="" aria-hidden="true" />
+      <div class="scene-inner">
+        <span class="scene-tag">崖下情境</span>
+        <p class="scene-text">{{ questionStem }}</p>
       </div>
+    </div>
+
+    <SpeakingEchoStaff
+      :sentence="mantraText"
+      :staff-tokens="staffTokens"
+      :wave-bars="waveBars"
+      :is-casting="echoState === 'casting'"
+      :is-returned="echoState === 'returned'"
+    />
+
+    <div class="staff-tools">
+      <button class="btn-listen" type="button" title="听领诵" @click="playDemo">
+        <img class="btn-listen-bg" :src="assets.btnListen" alt="" aria-hidden="true" />
+        <span class="btn-listen-text">领诵一遍</span>
+      </button>
+      <span class="tool-hint">共鸣 ≥ {{ Math.round(passThreshold * 100) }}% 即传声过关</span>
+    </div>
+
+    <SpeakingRippleBell
+      v-if="echoState !== 'returned'"
+      :disabled="isJudging"
+      :is-casting="echoState === 'casting'"
+      @press="handlePress"
+      @release="handleRelease"
+    />
+
+    <div v-if="isJudging" class="status-line">崖壁辨音中…</div>
+    <div v-if="displayError" class="error-text">{{ displayError }}</div>
+
+    <Transition name="echo-slide">
+      <div v-if="echoState === 'returned'" class="echo-gallery">
+        <img class="gallery-bg" :src="assets.echoGallery" alt="" aria-hidden="true" />
+        <div class="gallery-inner">
+          <div class="gallery-head">
+            <span v-if="echoTier" class="tier-badge" :style="{ color: echoTier.color }">
+              {{ echoTier.icon }} {{ echoTier.label }}
+            </span>
+            <span class="match-badge">{{ Math.round(finalSimilarity * 100) }}% 共鸣</span>
+          </div>
+          <p class="verdict">{{ verdictText }}</p>
+
+          <div class="echo-compare">
+            <div class="echo-line yours">
+              <span class="echo-label">你的传声</span>
+              <span class="echo-content">{{ finalSpoken || '（未拾到声音）' }}</span>
+            </div>
+            <div class="echo-divider">⟷ 崖壁回响</div>
+            <div class="echo-line target">
+              <span class="echo-label">崖上真言</span>
+              <span class="echo-content">{{ mantraText }}</span>
+            </div>
+          </div>
+
+          <div class="gallery-actions">
+            <button v-if="!passed && !skippedVerify" class="btn-outline" type="button" @click="retryCast">
+              再喊一次
+            </button>
+            <button class="btn-cast" type="button" @click="handleContinue">
+              <img class="btn-cast-bg" :src="assets.btnCast" alt="" aria-hidden="true" />
+              <span class="btn-cast-text">{{ passed || skippedVerify ? '传声过关 →' : '强行过关（记未过）' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
+    <div v-if="echoState === 'ready' && !asrSupported" class="fallback-row">
+      <button class="btn-outline" type="button" @click="handleSkip">无声传声（免麦克风）</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref, toRef, watch } from 'vue';
 import { useSpeechRecognizer } from '../../composables/useSpeechRecognizer';
-import { speechSimilarity, SPEAKING_PASS_THRESHOLD } from '../../utils/speechSimilarity';
+import { useSpeakingEcho } from '../../composables/useSpeakingEcho';
+import { speakingAssets as assets } from '../../data/speakingAssets';
+import SpeakingEchoStaff from '../../components/speaking/SpeakingEchoStaff.vue';
+import SpeakingRippleBell from '../../components/speaking/SpeakingRippleBell.vue';
+import { getEchoVerdict } from '../../utils/speakingEcho';
+import { SPEAKING_PASS_THRESHOLD } from '../../utils/speechSimilarity';
 
 const props = defineProps<{
   question: {
     content?: string;
     expectedText?: string;
-    correctAnswerKey?: string;
+    question?: string;
+    stem?: string;
     correct_answer?: string;
     options?: Record<string, string>;
   };
@@ -84,191 +121,316 @@ const {
   reset,
 } = useSpeechRecognizer();
 
+const mantraText = computed(() => String(props.question?.expectedText || props.question?.content || '').trim());
+const questionStem = computed(() => String(props.question?.question || props.question?.stem || '').trim());
+const expectedRef = toRef(() => mantraText.value);
+
+const {
+  echoState,
+  liveSpoken,
+  finalSpoken,
+  finalSimilarity,
+  staffTokens,
+  waveBars,
+  echoTier,
+  resetEcho,
+  startCast,
+  returnEcho,
+  retryCast,
+} = useSpeakingEcho(expectedRef);
+
 const asrSupported = computed(() => isSupported());
 const passThreshold = SPEAKING_PASS_THRESHOLD;
 const isJudging = ref(false);
-const lastResult = ref<{ transcript: string; similarity: number; passed: boolean } | null>(null);
+const skippedVerify = ref(false);
+
 const displayError = computed(() => asrError.value);
+const passed = computed(() => finalSimilarity.value >= passThreshold);
+const verdictText = computed(() => getEchoVerdict(finalSimilarity.value, passed.value));
+
+watch(transcript, (val) => {
+  if (echoState.value === 'casting') liveSpoken.value = val;
+});
 
 watch(() => props.question?.content, () => {
   reset();
-  lastResult.value = null;
+  resetEcho();
   isJudging.value = false;
+  skippedVerify.value = false;
 });
 
-function expectedText(): string {
-  return String(
-    props.question?.expectedText ||
-    props.question?.content ||
-    ''
-  ).trim();
+function playDemo() {
+  const text = mantraText.value;
+  if (!text || typeof window === 'undefined' || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'en-US';
+  utter.rate = 0.88;
+  window.speechSynthesis.speak(utter);
 }
 
-async function handleStart() {
-  if (isJudging.value || isListening.value) return;
-  lastResult.value = null;
+function handlePress() {
+  if (isJudging.value || isListening.value || echoState.value === 'returned') return;
+  startCast();
+  liveSpoken.value = '';
   reset();
   start();
 }
 
-async function handleStop() {
+async function handleRelease() {
   if (!isListening.value || isJudging.value) return;
   isJudging.value = true;
   const said = await stop();
-  const expected = expectedText();
-  const similarity = speechSimilarity(expected, said);
-  const passed = similarity >= passThreshold;
-  lastResult.value = { transcript: said, similarity, passed };
+  liveSpoken.value = said;
+  returnEcho(said);
   isJudging.value = false;
-
-  if (passed) {
-    emit('submit-answer', { transcript: said, similarity, passed: true, skipped: false });
-  }
 }
 
-function handleContinueAfterFail() {
-  if (!lastResult.value) return;
+function handleContinue() {
   emit('submit-answer', {
-    transcript: lastResult.value.transcript,
-    similarity: lastResult.value.similarity,
-    passed: false,
-    skipped: false,
+    transcript: finalSpoken.value,
+    similarity: skippedVerify.value ? 1 : finalSimilarity.value,
+    passed: skippedVerify.value ? true : passed.value,
+    skipped: skippedVerify.value,
   });
 }
 
 function handleSkip() {
-  lastResult.value = { transcript: '', similarity: 1, passed: true };
-  emit('submit-answer', { transcript: '', similarity: 1, passed: true, skipped: true });
+  skippedVerify.value = true;
+  returnEcho('');
+  finalSimilarity.value = 1;
 }
 </script>
 
 <style scoped>
-.speaking-module {
+.echo-cliff {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  align-items: center;
-  padding: 20px 0;
+  gap: 16px;
   width: 100%;
-}
-.beta-banner {
-  width: 100%;
-  max-width: 560px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: 1px solid rgba(212, 168, 67, 0.35);
-  background: rgba(212, 168, 67, 0.08);
-  color: #e8dcc8;
-  font-size: 13px;
-  line-height: 1.5;
-  text-align: center;
-}
-.beta-banner.warn {
-  border-color: rgba(255, 107, 107, 0.35);
-  background: rgba(255, 107, 107, 0.08);
-}
-.question-display {
-  text-align: center;
   max-width: 640px;
+  margin: 0 auto;
+  padding: 0 8px 24px;
+  color: #d8e8f8;
 }
-.title {
-  font-size: 14px;
-  color: var(--parchment-dark);
-  margin-bottom: 10px;
+
+.deco-mist {
+  position: absolute;
+  width: 140px;
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 0;
 }
-.sentence {
-  font-size: 24px;
-  color: var(--gold);
-  line-height: 1.5;
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+.deco-mist-l { top: 120px; left: -20px; }
+.deco-mist-r { top: 200px; right: -20px; transform: scaleX(-1); }
+
+.scene-bubble {
+  position: relative;
+  width: 100%;
+  z-index: 1;
 }
-.recorder-container {
+.scene-bg {
+  width: 100%;
+  display: block;
+}
+.scene-inner {
+  position: absolute;
+  inset: 14% 8% 22% 10%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  max-width: 560px;
+  gap: 6px;
 }
-.record-btn {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: rgba(26, 26, 46, 0.8);
-  border: 2px solid var(--gold);
-  color: var(--gold-light);
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
+.scene-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #7ee8ff;
+  letter-spacing: 0.08em;
 }
-.record-btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-.record-btn:active:not(:disabled) {
-  transform: scale(0.95);
-}
-.record-btn.is-recording {
-  background: rgba(255, 107, 107, 0.15);
-  border-color: #ff6b6b;
-  color: #ff6b6b;
-  animation: pulse 1.5s infinite;
-}
-.skip-btn {
-  padding: 10px 20px;
-  border-radius: 999px;
-  border: 1px solid rgba(212, 168, 67, 0.45);
-  background: transparent;
-  color: #e8dcc8;
-  cursor: pointer;
+.scene-text {
+  margin: 0;
   font-size: 14px;
+  line-height: 1.55;
+  color: #d8e8f8;
 }
-.skip-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+
+.staff-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  z-index: 1;
 }
-.status-text {
-  color: #a8f5ff;
+.btn-listen {
+  position: relative;
+  min-width: 140px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+.btn-listen-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+.btn-listen-text {
+  position: relative;
+  z-index: 1;
+  font-size: 13px;
+  font-weight: 700;
+  color: #b8e8ff;
+  padding-left: 28px;
+}
+.tool-hint { color: rgba(180, 200, 230, 0.55); }
+
+.status-line {
+  text-align: center;
+  color: #7ee8ff;
   font-size: 13px;
 }
 .error-text {
-  color: #ff6b6b;
-  font-size: 12px;
   text-align: center;
-}
-.result-box {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 8px;
-  font-size: 14px;
-  line-height: 1.6;
-}
-.result-box.pass {
-  border: 1px solid rgba(52, 211, 153, 0.45);
-  background: rgba(16, 185, 129, 0.1);
-  color: #bbf7d0;
-}
-.result-box.fail {
-  border: 1px solid rgba(248, 113, 113, 0.45);
-  background: rgba(239, 68, 68, 0.08);
-  color: #fecaca;
-}
-.result-verdict {
-  margin-top: 4px;
-  font-weight: 700;
-}
-.fail-next {
-  margin-top: 10px;
+  color: #ff9e9e;
+  font-size: 12px;
 }
 
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4); }
-  70% { box-shadow: 0 0 0 15px rgba(255, 107, 107, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+.echo-gallery {
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+.gallery-bg {
+  width: 100%;
+  display: block;
+}
+.gallery-inner {
+  position: absolute;
+  inset: 10% 6% 8%;
+  display: flex;
+  flex-direction: column;
+}
+
+.gallery-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.tier-badge {
+  font-size: 20px;
+  font-weight: 800;
+}
+.match-badge {
+  font-size: 13px;
+  color: #8ab8d8;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.verdict {
+  text-align: center;
+  font-size: 14px;
+  color: #c8dce8;
+  margin: 0 0 14px;
+  line-height: 1.6;
+}
+
+.echo-compare {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.echo-line {
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.echo-line.yours {
+  background: rgba(60, 100, 160, 0.2);
+  border: 1px solid rgba(100, 160, 220, 0.3);
+}
+.echo-line.target {
+  background: rgba(40, 120, 80, 0.15);
+  border: 1px solid rgba(100, 200, 140, 0.25);
+}
+.echo-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  opacity: 0.65;
+  margin-bottom: 4px;
+}
+.echo-content {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #e8f4ff;
+}
+.echo-divider {
+  text-align: center;
+  font-size: 11px;
+  color: rgba(126, 232, 255, 0.5);
+}
+
+.gallery-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn-cast {
+  position: relative;
+  min-width: 200px;
+  height: 48px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+.btn-cast-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+.btn-cast-text {
+  position: relative;
+  z-index: 1;
+  font-size: 14px;
+  font-weight: 800;
+  color: #0a1830;
+}
+.btn-outline {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(126, 232, 255, 0.4);
+  background: transparent;
+  color: #b8e8ff;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.fallback-row {
+  display: flex;
+  justify-content: center;
+}
+
+.echo-slide-enter-active {
+  animation: echoIn 0.45s ease-out;
+}
+@keyframes echoIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>

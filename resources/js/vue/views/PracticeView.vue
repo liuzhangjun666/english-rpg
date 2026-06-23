@@ -105,10 +105,13 @@
       </div>
 
       <div v-else-if="sessionState === 'answering' && isWritingModule" class="writing-arena">
+        <img class="fz-bg" :src="fzSceneBg" alt="" aria-hidden="true" />
         <div class="fz-mask"></div>
 
-        <div class="fz-top">
-          <button class="fz-back-btn" type="button" @click="backHall">← 返回</button>
+        <div class="fz-toolbar">
+          <button class="fz-back-btn" type="button" @click="backHall" title="返回大厅">
+            <img :src="fzTopBack" alt="返回大厅" />
+          </button>
           <div class="fz-title-block">
             <div class="fz-title">符箓台 · 炼符修炼</div>
             <div class="fz-level">{{ currentLevel.realm }} · 第{{ String(currentLevel.stageNo).padStart(2, '0') }}关</div>
@@ -125,8 +128,39 @@
 
         <div class="fz-module-wrap">
           <WritingModule :key="String(currentWritingPrompt.prompt_id || currentIndex)" :question="currentWritingPrompt"
-            :initial-content="writingInitialContent" :submitting="writingSubmitting" @submit-answer="onWritingSubmit"
-            @save-draft="onWritingSaveDraft" />
+            :initial-content="writingInitialContent" :submitting="writingSubmitting" :show-back-button="false"
+            @submit-answer="onWritingSubmit" @save-draft="onWritingSaveDraft" @back-hall="backHall" />
+        </div>
+      </div>
+
+      <div v-else-if="sessionState === 'answering' && isSpeakingModule" class="speaking-arena">
+        <img class="sz-bg" :src="szSceneBg" alt="" aria-hidden="true" />
+        <div class="sz-mask"></div>
+
+        <div class="sz-toolbar">
+          <button class="sz-back-btn" type="button" @click="backHall" title="返回大厅">
+            <img :src="szTopBack" alt="返回大厅" />
+          </button>
+          <div class="sz-title-block">
+            <div class="sz-title">诵咒峰 · 回声崖</div>
+            <div class="sz-level">{{ currentLevel.realm }} · 第{{ String(currentLevel.stageNo).padStart(2, '0') }}关</div>
+          </div>
+          <div class="sz-progress-chip">
+            <div class="sz-progress-text">{{ currentIndex + 1 }}/{{ questions.length }}</div>
+            <div class="sz-progress-track">
+              <div class="sz-progress-fill" :style="{ width: `${progressPercent}%` }"></div>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="speakingCombo >= 2" class="sz-combo">连声 ×{{ speakingCombo }}</div>
+
+        <div class="sz-module-wrap">
+          <SpeakingModule
+            :key="String(currentQuestion.question_id || currentIndex)"
+            :question="speakingQuestion"
+            @submit-answer="onSpeakingSubmit"
+          />
         </div>
       </div>
     </template>
@@ -212,15 +246,6 @@
             @submit-answer="onListeningSubmit" />
         </template>
 
-        <template v-else-if="sessionState === 'answering' && isSpeakingModule">
-          <div class="cult-tag-row">
-            <span class="cult-tag info">{{ currentIndex + 1 }} / {{ questions.length }}</span>
-            <span class="cult-tag warning">{{ currentLevel.levelId }}</span>
-          </div>
-          <SpeakingModule :key="String(currentQuestion.question_id || currentIndex)" :question="speakingQuestion"
-            @submit-answer="onSpeakingSubmit" />
-        </template>
-
         <template v-else-if="sessionState === 'answering'">
           <div class="cult-tag-row">
             <span class="cult-tag info">{{ currentIndex + 1 }} / {{ questions.length }}</span>
@@ -263,6 +288,10 @@
               </div>
             </div>
 
+            <div v-if="resultBuffMessages.length" class="cult-result-buffs">
+              <div v-for="(msg, idx) in resultBuffMessages" :key="idx" class="cult-result-buff-item">✨ {{ msg }}</div>
+            </div>
+
             <div v-if="realmProgress" class="cult-result-realm">
               <div class="cult-result-realm-head">
                 <span>境界进境</span>
@@ -290,6 +319,20 @@
         </template>
       </div>
     </div>
+
+  <WritingScorePanel
+    v-if="writingScorePanel.visible"
+    :loading="writingScorePanel.loading"
+    :score="writingScorePanel.score"
+    :feedback="writingScorePanel.feedback"
+    :details="writingScorePanel.details"
+    :validation="writingScorePanel.validation"
+    :exp-gained="writingScorePanel.expGained"
+    :stones-gained="writingScorePanel.stonesGained"
+    :combo-bonus="writingScorePanel.comboBonus"
+    :is-last="isLastQuestion"
+    @continue="onWritingScoreContinue"
+  />
 
   <DemonTransition :visible="showDemonTransition" @update:visible="showDemonTransition = $event"
     @enter-encounter="handleEnterEncounter" />
@@ -323,6 +366,10 @@ import zfOptionStone from '../../../assets/images/ui/zhenfafeng/choose.png';
 import zfOptionStoneActive from '../../../assets/images/ui/zhenfafeng/correct_choose.png';
 import zfBridgeCorrect from '../../../assets/images/ui/zhenfafeng/correct_bridge.png';
 import zfBridgeError from '../../../assets/images/ui/zhenfafeng/error_bridge.png';
+import fzSceneBg from '../../../assets/images/ui/writing/background.png';
+import fzTopBack from '../../../assets/images/ui/zhenfafeng/back.png';
+import szSceneBg from '../../../assets/images/ui/speaking/background.png';
+import szTopBack from '../../../assets/images/ui/zhenfafeng/back.png';
 import WritingModule from './modules/WritingModule.vue';
 import ListeningModule from './modules/ListeningModule.vue';
 import SpeakingModule from './modules/SpeakingModule.vue';
@@ -455,14 +502,18 @@ const resultStones = ref(0);
 const resultCorrectCount = ref(0);
 const realmProgress = ref<RealmProgressSnapshot | null>(null);
 const resultPassed = ref(false);
+const resultBuffMessages = ref<string[]>([]);
 const writingSubmittedCount = ref(0);
 const writingPassedCount = ref(0);
 const writingTotalScore = ref(0);
 const writingCombo = ref(0);
 const writingMaxCombo = ref(0);
+const speakingCombo = ref(0);
+const speakingMaxCombo = ref(0);
 const writingResults = ref<Array<{ score: number; passed?: boolean }>>([]);
 const writingScorePanel = ref({
   visible: false,
+  loading: false,
   score: 0,
   feedback: '',
   details: null as Record<string, number> | null,
@@ -500,7 +551,7 @@ const isWritingModule = computed(() => currentType.value === 'writing');
 const isListeningModule = computed(() => currentType.value === 'listening');
 const isSpeakingModule = computed(() => currentType.value === 'speaking');
 const isArenaMode = computed(
-  () => sessionState.value === 'answering' && (isVocabModule.value || isGrammarModule.value || isWritingModule.value)
+  () => sessionState.value === 'answering' && (isVocabModule.value || isGrammarModule.value || isWritingModule.value || isSpeakingModule.value)
 );
 const rulesModuleKey = computed<ModuleRulesKey>(() => {
   if (sceneType.value === 'grammar' || currentType.value === 'grammar') return 'grammar';
@@ -617,6 +668,9 @@ function applySettlementFromResponse(data: Record<string, any>, options?: { accu
     resultStones.value = stonesDelta;
     resultPassed.value = Boolean(data.passed);
     resultCorrectCount.value = Number(data.correct_count ?? 0);
+    resultBuffMessages.value = Array.isArray(data.buff_messages)
+      ? data.buff_messages.filter((m: unknown) => typeof m === 'string' && m)
+      : [];
   }
 
   const rp = (data.realm_progress || null) as RealmProgressSnapshot | null;
@@ -843,13 +897,17 @@ function resetQuestionState() {
   resultCorrectCount.value = 0;
   realmProgress.value = null;
   resultPassed.value = false;
+  resultBuffMessages.value = [];
   writingSubmittedCount.value = 0;
   writingPassedCount.value = 0;
   writingTotalScore.value = 0;
   writingCombo.value = 0;
   writingMaxCombo.value = 0;
+  speakingCombo.value = 0;
+  speakingMaxCombo.value = 0;
   writingResults.value = [];
   writingScorePanel.value.visible = false;
+  writingScorePanel.value.loading = false;
   vocabCombo.value = 0;
   sessionState.value = 'idle';
   resetVocabRoundState();
@@ -1098,6 +1156,8 @@ async function confirmChallenge() {
   vocabCombo.value = 0;
   writingCombo.value = 0;
   writingMaxCombo.value = 0;
+  speakingCombo.value = 0;
+  speakingMaxCombo.value = 0;
   writingResults.value = [];
   resetGrammarRoundState();
   sessionState.value = 'answering';
@@ -1231,6 +1291,19 @@ function calcComboBonus(combo: number, baseExp: number): number {
   return 0;
 }
 
+function estimateWritingFallbackScore(validation: WritingValidation): number {
+  const ratio = validation.passedCount / Math.max(1, validation.totalCount);
+  return Math.min(85, Math.max(45, Math.round(50 + ratio * 35)));
+}
+
+function openWritingScorePanel(partial: Partial<typeof writingScorePanel.value>) {
+  writingScorePanel.value = {
+    ...writingScorePanel.value,
+    visible: true,
+    ...partial,
+  };
+}
+
 async function onWritingSubmit(payload: { content: string; validation: WritingValidation }) {
   const prompt = currentWritingPrompt.value;
   const promptId = String(prompt?.prompt_id || '');
@@ -1245,16 +1318,38 @@ async function onWritingSubmit(payload: { content: string; validation: WritingVa
 
   writingSubmitting.value = true;
   answers[promptId] = content;
-  ui.showLoading('符箓炼制中，天劫判符...');
+  openWritingScorePanel({
+    loading: true,
+    score: 0,
+    feedback: '',
+    details: null,
+    validation,
+    expGained: 0,
+    stonesGained: 0,
+    comboBonus: 0,
+  });
+
   try {
-    const res = await api.post('/writing/submit-one', {
-      prompt_id: promptId,
-      content,
-    });
+    const res = await api.post(
+      '/writing/submit-one',
+      { prompt_id: promptId, content },
+      { timeoutMs: 45000 },
+    );
 
     if (!res?.success || !res?.data) {
-      ElMessage.error(res?.message || '写作提交失败');
-      triggerWritingSceneEffect('fail');
+      const fallbackScore = estimateWritingFallbackScore(validation);
+      ElMessage.warning(res?.message || '天劫未应，已按符纹完成度给出初判');
+      triggerWritingSceneEffect('partial');
+      openWritingScorePanel({
+        loading: false,
+        score: fallbackScore,
+        feedback: '服务端判符暂不可用，此为本地初判分数（未计入修为与灵石）。请稍后重试或检查网络。',
+        details: null,
+        validation,
+        expGained: 0,
+        stonesGained: 0,
+        comboBonus: 0,
+      });
       return;
     }
 
@@ -1265,7 +1360,6 @@ async function onWritingSubmit(payload: { content: string; validation: WritingVa
     const passed = Boolean(data.passed);
 
     const combo = applyWritingCombo(validation, passed);
-    const comboBonus = calcComboBonus(combo, exp);
     const bonusStones = combo >= 3 ? 1 : 0;
 
     writingSubmittedCount.value += 1;
@@ -1288,8 +1382,8 @@ async function onWritingSubmit(payload: { content: string; validation: WritingVa
     const sceneEffect = score >= 90 ? 'heaven' : passed ? (validation.status === 'pass' ? 'success' : 'partial') : 'fail';
     triggerWritingSceneEffect(sceneEffect);
 
-    writingScorePanel.value = {
-      visible: true,
+    openWritingScorePanel({
+      loading: false,
       score,
       feedback: String(data.feedback || ''),
       details: data.details || null,
@@ -1297,16 +1391,31 @@ async function onWritingSubmit(payload: { content: string; validation: WritingVa
       expGained: exp,
       stonesGained: stones + bonusStones,
       comboBonus: combo >= 2 ? combo : 0,
-    };
+    });
     persistPracticeSession();
+  } catch {
+    const fallbackScore = estimateWritingFallbackScore(validation);
+    ElMessage.error('判符请求异常，已显示本地初判');
+    triggerWritingSceneEffect('fail');
+    openWritingScorePanel({
+      loading: false,
+      score: fallbackScore,
+      feedback: '判符过程出现异常，此为本地初判分数（未计入修为与灵石）。',
+      details: null,
+      validation,
+      expGained: 0,
+      stonesGained: 0,
+      comboBonus: 0,
+    });
   } finally {
-    ui.hideLoading();
     writingSubmitting.value = false;
   }
 }
 
 function onWritingScoreContinue() {
+  if (writingScorePanel.value.loading) return;
   writingScorePanel.value.visible = false;
+  writingScorePanel.value.loading = false;
 
   if (isLastQuestion.value) {
     const avgScore = Math.round(writingTotalScore.value / Math.max(1, writingSubmittedCount.value));
@@ -1649,6 +1758,21 @@ async function onSpeakingSubmit(payload?: {
   const optionKeys = ['A', 'B', 'C', 'D'];
   const wrongKey = optionKeys.find((key) => key !== correctKey) || 'B';
   const passed = Boolean(payload?.passed ?? payload?.skipped);
+  const similarity = Number(payload?.similarity ?? 0);
+
+  if (passed && !payload?.skipped) {
+    speakingCombo.value += 1;
+    if (speakingCombo.value > speakingMaxCombo.value) {
+      speakingMaxCombo.value = speakingCombo.value;
+    }
+    if (similarity >= 0.9) {
+      ElMessage.success('清音贯谷！');
+    } else if (similarity >= 0.75) {
+      ElMessage.success('正音稳落');
+    }
+  } else if (!payload?.skipped) {
+    speakingCombo.value = 0;
+  }
 
   answers[qid] = passed ? correctKey : wrongKey;
 
@@ -1675,47 +1799,77 @@ function backHall() {
 
 .writing-arena {
   position: fixed;
-  inset: 0;
+  top: var(--arena-below-hud, calc(var(--top-hud-height, 76px) + 10px));
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 80;
   width: 100vw;
-  min-height: 100vh;
   overflow: auto;
-  background: radial-gradient(ellipse at 50% 80%, rgba(74, 50, 0, 0.35), rgba(10, 5, 0, 0.95) 60%);
+  scroll-padding-top: 12px;
+  padding: 8px 0 24px;
   color: #e8dcc8;
+  box-sizing: border-box;
+}
+
+.fz-bg {
+  position: fixed;
+  top: var(--arena-below-hud, calc(var(--top-hud-height, 76px) + 10px));
+  left: 0;
+  width: 100%;
+  height: calc(100vh - var(--arena-below-hud, calc(var(--top-hud-height, 76px) + 10px)));
+  object-fit: cover;
+  object-position: center 70%;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .fz-mask {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(10, 5, 0, 0.3), rgba(10, 5, 0, 0.7));
+  position: fixed;
+  top: var(--arena-below-hud, calc(var(--top-hud-height, 76px) + 10px));
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(10, 5, 0, 0.45), rgba(10, 5, 0, 0.72));
   pointer-events: none;
+  z-index: 0;
 }
 
-.fz-top,
+.fz-toolbar,
 .fz-combo,
 .fz-module-wrap {
   position: relative;
   z-index: 1;
 }
 
-.fz-top {
+.fz-toolbar {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 12px;
-  padding: 16px 20px 8px;
-  max-width: 800px;
-  margin: 0 auto;
+  padding: 8px 16px;
+  max-width: 820px;
+  margin: 0 auto 8px;
+  position: sticky;
+  top: 0;
+  z-index: 12;
 }
 
 .fz-back-btn {
-  padding: 8px 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(212, 168, 67, 0.4);
-  background: rgba(0, 0, 0, 0.4);
-  color: #f4d98a;
-  font-size: 13px;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 0;
+  background: transparent;
   cursor: pointer;
+  justify-self: start;
+}
+
+.fz-back-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
 }
 
 .fz-title-block {
@@ -1775,6 +1929,145 @@ function backHall() {
   max-width: 720px;
   margin: 0 auto;
   padding: 0 20px 40px;
+}
+
+.speaking-arena {
+  position: fixed;
+  top: var(--arena-below-hud, calc(var(--top-hud-height, 76px) + 10px));
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 80;
+  width: 100vw;
+  overflow: auto;
+  scroll-padding-top: 12px;
+  padding: 8px 0 24px;
+  color: #e8dcc8;
+  box-sizing: border-box;
+}
+
+.sz-bg {
+  position: fixed;
+  top: var(--arena-below-hud, calc(var(--top-hud-height, 76px) + 10px));
+  left: 0;
+  width: 100%;
+  height: calc(100vh - var(--arena-below-hud, calc(var(--top-hud-height, 76px) + 10px)));
+  object-fit: cover;
+  object-position: center 40%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sz-mask {
+  position: fixed;
+  top: var(--arena-below-hud, calc(var(--top-hud-height, 76px) + 10px));
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(18, 8, 32, 0.5), rgba(10, 5, 20, 0.78));
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sz-toolbar,
+.sz-combo,
+.sz-module-wrap {
+  position: relative;
+  z-index: 1;
+}
+
+.sz-toolbar {
+  display: grid;
+  grid-template-columns: 88px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  max-width: 820px;
+  margin: 0 auto 8px;
+  position: sticky;
+  top: 0;
+  z-index: 12;
+}
+
+.sz-back-btn {
+  width: 80px;
+  height: 80px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  justify-self: start;
+}
+
+.sz-back-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.55));
+  transition: transform 0.15s ease;
+}
+
+.sz-back-btn:hover img {
+  transform: scale(1.06);
+}
+
+.sz-back-btn:active img {
+  transform: scale(0.96);
+}
+
+.sz-title-block { text-align: center; }
+
+.sz-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #e8d4ff;
+  text-shadow: 0 0 12px rgba(180, 120, 255, 0.45);
+}
+
+.sz-level {
+  font-size: 12px;
+  color: #b8a0d0;
+  margin-top: 2px;
+}
+
+.sz-progress-chip { min-width: 100px; }
+
+.sz-progress-text {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #e8d4ff;
+}
+
+.sz-progress-track {
+  margin-top: 6px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(180, 120, 255, 0.35);
+  overflow: hidden;
+}
+
+.sz-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7c4dff, #c9a0ff);
+  box-shadow: 0 0 8px rgba(180, 120, 255, 0.5);
+  transition: width 0.25s ease;
+}
+
+.sz-combo {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #c9a0ff;
+  text-shadow: 0 0 10px rgba(180, 120, 255, 0.7);
+  margin-bottom: 4px;
+}
+
+.sz-module-wrap {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 12px 40px;
 }
 
 .vocab-arena {

@@ -195,7 +195,7 @@ async function startEncounter(demon: DemonViewModel) {
 async function clearMastered() {
   ui.showLoading('净化中...');
   try {
-    await api.post('/demons/clear-mastered'); // 假设之前后端有个 clear 接口，现在改成 clear-mastered 或者使用旧的
+    await api.post('/demons/clear');
     await loadDemons();
   } catch {
     ElMessage.error('清理失败');

@@ -9,7 +9,22 @@ const SFX: Record<string, Howl> = {
   bgm:     new Howl({ src: ['/sounds/bgm_hall.mp3'], loop: true, volume: 0.15 }),
 }
 
-let muted = false
+function readMutedFromStorage(): boolean {
+  try {
+    return localStorage.getItem('settings_sound') === '0'
+  } catch {
+    return false
+  }
+}
+
+let muted = readMutedFromStorage()
+
+export function initGameSoundSettings() {
+  muted = readMutedFromStorage()
+  if (muted) {
+    SFX.bgm.pause()
+  }
+}
 
 export function useGameSound() {
   return {
@@ -22,8 +37,19 @@ export function useGameSound() {
       if (!muted && !SFX.bgm.playing()) SFX.bgm.play()
     },
     stopBgm: () => SFX.bgm.stop(),
+    setMuted: (value: boolean) => {
+      muted = value
+      try {
+        localStorage.setItem('settings_sound', value ? '0' : '1')
+      } catch { /* ignore */ }
+      if (muted) SFX.bgm.pause()
+      else if (!SFX.bgm.playing()) SFX.bgm.play()
+    },
     toggleMute: () => {
       muted = !muted
+      try {
+        localStorage.setItem('settings_sound', muted ? '0' : '1')
+      } catch { /* ignore */ }
       if (muted) SFX.bgm.pause()
       else if (!SFX.bgm.playing()) SFX.bgm.play()
       return muted

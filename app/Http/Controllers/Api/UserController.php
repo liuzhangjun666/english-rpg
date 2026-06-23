@@ -90,6 +90,11 @@ class UserController extends Controller
         $data['realm'] = (string) $user->realm;
         $data['realm_stage'] = max(1, (int) $user->realm_stage);
 
+        $currency = is_array($user->progress_currency) ? $user->progress_currency : [];
+        if (!empty($currency['equipped_title'])) {
+            $data['equipped_title'] = (string) $currency['equipped_title'];
+        }
+
         return response()->json([
             'success' => true,
             'data' => $data,
@@ -282,6 +287,16 @@ class UserController extends Controller
                 'new_word_count' => $newWordCount,
             ],
         ]);
+    }
+
+    /**
+     * POST /api/user/complete-tutorial
+     */
+    public function completeTutorial(Request $request): JsonResponse
+    {
+        $request->merge(['tutorial_step' => 1]);
+
+        return $this->updateTutorialStep($request);
     }
 
     /**

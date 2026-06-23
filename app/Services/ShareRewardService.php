@@ -46,6 +46,8 @@ class ShareRewardService
         $inviter->increment('spirit_power', $reward['sharer']);
         $inviter->save();
 
+        app(AchievementService::class)->onInviteRegistered($inviter->fresh());
+
         // 给新用户奖励
         $newUser->increment('spirit_power', $reward['new_user_spirit']);
         $newUser->spirit_power_max = max($newUser->spirit_power_max, 100);

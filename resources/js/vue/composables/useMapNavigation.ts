@@ -48,11 +48,21 @@ export function useMapNavigation(options: { beforeNavigate?: () => void } = {}) 
     runNav(() => { router.push('/mall'); });
   }
 
+  function goLeaderboard() {
+    runNav(() => { router.push('/leaderboard'); });
+  }
+
+  function goWorldBoss() {
+    runNav(() => { router.push({ path: '/mijing', query: { mode: 'boss' } }); });
+  }
+
   return {
     goPractice,
     goReading,
     goExam,
     goMijing,
+    goWorldBoss,
+    goLeaderboard,
     goMall,
   };
 }

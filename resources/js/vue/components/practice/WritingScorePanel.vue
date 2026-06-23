@@ -1,44 +1,53 @@
 <template>
-  <div class="writing-score-panel">
-    <div class="panel-inner" :class="`grade-${gradeInfo.grade}`">
-      <div class="grade-icon">{{ gradeInfo.icon }}</div>
-      <div class="grade-label" :style="{ color: gradeInfo.color }">{{ gradeInfo.label }}</div>
-      <div class="score-value">{{ score }} 分</div>
+  <Teleport to="body">
+    <div class="writing-score-panel" @click.self="!loading && $emit('continue')">
+      <div class="panel-inner" :class="[`grade-${gradeInfo.grade}`, { 'is-loading': loading }]">
+        <template v-if="loading">
+          <div class="judging-ring"></div>
+          <div class="grade-label judging-title">天劫判符中…</div>
+          <p class="judging-hint">雷云汇聚，正在鉴定符力与文笔</p>
+        </template>
+        <template v-else>
+          <div class="grade-icon">{{ gradeInfo.icon }}</div>
+          <div class="grade-label" :style="{ color: gradeInfo.color }">{{ gradeInfo.label }}</div>
+          <div class="score-value">{{ score }} 分</div>
 
-      <div v-if="validation" class="validation-box">
-        <div class="validation-title" :style="{ color: validationHeader.color }">
-          {{ validationHeader.text }}
-        </div>
-        <div v-for="check in validation.checks" :key="check.key" class="check-line">
-          <span>{{ check.passed ? '✓' : '✗' }}</span>
-          <span>{{ check.label }}</span>
-        </div>
-      </div>
-
-      <div v-if="details" class="radar-box">
-        <div class="radar-title">天劫判符 · 四维明细</div>
-        <div v-for="dim in dimensionRows" :key="dim.key" class="dim-row">
-          <span class="dim-label">{{ dim.label }}</span>
-          <div class="dim-track">
-            <div class="dim-fill" :style="{ width: `${dim.percent}%` }"></div>
+          <div v-if="validation" class="validation-box">
+            <div class="validation-title" :style="{ color: validationHeader.color }">
+              {{ validationHeader.text }}
+            </div>
+            <div v-for="check in validation.checks" :key="check.key" class="check-line">
+              <span>{{ check.passed ? '✓' : '✗' }}</span>
+              <span>{{ check.label }}</span>
+            </div>
           </div>
-          <span class="dim-score">{{ dim.value }}/25</span>
-        </div>
+
+          <div v-if="details && Object.keys(details).length" class="radar-box">
+            <div class="radar-title">天劫判符 · 四维明细</div>
+            <div v-for="dim in dimensionRows" :key="dim.key" class="dim-row">
+              <span class="dim-label">{{ dim.label }}</span>
+              <div class="dim-track">
+                <div class="dim-fill" :style="{ width: `${dim.percent}%` }"></div>
+              </div>
+              <span class="dim-score">{{ dim.value }}/25</span>
+            </div>
+          </div>
+
+          <p class="feedback-text">{{ feedback || '炼符完成，继续精进。' }}</p>
+
+          <div class="reward-row">
+            <span>修为 +{{ expGained }}</span>
+            <span>灵石 +{{ stonesGained }}</span>
+            <span v-if="comboBonus">连符 ×{{ comboBonus }}</span>
+          </div>
+
+          <button class="btn-continue" type="button" @click="$emit('continue')">
+            {{ isLast ? '查看关末结算' : '炼制下一符' }}
+          </button>
+        </template>
       </div>
-
-      <p class="feedback-text">{{ feedback || '炼符完成，继续精进。' }}</p>
-
-      <div class="reward-row">
-        <span>修为 +{{ expGained }}</span>
-        <span>灵石 +{{ stonesGained }}</span>
-        <span v-if="comboBonus">连符 ×{{ comboBonus }}</span>
-      </div>
-
-      <button class="btn-continue" type="button" @click="$emit('continue')">
-        {{ isLast ? '查看关末结算' : '炼制下一符' }}
-      </button>
     </div>
-  </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -58,11 +67,12 @@ const props = defineProps<{
   stonesGained?: number;
   comboBonus?: number;
   isLast?: boolean;
+  loading?: boolean;
 }>();
 
 defineEmits(['continue']);
 
-const gradeInfo = computed(() => getTalismanGrade(props.score));
+const gradeInfo = computed(() => getTalismanGrade(props.loading ? 0 : props.score));
 
 const validationHeader = computed(() => {
   if (!props.validation) return { text: '', color: '#f4dfa1' };
@@ -88,7 +98,7 @@ const dimensionRows = computed(() => {
 .writing-score-panel {
   position: fixed;
   inset: 0;
-  z-index: 300;
+  z-index: 9999;
   background: rgba(0, 0, 0, 0.82);
   display: flex;
   align-items: center;
@@ -106,6 +116,10 @@ const dimensionRows = computed(() => {
   text-align: center;
   box-shadow: 0 0 40px rgba(255, 180, 60, 0.15);
 }
+.panel-inner.is-loading {
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow: 0 0 50px rgba(255, 215, 0, 0.25);
+}
 .panel-inner.grade-heaven {
   border-color: #ffd700;
   box-shadow: 0 0 50px rgba(255, 215, 0, 0.35);
@@ -113,6 +127,31 @@ const dimensionRows = computed(() => {
 .panel-inner.grade-earth { border-color: #7bed9f; }
 .panel-inner.grade-human { border-color: #f0c040; }
 .panel-inner.grade-broken { border-color: #ff6b6b; }
+
+.judging-ring {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 215, 0, 0.35);
+  border-top-color: #ffd700;
+  animation: judgingSpin 0.9s linear infinite;
+}
+.judging-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffd700;
+  margin-bottom: 8px;
+}
+.judging-hint {
+  margin: 0;
+  font-size: 13px;
+  color: #c9b896;
+  line-height: 1.6;
+}
+@keyframes judgingSpin {
+  to { transform: rotate(360deg); }
+}
 
 .grade-icon { font-size: 56px; margin-bottom: 4px; }
 .grade-label { font-size: 22px; font-weight: 800; margin-bottom: 4px; }

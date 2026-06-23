@@ -1,15 +1,19 @@
 <?php
 
 use App\Http\Controllers\Api\AchievementController;
+use App\Http\Controllers\Api\AiAskController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\WritingController;
 use App\Http\Controllers\Api\CurrencyController;
+use App\Http\Controllers\Api\DailyTaskController;
 use App\Http\Controllers\Api\ExamController;
 use App\Http\Controllers\Api\GrammarController;
 use App\Http\Controllers\Api\HeartDemonController;
 use App\Http\Controllers\Api\LeaderboardController;
 use App\Http\Controllers\Api\MallController;
+use App\Http\Controllers\Api\MailController;
 use App\Http\Controllers\Api\ParentController;
+use App\Http\Controllers\Api\PetController;
 use App\Http\Controllers\Api\PracticeLevelController;
 use App\Http\Controllers\Api\MijingChallengeController;
 use App\Http\Controllers\Api\ReadingAdventureController;
@@ -41,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/profile', [UserController::class, 'updateProfile']);
         Route::post('/avatar', [UserController::class, 'uploadAvatar']);
         Route::patch('/tutorial-step', [UserController::class, 'updateTutorialStep']);
+        Route::post('/complete-tutorial', [UserController::class, 'completeTutorial']);
         Route::get('/stats', [UserController::class, 'stats']);
         Route::get('/learning-progress', [UserController::class, 'learningProgress']);
         Route::get('/analytics', [UserController::class, 'analytics']);
@@ -56,6 +61,22 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/daily-check', [CurrencyController::class, 'dailyCheck']);
         Route::get('/stones', [CurrencyController::class, 'stones']);
         Route::post('/redeem-scroll', [CurrencyController::class, 'redeemScroll']);
+    });
+
+    Route::prefix('daily')->group(function () {
+        Route::get('/tasks', [DailyTaskController::class, 'index']);
+        Route::post('/tasks/claim', [DailyTaskController::class, 'claim']);
+        Route::post('/signin', [DailyTaskController::class, 'signIn']);
+    });
+
+    Route::get('/mail/inbox', [MailController::class, 'inbox']);
+    Route::post('/mail/read', [MailController::class, 'markRead']);
+    Route::post('/ai-ask', [AiAskController::class, 'ask']);
+
+    Route::prefix('pet')->group(function () {
+        Route::get('/garden', [PetController::class, 'garden']);
+        Route::post('/select', [PetController::class, 'select']);
+        Route::post('/interact', [PetController::class, 'interact']);
     });
 
     Route::get('/practice/levels/{type}', [PracticeLevelController::class, 'show'])
@@ -119,6 +140,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/review-submit', [HeartDemonController::class, 'reviewSubmit']);
         Route::post('/report-wrong', [HeartDemonController::class, 'reportWrong']);
         Route::post('/clear', [HeartDemonController::class, 'clearMastered']);
+        Route::post('/clear-mastered', [HeartDemonController::class, 'clearMastered']);
     });
 
     Route::prefix('parent')->group(function () {
@@ -130,6 +152,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('share')->group(function () {
         Route::get('/info', [ShareController::class, 'info']);
         Route::post('/toggle', [ShareController::class, 'toggle']);
+        Route::post('/record', [ShareController::class, 'record']);
     });
 
     Route::prefix('achievements')->group(function () {
@@ -142,7 +165,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('mall')->group(function () {
         Route::get('/items', [MallController::class, 'items']);
+        Route::get('/inventory', [MallController::class, 'inventory']);
+        Route::get('/buffs', [MallController::class, 'buffs']);
         Route::post('/buy', [MallController::class, 'buy']);
+        Route::post('/use', [MallController::class, 'useItem']);
     });
 
     Route::prefix('mijing/timed-challenge')->group(function () {

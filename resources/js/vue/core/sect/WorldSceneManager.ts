@@ -8,6 +8,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import gsap from 'gsap';
 import { WorldCameraController } from './WorldCameraController';
+import { SCENE_NODE_META } from '../../data/mapBuildings';
 
 // ─── 数据 ─────────────────────────────────────────────────────────────────────
 
@@ -28,13 +29,13 @@ export interface WorldSceneOptions {
 }
 
 export const SECT_NODES: SectNodeDef[] = [
-  { id: 'sectHall',      name: '宗门大殿', pos: [0,     0, 0],     color: 0xffd700, unlockRealm: 0, glbPath: '/models/sectHall.glb',      glbTargetSize: 360 },
-  { id: 'swordHall',     name: '剑阁',     pos: [-430,  0, -300],  color: 0x66ccff, unlockRealm: 0, glbPath: '/models/swordHall.glb',     glbTargetSize: 270 },
-  { id: 'scriptureHall', name: '藏经阁',   pos: [430,   0, -300],  color: 0x00ddff, unlockRealm: 0, glbPath: '/models/scriptureHall.glb', glbTargetSize: 255 },
-  { id: 'alchemyHall',   name: '炼丹殿',   pos: [-370,  0, 390],   color: 0xff8833, unlockRealm: 0, glbPath: '/models/alchemyHall.glb',   glbTargetSize: 240, glbRotationY: 0 },
-  { id: 'innerDemonHall', name: '心魔殿',  pos: [620,   0, 820],   color: 0x33d6ff, unlockRealm: 0, glbPath: '/models/innerDemonHall.glb', glbTargetSize: 260, glbRotationY: 0 },
-  { id: 'beastGarden',   name: '灵兽园',   pos: [-740,  0, 50],    color: 0x44ee88, unlockRealm: 2, glbPath: '/models/beastGarden.glb',   glbTargetSize: 300 },
-  { id: 'farm',          name: '灵田',     pos: [730,   0, 60],    color: 0x99ee44, unlockRealm: 0, glbPath: '/models/farm.glb',          glbTargetSize: 310 },
+  { id: 'sectHall',      name: SCENE_NODE_META.sectHall.name,      pos: [0,     0, 0],     color: 0xffd700, unlockRealm: SCENE_NODE_META.sectHall.unlockRealm,      glbPath: '/models/sectHall.glb',      glbTargetSize: 360 },
+  { id: 'swordHall',     name: SCENE_NODE_META.swordHall.name,     pos: [-430,  0, -300],  color: 0x66ccff, unlockRealm: SCENE_NODE_META.swordHall.unlockRealm,     glbPath: '/models/swordHall.glb',     glbTargetSize: 270 },
+  { id: 'scriptureHall', name: SCENE_NODE_META.scriptureHall.name, pos: [430,   0, -300],  color: 0x00ddff, unlockRealm: SCENE_NODE_META.scriptureHall.unlockRealm, glbPath: '/models/scriptureHall.glb', glbTargetSize: 255 },
+  { id: 'alchemyHall',   name: SCENE_NODE_META.alchemyHall.name,   pos: [-370,  0, 390],   color: 0xff8833, unlockRealm: SCENE_NODE_META.alchemyHall.unlockRealm,   glbPath: '/models/alchemyHall.glb',   glbTargetSize: 240, glbRotationY: 0 },
+  { id: 'innerDemonHall', name: SCENE_NODE_META.innerDemonHall.name, pos: [620,   0, 820],   color: 0x33d6ff, unlockRealm: SCENE_NODE_META.innerDemonHall.unlockRealm, glbPath: '/models/innerDemonHall.glb', glbTargetSize: 260, glbRotationY: 0 },
+  { id: 'beastGarden',   name: SCENE_NODE_META.beastGarden.name,   pos: [-740,  0, 50],    color: 0x44ee88, unlockRealm: SCENE_NODE_META.beastGarden.unlockRealm,   glbPath: '/models/beastGarden.glb',   glbTargetSize: 300 },
+  { id: 'farm',          name: SCENE_NODE_META.farm.name,          pos: [730,   0, 60],    color: 0x99ee44, unlockRealm: SCENE_NODE_META.farm.unlockRealm,          glbPath: '/models/farm.glb',          glbTargetSize: 310 },
 ];
 
 // ─── 地形高度函数 ─────────────────────────────────────────────────────────────

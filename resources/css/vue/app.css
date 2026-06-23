@@ -23,6 +23,7 @@
   z-index: 140;
   pointer-events: auto;
   --top-hud-height: 76px;
+  --arena-below-hud: calc(var(--top-hud-height) + 10px);
 
   /* 修仙主题设计令牌 */
   --cult-gold: #f4d98a;
@@ -134,7 +135,16 @@
 
 #vue-app .shell-main:has(.practice-page.practice-page-arena) {
   padding: 0;
-  padding-top: var(--top-hud-height);
+  overflow: hidden;
+}
+
+#vue-app .shell-main:has(.writing-arena) {
+  padding: 0;
+  overflow: hidden;
+}
+
+#vue-app .shell-main:has(.speaking-arena) {
+  padding: 0;
   overflow: hidden;
 }
 
@@ -1022,6 +1032,22 @@ html, body, #app {
   color: #f4d98a;
   font-size: 18px;
   font-weight: 700;
+}
+
+#vue-app .cult-result-buffs {
+  margin: 12px 0 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#vue-app .cult-result-buff-item {
+  font-size: 13px;
+  color: #a8e6cf;
+  background: rgba(68, 238, 136, 0.08);
+  border: 1px solid rgba(68, 238, 136, 0.2);
+  border-radius: 8px;
+  padding: 6px 10px;
 }
 
 #vue-app .cult-result-realm {

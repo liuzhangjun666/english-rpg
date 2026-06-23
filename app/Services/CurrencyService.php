@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\DB;
  */
 class CurrencyService
 {
+    public function __construct(
+        private readonly MallService $mallService,
+    ) {}
+
     const SPIRIT_COST_PER_LEVEL = 5;
     const SPIRIT_COST_PER_QUESTION = 1;
     const SPIRIT_RECOVER_INTERVAL_SECONDS = 300;
@@ -162,10 +166,17 @@ class CurrencyService
         }
 
         $expGained = $correctCount * self::EXP_PER_CORRECT;
-        if ($accuracy === 100) $expGained += self::EXP_BONUS_PERFECT;
+        if ($accuracy === 100) {
+            $expGained += self::EXP_BONUS_PERFECT;
+        }
+
+        $buffResult = $this->mallService->applySettlementBuffs($user, $expGained, $correctCount);
+        $expGained = (int) $buffResult['adjusted_exp'];
 
         $stonesGained = $correctCount * self::STONE_PER_CORRECT;
-        if ($accuracy === 100) $stonesGained += self::STONE_PERFECT_BONUS;
+        if ($accuracy === 100) {
+            $stonesGained += self::STONE_PERFECT_BONUS;
+        }
 
         $user->increment('exp', $expGained);
         $user->increment('spirit_stone', $stonesGained);
@@ -173,7 +184,16 @@ class CurrencyService
 
         $passed = $accuracy >= self::PASS_THRESHOLD;
 
-        return ['exp_gained'=>$expGained,'spirit_cost'=>$spiritCost,'accuracy'=>$accuracy,'correct_count'=>$correctCount,'passed'=>$passed,'stones_gained'=>$stonesGained];
+        return [
+            'exp_gained' => $expGained,
+            'spirit_cost' => $spiritCost,
+            'accuracy' => $accuracy,
+            'correct_count' => $correctCount,
+            'passed' => $passed,
+            'stones_gained' => $stonesGained,
+            'buff_messages' => $buffResult['messages'] ?? [],
+            'exp_buff_bonus' => $buffResult['exp_bonus'] ?? 0,
+        ];
     }
 
     public static function getStageExpThreshold(string $realm, int $stage): int
