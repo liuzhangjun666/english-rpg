@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useApiClient } from './services/api';
 import { useAuthStore } from './stores/auth';
@@ -61,6 +61,15 @@ import ProfilePanel from './components/profile/ProfilePanel.vue';
 import ReviewModal from './views/ReviewModal.vue';
 import DemonEncounter from './components/demons/DemonEncounter.vue';
 import WorldMapOverlay from './views/WorldMapOverlay.vue';
+import LoadingSplash from './components/layout/LoadingSplash.vue';
+import GlobalHud from './components/map/GlobalHud.vue';
+import AchievementsModal from './views/AchievementsModal.vue';
+import {
+  preloadEssentials,
+  preloadProgress,
+  preloadCounts,
+  essentialDone,
+} from './services/assetPreloader';
 
 const router = useRouter();
 const route = useRoute();
@@ -105,22 +114,6 @@ async function logout() {
   // 避免 PracticeView 等组件的 onBeforeUnmount 钩子或 legacy game 残留把流程卡住。
   window.location.assign('/login');
 }
-
-import { onMounted, onUnmounted, ref, watch } from 'vue';
-import TopHud from './components/layout/TopHud.vue';
-import ProfilePanel from './components/profile/ProfilePanel.vue';
-import DemonEncounter from './components/demons/DemonEncounter.vue';
-import WorldMapOverlay from './views/WorldMapOverlay.vue';
-import LoadingSplash from './components/layout/LoadingSplash.vue';
-import GlobalHud from './components/map/GlobalHud.vue';
-import ReviewModal from './views/ReviewModal.vue';
-import AchievementsModal from './views/AchievementsModal.vue';
-import {
-  preloadEssentials,
-  preloadProgress,
-  preloadCounts,
-  essentialDone,
-} from './services/assetPreloader';
 
 const showProfile = ref(false);
 const showGlobalReview = ref(false);
