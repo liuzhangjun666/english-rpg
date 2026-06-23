@@ -1,5 +1,6 @@
 <template>
-  <div class="login-view relative w-full min-h-full overflow-x-hidden bg-gray-900 text-white font-sans selection:bg-yellow-500 selection:text-black">
+  <div
+    class="login-view relative w-full min-h-full overflow-x-hidden bg-gray-900 text-white font-sans selection:bg-yellow-500 selection:text-black">
     <!-- 全屏背景 -->
     <div class="absolute inset-0 bg-cover bg-center z-0 animate-slow-zoom"
       style="background-image: url('/images/ui/login_bg_fantasy.png');">
@@ -50,16 +51,17 @@
             <form v-if="isLogin" @submit.prevent="doLogin" class="login-form">
               <div class="login-field">
                 <label class="login-label">手机号</label>
-                <input v-model="loginForm.phone" type="tel" maxlength="11" class="login-input"
-                  placeholder="请输入11位手机号" autocomplete="tel">
+                <input v-model="loginForm.phone" type="tel" maxlength="11" class="login-input" placeholder="请输入11位手机号"
+                  autocomplete="tel">
               </div>
 
               <div class="login-field">
                 <label class="login-label">验证码</label>
                 <div class="login-code-row">
-                  <input v-model="loginForm.code" type="text" maxlength="6" class="login-input"
-                    placeholder="输入6位验证码" autocomplete="one-time-code">
-                  <button type="button" @click="sendCode('login')" :disabled="loginCountdown > 0" class="login-code-btn">
+                  <input v-model="loginForm.code" type="text" maxlength="6" class="login-input" placeholder="输入6位验证码"
+                    autocomplete="one-time-code">
+                  <button type="button" @click="sendCode('login')" :disabled="loginCountdown > 0"
+                    class="login-code-btn">
                     {{ loginCountdown > 0 ? `${loginCountdown}息后重试` : '获取验证码' }}
                   </button>
                 </div>
@@ -87,9 +89,10 @@
               <div class="login-field">
                 <label class="login-label">验证码</label>
                 <div class="login-code-row">
-                  <input v-model="registerForm.code" type="text" maxlength="6" class="login-input"
-                    placeholder="输入6位验证码" autocomplete="one-time-code">
-                  <button type="button" @click="sendCode('register')" :disabled="registerCountdown > 0" class="login-code-btn">
+                  <input v-model="registerForm.code" type="text" maxlength="6" class="login-input" placeholder="输入6位验证码"
+                    autocomplete="one-time-code">
+                  <button type="button" @click="sendCode('register')" :disabled="registerCountdown > 0"
+                    class="login-code-btn">
                     {{ registerCountdown > 0 ? `${registerCountdown}息后重试` : '获取验证码' }}
                   </button>
                 </div>
@@ -99,14 +102,9 @@
                 <label class="login-label">修炼学段（必选）</label>
                 <p class="login-hint">用于匹配灵根试炼起点；初始境界由测试测定，与学段无关。</p>
                 <div class="school-stage-grid">
-                  <button
-                    v-for="stage in schoolStages"
-                    :key="stage.value"
-                    type="button"
-                    class="school-stage-btn"
+                  <button v-for="stage in schoolStages" :key="stage.value" type="button" class="school-stage-btn"
                     :class="{ 'is-active': registerForm.school_grade === stage.value }"
-                    @click="registerForm.school_grade = stage.value"
-                  >
+                    @click="registerForm.school_grade = stage.value">
                     {{ stage.label }}
                   </button>
                 </div>
@@ -141,21 +139,28 @@
                       stage.desc }}</span>
                   </div>
                   <p class="text-sm text-gray-400">掌握 <span class="text-yellow-500 font-bold mx-1">{{ stage.words
-                      }}</span> 个核心词汇</p>
+                  }}</span> 个核心词汇</p>
                 </div>
               </div>
 
             </div>
           </div>
 
+          <button type="submit" class="jade-btn"><span>塑 魂 注 册</span></button>
+          </form>
         </div>
-      </transition>
+        <p class="brand-sub">英语修仙 · 背单词，修大道</p>
     </div>
+    </Transition>
+
+    <!-- 开门白光过场 -->
+    <div class="enter-flash" :class="{ on: entering }"></div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useApiClient } from '../services/api';
@@ -166,6 +171,7 @@ import { useUiStore } from '../stores/ui';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { resolveAssessmentDone } from '../router';
 import { refreshUserProfileFromApi } from '../services/profile';
+import { LoginGateScene } from '../core/login/LoginGateScene';
 
 const router = useRouter();
 const route = useRoute();
@@ -178,6 +184,24 @@ const bridge = useLegacyBridge();
 
 const showForm = ref(false);
 const isLogin = ref(true);
+
+const gateCanvasRef = ref<HTMLDivElement | null>(null);
+let gateScene: LoginGateScene | null = null;
+
+onMounted(() => {
+  if (gateCanvasRef.value) {
+    try {
+      gateScene = new LoginGateScene(gateCanvasRef.value);
+    } catch (err) {
+      console.error('[LoginView] LoginGateScene 初始化失败：', err);
+    }
+  }
+});
+
+onBeforeUnmount(() => {
+  gateScene?.dispose();
+  gateScene = null;
+});
 
 const loginCountdown = ref(0);
 const registerCountdown = ref(0);
@@ -209,13 +233,6 @@ function toggleFormType() {
     registerForm.school_grade = '';
   }
 }
-
-const growthStages = [
-  { name: '炼气期', desc: '初窥门径', words: 100 },
-  { name: '筑基期', desc: '融会贯通', words: 500 },
-  { name: '金丹期', desc: '过目不忘', words: 2000 },
-  { name: '元婴期', desc: '出口成章', words: 5000 },
-];
 
 function startCountdown(target: 'login' | 'register', seconds = 60) {
   const refTarget = target === 'login' ? loginCountdown : registerCountdown;
@@ -276,16 +293,28 @@ async function applyProfile(profile: Record<string, any>) {
   await bridge.applySessionFromProfile(profile);
 }
 
+const entering = ref(false);
+
 function navigateAfterAuth(needsAssessment: boolean, options?: { fromRegister?: boolean }) {
   const redirect = String(route.query.redirect || '/hall');
-  if (needsAssessment) {
-    const query: Record<string, string> = {};
-    if (options?.fromRegister) query.from = 'register';
-    if (redirect && redirect !== '/hall') query.redirect = redirect;
-    router.replace({ path: '/vocab-assessment/intro', query });
-    return;
+  const target = needsAssessment
+    ? {
+      path: '/vocab-assessment/intro',
+      query: {
+        ...(options?.fromRegister ? { from: 'register' } : {}),
+        ...(redirect && redirect !== '/hall' ? { redirect } : {}),
+      },
+    }
+    : (redirect as any);
+
+  // 仙门开门过场：放大推镜穿门白光 → 跳转目标路由。
+  // 没有 3D 场景（初始化失败）时直接跳转，避免卡死。
+  if (gateScene && !entering.value) {
+    entering.value = true;
+    gateScene.openGate(() => router.replace(target));
+  } else {
+    router.replace(target);
   }
-  router.replace(redirect);
 }
 
 async function doLogin() {
@@ -338,6 +367,15 @@ async function doRegister() {
     if (registerForm.nickname.trim()) payload.nickname = registerForm.nickname.trim();
     if (registerForm.birth_year.trim()) payload.birth_year = Number(registerForm.birth_year.trim());
 
+    // 邀请码：URL ?ref=XXX 直接用；否则尝试 localStorage（兜底之前访问时缓存的码）
+    // 字段名必须是 invite_code（后端 AuthController::register validator 里期望的字段）。
+    const refFromUrl = String(route.query.ref || '').trim().toUpperCase();
+    const refFromLs = (() => {
+      try { return localStorage.getItem('levelup_pending_invite_ref') || ''; } catch { return ''; }
+    })();
+    const inviteCode = refFromUrl || refFromLs;
+    if (inviteCode) payload.invite_code = inviteCode;
+
     const res = await api.post('/auth/register', payload);
     if (!res?.success && res?.code === 'PHONE_ALREADY_REGISTERED') {
       promptRegisteredPhoneAndGoLogin(registerForm.phone);
@@ -358,6 +396,8 @@ async function doRegister() {
     api.setToken(token);
     auth.setToken(token);
     await syncProfileFromApi(res.data.user);
+    // 注册成功后清掉本地缓存的邀请码，避免下次注册再次带上
+    try { localStorage.removeItem('levelup_pending_invite_ref'); } catch { /* ignore */ }
     ElMessage.success('仙魂凝聚成功！正在前往灵根测试...');
     navigateAfterAuth(true, { fromRegister: true });
     return;
@@ -774,13 +814,17 @@ async function promptRegisteredPhoneAndGoLogin(phone: string) {
   animation: slowZoom 20s infinite alternate linear;
 }
 
-@keyframes slowZoom {
-  0% {
+@keyframes ringPulse {
+
+  0%,
+  100% {
     transform: scale(1);
+    opacity: 0.85;
   }
 
-  100% {
-    transform: scale(1.05);
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
   }
 }
 
@@ -795,24 +839,154 @@ async function promptRegisteredPhoneAndGoLogin(phone: string) {
   transition: all 0.5s ease;
 }
 
-.fade-slide-enter-from,
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateY(20px);
+.portal-glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: 20px;
+  pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(243, 201, 90, 0.4);
+  animation: glowPulse 3.2s ease-in-out infinite;
 }
 
-.fade-up-enter-active,
-.fade-up-leave-active {
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+@keyframes glowPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 18px rgba(243, 201, 90, 0.25), 0 0 0 1px rgba(243, 201, 90, 0.35);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(243, 201, 90, 0.5), 0 0 0 1px rgba(243, 201, 90, 0.7);
+  }
 }
 
-.fade-up-enter-from,
-.fade-up-leave-to {
-  opacity: 0;
-  transform: translateY(40px);
+@keyframes breathe {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
 }
 
-.school-stage-grid {
+.portal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.portal-head h2 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 0.15em;
+  color: #f3d98a;
+  font-family: 'Ma Shan Zheng', serif;
+  text-shadow: 0 0 14px rgba(243, 201, 90, 0.5);
+}
+
+.switch-link {
+  background: none;
+  border: none;
+  color: #8fbfe6;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.switch-link:hover {
+  color: #f3d98a;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(150, 210, 255, 0.2);
+  border-radius: 12px;
+  padding: 0 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.field:focus-within {
+  border-color: rgba(243, 201, 90, 0.6);
+  box-shadow: 0 0 0 3px rgba(243, 201, 90, 0.12);
+}
+
+.field-ico {
+  color: #7fc8ff;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.field input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #eaf2ff;
+  font-size: 15px;
+  padding: 13px 0;
+}
+
+.field input::placeholder {
+  color: #6f93b8;
+}
+
+.code-field .code-btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: rgba(243, 201, 90, 0.12);
+  border: 1px solid rgba(243, 201, 90, 0.4);
+  color: #f3d98a;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.code-field .code-btn:hover:not(:disabled) {
+  background: rgba(243, 201, 90, 0.22);
+}
+
+.code-field .code-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* === 修炼学段 === */
+.stage-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 2px 0;
+}
+
+.stage-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #9fc4e6;
+  letter-spacing: 0.05em;
+}
+
+.stage-label .field-ico {
+  font-size: 14px;
+}
+
+.stage-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
@@ -830,15 +1004,22 @@ async function promptRegisteredPhoneAndGoLogin(phone: string) {
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.04);
-  color: #d1d5db;
-  font-size: 13px;
+  color: #c8dcec;
+  font-size: 12px;
   font-weight: 600;
+  letter-spacing: 0.05em;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.school-stage-btn:hover {
-  border-color: rgba(234, 179, 8, 0.45);
+.stage-chip:hover {
+  border-color: rgba(243, 201, 90, 0.55);
+  color: #f3d98a;
+}
+
+.stage-chip.is-active {
+  border-color: rgba(243, 201, 90, 0.85);
+  background: rgba(243, 201, 90, 0.16);
   color: #fde68a;
 }
 

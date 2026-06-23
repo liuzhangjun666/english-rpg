@@ -10,6 +10,7 @@ use App\Services\SmsService;
 use App\Support\CultivationProfile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -47,6 +48,22 @@ class AuthController extends Controller
      */
     public function register(Request $request): JsonResponse
     {
+        // ── 防刷限流 ──
+        // 单个 IP 每小时最多 5 次注册尝试（含失败）。SMS 验证码已经是天然限流，
+        // 这里追加一层兜底，主要防御机器人短时间用大量虚拟号刷邀请奖励。
+        // 命中限流：返回 429，前端展示倒计时。
+        $ipKey = 'register-ip:' . $request->ip();
+        if (RateLimiter::tooManyAttempts($ipKey, 5)) {
+            $retryAfter = RateLimiter::availableIn($ipKey);
+            return response()->json([
+                'success' => false,
+                'code' => 'TOO_MANY_REGISTRATIONS',
+                'message' => "注册过于频繁，请 {$retryAfter} 秒后再试",
+                'retry_after' => $retryAfter,
+            ], 429);
+        }
+        RateLimiter::hit($ipKey, 3600); // 计数器存活 1 小时
+
         $validator = Validator::make($request->all(), [
             'phone' => 'required|string|size:11',
             'code'  => 'required|string|size:6',
@@ -123,10 +140,16 @@ class AuthController extends Controller
             'tutorial_step' => 0,
         ]);
 
+        $shareService = app(ShareRewardService::class);
+        // 新用户立刻生成自己的邀请码，避免延迟到第一次访问 /share/info 才有
+        $shareService->getInviteCode($user);
+
         if ($request->filled('invite_code')) {
-            $shareService = app(ShareRewardService::class);
             $shareService->handleInvitedRegistration($user, $request->invite_code);
         }
+
+        // 重新加载以获取上面 increment / update 的最新值（spirit_power、invite_code 等）
+        $user->refresh();
 
         $token = $user->createToken('auth-token')->plainTextToken;
 

@@ -35,8 +35,10 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
-            $table->index(['user_id', 'status'], 'idx_user_status');
-            $table->index(['user_id', 'created_at'], 'idx_user_created');
+            // 索引名加 va_ 前缀避免 SQLite 全局命名空间冲突
+            // （MySQL 索引是 per-table，但 SQLite 是 per-database）
+            $table->index(['user_id', 'status'], 'idx_va_user_status');
+            $table->index(['user_id', 'created_at'], 'idx_va_user_created');
         });
     }
 

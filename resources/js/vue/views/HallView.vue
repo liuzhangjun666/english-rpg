@@ -8,23 +8,12 @@
         <span class="daily-quest-label">每日修炼</span>
       </button>
     </div>
-    <GlobalHud
-      @open-review="panels.showReview = true"
-      @open-achievements="panels.showAchievements = true"
-      @open-profile="panels.showProfile = true"
-      @open-events="panels.showEvents = true"
-      @open-mail="panels.showMail = true"
-      @open-settings="panels.showSettings = true"
-    />
+    <!-- GlobalHud 已提升至 App.vue 全局挂载，此处不再重复实例 -->
 
     <RadialMenu v-if="activeRadialBuilding" :visible="!!activeRadialBuilding" :x="radialPos.x" :y="radialPos.y"
       :nodes="activeRadialBuilding.subNodes" @close="activeRadialBuilding = null" />
 
-    <HallModals
-      :panels="panels"
-      @go-mijing="navigation.goMijing()"
-      @go-world-boss="navigation.goWorldBoss()"
-    />
+    <HallModals :panels="panels" @go-mijing="navigation.goMijing()" @go-world-boss="navigation.goWorldBoss()" />
   </div>
 </template>
 
@@ -157,6 +146,7 @@ function handleBuildingClick(building: any) {
 }
 
 @keyframes fab-pulse {
+
   0%,
   100% {
     box-shadow: 0 0 0 0 rgba(212, 168, 67, 0.3);

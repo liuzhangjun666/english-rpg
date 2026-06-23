@@ -2075,9 +2075,14 @@ function backHall() {
   inset: 0;
   z-index: 80;
   width: 100vw;
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   border-radius: 0;
+  /* 顶部留出 TopHud 高度（约 76px），避免标题"练功房·木桩连击"被状态栏盖住 */
+  padding-top: 80px;
+  padding-bottom: clamp(8px, 1.5vh, 20px);
 }
 
 .ws-bg {
@@ -2138,7 +2143,8 @@ function backHall() {
   position: relative;
   margin: 2px auto 0;
   width: min(95%, 980px);
-  height: 112px;
+  height: clamp(72px, 11vh, 112px);
+  flex-shrink: 0;
 }
 
 .ws-progress-panel {
@@ -2191,8 +2197,9 @@ function backHall() {
 .ws-combo-wrap {
   width: min(95%, 980px);
   margin: 6px auto 0;
-  height: 72px;
+  height: clamp(44px, 7vh, 72px);
   position: relative;
+  flex-shrink: 0;
 }
 
 .ws-combo-bg {
@@ -2218,25 +2225,32 @@ function backHall() {
 
 .ws-stake-zone {
   width: min(92%, 920px);
-  margin: 76px auto 0;
-  height: 560px;
+  margin: clamp(8px, 1.5vh, 24px) auto 0;
+  flex: 1 1 auto;
+  min-height: 220px;
+  height: auto;
+  position: relative;
 }
 
 .ws-stake-main {
   position: absolute;
   left: 50%;
-  bottom: 10px;
+  bottom: 0;
   transform: translateX(-50%);
-  width: 640px;
+  width: auto;
+  height: 100%;
+  max-width: 90%;
+  object-fit: contain;
+  object-position: bottom center;
 }
 
 .ws-word-row {
   position: absolute;
   left: 50%;
-  bottom: 414px;
+  bottom: 72%;
   transform: translateX(-50%);
-  width: min(64vw, 230px);
-  height: 88px;
+  width: min(28vh, 230px);
+  height: clamp(48px, 9vh, 88px);
 }
 
 .ws-word {
@@ -2296,10 +2310,11 @@ function backHall() {
 
 .ws-options {
   width: min(96%, 1140px);
-  margin: -72px auto 0;
+  margin: clamp(8px, 1.5vh, 16px) auto 0;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: clamp(12px, 1.5vw, 20px);
+  flex-shrink: 0;
 }
 
 .ws-option-btn {
@@ -2317,7 +2332,8 @@ function backHall() {
 }
 
 .ws-option-board {
-  width: min(100%, 460px);
+  width: 100%;
+  max-width: clamp(160px, 22vh, 260px);
   display: block;
   margin: 0 auto;
 }
@@ -2777,19 +2793,19 @@ function backHall() {
   }
 
   .ws-stake-zone {
-    margin-top: 58px;
-    height: 420px;
+    margin-top: clamp(8px, 1.5vh, 24px);
+    min-height: 200px;
   }
 
   .ws-stake-main {
-    bottom: 6px;
-    width: 440px;
+    bottom: 0;
+    width: auto;
   }
 
   .ws-word-row {
-    bottom: 280px;
-    width: min(72vw, 170px);
-    height: 62px;
+    bottom: 72%;
+    width: min(28vh, 170px);
+    height: clamp(40px, 8vh, 62px);
   }
 
   .ws-word {
@@ -2822,7 +2838,7 @@ function backHall() {
   }
 
   .ws-options {
-    margin-top: -52px;
+    margin-top: clamp(6px, 1.2vh, 12px);
     gap: 8px;
   }
 

@@ -1,6 +1,4 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
@@ -29,13 +27,13 @@ export interface WorldSceneOptions {
 }
 
 export const SECT_NODES: SectNodeDef[] = [
-  { id: 'sectHall',      name: SCENE_NODE_META.sectHall.name,      pos: [0,     0, 0],     color: 0xffd700, unlockRealm: SCENE_NODE_META.sectHall.unlockRealm,      glbPath: '/models/sectHall.glb',      glbTargetSize: 360 },
-  { id: 'swordHall',     name: SCENE_NODE_META.swordHall.name,     pos: [-430,  0, -300],  color: 0x66ccff, unlockRealm: SCENE_NODE_META.swordHall.unlockRealm,     glbPath: '/models/swordHall.glb',     glbTargetSize: 270 },
-  { id: 'scriptureHall', name: SCENE_NODE_META.scriptureHall.name, pos: [430,   0, -300],  color: 0x00ddff, unlockRealm: SCENE_NODE_META.scriptureHall.unlockRealm, glbPath: '/models/scriptureHall.glb', glbTargetSize: 255 },
-  { id: 'alchemyHall',   name: SCENE_NODE_META.alchemyHall.name,   pos: [-370,  0, 390],   color: 0xff8833, unlockRealm: SCENE_NODE_META.alchemyHall.unlockRealm,   glbPath: '/models/alchemyHall.glb',   glbTargetSize: 240, glbRotationY: 0 },
-  { id: 'innerDemonHall', name: SCENE_NODE_META.innerDemonHall.name, pos: [620,   0, 820],   color: 0x33d6ff, unlockRealm: SCENE_NODE_META.innerDemonHall.unlockRealm, glbPath: '/models/innerDemonHall.glb', glbTargetSize: 260, glbRotationY: 0 },
-  { id: 'beastGarden',   name: SCENE_NODE_META.beastGarden.name,   pos: [-740,  0, 50],    color: 0x44ee88, unlockRealm: SCENE_NODE_META.beastGarden.unlockRealm,   glbPath: '/models/beastGarden.glb',   glbTargetSize: 300 },
-  { id: 'farm',          name: SCENE_NODE_META.farm.name,          pos: [730,   0, 60],    color: 0x99ee44, unlockRealm: SCENE_NODE_META.farm.unlockRealm,          glbPath: '/models/farm.glb',          glbTargetSize: 310 },
+  { id: 'sectHall',      name: '宗门大殿', pos: [0,     0, 0],     color: 0xffd700, unlockRealm: 0, glbPath: '/models/sectHall.glb',      glbTargetSize: 360, glbRotationY: 0 },
+  { id: 'swordHall',     name: '剑阁',     pos: [-430,  0, -300],  color: 0x66ccff, unlockRealm: 0, glbPath: '/models/swordHall.glb',     glbTargetSize: 270 },
+  { id: 'scriptureHall', name: '藏经阁',   pos: [430,   0, -300],  color: 0x00ddff, unlockRealm: 0, glbPath: '/models/scriptureHall.glb', glbTargetSize: 255 },
+  { id: 'alchemyHall',   name: '炼丹殿',   pos: [-370,  0, 390],   color: 0xff8833, unlockRealm: 0, glbPath: '/models/alchemyHall.glb',   glbTargetSize: 240, glbRotationY: 0 },
+  { id: 'innerDemonHall', name: '心魔殿',  pos: [620,   0, 820],   color: 0x33d6ff, unlockRealm: 0, glbPath: '/models/innerDemonHall.glb', glbTargetSize: 260, glbRotationY: 0 },
+  { id: 'beastGarden',   name: '灵兽园',   pos: [-740,  0, 50],    color: 0x44ee88, unlockRealm: 2, glbPath: '/models/beastGarden.glb',   glbTargetSize: 300 },
+  { id: 'farm',          name: '灵田',     pos: [730,   0, 60],    color: 0x99ee44, unlockRealm: 0, glbPath: '/models/farm.glb',          glbTargetSize: 310 },
 ];
 
 // ─── 地形高度函数 ─────────────────────────────────────────────────────────────
@@ -87,31 +85,9 @@ const LEY_FRAG = /* glsl */`
   }
 `;
 
-// ─── GLB 模块级缓存：加载一次、解析一次，之后开图直接克隆（瞬间出现） ──────────────
+// ─── GLB 加载：委托给全局 AssetPreloader（共享缓存 + 全局进度追踪）──────────────
 
-let _sharedDraco: DRACOLoader | null = null;
-function getSharedDraco(): DRACOLoader {
-  if (!_sharedDraco) {
-    _sharedDraco = new DRACOLoader();
-    _sharedDraco.setDecoderPath('/draco/gltf/');
-  }
-  return _sharedDraco;
-}
-
-const _glbCache = new Map<string, Promise<THREE.Group>>();
-/** 加载 GLB（带缓存）；返回的是缓存场景的克隆，可安全独立变换 */
-function loadGLBCached(path: string): Promise<THREE.Group> {
-  let p = _glbCache.get(path);
-  if (!p) {
-    const loader = new GLTFLoader();
-    loader.setDRACOLoader(getSharedDraco());
-    p = new Promise<THREE.Group>((resolve, reject) => {
-      loader.load(path, (g) => resolve(g.scene), undefined, reject);
-    });
-    _glbCache.set(path, p);
-  }
-  return p.then((scene) => scene.clone(true));
-}
+import { loadGLB as loadGLBCached } from '../../services/assetPreloader';
 
 /** 全部地图模型路径（用于预加载） */
 const ALL_MAP_MODELS = [
@@ -159,8 +135,11 @@ export class WorldSceneManager {
   private valleyClouds: THREE.Mesh[] = [];     // 山谷 billboard 流云
   private ringParticles: THREE.Points[] = [];  // 云环主题粒子
   private sunSprite: THREE.Sprite | null = null;
+  private labels: CSS2DObject[] = [];          // 建筑名标签（近大远小 + 远处淡出）
+  private _tmpV = new THREE.Vector3();         // 复用临时向量
   private decorBob: THREE.Object3D[] = [];     // 装饰小浮岛（上下浮动）
   private birds: THREE.Sprite[] = [];          // 飞鸟群
+  private flyers: THREE.Sprite[] = [];         // 御剑仙人
   private petals: THREE.Points | null = null;  // 飘落灵气花瓣
   private dracoLoader: DRACOLoader | null = null; // Draco 解码器，dispose 时释放 worker
   private perfProfile: ScenePerfProfile;
@@ -176,6 +155,13 @@ export class WorldSceneManager {
   private mouse = new THREE.Vector2();
   private isFocused = false; // 是否已飞入某建筑特写
   private focusedBuilding: THREE.Group | null = null; // 当前特写的建筑（用于每帧更新菜单坐标）
+
+  // 性能优化缓存
+  private raycastMeshes: THREE.Object3D[] = [];        // 缓存的建筑 mesh 列表（避免每次 mousemove 遍历）
+  private raycastDirty = true;                         // 标记 mesh 缓存是否需要刷新
+  private buildingCircles: THREE.Mesh[] = [];           // 缓存法阵引用
+  private buildingPointsList: { pts: THREE.Points; basePos: Float32Array; speed: number }[] = []; // 缓存粒子引用
+  private mouseMoveThrottled = false;                  // mousemove 节流标记
 
   // 配置
   private userRealmLevel: number;
@@ -548,25 +534,27 @@ export class WorldSceneManager {
         const x = Math.cos(a) * r, z = Math.sin(a) * r;
         const y = yMin + Math.random() * (yMax - yMin);
         const s = sMin + Math.random() * (sMax - sMin);
+        const op = oMin + Math.random() * (oMax - oMin);
         const mesh = new THREE.Mesh(
           new THREE.PlaneGeometry(s * 1.8, s),
           new THREE.MeshBasicMaterial({
             map: pick(), transparent: true,
-            opacity: oMin + Math.random() * (oMax - oMin),
+            opacity: op,
             depthWrite: false, side: THREE.DoubleSide, fog: false,
           }),
         );
         mesh.position.set(x, y, z);
-        mesh.userData = { drift: (Math.random() - 0.5) * 0.5, phase: Math.random() * Math.PI * 2, baseY: y, ang: a, rad: r };
+        mesh.userData = { drift: (Math.random() - 0.5) * 0.5, phase: Math.random() * Math.PI * 2, baseY: y, ang: a, rad: r, baseOp: op };
         this.scene.add(mesh);
         this.valleyClouds.push(mesh);
       }
     };
 
     // 三层云带：近景翻涌缭绕 / 中景填满空隙 / 远景云塔与地平线
-    addBand(18,  280, 1400,  -55,  -8,  700, 1500, 0.42, 0.72);   // 近景
-    addBand(24, 1400, 2900,  -95,  20, 1100, 2300, 0.30, 0.55);   // 中景
-    addBand(16, 2900, 4800, -130, 200, 2000, 3600, 0.20, 0.42);   // 远景云塔
+    // 减半数量；剩余 billboard 体积放大以保持覆盖感（视觉密度几乎不变，但每帧朝向相机 / 透明度计算开销减半）
+    addBand(10,  280, 1400,  -55,  -8,   900, 1900, 0.42, 0.72);  // 近景
+    addBand(14, 1400, 2900,  -95,  20,  1400, 2900, 0.30, 0.55);  // 中景
+    addBand(8,  2900, 4800, -130, 200,  2500, 4500, 0.20, 0.42);  // 远景云塔
   }
 
   // ─── 世界装饰：小浮岛 + 远峰 + 飞鸟 + 花瓣 ──────────────────────────────────────
@@ -576,6 +564,125 @@ export class WorldSceneManager {
     this.buildDistantPeaks();
     this.buildBirds();
     this.buildPetals();
+    this.buildFlyingImmortals(); // 御剑仙人掠过
+    this.buildSpiritDust();      // 全局漂浮灵尘
+  }
+
+  // 全局漂浮灵尘：缓慢上浮的细微光尘，弥漫整个宗门
+  private buildSpiritDust() {
+    const COUNT = 260;
+    const pos = new Float32Array(COUNT * 3);
+    const spd = new Float32Array(COUNT);
+    for (let i = 0; i < COUNT; i++) {
+      pos[i*3]   = (Math.random() - 0.5) * 4000;
+      pos[i*3+1] = -100 + Math.random() * 900;
+      pos[i*3+2] = (Math.random() - 0.5) * 4000;
+      spd[i] = 0.1 + Math.random() * 0.3;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    this.spiritDust = new THREE.Points(geo, new THREE.PointsMaterial({
+      color: 0xfff4d6, size: 4, map: this.glowTex, transparent: true, opacity: 0.5,
+      depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true, fog: false,
+    }));
+    this.spiritDust.userData = { spd, topY: 900 };
+    this.scene.add(this.spiritDust);
+  }
+
+  // 主灵脉云阶大道：从前景升向宗门大殿，营造"登仙之路"
+  private buildSpiritAvenue() {
+    const start = new THREE.Vector3(0, -30, 800);
+    const end   = new THREE.Vector3(0, terrainAt(0, 0) + 15, 210);
+    const mid   = new THREE.Vector3().lerpVectors(start, end, 0.5);
+    mid.y += 40; mid.x += 30;
+
+    const stepMat = new THREE.MeshStandardMaterial({
+      color: 0xcfe2ea, roughness: 0.5, metalness: 0.1,
+      emissive: 0x2a5a7a, emissiveIntensity: 0.3, transparent: true, opacity: 0.92,
+    });
+    const glowMat = new THREE.MeshBasicMaterial({
+      color: 0xffe6a8, transparent: true, opacity: 0.55,
+      blending: THREE.AdditiveBlending, depthWrite: false,
+    });
+
+    const STEPS = 16;
+    for (let i = 0; i < STEPS; i++) {
+      const f = i / (STEPS - 1);
+      const p = new THREE.Vector3().lerpVectors(start, end, f);
+      p.x += Math.sin(f * Math.PI * 1.6) * 70;          // 蜿蜒
+      const r = 95 - f * 42;                            // 近宽远窄
+      const step = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 0.9, 9, 8), stepMat);
+      step.position.copy(p);
+      step.castShadow = true;
+      const glow = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.66, r * 0.66, 2.5, 8), glowMat);
+      glow.position.y = 6;
+      step.add(glow);
+      step.userData = { baseY: p.y, phase: i * 0.5, bob: 4 };
+      this.scene.add(step);
+      this.decorBob.push(step);
+    }
+
+    // 中央流光灵脉沿大道流淌
+    const curve = new THREE.CatmullRomCurve3([start, mid, end]);
+    const tube = new THREE.Mesh(
+      new THREE.TubeGeometry(curve, 64, 4, 6, false),
+      new THREE.MeshBasicMaterial({ color: 0x9fd4ff, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending, depthWrite: false }),
+    );
+    this.scene.add(tube);
+    this.addLeyParticles(curve, 0xffe6a8);             // 复用灵脉流光粒子
+  }
+
+  // 御剑仙人：横向掠过场景，留光痕，循环
+  private makeSwordImmortalTexture(): THREE.CanvasTexture {
+    const w = 160, h = 64;
+    const cv = document.createElement('canvas');
+    cv.width = w; cv.height = h;
+    const ctx = cv.getContext('2d')!;
+    // 御剑光痕（水平拖尾，头部亮）
+    const g = ctx.createLinearGradient(0, 0, w, 0);
+    g.addColorStop(0.0, 'rgba(159,212,255,0)');
+    g.addColorStop(0.7, 'rgba(180,225,255,0.5)');
+    g.addColorStop(1.0, 'rgba(255,240,200,0.95)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(0, 34); ctx.lineTo(w, 30); ctx.lineTo(w, 38); ctx.lineTo(0, 38);
+    ctx.closePath(); ctx.fill();
+    // 剑（头部细长）
+    ctx.strokeStyle = 'rgba(230,245,255,0.95)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(w - 60, 36); ctx.lineTo(w - 6, 33); ctx.stroke();
+    // 仙人剪影（立于剑上）
+    ctx.fillStyle = '#2a3550';
+    ctx.beginPath();
+    ctx.ellipse(w - 30, 24, 5, 11, 0, 0, Math.PI * 2);   // 身体
+    ctx.fill();
+    ctx.beginPath(); ctx.arc(w - 30, 11, 4, 0, Math.PI * 2); ctx.fill(); // 头
+    // 飘带
+    ctx.strokeStyle = 'rgba(120,160,210,0.7)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(w - 34, 24); ctx.quadraticCurveTo(w - 55, 20, 80, 28); ctx.stroke();
+    const tex = new THREE.CanvasTexture(cv);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
+  }
+
+  private buildFlyingImmortals() {
+    const tex = this.makeSwordImmortalTexture();
+    const lanes = [
+      { y: 380, z: 200,  vx: 2.6,  size: 200 },
+      { y: 520, z: -300, vx: -1.9, size: 170 },
+      { y: 300, z: 650,  vx: 3.1,  size: 220 },
+      { y: 600, z: 100,  vx: -2.3, size: 180 },
+    ];
+    lanes.forEach((ln, i) => {
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: tex, transparent: true, opacity: 0.95, depthWrite: false, fog: true,
+      }));
+      const dir = ln.vx >= 0 ? 1 : -1;
+      sp.scale.set(ln.size * dir, ln.size * 0.4, 1);     // 负 x 翻转朝向
+      sp.position.set((i % 2 ? -1 : 1) * 1800, ln.y, ln.z);
+      sp.userData = { vx: ln.vx, baseY: ln.y, phase: Math.random() * Math.PI * 2, maxX: 2400, size: ln.size };
+      this.scene.add(sp);
+      this.flyers.push(sp);
+    });
   }
 
   private makeTree(): THREE.Group {
@@ -670,7 +777,8 @@ export class WorldSceneManager {
   private buildDistantPeaks() {
     const rockMat = new THREE.MeshBasicMaterial({ color: 0x8ea6c6, transparent: true, opacity: 0.8, fog: true });
     const snowMat = new THREE.MeshBasicMaterial({ color: 0xeaf2ff, transparent: true, opacity: 0.85, fog: true });
-    const COUNT = 6;
+    // 远山下半部被云海吞没，4 座 + 错开角度比 6 座效果几乎相同
+    const COUNT = 4;
     for (let i = 0; i < COUNT; i++) {
       const a = (i / COUNT) * Math.PI * 2 + Math.random() * 0.4;
       const r = 3400 + Math.random() * 1800;
@@ -705,7 +813,8 @@ export class WorldSceneManager {
 
   private buildBirds() {
     const tex = this.makeBirdTexture();
-    const COUNT = 16;
+    // 16 → 8：远景小剪影，数量减半在天空中几乎察觉不到差异
+    const COUNT = 8;
     for (let i = 0; i < COUNT; i++) {
       const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 0.75, depthWrite: false, fog: true });
       const sp = new THREE.Sprite(mat);
@@ -830,9 +939,11 @@ export class WorldSceneManager {
       group.userData = { def, baseY: groundY, phase: idx * 0.85 };
 
       // ── 建筑 slot（GLB 加载后替换占位） ──
+      // 仅在没有 glbPath 的情况下用几何占位；有 GLB 时直接等待模型加载，
+      // 避免地图打开瞬间看到橙色球 / 绿色圆柱等几何占位形状。
       const slot = new THREE.Group();
       group.add(slot);
-      this.addPlaceholder(slot, def);
+      if (!def.glbPath) this.addPlaceholder(slot, def);
 
       if (def.glbPath) {
         loadGLBCached(def.glbPath).then((model) => {
@@ -851,7 +962,11 @@ export class WorldSceneManager {
           });
           slot.clear();
           slot.add(model);
-        }).catch(() => { /* GLB 不存在时保留占位 */ });
+          this.raycastDirty = true;
+        }).catch(() => { /* GLB 加载失败 → 回落到几何占位，确保建筑不缺席 */
+          this.addPlaceholder(slot, def);
+          this.raycastDirty = true;
+        });
       }
 
       // ── 地面法阵 ──
@@ -866,6 +981,7 @@ export class WorldSceneManager {
       circle.position.y = 2;
       circle.userData.isCircle = true;
       group.add(circle);
+      this.buildingCircles.push(circle);
 
       // ── 主题点光源 ──
       const ptLight = new THREE.PointLight(def.color, 1.8, 800, 1.6);
@@ -875,6 +991,9 @@ export class WorldSceneManager {
       // ── 粒子（向上浮动的灵气光点） ──
       this.addBuildingParticles(group, def);
 
+      // ── 建筑专属动态特效（让建筑"活"起来） ──
+      this.buildBuildingEffects(group, def);
+
       // ── CSS2D 标签 ──
       const label = this.createLabel(def);
       label.position.y = 280;
@@ -882,6 +1001,257 @@ export class WorldSceneManager {
 
       this.scene.add(group);
       this.buildings.push(group);
+    });
+  }
+
+  // ─── 建筑动态特效系统 ─────────────────────────────────────────────────────────
+
+  /** 软发光精灵（灵气光晕/拖尾通用） */
+  private glowSprite(color: number, size: number, opacity = 0.8): THREE.Sprite {
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: this.glowTex, color, transparent: true, opacity,
+      depthWrite: false, blending: THREE.AdditiveBlending, fog: false,
+    }));
+    s.scale.set(size, size, 1);
+    return s;
+  }
+
+  /** 上浮灵气粒子（作为建筑子节点，复用 animate 中 basePos 上浮逻辑） */
+  private makeMotesChild(color: number, count: number, spreadXZ: number, baseY: number, size = 9): THREE.Points {
+    const positions = new Float32Array(count * 3);
+    const base = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const rad = Math.random() * spreadXZ;
+      const x = Math.cos(a) * rad, z = Math.sin(a) * rad;
+      const y = baseY + Math.random() * 120;
+      positions[i*3] = x; positions[i*3+1] = y; positions[i*3+2] = z;
+      base[i*3] = x; base[i*3+1] = baseY; base[i*3+2] = z;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const pts = new THREE.Points(geo, new THREE.PointsMaterial({
+      color, size, map: this.glowTex, transparent: true, opacity: 0.8,
+      depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true,
+    }));
+    const speed = 0.5 + Math.random() * 0.5;
+    pts.userData = { basePos: base, speed };
+    this.buildingPointsList.push({ pts, basePos: base, speed });
+    return pts;
+  }
+
+  private buildBuildingEffects(group: THREE.Group, def: SectNodeDef) {
+    switch (def.id) {
+      case 'sectHall':       this.fxSectHall(group); break;
+      case 'swordHall':      this.fxSwordHall(group); break;
+      case 'scriptureHall':  this.fxScriptureHall(group); break;
+      case 'alchemyHall':    this.fxAlchemyHall(group); break;
+      case 'innerDemonHall': this.fxInnerDemonHall(group); break;
+      case 'beastGarden':    this.fxBeastGarden(group); break;
+      case 'farm':           this.fxFarm(group); break;
+    }
+  }
+
+  // 宗门大殿：悬浮灵晶 + 光晕脉冲（地面法阵已在 createBuildings 中旋转）
+  private fxSectHall(group: THREE.Group) {
+    const crystal = new THREE.Mesh(
+      new THREE.OctahedronGeometry(26),
+      new THREE.MeshStandardMaterial({ color: 0xffe9a8, emissive: 0xffc844, emissiveIntensity: 1.3, metalness: 0.3, roughness: 0.2 }),
+    );
+    crystal.position.y = 330; crystal.scale.y = 1.6;
+    group.add(crystal);
+    const halo = this.glowSprite(0xffd966, 170, 0.85); halo.position.y = 330; group.add(halo);
+    group.add(this.makeMotesChild(0xffd966, 40, 110, 20));   // 金色灵气
+    this.buildingFx.push((t) => {
+      crystal.position.y = 330 + Math.sin(t * 0.8) * 16;
+      crystal.rotation.y += 0.01;
+      (halo.material as THREE.SpriteMaterial).opacity = 0.7 + Math.sin(t * 2) * 0.2;
+    });
+  }
+
+  /** 用 ExtrudeGeometry 构建一把精致的剑（剑身尖锋 + 血槽倒角 + 十字护手 + 剑柄 + 剑首 + 剑气） */
+  private makeSword(): THREE.Group {
+    const s = new THREE.Group();
+    const bladeMat = new THREE.MeshStandardMaterial({ color: 0xe6f4ff, emissive: 0x3aa0ff, emissiveIntensity: 0.95, metalness: 0.95, roughness: 0.22 });
+    const goldMat  = new THREE.MeshStandardMaterial({ color: 0xe8c66a, emissive: 0x5a4310, emissiveIntensity: 0.35, metalness: 1.0, roughness: 0.35 });
+    const gripMat  = new THREE.MeshStandardMaterial({ color: 0x281d2e, roughness: 0.85, metalness: 0.2 });
+
+    // 剑身：2D 剑形轮廓 → 拉伸 + 倒角形成锋利刃口
+    const w = 3.2, L = 62;
+    const shape = new THREE.Shape();
+    shape.moveTo(-w, 0);
+    shape.lineTo(-w, L * 0.80);
+    shape.lineTo(0, L);            // 尖锋
+    shape.lineTo(w, L * 0.80);
+    shape.lineTo(w, 0);
+    shape.lineTo(-w, 0);
+    const bladeGeo = new THREE.ExtrudeGeometry(shape, {
+      depth: 1.8, bevelEnabled: true, bevelThickness: 1.0, bevelSize: 1.0, bevelSegments: 1, steps: 1,
+    });
+    bladeGeo.translate(0, 0, -0.9);  // 厚度居中
+    const blade = new THREE.Mesh(bladeGeo, bladeMat);
+    s.add(blade);
+
+    // 十字护手
+    const guard = new THREE.Mesh(new THREE.BoxGeometry(22, 4.5, 6, 1, 1, 1), goldMat);
+    guard.position.y = -1; s.add(guard);
+    // 圆珠护手两端
+    [-10, 10].forEach(x => {
+      const knob = new THREE.Mesh(new THREE.SphereGeometry(3, 8, 8), goldMat);
+      knob.position.set(x, -1, 0); s.add(knob);
+    });
+    // 剑柄
+    const grip = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 2.5, 16, 10), gripMat);
+    grip.position.y = -10; s.add(grip);
+    // 剑首
+    const pommel = new THREE.Mesh(new THREE.SphereGeometry(3.6, 12, 12), goldMat);
+    pommel.position.y = -19; s.add(pommel);
+
+    // 剑气光晕（沿剑身）
+    const aura = this.glowSprite(0x66bbff, 70, 0.45);
+    aura.position.y = 34; s.add(aura);
+
+    return s;
+  }
+
+  // 剑阁：8 把精致飞剑组成旋转剑阵 + 蓝色剑气
+  private fxSwordHall(group: THREE.Group) {
+    const ring = new THREE.Group();
+    ring.position.y = 185;
+    group.add(ring);
+
+    const N = 8;
+    for (let i = 0; i < N; i++) {
+      const holder = new THREE.Group();
+      holder.rotation.y = (i / N) * Math.PI * 2;
+      const sword = this.makeSword();
+      sword.position.x = 130;          // 沿半径外移
+      sword.rotation.z = 0;            // 竖直，剑尖朝上
+      sword.scale.setScalar(1.15);
+      holder.add(sword);
+      ring.add(holder);
+    }
+
+    const aura = this.glowSprite(0x66bbff, 170, 0.4); aura.position.y = 185; group.add(aura);
+    group.add(this.makeMotesChild(0x88ccff, 36, 110, 30));
+
+    this.buildingFx.push((t) => {
+      ring.rotation.y += 0.012;                       // 剑阵旋转
+      ring.position.y = 185 + Math.sin(t * 1.1) * 12; // 整体起伏
+      (aura.material as THREE.SpriteMaterial).opacity = 0.35 + Math.sin(t * 1.6) * 0.15;
+    });
+  }
+
+  // 藏经阁：漂浮经卷 + 蓝色光柱
+  private fxScriptureHall(group: THREE.Group) {
+    const scrollMat = new THREE.MeshStandardMaterial({ color: 0xf0e2b8, emissive: 0x553a14, emissiveIntensity: 0.4, roughness: 0.8 });
+    const scrolls: THREE.Mesh[] = [];
+    for (let i = 0; i < 4; i++) {
+      const sc = new THREE.Mesh(new THREE.CylinderGeometry(6, 6, 34, 10), scrollMat);
+      sc.rotation.z = Math.PI / 2;
+      const a = (i / 4) * Math.PI * 2;
+      sc.position.set(Math.cos(a) * 95, 150 + i * 14, Math.sin(a) * 95);
+      sc.userData.base = 150 + i * 14;
+      group.add(sc); scrolls.push(sc);
+    }
+    const beam = new THREE.Mesh(
+      new THREE.CylinderGeometry(14, 32, 520, 12, 1, true),
+      new THREE.MeshBasicMaterial({ color: 0x66bbff, transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false }),
+    );
+    beam.position.y = 260; group.add(beam);
+    group.add(this.makeMotesChild(0x7fb0ff, 34, 90, 40));
+    this.buildingFx.push((t) => {
+      scrolls.forEach((sc, i) => {
+        sc.position.y = sc.userData.base + Math.sin(t * 0.7 + i) * 12;
+        sc.rotation.x += 0.01;
+      });
+      (beam.material as THREE.MeshBasicMaterial).opacity = 0.12 + Math.sin(t * 1.3) * 0.06;
+    });
+  }
+
+  // 炼丹殿：火焰粒子 + 环绕丹药 + 热浪光晕
+  private fxAlchemyHall(group: THREE.Group) {
+    group.add(this.makeMotesChild(0xff6622, 50, 70, 20, 12));  // 火焰上升
+    group.add(this.makeMotesChild(0xffcc44, 30, 50, 30, 8));   // 火星
+    const pills: THREE.Mesh[] = [];
+    const colors = [0xff5533, 0xffaa22, 0xff8844, 0xffcc66, 0xff6622];
+    for (let i = 0; i < 5; i++) {
+      const pill = new THREE.Mesh(new THREE.SphereGeometry(7, 12, 12),
+        new THREE.MeshStandardMaterial({ color: colors[i], emissive: colors[i], emissiveIntensity: 1.0 }));
+      group.add(pill); pills.push(pill);
+    }
+    const heat = this.glowSprite(0xff8844, 130, 0.4); heat.position.y = 120; group.add(heat);
+    this.buildingFx.push((t) => {
+      pills.forEach((p, i) => {
+        const a = (i / 5) * Math.PI * 2 + t * 1.1;
+        p.position.set(Math.cos(a) * 90, 130 + Math.sin(t * 2 + i) * 14, Math.sin(a) * 90);
+      });
+      (heat.material as THREE.SpriteMaterial).opacity = 0.32 + Math.sin(t * 3) * 0.12;
+    });
+  }
+
+  // 心魔殿：心跳核心 + 封印阵 + 摆动锁链 + 紫雾 + 漂浮知识碎片
+  private fxInnerDemonHall(group: THREE.Group) {
+    const core = new THREE.Mesh(
+      new THREE.SphereGeometry(22, 20, 20),
+      new THREE.MeshStandardMaterial({ color: 0x6a3acc, emissive: 0x9b6bff, emissiveIntensity: 1.4, roughness: 0.4 }),
+    );
+    core.position.y = 170; group.add(core);
+    const coreHalo = this.glowSprite(0xb38bff, 150, 0.7); coreHalo.position.y = 170; group.add(coreHalo);
+    // 封印环（水平，反向旋转）
+    const seal = new THREE.Mesh(
+      new THREE.TorusGeometry(70, 3, 8, 40),
+      new THREE.MeshBasicMaterial({ color: 0x9b6bff, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false }),
+    );
+    seal.rotation.x = Math.PI / 2; seal.position.y = 60; group.add(seal);
+    // 漂浮锁链（几段圆环错落）
+    const chains: THREE.Mesh[] = [];
+    for (let i = 0; i < 4; i++) {
+      const ch = new THREE.Mesh(new THREE.TorusGeometry(14, 3, 6, 12),
+        new THREE.MeshStandardMaterial({ color: 0x88809a, metalness: 0.8, roughness: 0.5 }));
+      const a = (i / 4) * Math.PI * 2;
+      ch.position.set(Math.cos(a) * 80, 90 + i * 18, Math.sin(a) * 80);
+      ch.userData = { a, base: 90 + i * 18 };
+      group.add(ch); chains.push(ch);
+    }
+    group.add(this.makeMotesChild(0xb38bff, 40, 90, 30));   // 紫色封印雾气
+    this.buildingFx.push((t) => {
+      const beat = 1 + Math.sin(t * 2.2) * 0.08;            // 心跳
+      core.scale.setScalar(beat);
+      (coreHalo.material as THREE.SpriteMaterial).opacity = 0.55 + Math.sin(t * 2.2) * 0.2;
+      seal.rotation.z += 0.006;
+      chains.forEach((ch, i) => {
+        ch.position.y = ch.userData.base + Math.sin(t * 1.2 + i) * 8;
+        ch.rotation.z += 0.01;
+      });
+    });
+  }
+
+  // 灵兽园：灵蝶/萤火 游走 + 落叶
+  private fxBeastGarden(group: THREE.Group) {
+    const fireflies: THREE.Sprite[] = [];
+    for (let i = 0; i < 14; i++) {
+      const f = this.glowSprite(Math.random() < 0.5 ? 0x9dff8a : 0xfff19a, 14, 0.85);
+      f.userData = { a: Math.random() * Math.PI * 2, rad: 40 + Math.random() * 90, baseY: 30 + Math.random() * 80, phase: Math.random() * Math.PI * 2, spd: 0.2 + Math.random() * 0.4 };
+      group.add(f); fireflies.push(f);
+    }
+    group.add(this.makeMotesChild(0x7dff9e, 30, 100, 20));
+    this.buildingFx.push((t) => {
+      fireflies.forEach((f) => {
+        const u = f.userData;
+        u.a += u.spd * 0.02;
+        f.position.set(Math.cos(u.a) * u.rad, u.baseY + Math.sin(t * 1.5 + u.phase) * 18, Math.sin(u.a) * u.rad);
+        (f.material as THREE.SpriteMaterial).opacity = 0.5 + Math.sin(t * 3 + u.phase) * 0.4;  // 闪烁
+      });
+    });
+  }
+
+  // 灵田：绿色灵气上浮 + 灵泉光晕
+  private fxFarm(group: THREE.Group) {
+    group.add(this.makeMotesChild(0xbfff8a, 44, 120, 16, 8));
+    const spring = this.glowSprite(0x9fe0c0, 120, 0.5); spring.position.y = 14; group.add(spring);
+    this.buildingFx.push((t) => {
+      (spring.material as THREE.SpriteMaterial).opacity = 0.4 + Math.sin(t * 1.4) * 0.15;
     });
   }
 
@@ -1001,26 +1371,31 @@ export class WorldSceneManager {
     pts.userData.basePos  = positions.slice();
     pts.userData.speed    = 0.28 + Math.random() * 0.18;
     group.add(pts);
+    this.buildingPointsList.push({ pts, basePos: pts.userData.basePos, speed: pts.userData.speed });
   }
 
   private createLabel(def: SectNodeDef): CSS2DObject {
     const isLocked = (def.unlockRealm ?? 0) > this.userRealmLevel;
     const imgSrc   = this.buildingImages[def.id];
 
+    // 外层 wrap 仅做定位（CSS2DRenderer 会覆写其 transform）；视觉盒子放内层 box，缩放作用其上
     const wrap = document.createElement('div');
-    Object.assign(wrap.style, {
+    const box = document.createElement('div');
+    Object.assign(box.style, {
       background: 'rgba(4,12,28,0.88)',
       border: `1px solid ${isLocked ? 'rgba(200,120,0,0.6)' : 'rgba(212,168,67,0.65)'}`,
       borderRadius: '10px', padding: '7px 13px',
       textAlign: 'center', userSelect: 'none',
-      transition: 'all .22s', backdropFilter: 'blur(4px)', whiteSpace: 'nowrap',
+      backdropFilter: 'blur(4px)', whiteSpace: 'nowrap',
+      transformOrigin: 'center center', willChange: 'transform',
     });
+    wrap.appendChild(box);
 
     if (imgSrc) {
       const img = document.createElement('img');
       img.src = imgSrc;
       Object.assign(img.style, { width: '48px', height: '48px', objectFit: 'contain', display: 'block', margin: '0 auto 3px' });
-      wrap.appendChild(img);
+      box.appendChild(img);
     }
 
     const nameEl = document.createElement('div');
@@ -1029,17 +1404,18 @@ export class WorldSceneManager {
       fontSize: '14px', fontWeight: 'bold', letterSpacing: '2px',
       color: isLocked ? '#cc8844' : '#ffdda1', marginBottom: '2px',
     });
-    wrap.appendChild(nameEl);
+    box.appendChild(nameEl);
 
     if (isLocked) {
       const lock = document.createElement('div');
       lock.textContent = '🔒 境界不足';
       Object.assign(lock.style, { fontSize: '11px', color: '#ffaa44' });
-      wrap.appendChild(lock);
+      box.appendChild(lock);
     }
 
     const obj = new CSS2DObject(wrap);
-    obj.userData.labelEl = wrap;
+    obj.userData.box = box;
+    this.labels.push(obj);
     return obj;
   }
 
@@ -1106,10 +1482,20 @@ export class WorldSceneManager {
     const positions = new Float32Array(COUNT * 3);
     const offsets   = new Float32Array(COUNT); // [0,1) 相位偏移
 
+    // 预采样曲线为查找表：每帧 O(1) 索引代替 CatmullRomCurve3.getPoint()（每次 ~20 次 Vector3 数学）。
+    // 7 条灵脉 × 18 粒子 × 60fps ≈ 7560 次 getPoint/秒 是肉眼看不到差别的"看不见的卡顿源"。
+    const LUT_SEGMENTS = 256;
+    const lut = new Float32Array(LUT_SEGMENTS * 3);
+    const tmp = new THREE.Vector3();
+    for (let i = 0; i < LUT_SEGMENTS; i++) {
+      curve.getPoint(i / LUT_SEGMENTS, tmp);
+      lut[i*3] = tmp.x; lut[i*3+1] = tmp.y; lut[i*3+2] = tmp.z;
+    }
+
     for (let i = 0; i < COUNT; i++) {
       offsets[i] = i / COUNT;
-      const pt = curve.getPoint(offsets[i]);
-      positions[i*3] = pt.x; positions[i*3+1] = pt.y; positions[i*3+2] = pt.z;
+      const idx = (offsets[i] * LUT_SEGMENTS) | 0;
+      positions[i*3] = lut[idx*3]; positions[i*3+1] = lut[idx*3+1]; positions[i*3+2] = lut[idx*3+2];
     }
 
     const geo = new THREE.BufferGeometry();
@@ -1118,7 +1504,8 @@ export class WorldSceneManager {
       color, size: 7, transparent: true, opacity: 0.45,
       map: this.glowTex, blending: THREE.AdditiveBlending, depthWrite: false,
     }));
-    pts.userData.curve   = curve;
+    pts.userData.lut     = lut;
+    pts.userData.lutLen  = LUT_SEGMENTS;
     pts.userData.offsets = offsets;
     pts.userData.speed   = 0.10 + Math.random() * 0.06;
     this.scene.add(pts);
@@ -1177,16 +1564,23 @@ export class WorldSceneManager {
   };
 
   private onMouseMove = (e: MouseEvent) => {
-    if (this.cameraController.flying) return;
+    if (this.cameraController.flying || this.mouseMoveThrottled) return;
+    this.mouseMoveThrottled = true;
+    requestAnimationFrame(() => { this.mouseMoveThrottled = false; });
+
     const rect = this.container.getBoundingClientRect();
     this.mouse.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
     this.mouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
 
     this.raycaster.setFromCamera(this.mouse, this.cameraController.camera);
-    const meshes: THREE.Object3D[] = [];
-    this.buildings.forEach(b => b.traverse(c => { if (c instanceof THREE.Mesh) meshes.push(c); }));
 
-    const hit  = this.raycaster.intersectObjects(meshes, false)[0];
+    if (this.raycastDirty) {
+      this.raycastMeshes = [];
+      this.buildings.forEach(b => b.traverse(c => { if (c instanceof THREE.Mesh) this.raycastMeshes.push(c); }));
+      this.raycastDirty = false;
+    }
+
+    const hit  = this.raycaster.intersectObjects(this.raycastMeshes, false)[0];
     const hitG = hit ? this.findBuildingGroup(hit.object) : null;
 
     if (hitG !== this.hoveredBuilding) {
@@ -1199,7 +1593,7 @@ export class WorldSceneManager {
   };
 
   private onClick = (e: MouseEvent) => {
-    if (this.cameraController.flying) return;
+    if (this.cameraController.flying || this.isFocused) return;
     const dx = e.clientX - this.mouseDownPos.x;
     const dy = e.clientY - this.mouseDownPos.y;
     if (Math.sqrt(dx * dx + dy * dy) > 5) return;
@@ -1283,55 +1677,63 @@ export class WorldSceneManager {
 
   // ─── 动画循环 ─────────────────────────────────────────────────────────────────
 
+  private _frameCount = 0;
   private animate = () => {
     this.animFrameId = requestAnimationFrame(this.animate);
     const t     = this.clock.getElapsedTime();
     const delta = this.clock.getDelta ? 0.016 : 0.016;
+    const frame = ++this._frameCount;
+    // 半频更新标志：粒子上浮/星空/云海等视觉上 30Hz 足够，腾出 GPU 上传带宽
+    const halfA = (frame & 1) === 0;
+    const halfB = (frame & 1) === 1;
 
     this.cameraController.update();
 
     // 更新所有灵脉 shader 时间（共享 uniform，只写一次）
     this.timeUniform.value = t;
 
-    // 灵脉粒子沿曲线游走
+    // 灵脉粒子沿曲线游走（用预采样 LUT，O(1) 索引代替 curve.getPoint）
     this.leyParticles.forEach(pts => {
-      const curve   = pts.userData.curve as THREE.CatmullRomCurve3;
+      const lut     = pts.userData.lut as Float32Array;
+      const lutLen  = pts.userData.lutLen as number;
       const offsets = pts.userData.offsets as Float32Array;
       const spd     = pts.userData.speed as number;
       const pos     = pts.geometry.getAttribute('position') as THREE.BufferAttribute;
       const arr     = pos.array as Float32Array;
       for (let i = 0; i < offsets.length; i++) {
-        offsets[i] = (offsets[i] + spd * 0.016) % 1;
-        const pt = curve.getPoint(offsets[i]);
-        arr[i*3] = pt.x; arr[i*3+1] = pt.y; arr[i*3+2] = pt.z;
+        const o = (offsets[i] + spd * 0.016) % 1;
+        offsets[i] = o;
+        const idx = (o * lutLen) | 0;
+        arr[i*3] = lut[idx*3]; arr[i*3+1] = lut[idx*3+1]; arr[i*3+2] = lut[idx*3+2];
       }
       pos.needsUpdate = true;
     });
 
-    // 建筑轻微浮动 + 法阵旋转 + 粒子上浮
+    // 建筑轻微浮动
     this.buildings.forEach(group => {
       const { baseY, phase } = group.userData;
-      // 特写中的建筑保持静止，避免菜单跟随浮动而抖动
       group.position.y = group === this.focusedBuilding
         ? baseY
         : baseY + Math.sin(t * 1.3 + phase) * 8;
-
-      group.traverse(child => {
-        if (child instanceof THREE.Mesh && child.userData.isCircle) {
-          child.rotation.z -= 0.004;
-        }
-        if (child instanceof THREE.Points && child.userData.basePos) {
-          const arr  = (child.geometry.getAttribute('position') as THREE.BufferAttribute).array as Float32Array;
-          const base = child.userData.basePos as Float32Array;
-          const spd  = child.userData.speed as number;
-          for (let i = 0; i < arr.length / 3; i++) {
-            arr[i*3+1] += spd;
-            if (arr[i*3+1] - base[i*3+1] > 220) arr[i*3+1] = base[i*3+1];
-          }
-          (child.geometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true;
-        }
-      });
     });
+
+    // 法阵旋转（缓存引用，不再 traverse）
+    for (let i = 0; i < this.buildingCircles.length; i++) {
+      this.buildingCircles[i].rotation.z -= 0.004;
+    }
+
+    // 建筑粒子上浮（30Hz 即可，奇/偶帧交替更新一半的建筑，分担 GPU 上传带宽）
+    if (halfA) {
+      for (let i = 0; i < this.buildingPointsList.length; i++) {
+        const { pts, basePos, speed } = this.buildingPointsList[i];
+        const arr = (pts.geometry.getAttribute('position') as THREE.BufferAttribute).array as Float32Array;
+        for (let j = 0; j < arr.length / 3; j++) {
+          arr[j*3+1] += speed * 2; // 半频补偿
+          if (arr[j*3+1] - basePos[j*3+1] > 220) arr[j*3+1] = basePos[j*3+1];
+        }
+        (pts.geometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true;
+      }
+    }
 
     // 瀑布粒子下落
     if (this.waterfallPts) {
@@ -1365,28 +1767,53 @@ export class WorldSceneManager {
       ring.rotation.z += (ring.userData.spin as number) * 0.016;
     });
 
-    // 云环主题粒子上浮 + 回收
-    this.ringParticles.forEach((pts) => {
-      const arr  = (pts.geometry.getAttribute('position') as THREE.BufferAttribute).array as Float32Array;
-      const base = pts.userData.basePos as Float32Array;
-      const spd  = pts.userData.speed as number;
-      const range = pts.userData.range as number;
-      for (let i = 0; i < arr.length / 3; i++) {
-        arr[i*3+1] += spd;
-        if (arr[i*3+1] - base[i*3+1] > range) arr[i*3+1] = base[i*3+1];
-      }
-      (pts.geometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true;
-    });
+    // 云环主题粒子上浮 + 回收（与建筑粒子错开帧位，进一步分摊 GPU 上传）
+    if (halfB) {
+      this.ringParticles.forEach((pts) => {
+        const arr  = (pts.geometry.getAttribute('position') as THREE.BufferAttribute).array as Float32Array;
+        const base = pts.userData.basePos as Float32Array;
+        const spd  = pts.userData.speed as number;
+        const range = pts.userData.range as number;
+        for (let i = 0; i < arr.length / 3; i++) {
+          arr[i*3+1] += spd * 2;
+          if (arr[i*3+1] - base[i*3+1] > range) arr[i*3+1] = base[i*3+1];
+        }
+        (pts.geometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true;
+      });
+    }
 
     // 山谷流云：billboard 朝向相机 + 缓慢绕岛漂移 + 上下浮动
     const cam = this.cameraController.camera;
-    this.valleyClouds.forEach((c) => {
+    const focus = this.focusedBuilding;
+    const camQuat = cam.quaternion;
+    for (let i = 0; i < this.valleyClouds.length; i++) {
+      const c = this.valleyClouds[i];
       const u = c.userData;
       u.ang += u.drift * 0.0006;
       c.position.x = Math.cos(u.ang) * u.rad;
       c.position.z = Math.sin(u.ang) * u.rad;
       c.position.y = u.baseY + Math.sin(t * 0.4 + u.phase) * 12;
-      c.quaternion.copy(cam.quaternion);
+      c.quaternion.copy(camQuat);
+      if (focus) {
+        const mat = c.material as THREE.MeshBasicMaterial;
+        const near = c.position.distanceTo(focus.position) < 900;
+        const targetOp = near ? 0 : u.baseOp;
+        mat.opacity += (targetOp - mat.opacity) * 0.12;
+      }
+    }
+
+    // 建筑名标签：近大远小 + 远处淡出（CSS2D 默认固定尺寸，这里手动按距离缩放内层盒子）
+    const camPos = cam.position;
+    this.labels.forEach((lb) => {
+      lb.getWorldPosition(this._tmpV);
+      const d = camPos.distanceTo(this._tmpV);
+      const k = THREE.MathUtils.clamp(1300 / d, 0.55, 1.45);
+      const op = d > 2400 ? THREE.MathUtils.clamp((3300 - d) / 900, 0, 1) : 1;
+      const box = lb.userData.box as HTMLElement;
+      if (box) {
+        box.style.transform = `scale(${k.toFixed(3)})`;
+        box.style.opacity = op.toFixed(2);
+      }
     });
 
     // 装饰小浮岛：上下浮动
@@ -1404,15 +1831,39 @@ export class WorldSceneManager {
       b.position.y = u.baseY + Math.sin(t * 0.6 + u.phase) * 30;
     });
 
-    // 灵气花瓣：缓慢飘落 + 回收
-    if (this.petals) {
+    // 御剑仙人：横向掠过 + 起伏 + 出界循环
+    this.flyers.forEach((f) => {
+      const u = f.userData;
+      f.position.x += u.vx;
+      f.position.y = u.baseY + Math.sin(t * 0.8 + u.phase) * 16;
+      if (u.vx > 0 && f.position.x > u.maxX) f.position.x = -u.maxX;
+      else if (u.vx < 0 && f.position.x < -u.maxX) f.position.x = u.maxX;
+    });
+
+    // 建筑专属动态特效（飞剑/灵晶/丹药/心魔核心/灵蝶…）
+    this.buildingFx.forEach((fn) => fn(t));
+
+    // 全局灵尘缓慢上浮 + 回收（半频：30Hz 视觉无差）
+    if (this.spiritDust && halfA) {
+      const arr = (this.spiritDust.geometry.getAttribute('position') as THREE.BufferAttribute).array as Float32Array;
+      const spd = this.spiritDust.userData.spd as Float32Array;
+      const topY = this.spiritDust.userData.topY as number;
+      for (let i = 0; i < spd.length; i++) {
+        arr[i*3+1] += spd[i] * 2;
+        if (arr[i*3+1] > topY) arr[i*3+1] = -100;
+      }
+      (this.spiritDust.geometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true;
+    }
+
+    // 灵气花瓣：缓慢飘落 + 回收（半频，错开 spiritDust 帧位）
+    if (this.petals && halfB) {
       const arr  = (this.petals.geometry.getAttribute('position') as THREE.BufferAttribute).array as Float32Array;
       const base = this.petals.userData.base as Float32Array;
       const spd  = this.petals.userData.spd as Float32Array;
       const topY = this.petals.userData.topY as number;
       for (let i = 0; i < spd.length; i++) {
-        arr[i*3+1] -= spd[i];
-        arr[i*3]   += Math.sin(t * 0.5 + i) * 0.15;        // 左右飘摆
+        arr[i*3+1] -= spd[i] * 2;
+        arr[i*3]   += Math.sin(t * 0.5 + i) * 0.30;        // 左右飘摆
         if (arr[i*3+1] < -200) { arr[i*3+1] = topY; arr[i*3] = base[i*3]; }
       }
       (this.petals.geometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true;
@@ -1509,7 +1960,6 @@ export class WorldSceneManager {
     this.container.removeEventListener('click', this.onClick);
     this.renderer.dispose();
     this.composer.dispose();
-    this.dracoLoader?.dispose();
     this.scene.clear();
     if (this.renderer.domElement.parentNode) this.renderer.domElement.remove();
     if (this.css2dRenderer.domElement.parentNode) this.css2dRenderer.domElement.remove();

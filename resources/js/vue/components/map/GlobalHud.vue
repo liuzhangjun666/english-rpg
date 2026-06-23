@@ -1,20 +1,14 @@
 <template>
   <div class="global-hud" :class="{ expanded: isExpanded }">
     <!-- 折叠触发按钮 -->
-    <button class="toggle-btn" @click="isExpanded = !isExpanded" :title="isExpanded ? '收起' : '展开功能'">
+    <button class="toggle-btn" @click="toggleExpanded" :title="isExpanded ? '收起' : '展开功能'">
       <span class="toggle-arrow">{{ isExpanded ? '›' : '‹' }}</span>
     </button>
 
     <!-- 功能面板 -->
     <transition name="slide">
       <div v-show="isExpanded" class="hud-dock">
-        <div 
-          v-for="item in dockItems" 
-          :key="item.id"
-          class="hud-item"
-          @click="item.onClick"
-          :title="item.name"
-        >
+        <div v-for="item in dockItems" :key="item.id" class="hud-item" @click="item.onClick" :title="item.name">
           <div class="hud-icon-wrapper">
             <img v-if="item.iconUrl" :src="item.iconUrl" :alt="item.name" class="hud-icon-img" />
             <span v-else class="hud-icon-emoji">{{ item.emoji }}</span>
@@ -26,8 +20,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useUiStore } from '../../stores/ui';
 import hallMall from '../../../../assets/images/ui/hall_mall.png';
 import hallLeaderboard from '../../../../assets/images/ui/hall_leaderboard.png';
 import hallReview from '../../../../assets/images/ui/hall_review.png';
@@ -35,6 +30,7 @@ import hallAchievements from '../../../../assets/images/ui/hall_achievements.png
 import hallProfile from '../../../../assets/images/ui/hall_profile.png';
 
 const router = useRouter();
+const ui = useUiStore();
 
 const emit = defineEmits<{
   (e: 'open-review'): void;
@@ -45,7 +41,11 @@ const emit = defineEmits<{
   (e: 'open-settings'): void;
 }>();
 
-const isExpanded = ref(false);
+// 展开/收起状态由 ui store 持有，跨路由 + 跨会话保留
+const isExpanded = computed(() => ui.sidebarExpanded);
+function toggleExpanded() {
+  ui.setSidebarExpanded(!ui.sidebarExpanded);
+}
 
 const dockItems = ref([
   { id: 'mall', name: '坊市', iconUrl: hallMall, onClick: () => router.push('/mall') },
@@ -148,7 +148,7 @@ const dockItems = ref([
   width: 26px;
   height: 26px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
 }
 
 .hud-icon-emoji {

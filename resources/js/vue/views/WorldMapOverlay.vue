@@ -24,29 +24,18 @@
         </button>
 
         <!-- 环形菜单 -->
-        <RadialMenu
-          v-if="activeRadialBuilding"
-          :visible="!!activeRadialBuilding"
-          :x="radialPos.x"
-          :y="radialPos.y"
-          :nodes="activeRadialBuilding.subNodes"
-          @close="activeRadialBuilding = null"
-        />
+        <RadialMenu v-if="activeRadialBuilding" :visible="!!activeRadialBuilding" :x="radialPos.x" :y="radialPos.y"
+          :nodes="activeRadialBuilding.subNodes" @close="activeRadialBuilding = null" />
 
-        <GlobalHud
-          @open-review="panels.showReview = true"
-          @open-achievements="panels.showAchievements = true"
-          @open-profile="panels.showProfile = true"
-          @open-events="panels.showEvents = true"
-          @open-mail="panels.showMail = true"
-          @open-settings="panels.showSettings = true"
-        />
+        <!-- GlobalHud 已提升至 App.vue 全局挂载，此处不再重复实例 -->
 
-        <HallModals
-          :panels="panels"
-          @go-mijing="navigation.goMijing()"
-          @go-world-boss="navigation.goWorldBoss()"
-        />
+        <!-- 弹窗 -->
+        <ReviewModal v-model:visible="showReview" />
+        <HeartDemonRecord v-model:visible="showDemons" />
+        <AchievementsModal v-model:visible="showAchievements" />
+        <ProfilePanel v-model:visible="showProfile" @open-review="openReviewFromProfile" />
+        <DailyQuestPanel v-model:visible="showDailyQuest" />
+        <InnerDemonPanel v-model:visible="showInnerDemon" :auto-challenge="innerDemonAutoChallenge" />
       </div>
     </Transition>
   </Teleport>
@@ -67,17 +56,17 @@ import GlobalHud from '../components/map/GlobalHud.vue';
 import HallModals from '../components/features/HallModals.vue';
 
 const props = defineProps<{ visible: boolean }>();
-const emit  = defineEmits<{ (e: 'close'): void }>();
+const emit = defineEmits<{ (e: 'close'): void }>();
 
-const bridge    = useLegacyBridge();
-const ui        = useUiStore();
+const bridge = useLegacyBridge();
+const ui = useUiStore();
 const userStore = useUserStore();
 
-const overlayRef   = ref<HTMLElement | null>(null);
+const overlayRef = ref<HTMLElement | null>(null);
 const hallSceneRef = ref<HTMLElement | null>(null);
 let worldManager: WorldSceneManager | null = null;
 const userRealmLevel = ref(0);
-const radialPos      = ref({ x: '50%', y: '50%' });
+const radialPos = ref({ x: '50%', y: '50%' });
 
 const activeRadialBuilding = ref<any>(null);
 
@@ -101,6 +90,10 @@ watch(() => props.visible, async (val) => {
     game.ui.hideAllPanels();
 
     if (!hallSceneRef.value) return;
+
+    // 等待全部地图建筑 GLB 就绪，避免开图瞬间显示几何占位（橙球/绿柱等）
+    await WorldSceneManager.preload();
+    if (!props.visible || !hallSceneRef.value) return;
 
     const realmStr = userStore.profile?.current_realm || '练气一层';
     if (realmStr.includes('筑基')) userRealmLevel.value = 1;
@@ -189,7 +182,8 @@ watch(activeRadialBuilding, (val) => {
 /* ── 关闭按钮 ── */
 .map-close-btn {
   position: absolute;
-  top: 88px; /* TopHud 76px + 12px 间距 */
+  top: 88px;
+  /* TopHud 76px + 12px 间距 */
   right: 24px;
   z-index: 100;
   width: 40px;
@@ -206,6 +200,7 @@ watch(activeRadialBuilding, (val) => {
   transition: all 0.2s;
   backdrop-filter: blur(4px);
 }
+
 .map-close-btn:hover {
   background: rgba(212, 168, 67, 0.2);
   border-color: #ffd700;
@@ -233,6 +228,7 @@ watch(activeRadialBuilding, (val) => {
   backdrop-filter: blur(4px);
   transition: all 0.2s;
 }
+
 .map-back-btn:hover {
   background: rgba(212, 168, 67, 0.2);
   border-color: #ffd700;
@@ -243,7 +239,8 @@ watch(activeRadialBuilding, (val) => {
 .radial-backdrop {
   position: absolute;
   inset: 0;
-  z-index: 30;            /* 在 canvas(2) 之上，RadialMenu(50) 之下 */
+  z-index: 30;
+  /* 在 canvas(2) 之上，RadialMenu(50) 之下 */
   background: transparent;
   cursor: default;
 }
@@ -266,25 +263,44 @@ watch(activeRadialBuilding, (val) => {
   transition: transform 0.15s, box-shadow 0.15s;
   animation: fab-pulse 3s ease-in-out infinite;
 }
+
 .daily-quest-fab:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 20px rgba(212, 168, 67, 0.4);
   animation: none;
 }
+
 @keyframes fab-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 168, 67, 0.3); }
-  50%       { box-shadow: 0 0 0 8px rgba(212, 168, 67, 0); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(212, 168, 67, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px rgba(212, 168, 67, 0);
+  }
 }
-.daily-quest-icon  { font-size: 22px; }
-.daily-quest-label { font-size: 11px; color: #d4a843; white-space: nowrap; }
+
+.daily-quest-icon {
+  font-size: 22px;
+}
+
+.daily-quest-label {
+  font-size: 11px;
+  color: #d4a843;
+  white-space: nowrap;
+}
 
 /* ── 进入/离开动画 ── */
 .map-overlay-enter-active {
   transition: opacity 0.4s ease;
 }
+
 .map-overlay-leave-active {
   transition: opacity 0.25s ease;
 }
+
 .map-overlay-enter-from,
 .map-overlay-leave-to {
   opacity: 0;

@@ -9,32 +9,15 @@
                 <img :src="profile.avatar_url || defaultAvatar" class="profile-header-avatar" alt="avatar">
                 <div class="avatar-hover-mask">更换</div>
               </div>
-              <input
-                ref="fileInput"
-                type="file"
-                accept="image/png,image/jpeg,image/gif,image/webp"
-                class="hidden-input"
-                @change="handleAvatarUpload"
-              >
+              <input ref="fileInput" type="file" accept="image/png,image/jpeg,image/gif,image/webp" class="hidden-input"
+                @change="handleAvatarUpload">
 
               <div class="profile-header-meta">
                 <div class="nickname-row">
-                  <span
-                    v-if="!isEditingNickname"
-                    class="nickname-display"
-                    title="点击修改道号"
-                    @click="startEditNickname"
-                  >{{ profile.nickname || '匿名前辈' }}</span>
-                  <input
-                    v-else
-                    ref="nicknameInputRef"
-                    v-model="editNicknameValue"
-                    class="nickname-input"
-                    maxlength="50"
-                    @blur="finishEditNickname"
-                    @keyup.enter="finishEditNickname"
-                    @keyup.esc="cancelEditNickname"
-                  >
+                  <span v-if="!isEditingNickname" class="nickname-display" title="点击修改道号" @click="startEditNickname">{{
+                    profile.nickname || '匿名前辈' }}</span>
+                  <input v-else ref="nicknameInputRef" v-model="editNicknameValue" class="nickname-input" maxlength="50"
+                    @blur="finishEditNickname" @keyup.enter="finishEditNickname" @keyup.esc="cancelEditNickname">
                   <span class="profile-subtitle">的仙躯 · 命盘</span>
                 </div>
                 <div class="header-actions">
@@ -85,7 +68,8 @@
                   <div v-for="row in realmProgress.rows" :key="row.label" class="realm-progress-row">
                     <div class="realm-progress-label">{{ row.label }}</div>
                     <div class="realm-progress-track">
-                      <div class="realm-progress-fill" :class="row.className" :style="{ width: `${row.percent}%` }"></div>
+                      <div class="realm-progress-fill" :class="row.className" :style="{ width: `${row.percent}%` }">
+                      </div>
                     </div>
                     <div class="realm-progress-value">{{ row.percent }}%</div>
                   </div>
@@ -492,10 +476,17 @@ function logout() {
   transform: scale(1.05);
 }
 
-.text-red { color: #ff9e9e; }
-.text-gold { color: #d4a843; }
-.text-blue { color: #8cc5ff; }
-.text-danger { color: var(--cinnabar, #ff6b6b); }
+.text-red {
+  color: #ff9e9e;
+}
+
+.text-blue {
+  color: #8cc5ff;
+}
+
+.text-danger {
+  color: var(--cinnabar, #ff6b6b);
+}
 
 .ability-icon {
   width: 16px;

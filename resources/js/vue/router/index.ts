@@ -46,7 +46,60 @@ export function normalizeLegacyHashRoute() {
 
 normalizeLegacyHashRoute();
 
-const routes: RouteRecordRaw[] = [
+let bootstrapReady: Promise<void> | null = null;
+
+export function setBootstrapWaiter(promise: Promise<void>) {
+  bootstrapReady = promise;
+}
+
+function waitForBootstrap() {
+  return bootstrapReady ?? Promise.resolve();
+}
+
+export async function resolveAssessmentDone(): Promise<boolean> {
+  const user = useUserStore();
+  let done = Number(user.profile?.initial_assessment_done ?? 0) === 1;
+  if (done) return true;
+
+  const api = useApiClient();
+  try {
+    const res = await api.get('/vocab-assessment/status', { skipAuthLogout: true });
+    if (res?.success) {
+      done = !!res.data?.done;
+      if (user.profile) {
+        const patch: Record<string, any> = {
+          initial_assessment_done: done ? 1 : 0,
+        };
+        if (res.data?.current_realm) {
+          patch.current_realm = res.data.current_realm;
+        }
+        user.updateProfile(patch);
+      }
+    }
+  } catch {
+    // 状态接口不可用时，沿用本地缓存判断。
+  }
+
+  return done;
+}
+
+function pickRedirectQuery(source: Record<string, unknown>, fallback = '/practice') {
+  const redirect = String(source.redirect || '').trim();
+  if (redirect && redirect.startsWith('/')) {
+    return redirect;
+  }
+  return fallback;
+}
+
+function buildAssessmentIntroLocation(redirect?: string, extra: Record<string, string> = {}) {
+  const query: Record<string, string> = { ...extra };
+  if (redirect && redirect !== '/hall') {
+    query.redirect = redirect;
+  }
+  return { path: '/vocab-assessment/intro', query };
+}
+
+const routes = [
   {
     path: '/login',
     name: 'login',
@@ -146,59 +199,6 @@ export const router = createRouter({
   routes,
 });
 
-let bootstrapReady: Promise<void> | null = null;
-
-export function setBootstrapWaiter(promise: Promise<void>) {
-  bootstrapReady = promise;
-}
-
-function waitForBootstrap() {
-  return bootstrapReady ?? Promise.resolve();
-}
-
-export async function resolveAssessmentDone(): Promise<boolean> {
-  const user = useUserStore();
-  let done = Number(user.profile?.initial_assessment_done ?? 0) === 1;
-  if (done) return true;
-
-  const api = useApiClient();
-  try {
-    const res = await api.get('/vocab-assessment/status', { skipAuthLogout: true });
-    if (res?.success) {
-      done = !!res.data?.done;
-      if (user.profile) {
-        const patch: Record<string, any> = {
-          initial_assessment_done: done ? 1 : 0,
-        };
-        if (res.data?.current_realm) {
-          patch.current_realm = res.data.current_realm;
-        }
-        user.updateProfile(patch);
-      }
-    }
-  } catch {
-    // 状态接口不可用时，沿用本地缓存判断。
-  }
-
-  return done;
-}
-
-function pickRedirectQuery(source: Record<string, unknown>, fallback = '/hall') {
-  const redirect = String(source.redirect || '').trim();
-  if (redirect && redirect.startsWith('/')) {
-    return redirect;
-  }
-  return fallback;
-}
-
-function buildAssessmentIntroLocation(redirect?: string, extra: Record<string, string> = {}) {
-  const query: Record<string, string> = { ...extra };
-  if (redirect && redirect !== '/hall') {
-    query.redirect = redirect;
-  }
-  return { path: '/vocab-assessment/intro', query };
-}
-
 router.beforeEach(async (to) => {
   await waitForBootstrap();
 
@@ -216,7 +216,7 @@ router.beforeEach(async (to) => {
       return redirect;
     }
     const query: Record<string, string> = {};
-    if (redirect !== '/hall') query.redirect = redirect;
+    if (redirect !== '/practice') query.redirect = redirect;
     return buildAssessmentIntroLocation(undefined, query);
   }
 

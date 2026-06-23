@@ -54,6 +54,13 @@ class User extends Authenticatable
         'dao_heart',
         'story_keys',
         'unlocked_nodes',
+        // 邀请系统：migration 2026_05_01_000007 增加的字段，没加进 fillable 会让
+        // ShareRewardService::getInviteCode() 的 mass-assignment 静默失败，
+        // 导致新用户永远没有邀请码。
+        'invite_code',
+        'invited_by',
+        'share_enabled',
+        'invite_first_clear_rewarded_at',
     ];
 
     protected $hidden = [
@@ -68,6 +75,7 @@ class User extends Authenticatable
             'last_login_at' => 'datetime',
             'initiation_completed_at' => 'datetime',
             'spirit_power_last_recover_at' => 'datetime',
+            'invite_first_clear_rewarded_at' => 'datetime',
             'password' => 'hashed',
             'is_minor' => 'boolean',
             'parent_verified' => 'boolean',
