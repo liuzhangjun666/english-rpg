@@ -90,6 +90,12 @@ export class WorldCameraController {
 
     gsap.timeline({
       onComplete: () => {
+        // 近景为焦点态：完全锁住——禁用 pan，并让 OrbitControls 内部 spherical
+        // 与 gsap 直接 set 的 camera.position / target 重新对齐，防止零输入漂动。
+        this.controls.enablePan = false;
+        this.controls.target.set(tgt.x, tgt.y, tgt.z);
+        this.controls.enabled = true;
+        this.controls.update();
         this.flying = false;
         onComplete?.();
       },
@@ -109,7 +115,11 @@ export class WorldCameraController {
 
     gsap.timeline({
       onComplete: () => {
+        // 回到 overview：恢复 pan，让 OrbitControls 内部 spherical 重新跟 camera 对齐
+        this.controls.enablePan = true;
+        this.controls.target.set(OVERVIEW_TARGET.x, OVERVIEW_TARGET.y, OVERVIEW_TARGET.z);
         this.controls.enabled = true;
+        this.controls.update();
         this.flying = false;
         onComplete?.();
       },
