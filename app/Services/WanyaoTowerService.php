@@ -5,6 +5,8 @@ use App\Models\User;
 use App\Models\WanyaoTowerProgress;
 use App\Models\WanyaoTowerRun;
 use App\Models\VocabularyWord;
+use App\Services\CurrencyService;
+use App\Services\HeartDemonService;
 use Illuminate\Support\Facades\DB;
 
 class WanyaoTowerService
@@ -89,6 +91,121 @@ class WanyaoTowerService
             $p->current_run_id = $run->id;
             $p->save();
             return $run;
+        });
+    }
+
+    public function gradeAnswer(array $snapshot, int $qid, string $given): bool
+    {
+        foreach ($snapshot['questions'] ?? [] as $q) {
+            if ((int)($q['id'] ?? 0) === $qid) {
+                return strcasecmp($q['answer'] ?? '', $given) === 0;
+            }
+        }
+        throw new \DomainException("UNKNOWN_QID:{$qid}");
+    }
+
+    public function computeSettleResult(int $correctCount, bool $bossPassed): array
+    {
+        $passThreshold = 3;
+        $cleared = $correctCount >= $passThreshold && $bossPassed;
+        $perfect = $correctCount === 5 && $bossPassed;
+        return [
+            'cleared' => $cleared,
+            'perfect' => $perfect,
+            'correct_count' => $correctCount,
+            'boss_passed' => $bossPassed,
+        ];
+    }
+
+    public function submitAnswer(WanyaoTowerRun $run, int $qid, string $given): bool
+    {
+        if ($run->user_id !== auth()->id()) {
+            throw new \DomainException('FORBIDDEN');
+        }
+        if ($run->status !== 'in_progress') {
+            throw new \DomainException('RUN_NOT_ACTIVE');
+        }
+        $correct = $this->gradeAnswer($run->questions_json, $qid, $given);
+        $snap = $run->questions_json;
+        $snap['answered'] = $snap['answered'] ?? [];
+        if (isset($snap['answered'][$qid])) {
+            return (bool) $snap['answered'][$qid]['correct'];
+        }
+        $snap['answered'][$qid] = ['given' => $given, 'correct' => $correct];
+        if ($correct) {
+            $run->correct_count = $run->correct_count + 1;
+        }
+        $run->questions_json = $snap;
+        $run->save();
+        return $correct;
+    }
+
+    public function settle(
+        WanyaoTowerRun $run,
+        bool $bossPassed,
+        HeartDemonService $heartDemon,
+        CurrencyService $currency,
+    ): array {
+        if ($run->user_id !== auth()->id()) {
+            throw new \DomainException('FORBIDDEN');
+        }
+        if ($run->status !== 'in_progress') {
+            throw new \DomainException('RUN_NOT_ACTIVE');
+        }
+        return DB::transaction(function () use ($run, $bossPassed, $heartDemon, $currency) {
+            $result = $this->computeSettleResult($run->correct_count, $bossPassed);
+            $progress = WanyaoTowerProgress::lockForUpdate()->firstOrCreate(['user_id' => $run->user_id]);
+            $isFirstClear = $result['cleared'] && $run->floor > $progress->highest_floor;
+            $stones = 0;
+            $demonsAdded = 0;
+
+            if ($result['cleared']) {
+                $stones = TowerRewardConfig::computeStones($run->floor, $isFirstClear, $result['perfect']);
+                // CurrencyService 没有 addStones：直接 increment spirit_stone
+                User::where('id', $run->user_id)->increment('spirit_stone', $stones);
+                $progress->current_floor = $run->floor + 1;
+                if ($run->floor > $progress->highest_floor) {
+                    $progress->highest_floor = $run->floor;
+                }
+                $run->status = 'cleared';
+            } else {
+                foreach ($run->questions_json['questions'] ?? [] as $q) {
+                    $given = $run->questions_json['answered'][$q['id']]['correct'] ?? null;
+                    if ($given !== true) {
+                        $heartDemon->recordWrong($run->user_id, (string)$q['id'], 'vocab');
+                        $demonsAdded++;
+                    }
+                }
+                $run->status = 'failed';
+            }
+            $run->ended_at = now();
+            $run->save();
+            $progress->current_run_id = null;
+            $progress->save();
+
+            return [
+                'cleared' => $result['cleared'],
+                'perfect' => $result['perfect'],
+                'stones' => $stones,
+                'demons_added' => $demonsAdded,
+                'is_first_clear' => $isFirstClear,
+                'breakthrough' => TowerRewardConfig::isBreakthrough($run->floor) && $result['cleared'],
+                'new_floor' => $progress->current_floor,
+                'highest_floor' => $progress->highest_floor,
+            ];
+        });
+    }
+
+    public function abandon(WanyaoTowerRun $run): void
+    {
+        if ($run->user_id !== auth()->id()) {
+            throw new \DomainException('FORBIDDEN');
+        }
+        DB::transaction(function () use ($run) {
+            $run->status = 'abandoned';
+            $run->ended_at = now();
+            $run->save();
+            WanyaoTowerProgress::where('user_id', $run->user_id)->update(['current_run_id' => null]);
         });
     }
 }
