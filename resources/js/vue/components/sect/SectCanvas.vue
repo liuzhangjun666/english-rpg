@@ -13,11 +13,17 @@ const hoverPos = ref<{ x: number, y: number } | null>(null)
 
 let worldManager: WorldSceneManager | null = null
 
-onMounted(() => {
+onMounted(async () => {
   if (!canvasContainer.value) return
 
-  // 初始化 3D 场景
+  // 初始化 3D 场景（分阶段、给浏览器画面让出帧）
   worldManager = new WorldSceneManager(canvasContainer.value)
+  await worldManager.init()
+  if (!canvasContainer.value) {
+    worldManager.dispose()
+    worldManager = null
+    return
+  }
 
   // 绑定悬浮回调
   worldManager.onBuildingHover = (node) => {

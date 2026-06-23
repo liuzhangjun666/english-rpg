@@ -226,19 +226,36 @@ export class WorldSceneManager {
     this.glowTex   = this.makeGlowTex(64);
     this.circleTex = this.makeMagicCircleTex(256);
 
-    // ── 后处理 ──
-    this.setupPostProcessing(w, h);
-
-    // ── 构建场景 ──
-    this.buildScene();
-    this.scheduleEnhancedEffects();
-
-    // ── 事件 ──
+    // ── 事件（绑定不耗时） ──
     window.addEventListener('resize', this.onResize);
     container.addEventListener('mousedown', this.onMouseDown);
     container.addEventListener('mousemove', this.onMouseMove);
     container.addEventListener('click', this.onClick);
+  }
 
+  /**
+   * 异步分阶段把"重活"做完——后处理 + 场景构建 + 启动渲染循环。
+   * 每阶段之间让出 microtask + RAF，给浏览器 paint loading UI 的机会，
+   * 也让 shader 编译不会一次性顶死主线程。
+   *
+   * 由调用方在 new 之后 await，可选 onStage 回调把当前阶段文本上报给 loading UI。
+   */
+  public async init(onStage?: (label: string) => void): Promise<void> {
+    const yieldFrame = () => new Promise<void>((r) => requestAnimationFrame(() => r()));
+    const w = this.container.offsetWidth || window.innerWidth;
+    const h = this.container.offsetHeight || window.innerHeight;
+
+    onStage?.('凝聚灵脉...');
+    await yieldFrame();
+    this.setupPostProcessing(w, h);
+
+    onStage?.('搭建宗门...');
+    await yieldFrame();
+    this.buildScene();
+
+    onStage?.('云海散开...');
+    await yieldFrame();
+    this.scheduleEnhancedEffects();
     this.animate();
   }
 

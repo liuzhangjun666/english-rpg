@@ -93,6 +93,13 @@ onMounted(async () => {
         userRealmLevel: userRealmLevel.value,
         buildingImages: getSceneBuildingImages(),
       });
+      // 重活分阶段做、每阶段让出一帧给浏览器画 loading
+      await worldManager.init((label) => ui.showLoading(label));
+      if (!hallSceneRef.value) {
+        worldManager.dispose();
+        worldManager = null;
+        return;
+      }
 
       worldManager.onBuildingClick = (nodeDef, screenX, screenY) => {
         radialPos.value = { x: screenX + 'px', y: screenY + 'px' };

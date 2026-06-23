@@ -121,17 +121,14 @@ watch(() => props.visible, async (val) => {
   await nextTick();
   overlayRef.value?.focus();
 
-  ui.showLoading('云海散开，宗门出现...');
+  ui.showLoading('同步进度...');
   try {
     const game = await bridge.getGame();
     await game.syncDailyStatus();
     game.ui.hideAllPanels();
 
     if (!hallSceneRef.value) return;
-
-    // 等待全部地图建筑 GLB 就绪，避免开图瞬间显示几何占位（橙球/绿柱等）
-    await WorldSceneManager.preload();
-    if (!props.visible || !hallSceneRef.value) return;
+    if (!props.visible) return;
 
     const realmStr = userStore.profile?.current_realm || '练气一层';
     if (realmStr.includes('筑基')) userRealmLevel.value = 1;
@@ -142,6 +139,13 @@ watch(() => props.visible, async (val) => {
       userRealmLevel: userRealmLevel.value,
       buildingImages: getSceneBuildingImages(),
     });
+    // 重活分阶段做、每阶段让出一帧给浏览器画 loading
+    await worldManager.init((label) => ui.showLoading(label));
+    if (!props.visible || !hallSceneRef.value) {
+      worldManager.dispose();
+      worldManager = null;
+      return;
+    }
 
     worldManager.onBuildingClick = (nodeDef, screenX, screenY) => {
       radialPos.value = { x: screenX + 'px', y: screenY + 'px' };
