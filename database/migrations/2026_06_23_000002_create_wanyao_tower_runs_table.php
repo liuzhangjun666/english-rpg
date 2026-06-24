@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->timestamp('started_at')->useCurrent();
             $table->timestamp('ended_at')->nullable();
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('levelup_users')->onDelete('cascade');
             $table->index(['user_id','status']);
             $table->index('boss_question_id');
         });

@@ -12,7 +12,7 @@ return new class extends Migration {
             $table->unsignedInteger('highest_floor')->default(0);
             $table->unsignedBigInteger('current_run_id')->nullable();
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('levelup_users')->onDelete('cascade');
         });
     }
     public function down(): void { Schema::dropIfExists('wanyao_tower_progress'); }
