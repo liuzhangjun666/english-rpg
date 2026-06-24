@@ -48,11 +48,16 @@ export function useMapNavigation(options: { beforeNavigate?: () => void } = {}) 
     runNav(() => { router.push('/mall'); });
   }
 
+  function goWanyaoTower() {
+    runNav(() => { router.push('/wanyao-tower'); });
+  }
+
   return {
     goPractice,
     goReading,
     goExam,
     goMijing,
     goMall,
+    goWanyaoTower,
   };
 }

@@ -6,7 +6,8 @@ export type SceneBuildingId =
   | 'alchemyHall'
   | 'innerDemonHall'
   | 'beastGarden'
-  | 'farm';
+  | 'farm'
+  | 'wanyaoTower';
 
 export type AbilityIconKey =
   | 'vocab'
@@ -28,6 +29,7 @@ export type MapBuildingAction =
   | { type: 'review' }
   | { type: 'demons' }
   | { type: 'innerDemon'; autoChallenge: boolean }
+  | { type: 'wanyaoTower' }
   | { type: 'message'; text: string };
 
 export interface MapSubNodeDef {
@@ -118,6 +120,16 @@ export const MAP_BUILDING_DEFS: MapBuildingDef[] = [
       { key: 'dungeon', title: '副本', iconKey: 'writing', action: { type: 'mijing' } },
       { key: 'event', title: '活动', iconKey: 'speaking', action: { type: 'message', text: '秘境异象尚未开启' } },
       { key: 'world-boss', title: '世界挑战', iconKey: 'reading', action: { type: 'message', text: '上古大妖沉睡中...' } },
+    ],
+  },
+  {
+    sceneId: 'wanyaoTower',
+    title: '万妖塔',
+    unlockRealm: 0,
+    subNodes: [
+      { key: 'tower-climb', title: '登塔挑战', iconKey: 'vocab', action: { type: 'wanyaoTower' } },
+      { key: 'tower-rank', title: '镇妖榜', iconKey: 'reading', action: { type: 'message', text: '镇妖榜推演中...' } },
+      { key: 'tower-spoils', title: '妖魂兑换', iconKey: 'grammar', action: { type: 'message', text: '妖魂阁稍后开放' } },
     ],
   },
 ];

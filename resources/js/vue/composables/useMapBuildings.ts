@@ -33,6 +33,7 @@ const SCENE_BUILDING_IMAGES: Record<SceneBuildingId, string> = {
   innerDemonHall: hallDemons,
   beastGarden: hallProfile,
   farm: hallMijing,
+  wanyaoTower: hallDemons,
 };
 
 export interface MapBuildingHandlers {
@@ -47,6 +48,7 @@ export interface MapBuildingHandlers {
   showReview: () => void;
   showDemons: () => void;
   showInnerDemon: (autoChallenge: boolean) => void;
+  goWanyaoTower?: () => void;
 }
 
 function resolveAction(action: MapBuildingAction, handlers: MapBuildingHandlers) {
@@ -83,6 +85,9 @@ function resolveAction(action: MapBuildingAction, handlers: MapBuildingHandlers)
       break;
     case 'innerDemon':
       handlers.showInnerDemon(action.autoChallenge);
+      break;
+    case 'wanyaoTower':
+      handlers.goWanyaoTower?.();
       break;
     case 'message':
       ElMessage.info(action.text);

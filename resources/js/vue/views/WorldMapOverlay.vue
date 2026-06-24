@@ -92,13 +92,14 @@ function openReviewFromProfile() {
   showReview.value = true;
 }
 
-const { goPractice, goReading, goExam, goMijing, goMall } = useMapNavigation({ beforeNavigate: close });
+const { goPractice, goReading, goExam, goMijing, goMall, goWanyaoTower } = useMapNavigation({ beforeNavigate: close });
 const { mapBuildings } = useMapBuildings({
   goPractice,
   goReading,
   goExam,
   goMijing,
   goMall,
+  goWanyaoTower,
   showDailyQuest: () => { showDailyQuest.value = true; },
   showAchievements: () => { showAchievements.value = true; },
   showProfile: () => { showProfile.value = true; },
@@ -153,7 +154,8 @@ watch(() => props.visible, async (val) => {
     worldManager.onFocusedMove = (screenX, screenY) => {
       radialPos.value = { x: screenX + 'px', y: screenY + 'px' };
     };
-  } catch {
+  } catch (err) {
+    console.error('[WorldMapOverlay] 地图加载失败：', err);
     ElMessage.error('地图加载失败，请重试');
   } finally {
     ui.hideLoading();

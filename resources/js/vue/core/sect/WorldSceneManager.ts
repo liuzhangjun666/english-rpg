@@ -29,10 +29,11 @@ export const SECT_NODES: SectNodeDef[] = [
   { id: 'sectHall',      name: '宗门大殿', pos: [0,     0, 0],     color: 0xffd700, unlockRealm: 0, glbPath: '/models/sectHall.glb',      glbTargetSize: 360, glbRotationY: 0 },
   { id: 'swordHall',     name: '剑阁',     pos: [-430,  0, -300],  color: 0x66ccff, unlockRealm: 0, glbPath: '/models/swordHall.glb',     glbTargetSize: 270 },
   { id: 'scriptureHall', name: '藏经阁',   pos: [430,   0, -300],  color: 0x00ddff, unlockRealm: 0, glbPath: '/models/scriptureHall.glb', glbTargetSize: 255 },
-  { id: 'alchemyHall',   name: '炼丹殿',   pos: [-370,  0, 390],   color: 0xff8833, unlockRealm: 0, glbPath: '/models/alchemyHall.glb',   glbTargetSize: 240, glbRotationY: 0 },
-  { id: 'innerDemonHall', name: '心魔殿',  pos: [620,   0, 820],   color: 0x33d6ff, unlockRealm: 0, glbPath: '/models/innerDemonHall.glb', glbTargetSize: 260, glbRotationY: 0 },
-  { id: 'beastGarden',   name: '灵兽园',   pos: [-740,  0, 50],    color: 0x44ee88, unlockRealm: 2, glbPath: '/models/beastGarden.glb',   glbTargetSize: 300 },
-  { id: 'farm',          name: '灵田',     pos: [730,   0, 60],    color: 0x99ee44, unlockRealm: 0, glbPath: '/models/farm.glb',          glbTargetSize: 310 },
+  { id: 'alchemyHall',   name: '炼丹殿',   pos: [-370,  0, 390],   color: 0xff8833, unlockRealm: 1, glbPath: '/models/alchemyHall.glb',   glbTargetSize: 240, glbRotationY: 0 },
+  { id: 'innerDemonHall', name: '心魔殿',  pos: [620,   0, 820],   color: 0x33d6ff, unlockRealm: 2, glbPath: '/models/innerDemonHall.glb', glbTargetSize: 260, glbRotationY: 0 },
+  { id: 'beastGarden',   name: '灵兽园',   pos: [-740,  0, 50],    color: 0x44ee88, unlockRealm: 0, glbPath: '/models/beastGarden.glb',   glbTargetSize: 300 },
+  { id: 'farm',          name: '灵田',     pos: [730,   0, 60],    color: 0x99ee44, unlockRealm: 3, glbPath: '/models/farm.glb',          glbTargetSize: 310 },
+  { id: 'wanyaoTower',   name: '万妖塔',   pos: [-620,  0, 820],   color: 0xcc3366, unlockRealm: 0, glbPath: '/models/wanyaoTower.glb',   glbTargetSize: 320, glbRotationY: 0 },
 ];
 
 // ─── 地形高度函数 ─────────────────────────────────────────────────────────────
@@ -88,12 +89,15 @@ const LEY_FRAG = /* glsl */`
 
 import { loadGLB as loadGLBCached } from '../../services/assetPreloader';
 
-/** 全部地图模型路径（用于预加载） */
-const ALL_MAP_MODELS = [
-  '/models/sectHall.glb', '/models/swordHall.glb', '/models/scriptureHall.glb',
-  '/models/alchemyHall.glb', '/models/innerDemonHall.glb', '/models/beastGarden.glb',
-  '/models/farm.glb', '/models/fuyan.glb', '/models/shucong.glb',
+/** 装饰模型（非 SECT_NODES 建筑：浮岩 / 树丛 / 凉亭 / 灵晶） */
+const DECOR_MODELS = [
+  '/models/fuyan.glb', '/models/shucong.glb',
   '/models/liangting.glb', '/models/lingjing.glb',
+];
+/** 全部地图模型路径（用于预加载）：SECT_NODES 自动派生 + 装饰模型 */
+const ALL_MAP_MODELS = [
+  ...SECT_NODES.map(d => d.glbPath).filter((p): p is string => !!p),
+  ...DECOR_MODELS,
 ];
 const CRITICAL_MAP_MODELS = [
   '/models/sectHall.glb',
@@ -160,6 +164,7 @@ export class WorldSceneManager {
   private raycastDirty = true;                         // 标记 mesh 缓存是否需要刷新
   private buildingCircles: THREE.Mesh[] = [];           // 缓存法阵引用
   private buildingPointsList: { pts: THREE.Points; basePos: Float32Array; speed: number }[] = []; // 缓存粒子引用
+  private buildingFx: ((t: number) => void)[] = [];     // 每建筑的动态效果回调（fxSectHall 等 push，animate 中 forEach 执行）
   private mouseMoveThrottled = false;                  // mousemove 节流标记
 
   // 配置
@@ -1381,34 +1386,24 @@ export class WorldSceneManager {
     const wrap = document.createElement('div');
     const box = document.createElement('div');
     Object.assign(box.style, {
-      background: 'rgba(4,12,28,0.88)',
-      border: `1px solid ${isLocked ? 'rgba(200,120,0,0.6)' : 'rgba(212,168,67,0.65)'}`,
-      borderRadius: '10px', padding: '7px 13px',
       textAlign: 'center', userSelect: 'none',
-      backdropFilter: 'blur(4px)', whiteSpace: 'nowrap',
+      whiteSpace: 'nowrap',
       transformOrigin: 'center center', willChange: 'transform',
+      filter: isLocked ? 'grayscale(0.6) brightness(0.7)' : 'none',
     });
     wrap.appendChild(box);
 
     if (imgSrc) {
       const img = document.createElement('img');
       img.src = imgSrc;
-      Object.assign(img.style, { width: '48px', height: '48px', objectFit: 'contain', display: 'block', margin: '0 auto 3px' });
+      Object.assign(img.style, { width: '64px', height: '64px', objectFit: 'contain', display: 'block', margin: '0 auto' });
       box.appendChild(img);
     }
-
-    const nameEl = document.createElement('div');
-    nameEl.textContent = def.name;
-    Object.assign(nameEl.style, {
-      fontSize: '14px', fontWeight: 'bold', letterSpacing: '2px',
-      color: isLocked ? '#cc8844' : '#ffdda1', marginBottom: '2px',
-    });
-    box.appendChild(nameEl);
 
     if (isLocked) {
       const lock = document.createElement('div');
       lock.textContent = '🔒 境界不足';
-      Object.assign(lock.style, { fontSize: '11px', color: '#ffaa44' });
+      Object.assign(lock.style, { fontSize: '11px', color: '#ffaa44', marginTop: '2px', textShadow: '0 1px 3px rgba(0,0,0,0.9)' });
       box.appendChild(lock);
     }
 
