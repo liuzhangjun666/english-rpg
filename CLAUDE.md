@@ -39,9 +39,14 @@ a decorative 3D background layer.
 - **Key API endpoints:** `/review/list` `/review/submit` · `/demons` (`/demons/list`,
   `/demons/report-wrong`, `/demons/review-submit`, `/demons/clear-mastered`, `/demons/pre-exam`) ·
   `/achievements` · `/mall/items` `/mall/buy` · `/leaderboard`.
-- **7 sect buildings (`SECT_NODES`):** sectHall 宗门大殿 / swordHall 剑阁 /
+- **8 sect buildings (`SECT_NODES`):** sectHall 宗门大殿 / swordHall 剑阁 /
   scriptureHall 藏经阁 / alchemyHall 炼丹殿 / innerDemonHall 心魔殿 / beastGarden 灵兽园 /
-  farm 灵田. (Former lawHall 执法堂 was deleted — do not reintroduce.)
+  farm 灵田 / wanyaoTower 万妖塔. (Former lawHall 执法堂 was deleted — do not reintroduce.)
+- **Wanyao Tower (万妖塔):** roguelike-style tower-climb challenge content with
+  state-machine UI (lobby → answering → boss → reward/failed). Route `/wanyao-tower`
+  → `WanyaoTowerView.vue`; store `towerStore.ts`; components under
+  `components/wanyaoTower/`. Currently Phase 1 (no real backend tower API yet —
+  `fetchStatus()` may 4xx until backend lands).
 
 ---
 
@@ -52,9 +57,11 @@ a decorative 3D background layer.
 - Interact with the legacy game exclusively through `useLegacyBridge` (kept methods:
   `switchToHall`, `switchToPracticeScene`, `openPracticePanel`, `switchToReadingScene`,
   `openReadingAdventure`, `switchToExamScene`, `openExam`, `switchToMijingScene`,
-  `openMijing`, `clearSession`, `closeLegacyPanels`, `applySessionFromProfile`, `getGame`,
-  `getApi`, `loadGame`). Migrated-away methods (openReview/openDemons/openAchievements/
-  openProfilePanel/openMall/openLeaderboard) are now Vue components — do not re-add to the bridge.
+  `openMijing`, `switchToWanyaoTowerScene`, `clearSession`, `closeLegacyPanels`,
+  `applySessionFromProfile`, `getGame`, `getApi`, `loadGame`). Migrated-away methods
+  (openReview/openDemons/openAchievements/openProfilePanel/openMall/openLeaderboard) are
+  now Vue components — do not re-add to the bridge. `switchToWanyaoTowerScene` is a
+  no-op for scene (Vue view is fullscreen), only does session sync.
 
 ---
 
@@ -79,6 +86,13 @@ a decorative 3D background layer.
   `public/models/{buildingId}.glb` via
   `npx @gltf-transform/cli optimize <in> <out> --compress draco --texture-compress webp --texture-size 1024`
   (~95% size reduction).
+- **`ALL_MAP_MODELS` is auto-derived from `SECT_NODES` in `WorldSceneManager.ts`** —
+  do NOT re-hardcode building paths. Adding a new SECT_NODE with a `glbPath` puts it
+  in preload automatically; only `DECOR_MODELS` (浮岩/树丛/凉亭/灵晶) is hand-listed.
+- **`SECT_NODES.unlockRealm` MUST match `MAP_BUILDING_DEFS[*].unlockRealm`** — the 3D
+  label renders the lock state from SECT_NODES while the click handler gates from
+  MAP_BUILDING_DEFS. Mismatch → "看似锁定但能点进 / 看似可入实被拦" bugs. Treat
+  `MAP_BUILDING_DEFS` as the single source of truth and mirror to SECT_NODES.
 - Heart Demon **Phase 2 is pending:** 紫雾 shader / 锁链 particles / demon-core animation /
   floating fragments; danger tier should later drive world-map weather + giant-shadow effects.
 - See `~/.claude/projects/E--work-english-rpg/memory/` for the live migration-status memory.
