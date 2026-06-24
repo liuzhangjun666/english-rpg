@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useApiClient } from './services/api';
 import { useAuthStore } from './stores/auth';
@@ -61,6 +61,15 @@ import ProfilePanel from './components/profile/ProfilePanel.vue';
 import ReviewModal from './views/ReviewModal.vue';
 import DemonEncounter from './components/demons/DemonEncounter.vue';
 import WorldMapOverlay from './views/WorldMapOverlay.vue';
+import LoadingSplash from './components/layout/LoadingSplash.vue';
+import GlobalHud from './components/map/GlobalHud.vue';
+import AchievementsModal from './views/AchievementsModal.vue';
+import {
+  preloadEssentials,
+  preloadProgress,
+  preloadCounts,
+  essentialDone,
+} from './services/assetPreloader';
 
 const router = useRouter();
 const route = useRoute();
@@ -106,25 +115,13 @@ async function logout() {
   window.location.assign('/login');
 }
 
-import { onMounted, onUnmounted, ref, watch } from 'vue';
-import TopHud from './components/layout/TopHud.vue';
-import ProfilePanel from './components/profile/ProfilePanel.vue';
-import DemonEncounter from './components/demons/DemonEncounter.vue';
-import WorldMapOverlay from './views/WorldMapOverlay.vue';
-import LoadingSplash from './components/layout/LoadingSplash.vue';
-import GlobalHud from './components/map/GlobalHud.vue';
-import ReviewModal from './views/ReviewModal.vue';
-import AchievementsModal from './views/AchievementsModal.vue';
-import {
-  preloadEssentials,
-  preloadProgress,
-  preloadCounts,
-  essentialDone,
-} from './services/assetPreloader';
-
 const showProfile = ref(false);
 const showGlobalReview = ref(false);
 const showGlobalAchievements = ref(false);
+const showReviewFromProfile = ref(false);
+function openReviewFromProfile() {
+  showReviewFromProfile.value = true;
+}
 
 // ─── 资源预热遮罩 ─────────────────────────────────────────────
 // auth 通过后 splash 立刻显示；预热完成（或保护超时）后隐藏。

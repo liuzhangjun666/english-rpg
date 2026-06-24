@@ -95,6 +95,8 @@
       </div>
     </transition>
   </Teleport>
+
+  <InviteFriendsPanel v-model:visible="showInvitePanel" />
 </template>
 
 <script setup lang="ts">
@@ -106,6 +108,7 @@ import { refreshUserProfileFromApi } from '../../services/profile';
 import { useLegacyBridge } from '../../composables/useLegacyBridge';
 import { useUserStore } from '../../stores/user';
 import { useUiStore } from '../../stores/ui';
+import InviteFriendsPanel from './InviteFriendsPanel.vue';
 import defaultAvatar from '../../../../assets/images/avatar_default.png';
 import abilityReading from '../../../../assets/images/ui/ability_reading.png';
 import abilityVocab from '../../../../assets/images/ui/ability_vocab.png';
@@ -127,6 +130,7 @@ const bridge = useLegacyBridge();
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const nicknameInputRef = ref<HTMLInputElement | null>(null);
+const showInvitePanel = ref(false);
 const isEditingNickname = ref(false);
 const editNicknameValue = ref('');
 const progressLoading = ref(false);
@@ -309,20 +313,8 @@ async function finishEditNickname() {
   }
 }
 
-async function shareInvite() {
-  try {
-    const res = await api.get('/share/info');
-    const code = res?.success ? res.data.invite_code : '';
-    const text = `我用 LevelUp 英语修仙学英语！🎯\n邀请码：${code}\n输入邀请码注册，我们各得灵力奖励！\n👉 一起来修炼吧～`;
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(text);
-      ElMessage.success('邀请码已复制！分享给好友一起修炼吧 🎁');
-    } else {
-      window.prompt('复制以下内容去分享：', text);
-    }
-  } catch {
-    ElMessage.error('获取邀请码失败');
-  }
+function shareInvite() {
+  showInvitePanel.value = true;
 }
 
 function openReview() {
