@@ -190,6 +190,12 @@ const routes = [
     component: () => import('../views/SectWorldView.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/wanyao-tower',
+    name: 'wanyao-tower',
+    component: () => import('../views/WanyaoTowerView.vue'),
+    meta: { requiresAuth: true },
+  },
   { path: '/', redirect: '/hall' },
   { path: '/:pathMatch(.*)*', name: 'not-found', redirect: '/hall' },
 ];

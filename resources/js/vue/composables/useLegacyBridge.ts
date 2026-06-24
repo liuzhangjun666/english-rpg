@@ -153,6 +153,15 @@ class LegacyBridge {
     game.ui.hideAllPanels();
   }
 
+  async switchToWanyaoTowerScene() {
+    // 万妖塔是全屏 Vue 视图（无对应 Canvas 场景）；这里只确保 legacy game 已初始化
+    // 且 session 已同步，方便从塔内返回时 3D 背景状态一致。
+    const game = await this.getGame();
+    this.applySessionToGame(game, this.pendingProfile);
+    game.ensureSceneInitialized();
+    game.ui.hideAllPanels();
+  }
+
   async closeLegacyPanels() {
     const game = await this.getGame();
     game.ui.hideAllPanels();

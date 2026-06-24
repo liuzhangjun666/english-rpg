@@ -118,6 +118,10 @@ async function logout() {
 const showProfile = ref(false);
 const showGlobalReview = ref(false);
 const showGlobalAchievements = ref(false);
+const showReviewFromProfile = ref(false);
+function openReviewFromProfile() {
+  showReviewFromProfile.value = true;
+}
 
 // ─── 资源预热遮罩 ─────────────────────────────────────────────
 // auth 通过后 splash 立刻显示；预热完成（或保护超时）后隐藏。
