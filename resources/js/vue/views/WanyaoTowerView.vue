@@ -13,7 +13,7 @@ const store = useTowerStore();
 const bridge = useLegacyBridge();
 
 onMounted(async () => {
-  (bridge as any).switchToWanyaoTowerScene?.();
+  bridge.switchToWanyaoTowerScene?.();
   await store.fetchStatus();
 });
 
