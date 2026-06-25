@@ -12,9 +12,19 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
+    /** 访问令牌名称：用于常规 auth:sanctum 鉴权。 */
+    public const ACCESS_TOKEN_NAME = 'access-token';
+
+    /** 刷新令牌名称：仅用于 /auth/refresh 手动校验，禁止当访问令牌使用。 */
+    public const REFRESH_TOKEN_NAME = 'refresh-token';
+
+    /** 刷新令牌能力标记（最小权限：不携带 `*`）。 */
+    public const REFRESH_ABILITY = 'refresh';
+
     private SmsService $smsService;
     private RealmService $realmService;
 
@@ -151,11 +161,11 @@ class AuthController extends Controller
         // 重新加载以获取上面 increment / update 的最新值（spirit_power、invite_code 等）
         $user->refresh();
 
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $tokens = $this->issueAuthTokens($user);
 
         return response()->json([
             'success' => true,
-            'data' => ['user' => $user, 'token' => $token],
+            'data' => array_merge(['user' => $user], $tokens),
         ], 201);
     }
 
@@ -197,34 +207,155 @@ class AuthController extends Controller
         }
 
         $user->update(['last_login_at' => now()]);
+        // 显式重新登录：清空旧令牌（含旧刷新令牌），等价于在此设备上重置会话。
         $user->tokens()->delete();
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $tokens = $this->issueAuthTokens($user);
 
         return response()->json([
             'success' => true,
-            'data' => ['user' => $user, 'token' => $token],
+            'data' => array_merge(['user' => $user], $tokens),
         ]);
     }
 
+    /**
+     * 刷新访问令牌
+     * POST /api/auth/refresh
+     *
+     * 该端点**不在** auth:sanctum 之下：访问令牌过期后正是要靠它恢复会话。
+     * 凭据是独立的、更长寿命的刷新令牌（请求体 refresh_token，或 Bearer 头兜底），
+     * 在此手动校验，因此不受 sanctum.expiration（按 created_at 的 7 天全局上限）约束。
+     *
+     * 关键：刷新**不旋转**刷新令牌，也**不删除**任何在用的访问令牌，只新签发一个访问令牌。
+     * 这样两个入口（Vue / 旧版）并发刷新时不会互相作废，杜绝“无故掉线”。
+     */
     public function refresh(Request $request): JsonResponse
     {
-        $user = $request->user();
-        $user->tokens()->delete();
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $plainTextRefreshToken = $this->extractRefreshToken($request);
+        if ($plainTextRefreshToken === null) {
+            return response()->json([
+                'success' => false,
+                'code' => 'REFRESH_TOKEN_REQUIRED',
+                'message' => '缺少刷新凭证，请重新登录',
+            ], 401);
+        }
+
+        $refreshToken = PersonalAccessToken::findToken($plainTextRefreshToken);
+
+        if (! $this->isValidRefreshToken($refreshToken)) {
+            return response()->json([
+                'success' => false,
+                'code' => 'INVALID_REFRESH_TOKEN',
+                'message' => '刷新凭证无效或已过期，请重新登录',
+            ], 401);
+        }
+
+        /** @var User $user */
+        $user = $refreshToken->tokenable;
+
+        // 顺手回收已过期的访问令牌（仅删 expires_at 已过的，绝不碰在用令牌），避免无限堆积。
+        $this->pruneExpiredAccessTokens($user);
+
+        $accessToken = $user->createToken(
+            self::ACCESS_TOKEN_NAME,
+            ['*'],
+            now()->addMinutes($this->accessTokenTtlMinutes())
+        )->plainTextToken;
 
         return response()->json([
             'success' => true,
-            'data' => ['token' => $token],
+            'data' => ['token' => $accessToken],
         ]);
     }
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        $user = $request->user();
+        // 注销访问令牌；同时撤销刷新令牌，防止注销后仍能用旧刷新凭证换取新会话。
+        $user->currentAccessToken()->delete();
+        $user->tokens()->where('name', self::REFRESH_TOKEN_NAME)->delete();
 
         return response()->json([
             'success' => true,
             'message' => '已退出宗门',
         ]);
+    }
+
+    /**
+     * 同时签发访问令牌与刷新令牌。
+     *
+     * @return array{token: string, refresh_token: string}
+     */
+    private function issueAuthTokens(User $user): array
+    {
+        $accessToken = $user->createToken(
+            self::ACCESS_TOKEN_NAME,
+            ['*'],
+            now()->addMinutes($this->accessTokenTtlMinutes())
+        )->plainTextToken;
+
+        $refreshToken = $user->createToken(
+            self::REFRESH_TOKEN_NAME,
+            [self::REFRESH_ABILITY],
+            now()->addMinutes($this->refreshTokenTtlMinutes())
+        )->plainTextToken;
+
+        return [
+            'token' => $accessToken,
+            'refresh_token' => $refreshToken,
+        ];
+    }
+
+    /** 从请求体 refresh_token 取刷新凭证，回退到 Bearer 头。 */
+    private function extractRefreshToken(Request $request): ?string
+    {
+        $fromBody = $request->input('refresh_token');
+        if (is_string($fromBody) && $fromBody !== '') {
+            return $fromBody;
+        }
+
+        $bearer = $request->bearerToken();
+
+        return (is_string($bearer) && $bearer !== '') ? $bearer : null;
+    }
+
+    /**
+     * 校验刷新令牌：必须存在、归属用户、名称与能力匹配、且未过自身 expires_at。
+     * 刻意不套用全局 sanctum.expiration —— 刷新令牌寿命只由其 expires_at 决定。
+     */
+    private function isValidRefreshToken(?PersonalAccessToken $token): bool
+    {
+        if (! $token || ! $token->tokenable) {
+            return false;
+        }
+
+        if ($token->name !== self::REFRESH_TOKEN_NAME || ! $token->can(self::REFRESH_ABILITY)) {
+            return false;
+        }
+
+        if ($token->expires_at && $token->expires_at->isPast()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /** 仅删除已过期的访问令牌（绝不删除在用令牌或刷新令牌），用于卫生回收。 */
+    private function pruneExpiredAccessTokens(User $user): void
+    {
+        $user->tokens()
+            ->where('name', self::ACCESS_TOKEN_NAME)
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '<', now())
+            ->delete();
+    }
+
+    private function accessTokenTtlMinutes(): int
+    {
+        return (int) config('sanctum.expiration', 10080);
+    }
+
+    private function refreshTokenTtlMinutes(): int
+    {
+        return (int) config('sanctum.refresh_expiration', 43200);
     }
 }

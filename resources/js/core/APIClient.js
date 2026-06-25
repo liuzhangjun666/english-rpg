@@ -1,6 +1,7 @@
 export class APIClient {
     constructor() {
         this.token = null;
+        this.refreshToken = this.getStoredRefreshToken();
         this.baseUrl = '/api';
         this.refreshing = false;
         this.pendingQueue = [];
@@ -19,11 +20,22 @@ export class APIClient {
 
     clearToken() {
         this.token = null;
+        this.refreshToken = null;
         localStorage.removeItem('levelup_token');
+        localStorage.removeItem('levelup_refresh_token');
     }
 
     getStoredToken() {
         return localStorage.getItem('levelup_token');
+    }
+
+    setRefreshToken(token) {
+        this.refreshToken = token;
+        localStorage.setItem('levelup_refresh_token', token);
+    }
+
+    getStoredRefreshToken() {
+        return localStorage.getItem('levelup_refresh_token');
     }
 
     async request(method, path, data = null, meta = {}) {
@@ -138,11 +150,23 @@ export class APIClient {
             });
         }
 
+        // 用独立的刷新令牌换取新访问令牌（端点在 auth:sanctum 之外，过期访问令牌也能恢复）。
+        const refreshToken = this.refreshToken || this.getStoredRefreshToken();
+        if (!refreshToken) {
+            return false;
+        }
+
         this.refreshing = true;
         try {
-            const res = await this.post('/auth/refresh');
+            const res = await this.post(
+                '/auth/refresh',
+                { refresh_token: refreshToken },
+                { skipAuthLogout: true, skipQueue: true },
+            );
             if (res.success && res.data?.token) {
                 this.setToken(res.data.token);
+                // 刷新令牌默认不旋转；若后端返回新刷新令牌则一并更新。
+                if (res.data.refresh_token) this.setRefreshToken(res.data.refresh_token);
                 this.refreshing = false;
                 this.pendingQueue.forEach((r) => r(true));
                 this.pendingQueue = [];

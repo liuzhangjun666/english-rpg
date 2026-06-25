@@ -31,10 +31,11 @@ Route::post('/sms/send', [SmsController::class, 'send']);
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
+    // 刷新必须在 auth:sanctum 之外：访问令牌过期后正靠它恢复会话，凭据是独立的刷新令牌。
+    Route::post('/refresh', [AuthController::class, 'refresh']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/auth/refresh', [AuthController::class, 'refresh']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
     Route::prefix('user')->group(function () {

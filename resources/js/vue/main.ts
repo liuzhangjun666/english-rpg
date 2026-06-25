@@ -105,11 +105,16 @@ async function bootstrapSession() {
   try {
     let profile = await refreshUserProfileFromApi({ skipAuthLogout: true });
     if (!profile) {
-      const refreshed = await api.post('/auth/refresh', null, { skipAuthLogout: true });
+      // 访问令牌可能已过期；用独立的刷新令牌恢复会话（端点在 auth:sanctum 之外）。
+      const storedRefresh = api.getStoredRefreshToken();
+      const refreshed = storedRefresh
+        ? await api.post('/auth/refresh', { refresh_token: storedRefresh }, { skipAuthLogout: true })
+        : null;
       if (refreshed?.success && refreshed?.data?.token) {
         const nextToken = String(refreshed.data.token);
         api.setToken(nextToken);
         auth.setToken(nextToken);
+        if (refreshed.data.refresh_token) api.setRefreshToken(String(refreshed.data.refresh_token));
         profile = await refreshUserProfileFromApi({ skipAuthLogout: true });
       }
     }
