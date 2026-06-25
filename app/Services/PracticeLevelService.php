@@ -258,7 +258,22 @@ class PracticeLevelService
             });
         }
 
-        return $query->orderBy('lemma')->get();
+        $pool = $query->orderBy('lemma')->get();
+        if ($pool->isNotEmpty()) {
+            return $pool;
+        }
+
+        // 兜底1：年级过滤落空时（如低境界 L1/L2 映射到“一年级/二年级”，但小学英语词库从
+        // 三年级起、无对应词），仅按学段（level_tag）取词，避免练功房“境界暂无题目”死路。
+        if ($levelTag) {
+            $byTag = VocabularyWord::query()->where('level_tag', $levelTag)->orderBy('lemma')->get();
+            if ($byTag->isNotEmpty()) {
+                return $byTag;
+            }
+        }
+
+        // 兜底2：词库未标注 level_tag 时，返回全部词，保证练功房永不空转。
+        return VocabularyWord::query()->orderBy('lemma')->get();
     }
 
     public function progressStorageKey(User $user, string $type): string
