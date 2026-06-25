@@ -88,7 +88,9 @@ class CurrencyServiceTest extends TestCase
         $this->assertEquals(3, $settlement['correct_count']);
         $this->assertEquals(75, $settlement['accuracy']);
         $this->assertEquals(30, $settlement['exp_gained']); // 3 x 10
-        $this->assertEquals(4, $settlement['spirit_cost']);
+        // 未传 spiritCostOverride 时，单次结算按「关卡」扣灵力（SPIRIT_COST_PER_LEVEL），
+        // 与题目数量无关；与生产代码（控制器统一用 SPIRIT_COST_PER_LEVEL 计费）一致。
+        $this->assertEquals(CurrencyService::SPIRIT_COST_PER_LEVEL, $settlement['spirit_cost']);
         $this->assertTrue($settlement['passed']);
         $this->assertEquals(3, $settlement['stones_gained']); // 3 x 1
     }

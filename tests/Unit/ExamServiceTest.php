@@ -12,7 +12,7 @@ class ExamServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new ExamService();
+        $this->service = app(ExamService::class);
     }
 
     public function test_grade_S()
