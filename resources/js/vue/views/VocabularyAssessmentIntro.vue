@@ -124,7 +124,7 @@ onMounted(async () => {
         current_realm: res.data.current_realm ?? user.profile.current_realm,
       });
     }
-    const redirect = String(route.query.redirect || '/hall');
+    const redirect = String(route.query.redirect || '/practice');
     router.replace(redirect);
   }
 });

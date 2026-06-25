@@ -140,12 +140,12 @@ bootstrapDone.finally(async () => {
   const current = router.currentRoute.value;
   if (auth.isAuthenticated && current.path === '/login') {
     const done = await resolveAssessmentDone();
-    const redirect = String(current.query.redirect || '/hall');
+    const redirect = String(current.query.redirect || '/practice');
     if (done) {
       router.replace(redirect);
     } else {
       const query: Record<string, string> = {};
-      if (redirect && redirect !== '/hall') query.redirect = redirect;
+      if (redirect && redirect !== '/practice') query.redirect = redirect;
       router.replace({ path: '/vocab-assessment/intro', query });
     }
   }

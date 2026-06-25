@@ -137,7 +137,7 @@ const majorRealmLabel = computed(() => {
 });
 
 function goHall() {
-  const redirect = String(route.query.redirect || '/hall');
+  const redirect = String(route.query.redirect || '/practice');
   router.replace(redirect);
 }
 

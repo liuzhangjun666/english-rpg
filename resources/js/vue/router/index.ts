@@ -93,7 +93,7 @@ function pickRedirectQuery(source: Record<string, unknown>, fallback = '/practic
 
 function buildAssessmentIntroLocation(redirect?: string, extra: Record<string, string> = {}) {
   const query: Record<string, string> = { ...extra };
-  if (redirect && redirect !== '/hall') {
+  if (redirect && redirect !== '/practice') {
     query.redirect = redirect;
   }
   return { path: '/vocab-assessment/intro', query };
@@ -196,8 +196,8 @@ const routes = [
     component: () => import('../views/WanyaoTowerView.vue'),
     meta: { requiresAuth: true },
   },
-  { path: '/', redirect: '/hall' },
-  { path: '/:pathMatch(.*)*', name: 'not-found', redirect: '/hall' },
+  { path: '/', redirect: '/practice' },
+  { path: '/:pathMatch(.*)*', name: 'not-found', redirect: '/practice' },
 ];
 
 export const router = createRouter({
@@ -231,7 +231,7 @@ router.beforeEach(async (to) => {
     if (!isAssessmentRoute) {
       const done = await resolveAssessmentDone();
       if (!done) {
-        const redirect = to.fullPath !== '/hall' ? to.fullPath : '';
+        const redirect = to.fullPath !== '/practice' ? to.fullPath : '';
         const query: Record<string, string> = {};
         if (redirect) query.redirect = redirect;
         return buildAssessmentIntroLocation(undefined, query);

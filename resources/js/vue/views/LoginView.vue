@@ -234,13 +234,13 @@ async function applyProfile(profile: Record<string, any>) {
 const entering = ref(false);
 
 function navigateAfterAuth(needsAssessment: boolean, options?: { fromRegister?: boolean }) {
-  const redirect = String(route.query.redirect || '/hall');
+  const redirect = String(route.query.redirect || '/practice');
   const target = needsAssessment
     ? {
         path: '/vocab-assessment/intro',
         query: {
           ...(options?.fromRegister ? { from: 'register' } : {}),
-          ...(redirect && redirect !== '/hall' ? { redirect } : {}),
+          ...(redirect && redirect !== '/practice' ? { redirect } : {}),
         },
       }
     : (redirect as any);
@@ -276,6 +276,7 @@ async function doLogin() {
     const token = String(res.data.token || '');
     api.setToken(token);
     auth.setToken(token);
+    if (res.data.refresh_token) api.setRefreshToken(String(res.data.refresh_token));
     await syncProfileFromApi(res.data.user);
     ElMessage.success('登录成功');
     const done = await resolveAssessmentDone();
@@ -333,6 +334,7 @@ async function doRegister() {
 
     api.setToken(token);
     auth.setToken(token);
+    if (res.data.refresh_token) api.setRefreshToken(String(res.data.refresh_token));
     await syncProfileFromApi(res.data.user);
     // 注册成功后清掉本地缓存的邀请码，避免下次注册再次带上
     try { localStorage.removeItem('levelup_pending_invite_ref'); } catch { /* ignore */ }
