@@ -114,8 +114,8 @@ class HeartDemonController extends Controller
         ]);
 
         $user = $request->user();
-        $question = Question::where('question_id', $data['question_id'])->first();
-        if (!$question) {
+        $recorded = $this->recordWrongForUser($user, (string) $data['question_id'], $data['type'] ?? null, $data['level'] ?? null);
+        if (!$recorded) {
             return response()->json([
                 'success' => false,
                 'code' => 'QUESTION_NOT_FOUND',
@@ -123,15 +123,65 @@ class HeartDemonController extends Controller
             ], 404);
         }
 
-        $type = $question->type ?: ($data['type'] ?? 'vocab');
-        $realm = $question->realm ?: ($data['level'] ?? $user->realm);
+        return response()->json([
+            'success' => true,
+            'data' => ['question_id' => $data['question_id']],
+        ]);
+    }
 
-        $this->demonService->recordWrong($user->id, $question->question_id, $type, $realm);
+    /** POST /api/demons/report-wrongs - 批量写入心魔录（试炼拼错/跳过等） */
+    public function reportWrongs(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'question_ids' => 'required|array',
+            'question_ids.*' => 'string',
+            'type' => 'nullable|string',
+            'level' => 'nullable|string',
+        ]);
+
+        $user = $request->user();
+        $recorded = [];
+        foreach ($data['question_ids'] as $questionId) {
+            if ($this->recordWrongForUser($user, (string) $questionId, $data['type'] ?? null, $data['level'] ?? null)) {
+                $recorded[] = (string) $questionId;
+            }
+        }
 
         return response()->json([
             'success' => true,
-            'data' => ['question_id' => $question->question_id],
+            'data' => [
+                'recorded' => $recorded,
+                'total' => count($recorded),
+            ],
         ]);
+    }
+
+    private function recordWrongForUser($user, string $questionId, ?string $typeOverride = null, ?string $levelOverride = null): bool
+    {
+        $questionId = trim($questionId);
+        if ($questionId === '') {
+            return false;
+        }
+
+        $resolved = $this->questionResolver->resolve($questionId);
+        if ($resolved) {
+            $type = $typeOverride ?: (string) ($resolved['type'] ?? 'vocab');
+            $realm = $levelOverride ?: (string) ($resolved['realm'] ?? $user->realm ?? 'L1');
+            $this->demonService->recordWrong($user->id, $questionId, $type, $realm);
+
+            return true;
+        }
+
+        $question = Question::where('question_id', $questionId)->first();
+        if (!$question) {
+            return false;
+        }
+
+        $type = $typeOverride ?: ($question->type ?: 'vocab');
+        $realm = $levelOverride ?: ($question->realm ?: $user->realm);
+        $this->demonService->recordWrong($user->id, $question->question_id, $type, $realm);
+
+        return true;
     }
 
     /** POST /api/demons/clear-mastered - 娓呴櫎宸叉帉鎻″績榄?*/

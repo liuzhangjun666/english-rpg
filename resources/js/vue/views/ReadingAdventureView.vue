@@ -19,16 +19,47 @@
         <div class="lobby-card" :style="{ backgroundImage: `url(${bgImage})` }">
           <div class="lobby-mask"></div>
           <div class="lobby-content">
-            <div class="lobby-title">准备进入经文机关</div>
-            <div class="lobby-meta">当前境界：{{ currentRealmLabel }}</div>
-            <div class="lobby-meta">当前关卡：{{ currentLevel.levelId }}（{{ currentLevel.index + 1 }}/{{ currentLevel.total }}）</div>
-            <div class="lobby-meta">本关题数：{{ totalCount }} ｜ 消耗灵力：{{ spiritCost }} ｜ 当前灵力：{{ currentSpirit }}</div>
-            <div class="lobby-meta">残卷已收集：{{ scrollFragmentCount }} 片</div>
-            <div v-if="totalCount <= 0" class="lobby-meta lobby-empty-hint">当前境界暂无阅读题目，请先修炼其他模块。</div>
-            <div class="lobby-actions">
-              <el-button type="primary" :disabled="totalCount <= 0" @click="startMechanism">进入机关</el-button>
-              <el-button @click="backHall">返回大厅</el-button>
+            <div class="lobby-head-row">
+              <div class="lobby-title">准备进入经文机关</div>
+              <div class="lobby-head-actions">
+                <PracticeVariantSwitch
+                  :model-value="practiceVariant"
+                  :arcade-enabled="true"
+                  :arcade-playable="arcadePlayable"
+                  @update:model-value="setPracticeVariant"
+                />
+                <button
+                  v-if="!isArcadeVariant"
+                  type="button"
+                  class="lobby-back-btn"
+                  @click="backHall"
+                >
+                  返回大厅
+                </button>
+              </div>
             </div>
+
+            <ArcadePracticePanel
+              v-if="isArcadeVariant"
+              ability="reading"
+              :stage-no="currentLevel.stageNo"
+              :realm="currentLevel.realm"
+              @back="backHall"
+              @switch-classic="setPracticeVariant('classic')"
+              @settled="onArcadeSettled"
+            />
+
+            <template v-else>
+              <div class="lobby-meta">当前境界：{{ currentRealmLabel }}</div>
+              <div class="lobby-meta">当前关卡：{{ currentLevel.levelId }}（{{ currentLevel.index + 1 }}/{{ currentLevel.total }}）</div>
+              <div class="lobby-meta">本关题数：{{ totalCount }} ｜ 消耗灵力：{{ spiritCost }} ｜ 当前灵力：{{ currentSpirit }}</div>
+              <div class="lobby-meta">残卷已收集：{{ scrollFragmentCount }} 片</div>
+              <div v-if="totalCount <= 0" class="lobby-meta lobby-empty-hint">当前境界暂无阅读题目，请先修炼其他模块。</div>
+              <div class="lobby-actions">
+                <el-button type="primary" :disabled="totalCount <= 0" @click="startMechanism">进入机关</el-button>
+                <el-button @click="backHall">返回大厅</el-button>
+              </div>
+            </template>
           </div>
         </div>
       </template>
@@ -79,14 +110,18 @@
                 <div class="scroll-title">经文探秘</div>
                 <div class="scroll-text" v-html="passageDisplayHtml"></div>
                 <div class="scroll-question-block">
-                  <div class="scroll-question-head">真伪灵签 {{ currentQuestionIndex + 1 }}/{{ totalCount }}</div>
+                  <div class="scroll-question-head">{{ questionBlockTitle }} {{ currentQuestionIndex + 1 }}/{{ totalCount }}</div>
                   <div class="scroll-question-stem">{{ currentQuestionStem }}</div>
-                  <div class="scroll-question-claim">命题：{{ currentClaimText }}</div>
+                  <div v-if="isTfJudgeMode" class="scroll-question-claim">命题：{{ currentClaimText }}</div>
                 </div>
               </div>
             </div>
 
-            <div class="judge-panel" :class="{ 'judge-shake': verdictFlash === 'wrong' }">
+            <div
+              v-if="isTfJudgeMode"
+              class="judge-panel"
+              :class="{ 'judge-shake': verdictFlash === 'wrong' }"
+            >
               <button
                 class="judge-btn judge-true"
                 :class="{
@@ -120,6 +155,34 @@
             </div>
 
             <div
+              v-else
+              class="choice-panel"
+              :class="{
+                'choice-shake': verdictFlash === 'wrong',
+                'choice-panel--triple': currentQuestionOptions.length === 3,
+              }"
+            >
+              <button
+                v-for="opt in currentQuestionOptions"
+                :key="`${currentQuestionId}-${opt.value}`"
+                class="choice-btn"
+                :class="{
+                  selected: currentChoice === opt.value && !isQuestionSolved(currentQuestionId),
+                  'pick-correct': currentChoice === opt.value && isQuestionSolved(currentQuestionId),
+                  'pick-wrong': currentChoice === opt.value && verdictFlash === 'wrong',
+                  'answer-hint': showAnswerHint && correctOptionKey === opt.value,
+                }"
+                type="button"
+                @click="selectChoice(opt.value)"
+              >
+                <img class="choice-bg" :src="optionIcon" alt="" aria-hidden="true" />
+                <span class="choice-key">{{ opt.label }}</span>
+                <span class="choice-text">{{ opt.text }}</span>
+                <span v-if="currentChoice === opt.value && isQuestionSolved(currentQuestionId)" class="choice-verdict-icon">✓</span>
+              </button>
+            </div>
+
+            <div
               class="feedback-panel"
               :class="{
                 good: currentChoiceCorrect === true,
@@ -141,7 +204,7 @@
                   class="index-btn"
                   :class="{
                     active: idx === currentQuestionIndex,
-                    done: Boolean(judgeChoices[String(q.question_id)]),
+                    done: Boolean(answerChoices[String(q.question_id)]),
                     solved: isQuestionSolved(String(q.question_id))
                   }"
                   type="button"
@@ -201,20 +264,30 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useApiClient } from '../services/api';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
+import {
+  isArcadePlayable,
+  loadVariantPreference,
+  parsePracticeVariant,
+  saveVariantPreference,
+  type PracticeVariant,
+} from '../data/arcadeModes';
 import bgImage from '../../../assets/images/ui/cangjingge/background.png';
 import backIcon from '../../../assets/images/ui/cangjingge/back.png';
 import questionIcon from '../../../assets/images/ui/cangjingge/question.png';
 import optionIcon from '../../../assets/images/ui/cangjingge/options.png';
 import ModuleRulesIntro from '../components/ModuleRulesIntro.vue';
+import PracticeVariantSwitch from '../components/practice/PracticeVariantSwitch.vue';
+import ArcadePracticePanel from '../components/practice/ArcadePracticePanel.vue';
 
 type Stage = 'rules' | 'lobby' | 'answer' | 'result';
 type JudgeChoice = 'T' | 'F';
+type AnswerChoice = JudgeChoice | 'A' | 'B' | 'C' | 'D';
 type LevelInfo = {
   realm: string;
   stageNo: number;
@@ -236,31 +309,51 @@ type JudgeState = {
 };
 
 const SCROLL_FRAGMENTS_KEY = 'reading_scroll_fragments';
-const lanternDefs = [
-  { key: 'detail', name: '寻物灯', sub: '待寻线索' },
-  { key: 'word', name: '辨意灯', sub: '待辨经义' },
-  { key: 'infer', name: '悟道灯', sub: '待悟道' },
-] as const;
+const lanternTypeDefs: Record<string, { key: string; name: string; sub: string }> = {
+  detail: { key: 'detail', name: '寻物灯', sub: '待寻线索' },
+  word: { key: 'word', name: '辨意灯', sub: '待辨经义' },
+  infer: { key: 'infer', name: '悟道灯', sub: '待悟道' },
+  tf: { key: 'word', name: '辨意灯', sub: '待辨经义' },
+  single: { key: 'detail', name: '寻物灯', sub: '待寻线索' },
+};
+
+const lanternDefs = computed(() => {
+  const fallback = [
+    lanternTypeDefs.detail,
+    lanternTypeDefs.word,
+    lanternTypeDefs.infer,
+  ];
+  return questions.value.map((q, idx) => {
+    const type = String(q.question_type || '').toLowerCase();
+    return lanternTypeDefs[type] || fallback[idx % fallback.length];
+  });
+});
 
 const router = useRouter();
+const route = useRoute();
 const api = useApiClient();
 const bridge = useLegacyBridge();
 const ui = useUiStore();
 const user = useUserStore();
 
 const stage = ref<Stage>('rules');
+const practiceVariant = ref<PracticeVariant>(
+  parsePracticeVariant(route.query.variant) || loadVariantPreference('reading'),
+);
+const arcadePlayable = computed(() => isArcadePlayable('reading'));
+const isArcadeVariant = computed(() => practiceVariant.value === 'arcade' && arcadePlayable.value);
 const questions = ref<Array<Record<string, any>>>([]);
 const spiritCost = ref(5);
 const currentSpirit = ref(0);
 const currentQuestionIndex = ref(0);
 const hintCount = ref(3);
 const judgeStateCache = ref<Record<string, JudgeState>>({});
-const judgeChoices = reactive<Record<string, JudgeChoice>>({});
+const answerChoices = reactive<Record<string, AnswerChoice>>({});
 const answers = reactive<Record<string, string>>({});
 const firstTryCorrect = reactive<Record<string, boolean>>({});
 const wrongAttempts = reactive<Record<string, number>>({});
 const clueHighlights = reactive<Record<string, string>>({});
-const feedbackText = ref('细读经文，判断真伪灵签。');
+const feedbackText = ref('');
 const verdictFlash = ref<'correct' | 'wrong' | null>(null);
 let verdictFlashTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -285,7 +378,7 @@ const currentRealmLabel = computed(() => {
 const currentLevel = computed<LevelInfo>(() => getCurrentPlayableLevel());
 const totalCount = computed(() => questions.value.length);
 const answeredCount = computed(() => {
-  return questions.value.filter((q) => Boolean(judgeChoices[String(q.question_id)])).length;
+  return questions.value.filter((q) => Boolean(answerChoices[String(q.question_id)])).length;
 });
 const solvedCount = computed(() => {
   return questions.value.filter((q) => isQuestionSolved(String(q.question_id || ''))).length;
@@ -302,9 +395,13 @@ const scrollFragmentCount = computed(() => {
   void scrollFragmentTick.value;
   return readScrollFragments().length;
 });
+const isTfJudgeMode = computed(() => /^L[123]$/.test(readingRealmCode()));
+const questionBlockTitle = computed(() => (isTfJudgeMode.value ? '真伪灵签' : '阅读灵签'));
+const currentQuestionOptions = computed(() => optionEntries(currentQuestion.value?.options));
 const currentQuestion = computed(() => questions.value[currentQuestionIndex.value] || null);
 const currentQuestionId = computed(() => String(currentQuestion.value?.question_id || ''));
-const currentChoice = computed(() => judgeChoices[currentQuestionId.value] || '');
+const correctOptionKey = computed(() => getCorrectOptionKey(currentQuestion.value));
+const currentChoice = computed(() => answerChoices[currentQuestionId.value] || '');
 const currentChoiceCorrect = computed<boolean | null>(() => {
   const qid = currentQuestionId.value;
   if (!qid || !isQuestionSolved(qid)) return null;
@@ -320,7 +417,11 @@ const correctJudgeChoice = computed<JudgeChoice | ''>(() => {
   if (!state) return '';
   return state.claimIsTrue ? 'T' : 'F';
 });
-const currentQuestionStem = computed(() => String(currentQuestion.value?.question || '请判断命题真伪'));
+const currentQuestionStem = computed(() => {
+  const stem = String(currentQuestion.value?.question || '').trim();
+  if (stem) return stem;
+  return isTfJudgeMode.value ? '请判断命题真伪' : '请选择正确答案';
+});
 const passageText = computed(() => getPassageText(currentQuestion.value));
 const currentClaimText = computed(() => {
   const qid = currentQuestionId.value;
@@ -354,31 +455,34 @@ onBeforeUnmount(() => {
   void bridge.closeLegacyPanels();
 });
 
+function readingRealmCode(): string {
+  const realm = String(user.profile?.realm || 'L1').toUpperCase();
+  const supported = new Set(['L1', 'L2', 'L3', 'Z1', 'J1', 'Y1', 'H1']);
+  return supported.has(realm) ? realm : 'L1';
+}
+
 function levelSequence(): Array<Omit<LevelInfo, 'index' | 'total'>> {
+  const realm = readingRealmCode();
   const list: Array<Omit<LevelInfo, 'index' | 'total'>> = [];
-  ['L1', 'L2', 'L3'].forEach((realm) => {
-    for (let stageNo = 1; stageNo <= 9; stageNo += 1) {
-      list.push({
-        realm,
-        stageNo,
-        levelId: `${realm}-${String(stageNo).padStart(2, '0')}`,
-      });
-    }
-  });
+  for (let stageNo = 1; stageNo <= 9; stageNo += 1) {
+    list.push({
+      realm,
+      stageNo,
+      levelId: `${realm}-${String(stageNo).padStart(2, '0')}`,
+    });
+  }
   return list;
 }
 
 function progressKey() {
-  return 'levelup_progress_reading';
+  const uid = user.profile?.id || 'guest';
+  return `levelup_progress_reading_${uid}_${readingRealmCode()}`;
 }
 
 function realmFloorIndex() {
-  const realm = String(user.profile?.realm || 'L1').toUpperCase();
   const stageNoRaw = Number(user.profile?.realm_stage || 1);
   const stageNo = Math.min(9, Math.max(1, Number.isFinite(stageNoRaw) ? stageNoRaw : 1));
-  const baseMap: Record<string, number> = { L1: 0, L2: 9, L3: 18 };
-  const base = baseMap[realm] ?? 0;
-  return base + stageNo - 1;
+  return stageNo - 1;
 }
 
 function syncProgressWithRealmFloor() {
@@ -488,7 +592,7 @@ function findClueSentence(question: Record<string, any> | null) {
 }
 
 function lampFeedbackMessage(index: number) {
-  const lamp = lanternDefs[index] || lanternDefs[0];
+  const lamp = lanternDefs.value[index] || lanternDefs.value[0];
   if (lamp.key === 'detail') return '寻物灯亮！细节线索已与经文吻合。';
   if (lamp.key === 'word') return '辨意灯亮！经义判断无误。';
   return '悟道灯亮！机关洞开，推理成立。';
@@ -529,6 +633,30 @@ function hashSeed(str: string) {
     h = (h * 31 + str.charCodeAt(i)) >>> 0;
   }
   return h;
+}
+
+function getCorrectOptionKey(question: Record<string, any> | null): string {
+  if (!question) return '';
+  const correctRaw = String(question.correct_answer || '').trim().toUpperCase();
+  const options = optionEntries(question.options);
+  const hit = options.find((opt) => normalize(opt.value) === normalize(correctRaw)
+    || normalize(opt.label) === normalize(correctRaw));
+  return hit?.value || correctRaw;
+}
+
+function defaultFeedbackText() {
+  return isTfJudgeMode.value ? '细读经文，判断真伪灵签。' : '细读经文，选择正确灵签。';
+}
+
+function wrongAttemptFeedback(wrongCount: number) {
+  if (wrongCount >= 2) {
+    return isTfJudgeMode.value
+      ? '机关回弹！文中线索已标出，正确答案方向也已暗示。'
+      : '机关回弹！文中线索已标出，正确选项方向也已暗示。';
+  }
+  return isTfJudgeMode.value
+    ? '机关回弹！线索已在文中标出，请再选 T/F。'
+    : '机关回弹！线索已在文中标出，请再选一项。';
 }
 
 function fallbackWrongValue(correctValue: string) {
@@ -585,7 +713,7 @@ function mapJudgeToAnswer(question: Record<string, any>, choice: JudgeChoice) {
 }
 
 function resetRoundState() {
-  Object.keys(judgeChoices).forEach((key) => delete judgeChoices[key]);
+  Object.keys(answerChoices).forEach((key) => delete answerChoices[key]);
   Object.keys(answers).forEach((key) => delete answers[key]);
   Object.keys(firstTryCorrect).forEach((key) => delete firstTryCorrect[key]);
   Object.keys(wrongAttempts).forEach((key) => delete wrongAttempts[key]);
@@ -598,7 +726,7 @@ function resetRoundState() {
     clearTimeout(verdictFlashTimer);
     verdictFlashTimer = null;
   }
-  feedbackText.value = '细读经文，判断真伪灵签。';
+  feedbackText.value = defaultFeedbackText();
 }
 
 function triggerVerdictFlash(type: 'correct' | 'wrong') {
@@ -613,18 +741,18 @@ function triggerVerdictFlash(type: 'correct' | 'wrong') {
 function restoreFeedbackForCurrent() {
   const qid = currentQuestionId.value;
   if (!qid) {
-    feedbackText.value = '细读经文，判断真伪灵签。';
+    feedbackText.value = defaultFeedbackText();
     return;
   }
   if (isQuestionSolved(qid)) {
     feedbackText.value = lampFeedbackMessage(currentQuestionIndex.value);
     return;
   }
-  if (judgeChoices[qid]) {
-    feedbackText.value = '机关回弹！线索已在文中标出，请再选 T/F。';
+  if (answerChoices[qid]) {
+    feedbackText.value = wrongAttemptFeedback(wrongAttempts[qid] || 0);
     return;
   }
-  feedbackText.value = '细读经文，判断真伪灵签。';
+  feedbackText.value = defaultFeedbackText();
 }
 
 function getPassageText(question: Record<string, any> | null) {
@@ -643,12 +771,25 @@ function getPassageText(question: Record<string, any> | null) {
 }
 
 function isQuestionSolved(questionId: string) {
-  const choice = judgeChoices[questionId];
+  const choice = answerChoices[questionId];
   if (!choice) return false;
   const question = questions.value.find((q) => String(q.question_id || '') === questionId);
-  const state = getJudgeState(question || null);
-  if (!state) return false;
-  return state.claimIsTrue ? choice === 'T' : choice === 'F';
+  if (!question) return false;
+
+  if (isTfJudgeMode.value) {
+    const state = getJudgeState(question);
+    if (!state) return false;
+    return state.claimIsTrue ? choice === 'T' : choice === 'F';
+  }
+
+  return normalize(choice) === normalize(getCorrectOptionKey(question));
+}
+
+function mapChoiceToAnswer(question: Record<string, any>, choice: AnswerChoice) {
+  if (isTfJudgeMode.value) {
+    return mapJudgeToAnswer(question, choice as JudgeChoice);
+  }
+  return String(choice);
 }
 
 async function reloadQuestions() {
@@ -695,19 +836,23 @@ async function startMechanism() {
   }
 
   stage.value = 'answer';
-  feedbackText.value = '细读经文，判断真伪灵签。';
+  feedbackText.value = defaultFeedbackText();
 }
 
 let autoAdvanceTimer: ReturnType<typeof setTimeout> | null = null;
 
 function selectJudge(choice: JudgeChoice) {
+  selectChoice(choice);
+}
+
+function selectChoice(choice: AnswerChoice) {
   const q = currentQuestion.value;
   if (!q) return;
   const qid = String(q.question_id || '');
   if (!qid) return;
   if (isQuestionSolved(qid)) return;
 
-  judgeChoices[qid] = choice;
+  answerChoices[qid] = choice;
   const correct = isQuestionSolved(qid);
 
   if (!(qid in firstTryCorrect)) {
@@ -715,7 +860,7 @@ function selectJudge(choice: JudgeChoice) {
   }
 
   if (correct) {
-    answers[qid] = mapJudgeToAnswer(q, choice);
+    answers[qid] = mapChoiceToAnswer(q, choice);
     triggerVerdictFlash('correct');
     feedbackText.value = lampFeedbackMessage(currentQuestionIndex.value);
     if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
@@ -731,9 +876,7 @@ function selectJudge(choice: JudgeChoice) {
   wrongAttempts[qid] = (wrongAttempts[qid] || 0) + 1;
   clueHighlights[qid] = findClueSentence(q);
   triggerVerdictFlash('wrong');
-  feedbackText.value = wrongAttempts[qid] >= 2
-    ? '机关回弹！文中线索已标出，正确答案方向也已暗示。'
-    : '机关回弹！线索已在文中标出，请再选 T/F。';
+  feedbackText.value = wrongAttemptFeedback(wrongAttempts[qid]);
 }
 
 function prevQuestion() {
@@ -830,7 +973,7 @@ async function submitChallenge() {
 function cancelChallenge() {
   if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
   stage.value = 'lobby';
-  feedbackText.value = '细读经文，判断真伪灵签。';
+  feedbackText.value = defaultFeedbackText();
 }
 
 async function retryLevel() {
@@ -840,6 +983,23 @@ async function retryLevel() {
 async function nextLevel() {
   syncProgressWithRealmFloor();
   await reloadQuestions();
+}
+
+function setPracticeVariant(variant: PracticeVariant) {
+  if (variant === 'arcade' && !arcadePlayable.value) {
+    ElMessage.info('阅读试炼「残卷推理」接入中');
+    return;
+  }
+  practiceVariant.value = variant;
+  saveVariantPreference('reading', variant);
+  const nextQuery = { ...route.query } as Record<string, string>;
+  if (variant === 'arcade') nextQuery.variant = 'arcade';
+  else delete nextQuery.variant;
+  router.replace({ query: nextQuery });
+}
+
+function onArcadeSettled(payload: { exp: number; stones: number }) {
+  ElMessage.success(`试炼结算：修为 +${payload.exp}，灵石 +${payload.stones}`);
 }
 
 function backHall() {
@@ -889,11 +1049,63 @@ function backHall() {
   padding: 16px;
 }
 
+.lobby-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.lobby-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lobby-back-btn {
+  padding: 6px 14px;
+  border: 1px solid rgba(212, 168, 67, 0.35);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  color: #c8b685;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', sans-serif;
+}
+
+.lobby-back-btn:hover {
+  border-color: rgba(212, 168, 67, 0.7);
+  color: #f4d98a;
+  background: rgba(212, 168, 67, 0.1);
+}
+
+.lobby-content :deep(.arcade-panel) {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(6, 10, 22, 0.94);
+  border: 1px solid rgba(212, 168, 67, 0.32);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+}
+
+.lobby-content :deep(.arcade-title) {
+  color: #ffd978;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+}
+
+.lobby-content :deep(.arcade-sub),
+.lobby-content :deep(.arcade-rules) {
+  color: #d8c8a0;
+}
+
 .lobby-title {
   font-size: 24px;
   color: var(--gold-light);
   font-family: var(--font-title);
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
 
 .lobby-meta {
@@ -1373,6 +1585,135 @@ function backHall() {
   100% { transform: scale(1); opacity: 1; }
 }
 
+.choice-panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 980px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 4px;
+}
+
+.choice-panel--triple {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.choice-panel.choice-shake {
+  animation: judge-shake 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.choice-btn {
+  position: relative;
+  border: none;
+  border-radius: 0;
+  width: 100%;
+  min-height: 92px;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  line-height: 0;
+  transition: transform 0.2s ease;
+  box-shadow: none;
+  outline: none;
+}
+
+.choice-btn:focus,
+.choice-btn:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.choice-btn:active {
+  transform: scale(0.98);
+}
+
+.choice-bg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 92px;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.choice-btn.selected .choice-bg {
+  filter:
+    drop-shadow(0 0 1px rgba(8, 6, 4, 0.9))
+    drop-shadow(0 0 14px rgba(255, 214, 120, 0.45))
+    drop-shadow(0 6px 16px rgba(0, 0, 0, 0.28));
+}
+
+.choice-btn.pick-correct {
+  animation: judge-correct-pop 0.65s ease;
+}
+
+.choice-btn.pick-correct .choice-bg {
+  filter:
+    drop-shadow(0 0 1px rgba(8, 6, 4, 0.9))
+    drop-shadow(0 0 22px rgba(72, 220, 140, 0.72))
+    drop-shadow(0 6px 16px rgba(0, 0, 0, 0.32));
+}
+
+.choice-btn.pick-wrong .choice-bg {
+  filter:
+    drop-shadow(0 0 1px rgba(8, 6, 4, 0.9))
+    drop-shadow(0 0 20px rgba(255, 72, 58, 0.62))
+    drop-shadow(0 6px 16px rgba(0, 0, 0, 0.32));
+}
+
+.choice-btn.answer-hint .choice-bg {
+  filter:
+    drop-shadow(0 0 1px rgba(8, 6, 4, 0.9))
+    drop-shadow(0 0 18px rgba(92, 220, 140, 0.48))
+    drop-shadow(0 6px 16px rgba(0, 0, 0, 0.32));
+}
+
+.choice-key {
+  position: absolute;
+  left: 12%;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #f8e9c5;
+  font-size: clamp(20px, 2.1vw, 28px);
+  font-family: var(--font-title);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+  pointer-events: none;
+}
+
+.choice-text {
+  position: absolute;
+  left: 24%;
+  right: 8%;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #f8e9c5;
+  font-size: clamp(13px, 1.25vw, 17px);
+  line-height: 1.35;
+  text-align: left;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+  pointer-events: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.choice-btn.answer-hint .choice-key,
+.choice-btn.answer-hint .choice-text {
+  color: #d8ffe8;
+}
+
+.choice-verdict-icon {
+  position: absolute;
+  top: 8%;
+  right: 8%;
+  color: #7dffb0;
+  font-size: clamp(18px, 2vw, 24px);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+  pointer-events: none;
+}
+
 .feedback-panel {
   display: flex;
   align-items: center;
@@ -1562,6 +1903,20 @@ function backHall() {
 
   .judge-label {
     font-size: 20px;
+  }
+
+  .choice-panel,
+  .choice-panel--triple {
+    grid-template-columns: 1fr;
+  }
+
+  .choice-btn {
+    min-height: 78px;
+  }
+
+  .choice-text {
+    font-size: 13px;
+    -webkit-line-clamp: 2;
   }
 
   .nav-panel {

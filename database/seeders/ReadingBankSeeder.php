@@ -4,130 +4,221 @@ namespace Database\Seeders;
 
 use App\Models\ReadingPassage;
 use App\Models\ReadingQuestion;
+use App\Support\ReadingQuestionNormalizer;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\File;
 
 /**
- * L1–L3 每关一篇短文 + 3 道小题，保证藏经阁可玩。
+ * 阅读题库：小学用真题导入，初中/高中/大学/研究生用生成器。
  */
 class ReadingBankSeeder extends Seeder
 {
+    private const QUESTIONS_PER_PASSAGE = 3;
+
+    /** @var list<string> */
+    private const REALM_ORDER = ['L1', 'L2', 'L3', 'Z1', 'J1', 'Y1', 'H1'];
+
     public function run(): void
     {
-        $realms = ['L1', 'L2', 'L3', 'Z1', 'J1', 'Y1', 'H1'];
-        $count = 0;
+        require_once database_path('scripts/JuniorReadingGenerator.php');
+        require_once database_path('scripts/SeniorReadingGenerator.php');
+        require_once database_path('scripts/UniversityReadingGenerator.php');
 
-        foreach ($realms as $realmIdx => $realm) {
-            for ($stageNo = 1; $stageNo <= 9; $stageNo++) {
-                $stage = str_pad((string) $stageNo, 2, '0', STR_PAD_LEFT);
-                $template = $this->templateFor($realmIdx, $stageNo);
+        $normalizer = new ReadingQuestionNormalizer();
+        $importPassages = $this->loadImportPassages();
+        $plan = $this->buildRealmPlan($importPassages);
 
-                $passage = ReadingPassage::updateOrCreate(
-                    [
-                        'realm' => $realm,
-                        'stage' => $stage,
-                        'passage_code' => "RP-{$realm}-{$stage}",
-                    ],
-                    [
-                        'level_tag' => '小学',
-                        'grade_level' => $this->gradeLabel($realmIdx, $stageNo),
-                        'title' => $template['title'],
-                        'content' => $template['content'],
-                        'meta' => ['seeded' => true],
-                    ]
+        $passageCount = 0;
+        $questionCount = 0;
+
+        foreach (self::REALM_ORDER as $realm) {
+            $entries = $plan[$realm] ?? [];
+            foreach ($entries as $entry) {
+                [$passageCount, $questionCount] = $this->seedPassage(
+                    $normalizer,
+                    $entry,
+                    $passageCount,
+                    $questionCount,
                 );
-
-                ReadingQuestion::query()->where('passage_id', $passage->id)->delete();
-
-                foreach ($template['questions'] as $idx => $q) {
-                    ReadingQuestion::create([
-                        'passage_id' => $passage->id,
-                        'question_no' => $idx + 1,
-                        'question_type' => $q['question_type'],
-                        'question' => $q['question'],
-                        'options' => $q['options'] ?? null,
-                        'correct_answer' => $q['correct_answer'],
-                        'explanation' => $q['explanation'] ?? null,
-                    ]);
-                    $count++;
-                }
             }
         }
 
-        echo "Seeded reading bank: {$count} questions across L1-H1.\n";
+        echo "Seeded reading bank: {$passageCount} passages, {$questionCount} questions.\n";
     }
 
-    private function gradeLabel(int $realmIdx, int $stageNo): string
+    /**
+     * @param  list<array<string, mixed>>  $importPassages
+     * @return array<string, list<array<string, mixed>>>
+     */
+    private function buildRealmPlan(array $importPassages): array
     {
-        $base = match ($realmIdx) {
-            0 => '一年级',
-            1 => '二年级',
-            2 => '三年级',
-            3 => '七年级',
-            4 => '高一',
-            5 => '大一',
-            6 => '研一',
-            default => '一年级',
-        };
-        if ($stageNo >= 7 && $realmIdx <= 2) {
-            return match ($realmIdx) {
-                0 => '二年级',
-                1 => '三年级',
-                default => '四年级',
-            };
-        }
-        if ($stageNo >= 7 && $realmIdx === 3) {
-            return '八年级';
-        }
-        if ($stageNo >= 7 && $realmIdx === 4) {
-            return '高二';
-        }
-        if ($stageNo >= 7 && $realmIdx === 5) {
-            return '大三';
-        }
-        if ($stageNo >= 7 && $realmIdx === 6) {
-            return '研二';
-        }
-
-        return $base;
-    }
-
-    private function templateFor(int $realmIdx, int $stageNo): array
-    {
-        $templateRealmIdx = min($realmIdx, 2);
-        $animals = ['cat', 'dog', 'lion', 'giraffe', 'panda', 'rabbit', 'tiger', 'elephant'];
-        $animal = $animals[($templateRealmIdx * 9 + $stageNo - 1) % count($animals)];
-        $heightWord = $animal === 'giraffe' ? 'very tall' : ($animal === 'rabbit' ? 'small' : 'strong');
-
-        $content = "My name is Tom. I have a pet {$animal}. The {$animal} is {$heightWord}. "
-            . "Every morning, I feed it and play with it in the garden. "
-            . "My friends like my pet because it is friendly and cute.";
-
         return [
-            'title' => "Tom and the {$animal}",
-            'content' => $content,
-            'questions' => [
-                [
-                    'question_type' => 'detail',
-                    'question' => "What pet does Tom have?",
-                    'options' => ['A' => $animal, 'B' => 'fish', 'C' => 'bird', 'D' => 'horse'],
-                    'correct_answer' => 'A',
-                    'explanation' => "文中提到 pet {$animal}。",
-                ],
-                [
-                    'question_type' => 'word',
-                    'question' => "Tom plays with the pet in the garden.",
-                    'options' => ['A' => 'True', 'B' => 'False'],
-                    'correct_answer' => 'True',
-                    'explanation' => '文中说 play with it in the garden。',
-                ],
-                [
-                    'question_type' => 'infer',
-                    'question' => "Why do Tom's friends like the pet?",
-                    'options' => ['A' => 'It is friendly and cute', 'B' => 'It is very fast', 'C' => 'It can fly', 'D' => 'It is noisy'],
-                    'correct_answer' => 'A',
-                    'explanation' => '最后一句说明 because it is friendly and cute。',
-                ],
-            ],
+            'L1' => $this->sliceImport($importPassages, 0, 'L1', '小学', '一年级'),
+            'L2' => $this->sliceImport($importPassages, 9, 'L2', '小学', '三年级'),
+            'L3' => $this->sliceImport($importPassages, 18, 'L3', '小学', '六年级'),
+            'Z1' => $this->tagPassages((new \JuniorReadingGenerator())->generate(), 'junior_reading_generator'),
+            'J1' => $this->tagPassages((new \SeniorReadingGenerator())->generate(), 'senior_reading_generator'),
+            'Y1' => $this->tagPassages((new \UniversityReadingGenerator())->forRealm('Y1'), 'university_reading_generator'),
+            'H1' => $this->tagPassages((new \UniversityReadingGenerator())->forRealm('H1'), 'graduate_reading_generator'),
         ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $entry
+     * @return array{0:int,1:int}
+     */
+    private function seedPassage(
+        ReadingQuestionNormalizer $normalizer,
+        array $entry,
+        int $passageCount,
+        int $questionCount,
+    ): array {
+        $stage = str_pad((string) $entry['stage'], 2, '0', STR_PAD_LEFT);
+        $realmCode = strtoupper((string) $entry['realm']);
+
+        $passage = ReadingPassage::updateOrCreate(
+            [
+                'realm' => $realmCode,
+                'stage' => $stage,
+                'passage_code' => "RP-{$realmCode}-{$stage}",
+            ],
+            [
+                'level_tag' => (string) ($entry['level_tag'] ?? ''),
+                'grade_level' => (string) ($entry['grade_level'] ?? ''),
+                'title' => $entry['title'] ?? $this->fallbackTitle((string) ($entry['content'] ?? '')),
+                'content' => (string) ($entry['content'] ?? ''),
+                'meta' => [
+                    'seeded' => true,
+                    'source' => $entry['source'] ?? 'import',
+                ],
+            ]
+        );
+
+        ReadingQuestion::query()->where('passage_id', $passage->id)->delete();
+
+        $questions = array_slice($entry['questions'] ?? [], 0, self::QUESTIONS_PER_PASSAGE);
+        foreach ($questions as $idx => $rawQuestion) {
+            $normalized = $normalizer->normalize($rawQuestion);
+            if ($normalized['question'] === '' || count($normalized['options']) < 2) {
+                continue;
+            }
+
+            ReadingQuestion::create([
+                'passage_id' => $passage->id,
+                'question_no' => $idx + 1,
+                'question_type' => $normalized['question_type'],
+                'question' => $normalized['question'],
+                'options' => $normalized['options'],
+                'correct_answer' => $normalized['correct_answer'],
+                'explanation' => $normalized['explanation'],
+            ]);
+            $questionCount++;
+        }
+
+        return [$passageCount + 1, $questionCount];
+    }
+
+    /** @return list<array<string, mixed>> */
+    private function loadImportPassages(): array
+    {
+        $path = database_path('seeders/data/reading_grade6_import.json');
+        if (!File::exists($path)) {
+            return [];
+        }
+
+        $payload = json_decode(File::get($path), true);
+        if (!is_array($payload)) {
+            return [];
+        }
+
+        $passages = $payload['passages'] ?? [];
+        if (!is_array($passages)) {
+            return [];
+        }
+
+        usort($passages, function (array $a, array $b): int {
+            return $this->wordCount((string) ($a['content'] ?? '')) <=> $this->wordCount((string) ($b['content'] ?? ''));
+        });
+
+        return array_values($passages);
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $importPassages
+     * @return list<array<string, mixed>>
+     */
+    private function sliceImport(
+        array $importPassages,
+        int $offset,
+        string $realm,
+        string $levelTag,
+        string $baseGrade,
+    ): array {
+        $entries = [];
+        $total = max(1, count($importPassages));
+
+        for ($stageNo = 1; $stageNo <= 9; $stageNo++) {
+            $source = $importPassages[$offset + $stageNo - 1]
+                ?? $importPassages[($offset + $stageNo - 1) % $total]
+                ?? ['content' => 'Reading practice passage.', 'questions' => []];
+
+            $entries[] = [
+                'realm' => $realm,
+                'stage' => $stageNo,
+                'level_tag' => $levelTag,
+                'grade_level' => $this->gradeLabel($baseGrade, $stageNo),
+                'title' => $source['title'] ?? null,
+                'content' => (string) ($source['content'] ?? ''),
+                'questions' => is_array($source['questions'] ?? null) ? $source['questions'] : [],
+                'source' => 'reading_grade6_import.json',
+            ];
+        }
+
+        return $entries;
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $passages
+     * @return list<array<string, mixed>>
+     */
+    private function tagPassages(array $passages, string $source): array
+    {
+        return array_map(function (array $passage) use ($source) {
+            $passage['source'] = $source;
+
+            return $passage;
+        }, $passages);
+    }
+
+    private function gradeLabel(string $baseGrade, int $stageNo): string
+    {
+        $ladder = match ($baseGrade) {
+            '一年级' => ['一年级', '一年级', '二年级', '二年级', '三年级', '三年级', '四年级', '四年级', '五年级'],
+            '三年级' => ['三年级', '三年级', '四年级', '四年级', '五年级', '五年级', '六年级', '六年级', '六年级'],
+            '六年级' => ['四年级', '五年级', '五年级', '六年级', '六年级', '六年级', '六年级', '六年级', '六年级'],
+            default => array_fill(0, 9, $baseGrade),
+        };
+
+        return $ladder[$stageNo - 1] ?? $baseGrade;
+    }
+
+    private function fallbackTitle(string $content): string
+    {
+        $snippet = trim(preg_replace('/\s+/', ' ', $content) ?? '');
+        if ($snippet === '') {
+            return '阅读短文';
+        }
+
+        return mb_substr($snippet, 0, 24) . (mb_strlen($snippet) > 24 ? '…' : '');
+    }
+
+    private function wordCount(string $content): int
+    {
+        $content = trim($content);
+        if ($content === '') {
+            return 0;
+        }
+
+        return count(preg_split('/\s+/u', $content, -1, PREG_SPLIT_NO_EMPTY) ?: []);
     }
 }

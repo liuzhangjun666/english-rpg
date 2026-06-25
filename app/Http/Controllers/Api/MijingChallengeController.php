@@ -20,6 +20,7 @@ class MijingChallengeController extends Controller
             'module_type' => 'required|string',
             'level' => 'required|string',
             'stage' => 'required|string',
+            'mode' => 'nullable|string|in:normal,boss',
         ]);
 
         $result = $this->challengeService->start(
@@ -27,6 +28,7 @@ class MijingChallengeController extends Controller
             $data['module_type'],
             $data['level'],
             $data['stage'],
+            $data['mode'] ?? 'normal',
         );
 
         if (!$result['success']) {

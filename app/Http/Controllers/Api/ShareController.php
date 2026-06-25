@@ -3,18 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Services\AchievementService;
 use App\Services\ShareRewardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ShareController extends Controller
 {
-    private ShareRewardService $shareService;
-
-    public function __construct(ShareRewardService $shareService)
-    {
-        $this->shareService = $shareService;
-    }
+    public function __construct(
+        private readonly ShareRewardService $shareService,
+        private readonly AchievementService $achievementService,
+    ) {}
 
     /**
      * 获取分享信息
@@ -41,7 +40,21 @@ class ShareController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => ['share_enabled' => (bool)$user->share_enabled],
+            'data' => ['share_enabled' => (bool) $user->share_enabled],
+        ]);
+    }
+
+    /**
+     * 记录分享行为（成就等）
+     * POST /api/share/record
+     */
+    public function record(Request $request): JsonResponse
+    {
+        $new = $this->achievementService->onShare($request->user());
+
+        return response()->json([
+            'success' => true,
+            'data' => ['new_achievements' => $new],
         ]);
     }
 }

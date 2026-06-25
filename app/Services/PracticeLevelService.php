@@ -6,6 +6,7 @@ use App\Models\Question;
 use App\Models\User;
 use App\Models\VocabularyWord;
 use App\Models\WritingPrompt;
+use App\Support\AssessmentLevelResolver;
 use Illuminate\Support\Collection;
 
 /**
@@ -50,32 +51,126 @@ class PracticeLevelService
         return $this->gradeNumberToLabels($target);
     }
 
+    public function getRealmCode(User $user): string
+    {
+        return strtoupper((string) ($user->realm ?? 'L1'));
+    }
+
+    public function getRealmPrefix(User $user): string
+    {
+        return strtoupper(substr($this->getRealmCode($user), 0, 1));
+    }
+
+    public function getEducationStageLabel(User $user): ?string
+    {
+        return match ($this->getRealmPrefix($user)) {
+            'L' => '小学',
+            'Z' => '初中',
+            'J' => '高中',
+            'Y' => '大学',
+            default => null,
+        };
+    }
+
     public function getQuestionPool(User $user, string $type): Collection
     {
-        // 练功房与灵根测试可共用题库；is_assessment 仅表示可用于测评，不应从练功房排除
-        $baseQuery = Question::query()->where('type', $type);
+        $query = Question::query()->where('type', $type);
+        $this->applyStrictRealmScope($query, $user);
 
         $gradeLabels = $this->getGradeLabelsForUser($user);
         if (!empty($gradeLabels)) {
-            $gradeMatched = (clone $baseQuery)
-                ->whereIn('grade_level', $gradeLabels)
-                ->orderBy('question_id')
-                ->get();
-            if ($gradeMatched->isNotEmpty()) {
-                return $gradeMatched;
-            }
+            $this->applyGradeScope($query, $gradeLabels);
         }
 
-        $realmCode = (string) ($user->realm ?? 'L1');
-        $legacy = (clone $baseQuery)
-            ->where('realm', $realmCode)
-            ->orderBy('question_id')
-            ->get();
-        if ($legacy->isNotEmpty()) {
-            return $legacy;
+        if ($type === 'grammar') {
+            AssessmentLevelResolver::applyGrammarPracticeScope($query);
         }
 
-        return $baseQuery->orderBy('question_id')->get();
+        $questions = $query->orderBy('question_id')->get();
+
+        if ($type === 'grammar') {
+            $questions = $questions
+                ->reject(fn (Question $question) => AssessmentLevelResolver::isVocabularyClassificationStem($question->question))
+                ->values();
+        }
+
+        return $questions;
+    }
+
+    public function isQuestionInUserPool(User $user, string $type, string $questionId): bool
+    {
+        $questionId = trim($questionId);
+        if ($questionId === '') {
+            return false;
+        }
+
+        static $cache = [];
+        $key = $user->id . ':' . $type;
+        if (!array_key_exists($key, $cache)) {
+            $cache[$key] = $this->getQuestionPool($user, $type)
+                ->pluck('question_id')
+                ->mapWithKeys(fn ($id) => [(string) $id => true])
+                ->all();
+        }
+
+        return !empty($cache[$key][$questionId]);
+    }
+
+    public function isVocabWordInUserPool(User $user, int $wordId): bool
+    {
+        if ($wordId <= 0) {
+            return false;
+        }
+
+        static $cache = [];
+        $key = (string) $user->id;
+        if (!array_key_exists($key, $cache)) {
+            $cache[$key] = $this->getVocabWordPool($user)
+                ->pluck('id')
+                ->mapWithKeys(fn ($id) => [(int) $id => true])
+                ->all();
+        }
+
+        return !empty($cache[$key][$wordId]);
+    }
+
+    private function applyStrictRealmScope($query, User $user): void
+    {
+        $realmCode = $this->getRealmCode($user);
+        $prefix = $this->getRealmPrefix($user);
+
+        $query->where(function ($q) use ($realmCode, $prefix) {
+            $q->where('realm', $realmCode)
+                ->orWhere('realm', 'like', $prefix . '%');
+        });
+
+        $educationStage = $this->getEducationStageLabel($user);
+        if ($educationStage) {
+            $query->where(function ($q) use ($educationStage) {
+                $q->whereNull('education_stage')
+                    ->orWhere('education_stage', '')
+                    ->orWhere('education_stage', $educationStage);
+            });
+        }
+    }
+
+    private function applyGradeScope($query, array $gradeLabels): void
+    {
+        $query->where(function ($q) use ($gradeLabels) {
+            $q->whereNull('grade_level')
+                ->orWhere('grade_level', '');
+
+            $q->orWhere(function ($inner) use ($gradeLabels) {
+                foreach ($gradeLabels as $label) {
+                    $label = trim((string) $label);
+                    if ($label === '') {
+                        continue;
+                    }
+                    $inner->orWhere('grade_level', $label)
+                        ->orWhere('grade_level', 'like', '%' . $label . '%');
+                }
+            });
+        });
     }
 
     public function getStageLayout(User $user, string $type): array
@@ -129,44 +224,41 @@ class PracticeLevelService
 
     public function getVocabWordPool(User $user): Collection
     {
-        $realmCode = strtoupper((string) ($user->realm ?? 'L1'));
-        $prefix = strtoupper(substr($realmCode, 0, 1));
-        $levelTag = match ($prefix) {
-            'L' => '小学',
-            'Z' => '初中',
-            'J' => '高中',
-            default => null,
-        };
+        $prefix = $this->getRealmPrefix($user);
+        $levelTag = $this->getEducationStageLabel($user);
 
         $query = VocabularyWord::query();
-        if ($levelTag) {
+        if ($prefix === 'Y') {
+            // 大学境界：level_tag=大学，或 grade_level 含 CET4/CET6（与中小学词共用词条时）
+            $query->where(function ($q) {
+                $q->where('level_tag', '大学')
+                    ->orWhere('grade_level', 'like', '%CET4%')
+                    ->orWhere('grade_level', 'like', '%CET6%');
+            });
+        } elseif ($levelTag) {
             $query->where('level_tag', $levelTag);
         }
 
         $gradeLabels = $this->getGradeLabelsForUser($user);
         if (!empty($gradeLabels)) {
             $query->where(function ($q) use ($gradeLabels) {
-                foreach ($gradeLabels as $label) {
-                    $label = trim((string) $label);
-                    if ($label === '') {
-                        continue;
+                $q->whereNull('grade_level')
+                    ->orWhere('grade_level', '');
+
+                $q->orWhere(function ($inner) use ($gradeLabels) {
+                    foreach ($gradeLabels as $label) {
+                        $label = trim((string) $label);
+                        if ($label === '') {
+                            continue;
+                        }
+                        $inner->orWhere('grade_level', $label)
+                            ->orWhere('grade_level', 'like', '%' . $label . '%');
                     }
-                    $q->orWhere('grade_level', 'like', '%' . $label . '%');
-                }
+                });
             });
         }
 
-        $pool = $query->orderBy('lemma')->get();
-        if ($pool->isNotEmpty()) {
-            return $pool;
-        }
-
-        // fallback: if grade label filtering yields none, use level_tag only
-        if ($levelTag) {
-            return VocabularyWord::query()->where('level_tag', $levelTag)->orderBy('lemma')->get();
-        }
-
-        return VocabularyWord::query()->orderBy('lemma')->get();
+        return $query->orderBy('lemma')->get();
     }
 
     public function progressStorageKey(User $user, string $type): string
@@ -198,10 +290,14 @@ class PracticeLevelService
         }
 
         $realmCode = strtoupper((string) ($user->realm ?? 'L1'));
+        $prefix = strtoupper(substr($realmCode, 0, 1));
         $realmStage = str_pad((string) max(1, min(9, (int) ($user->realm_stage ?? 1))), 2, '0', STR_PAD_LEFT);
 
         return WritingPrompt::query()
-            ->where('realm', $realmCode)
+            ->where(function ($q) use ($realmCode, $prefix) {
+                $q->where('realm', $realmCode)
+                    ->orWhere('realm', 'like', $prefix . '%');
+            })
             ->where('stage', $realmStage)
             ->orderBy('prompt_id')
             ->get();

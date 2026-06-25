@@ -3,7 +3,7 @@
     <div class="map-stage">
       <div class="hall-scene" ref="hallSceneRef"></div>
 
-      <button class="daily-quest-fab" @click="showDailyQuest = true" title="今日修炼任务">
+      <button class="daily-quest-fab" @click="panels.showDailyQuest = true" title="今日修炼任务">
         <span class="daily-quest-icon">📅</span>
         <span class="daily-quest-label">每日修炼</span>
       </button>
@@ -13,12 +13,7 @@
     <RadialMenu v-if="activeRadialBuilding" :visible="!!activeRadialBuilding" :x="radialPos.x" :y="radialPos.y"
       :nodes="activeRadialBuilding.subNodes" @close="activeRadialBuilding = null" />
 
-    <ReviewModal v-model:visible="showReview" />
-    <ProfilePanel v-model:visible="showProfile" @open-review="showReview = true" />
-    <HeartDemonRecord v-model:visible="showDemons" />
-    <AchievementsModal v-model:visible="showAchievements" />
-    <DailyQuestPanel v-model:visible="showDailyQuest" />
-    <InnerDemonPanel v-model:visible="showInnerDemon" :auto-challenge="innerDemonAutoChallenge" />
+    <HallModals :panels="panels" @go-mijing="navigation.goMijing()" @go-world-boss="navigation.goWorldBoss()" />
   </div>
 </template>
 
@@ -26,23 +21,15 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
-import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
 import { WorldSceneManager } from '../core/sect/WorldSceneManager';
-import { useMapBuildings, findMapBuilding, getSceneBuildingImages } from '../composables/useMapBuildings';
-import { useMapNavigation } from '../composables/useMapNavigation';
+import { findMapBuilding, getSceneBuildingImages } from '../composables/useMapBuildings';
+import { useHallPanels } from '../composables/useHallPanels';
 
-import GlobalHud from '../components/map/GlobalHud.vue';
 import RadialMenu from '../components/map/RadialMenu.vue';
-import ReviewModal from './ReviewModal.vue';
-import ProfilePanel from '../components/profile/ProfilePanel.vue';
-import HeartDemonRecord from '../components/demons/HeartDemonRecord.vue';
-import AchievementsModal from './AchievementsModal.vue';
-import DailyQuestPanel from './DailyQuestPanel.vue';
-import InnerDemonPanel from '../components/demons/InnerDemonPanel.vue';
+import HallModals from '../components/features/HallModals.vue';
 
 const bridge = useLegacyBridge();
-const ui = useUiStore();
 const userStore = useUserStore();
 
 const hallSceneRef = ref<HTMLElement | null>(null);
@@ -51,33 +38,9 @@ const userRealmLevel = ref(0);
 const radialPos = ref({ x: '50%', y: '50%' });
 const activeRadialBuilding = ref<any>(null);
 
-const showReview = ref(false);
-const showProfile = ref(false);
-const showDemons = ref(false);
-const showAchievements = ref(false);
-const showDailyQuest = ref(false);
-const showInnerDemon = ref(false);
-const innerDemonAutoChallenge = ref(false);
-
-const { goPractice, goReading, goExam, goMijing } = useMapNavigation();
-const { mapBuildings } = useMapBuildings({
-  goPractice,
-  goReading,
-  goExam,
-  goMijing,
-  showDailyQuest: () => { showDailyQuest.value = true; },
-  showAchievements: () => { showAchievements.value = true; },
-  showProfile: () => { showProfile.value = true; },
-  showReview: () => { showReview.value = true; },
-  showDemons: () => { showDemons.value = true; },
-  showInnerDemon: (autoChallenge) => {
-    innerDemonAutoChallenge.value = autoChallenge;
-    showInnerDemon.value = true;
-  },
-});
+const { mapBuildings, panels, navigation } = useHallPanels();
 
 onMounted(async () => {
-  ui.showLoading('加载天地灵气...');
   try {
     const game = await bridge.getGame();
     await game.syncDailyStatus();
@@ -107,10 +70,9 @@ onMounted(async () => {
         if (building) handleBuildingClick(building);
       };
     }
-  } catch {
+  } catch (error) {
+    console.error('[HallView] 地图初始化失败', error);
     ElMessage.error('地图加载失败，请刷新重试');
-  } finally {
-    ui.hideLoading();
   }
 });
 
@@ -186,6 +148,7 @@ function handleBuildingClick(building: any) {
 }
 
 @keyframes fab-pulse {
+
   0%,
   100% {
     box-shadow: 0 0 0 0 rgba(212, 168, 67, 0.3);

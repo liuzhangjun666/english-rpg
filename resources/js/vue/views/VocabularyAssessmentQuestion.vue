@@ -38,18 +38,29 @@
         </div>
 
         <div class="meta-grid">
-          <div class="meta-item">
-            <span class="meta-label">当前难度</span>
-            <span class="meta-value">L{{ progress.current_level }} · {{ currentMajorRealm }}</span>
+          <div class="meta-item meta-item-wide">
+            <span class="meta-label">双轨难度</span>
+            <div class="dual-level-row">
+              <span class="level-pill" :class="{ active: activeDimension === 'vocabulary' }">
+                词汇 {{ formatAssessmentLevel(progress.vocab_current_level) }}
+              </span>
+              <span class="level-pill" :class="{ active: activeDimension === 'grammar' }">
+                语法 {{ formatAssessmentLevel(progress.grammar_current_level) }}
+              </span>
+            </div>
           </div>
           <div class="meta-item">
-            <span class="meta-label">题型</span>
+            <span class="meta-label">试炼起点</span>
+            <span class="meta-value">{{ formatAssessmentLevel(progress.start_level) }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">本题类型</span>
             <span class="meta-value">{{ questionTypeLabel }}</span>
           </div>
-          <div class="meta-item">
-            <span class="meta-label">本题计时</span>
-            <span class="meta-value">{{ timerText }} 秒</span>
-          </div>
+        </div>
+
+        <div class="level-range-hint">
+          升降范围：最低 L{{ progress.min_level }}（比起点低一级）· 最高 L{{ progress.max_level }}
         </div>
 
         <div class="question-panel">
@@ -78,7 +89,10 @@
         >
           <span class="cult-notice-icon">{{ feedback.is_correct ? '✓' : '✗' }}</span>
           <div class="cult-notice-body">
-            <div class="cult-notice-title">{{ feedback.is_correct ? '回答正确' : '回答错误' }}</div>
+            <div class="cult-notice-title">
+              {{ feedback.is_correct ? '回答正确' : '回答错误' }}
+              <span v-if="levelChangeText" class="level-change">{{ levelChangeText }}</span>
+            </div>
             <div v-if="feedbackDescription" class="cult-notice-desc">{{ feedbackDescription }}</div>
           </div>
         </div>
@@ -97,6 +111,20 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRoute, useRouter } from 'vue-router';
 import { useApiClient } from '../services/api';
+import { formatAssessmentLevel } from '../data/assessmentLevels';
+
+const defaultProgress = () => ({
+  current: 0,
+  total: 25,
+  current_level: 1,
+  vocab_current_level: 1,
+  grammar_current_level: 1,
+  start_level: 1,
+  min_level: 1,
+  max_level: 7,
+  active_dimension: '',
+  school_stage: '',
+});
 
 const route = useRoute();
 const router = useRouter();
@@ -119,43 +147,51 @@ const submitting = ref(false);
 const loadError = ref('');
 
 const question = ref<any>(null);
-const progress = ref({ current: 0, total: 25, current_level: 1 });
+const progress = ref(defaultProgress());
 const selectedAnswer = ref('');
 const submitted = ref(false);
 const feedback = ref<any>(null);
 
-const elapsed = ref(0);
-const startTs = ref(0);
-let timer: number | null = null;
-let autoNextTimer: number | null = null;
-
-const currentMajorRealm = computed(() => {
-  const map: Record<number, string> = {
-    1: '练气期',
-    2: '练气期',
-    3: '筑基期',
-    4: '金丹期',
-    5: '元婴期',
-    6: '元婴期',
-    7: '化神期',
-  };
-  return map[Number(progress.value.current_level || 1)] || '练气期';
+const activeDimension = computed(() => {
+  const fromQuestion = String(question.value?.type || '').toLowerCase();
+  if (fromQuestion === 'grammar') return 'grammar';
+  if (fromQuestion === 'vocabulary' || fromQuestion === 'vocab') return 'vocabulary';
+  return String(progress.value.active_dimension || '');
 });
 
 const questionTypeLabel = computed(() => {
-  const type = String(question.value?.type || '').toLowerCase();
-  if (type === 'grammar') {
-    return '语法选择';
+  const stem = String(question.value?.question || '');
+  if (/选出不同类|不同类的一项|哪一项不同/i.test(stem)) {
+    return '词汇分类';
   }
-  return '词汇选择';
+  return activeDimension.value === 'grammar' ? '语法选择' : '词汇选择';
 });
 
-const timerText = computed(() => String(elapsed.value));
+const levelChangeText = computed(() => {
+  if (!feedback.value) return '';
+  const before = Number(feedback.value.level_before || 0);
+  const after = Number(feedback.value.level_after || 0);
+  if (!before || !after || before === after) return ' · 难度不变';
+  if (after > before) return ` · ${feedback.value.question_type === 'grammar' ? '语法' : '词汇'}升至 L${after}`;
+  return ` · ${feedback.value.question_type === 'grammar' ? '语法' : '词汇'}降至 L${after}`;
+});
 const progressPercent = computed(() => {
   const total = Math.max(1, Number(progress.value.total || 1));
   const current = Math.max(0, Math.min(total, Number(progress.value.current || 0)));
   return Math.round((current / total) * 100);
 });
+
+const startTs = ref(0);
+let autoNextTimer: number | null = null;
+
+function mergeProgress(next: Record<string, any> | undefined) {
+  if (!next) return;
+  progress.value = {
+    ...defaultProgress(),
+    ...progress.value,
+    ...next,
+  };
+}
 
 const feedbackDescription = computed(() => {
   if (!feedback.value) return '';
@@ -166,21 +202,11 @@ const feedbackDescription = computed(() => {
 });
 
 function resetTimer() {
-  elapsed.value = 0;
   startTs.value = Date.now();
-  if (timer) {
-    window.clearInterval(timer);
-  }
-  timer = window.setInterval(() => {
-    elapsed.value = Math.max(0, Math.floor((Date.now() - startTs.value) / 1000));
-  }, 1000);
 }
 
 function stopTimer() {
-  if (timer) {
-    window.clearInterval(timer);
-    timer = null;
-  }
+  // kept for lifecycle compatibility
 }
 
 function clearAutoNextTimer() {
@@ -212,7 +238,7 @@ async function nextQuestion() {
     }
 
     question.value = res.data.question;
-    progress.value = res.data.progress;
+    mergeProgress(res.data.progress);
     resetTimer();
   } finally {
     loading.value = false;
@@ -239,7 +265,7 @@ async function submitAnswer() {
 
     feedback.value = res.data;
     submitted.value = true;
-    progress.value.current_level = Number(res.data.level_after || progress.value.current_level);
+    mergeProgress(res.data.progress);
 
     stopTimer();
     const delay = res.data.is_correct ? 450 : 3000;
@@ -359,9 +385,50 @@ onBeforeUnmount(() => {
 
 .meta-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1.4fr 1fr 1fr;
   gap: 10px;
+  margin-bottom: 10px;
+}
+
+.meta-item-wide {
+  grid-column: span 1;
+}
+
+.dual-level-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.level-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 168, 67, 0.22);
+  background: rgba(0, 0, 0, 0.18);
+  color: var(--cult-parchment-dim, #c8b685);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.level-pill.active {
+  border-color: rgba(244, 217, 138, 0.55);
+  background: rgba(212, 168, 67, 0.14);
+  color: var(--cult-gold, #f4d98a);
+}
+
+.level-range-hint {
   margin-bottom: 14px;
+  font-size: 12px;
+  color: var(--cult-parchment-muted, #9a8f6e);
+  line-height: 1.5;
+}
+
+.level-change {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cult-parchment-dim, #c8b685);
 }
 
 .meta-item {

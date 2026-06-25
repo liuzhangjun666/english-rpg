@@ -18,30 +18,19 @@
         <div v-if="activeRadialBuilding" class="radial-backdrop" @click="closeFocus"></div>
 
         <!-- 每日修炼悬浮按钮 -->
-        <button class="daily-quest-fab" @click="showDailyQuest = true" title="今日修炼任务">
+        <button class="daily-quest-fab" @click="panels.showDailyQuest = true" title="今日修炼任务">
           <span class="daily-quest-icon">📅</span>
           <span class="daily-quest-label">每日修炼</span>
         </button>
 
         <!-- 环形菜单 -->
-        <RadialMenu
-          v-if="activeRadialBuilding"
-          :visible="!!activeRadialBuilding"
-          :x="radialPos.x"
-          :y="radialPos.y"
-          :nodes="activeRadialBuilding.subNodes"
-          @close="activeRadialBuilding = null"
-        />
+        <RadialMenu v-if="activeRadialBuilding" :visible="!!activeRadialBuilding" :x="radialPos.x" :y="radialPos.y"
+          :nodes="activeRadialBuilding.subNodes" @close="activeRadialBuilding = null" />
 
         <!-- GlobalHud 已提升至 App.vue 全局挂载，此处不再重复实例 -->
 
         <!-- 弹窗 -->
-        <ReviewModal      v-model:visible="showReview" />
-        <HeartDemonRecord v-model:visible="showDemons" />
-        <AchievementsModal v-model:visible="showAchievements" />
-        <ProfilePanel     v-model:visible="showProfile" @open-review="openReviewFromProfile" />
-        <DailyQuestPanel  v-model:visible="showDailyQuest" />
-        <InnerDemonPanel  v-model:visible="showInnerDemon" :auto-challenge="innerDemonAutoChallenge" />
+        <HallModals :panels="panels" @go-mijing="navigation.goMijing()" @go-world-boss="navigation.goWorldBoss()" />
       </div>
     </Transition>
   </Teleport>
@@ -53,39 +42,33 @@ import { ElMessage } from 'element-plus';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
-import { useMapBuildings, findMapBuilding, getSceneBuildingImages } from '../composables/useMapBuildings';
-import { useMapNavigation } from '../composables/useMapNavigation';
+import { findMapBuilding, getSceneBuildingImages } from '../composables/useMapBuildings';
+import { useHallPanels } from '../composables/useHallPanels';
 import { WorldSceneManager } from '../core/sect/WorldSceneManager';
 
-import RadialMenu       from '../components/map/RadialMenu.vue';
-import GlobalHud        from '../components/map/GlobalHud.vue';
-import ReviewModal      from './ReviewModal.vue';
-import HeartDemonRecord from '../components/demons/HeartDemonRecord.vue';
-import AchievementsModal from './AchievementsModal.vue';
-import ProfilePanel     from '../components/profile/ProfilePanel.vue';
-import DailyQuestPanel  from './DailyQuestPanel.vue';
-import InnerDemonPanel  from '../components/demons/InnerDemonPanel.vue';
+import RadialMenu from '../components/map/RadialMenu.vue';
+import HallModals from '../components/features/HallModals.vue';
 
 const props = defineProps<{ visible: boolean }>();
-const emit  = defineEmits<{ (e: 'close'): void }>();
+const emit = defineEmits<{ (e: 'close'): void }>();
 
-const bridge    = useLegacyBridge();
-const ui        = useUiStore();
+const bridge = useLegacyBridge();
+const ui = useUiStore();
 const userStore = useUserStore();
 
-const overlayRef   = ref<HTMLElement | null>(null);
+const overlayRef = ref<HTMLElement | null>(null);
 const hallSceneRef = ref<HTMLElement | null>(null);
 let worldManager: WorldSceneManager | null = null;
 const userRealmLevel = ref(0);
-const radialPos      = ref({ x: '50%', y: '50%' });
+const radialPos = ref({ x: '50%', y: '50%' });
 
 const activeRadialBuilding = ref<any>(null);
-const showReview      = ref(false);
-const showDemons      = ref(false);
+const showReview = ref(false);
+const showDemons = ref(false);
 const showAchievements = ref(false);
-const showProfile     = ref(false);
-const showDailyQuest  = ref(false);
-const showInnerDemon  = ref(false);
+const showProfile = ref(false);
+const showDailyQuest = ref(false);
+const showInnerDemon = ref(false);
 const innerDemonAutoChallenge = ref(false);
 
 function openReviewFromProfile() {
@@ -226,7 +209,8 @@ watch(activeRadialBuilding, (val) => {
 /* ── 关闭按钮 ── */
 .map-close-btn {
   position: absolute;
-  top: 88px; /* TopHud 76px + 12px 间距 */
+  top: 88px;
+  /* TopHud 76px + 12px 间距 */
   right: 24px;
   z-index: 100;
   width: 40px;
@@ -243,6 +227,7 @@ watch(activeRadialBuilding, (val) => {
   transition: all 0.2s;
   backdrop-filter: blur(4px);
 }
+
 .map-close-btn:hover {
   background: rgba(212, 168, 67, 0.2);
   border-color: #ffd700;
@@ -270,6 +255,7 @@ watch(activeRadialBuilding, (val) => {
   backdrop-filter: blur(4px);
   transition: all 0.2s;
 }
+
 .map-back-btn:hover {
   background: rgba(212, 168, 67, 0.2);
   border-color: #ffd700;
@@ -280,7 +266,8 @@ watch(activeRadialBuilding, (val) => {
 .radial-backdrop {
   position: absolute;
   inset: 0;
-  z-index: 30;            /* 在 canvas(2) 之上，RadialMenu(50) 之下 */
+  z-index: 30;
+  /* 在 canvas(2) 之上，RadialMenu(50) 之下 */
   background: transparent;
   cursor: default;
 }
@@ -303,25 +290,44 @@ watch(activeRadialBuilding, (val) => {
   transition: transform 0.15s, box-shadow 0.15s;
   animation: fab-pulse 3s ease-in-out infinite;
 }
+
 .daily-quest-fab:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 20px rgba(212, 168, 67, 0.4);
   animation: none;
 }
+
 @keyframes fab-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 168, 67, 0.3); }
-  50%       { box-shadow: 0 0 0 8px rgba(212, 168, 67, 0); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(212, 168, 67, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px rgba(212, 168, 67, 0);
+  }
 }
-.daily-quest-icon  { font-size: 22px; }
-.daily-quest-label { font-size: 11px; color: #d4a843; white-space: nowrap; }
+
+.daily-quest-icon {
+  font-size: 22px;
+}
+
+.daily-quest-label {
+  font-size: 11px;
+  color: #d4a843;
+  white-space: nowrap;
+}
 
 /* ── 进入/离开动画 ── */
 .map-overlay-enter-active {
   transition: opacity 0.4s ease;
 }
+
 .map-overlay-leave-active {
   transition: opacity 0.25s ease;
 }
+
 .map-overlay-enter-from,
 .map-overlay-leave-to {
   opacity: 0;

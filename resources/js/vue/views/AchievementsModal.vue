@@ -92,8 +92,13 @@ watch(() => props.visible, async (val) => {
   ui.showLoading('查询成就...');
   try {
     const res = await api.get('/achievements');
-    if (res?.success && Array.isArray(res.data?.unlocked_ids)) {
-      unlockedIds.value = new Set(res.data.unlocked_ids);
+    if (res?.success) {
+      const ids = Array.isArray(res.data?.unlocked_ids)
+        ? res.data.unlocked_ids
+        : (Array.isArray(res.data?.unlocked)
+          ? res.data.unlocked.map((row: { type?: string }) => row.type).filter(Boolean)
+          : []);
+      unlockedIds.value = new Set(ids);
     }
   } catch {
     ElMessage.error('成就碑加载失败');

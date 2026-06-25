@@ -16,6 +16,8 @@ class TimedChallengeService
 {
     public const DURATION_SEC = 60;
     public const SPIRIT_COST = 5;
+    public const BOSS_DURATION_SEC = 90;
+    public const BOSS_SPIRIT_COST = 8;
     public const DEMON_RATIO = 40;
 
     private const MODULE_TYPES = ['vocab', 'grammar', 'listening', 'speaking', 'reading', 'writing'];
@@ -25,20 +27,29 @@ class TimedChallengeService
         private readonly HeartDemonService $demonService,
         private readonly RealmService $realmService,
         private readonly QuestionResolverService $questionResolver,
+        private readonly PracticeLevelService $levelService,
     ) {
     }
 
-    public function start(User $user, string $moduleType, string $level, string $stage): array
+    public function start(User $user, string $moduleType, string $level, string $stage, string $mode = 'normal'): array
     {
+        $isBoss = $mode === 'boss';
+        if ($isBoss) {
+            $moduleType = self::MODULE_TYPES[array_rand(self::MODULE_TYPES)];
+        }
+
         if (!in_array($moduleType, self::MODULE_TYPES, true)) {
             return ['success' => false, 'code' => 'MODULE_NOT_SUPPORTED', 'message' => '不支持的挑战类型'];
         }
 
-        if (!$this->currencyService->hasEnoughSpirit($user, self::SPIRIT_COST)) {
+        $spiritCost = $isBoss ? self::BOSS_SPIRIT_COST : self::SPIRIT_COST;
+        $durationSec = $isBoss ? self::BOSS_DURATION_SEC : self::DURATION_SEC;
+
+        if (!$this->currencyService->hasEnoughSpirit($user, $spiritCost)) {
             return ['success' => false, 'code' => 'INSUFFICIENT_SPIRIT', 'message' => '学习精力不足'];
         }
 
-        $this->currencyService->consumeSpirit($user, self::SPIRIT_COST);
+        $this->currencyService->consumeSpirit($user, $spiritCost);
 
         $session = TimedChallengeSession::create([
             'challenge_id' => 'tc_' . Str::lower(Str::random(20)),
@@ -46,8 +57,8 @@ class TimedChallengeService
             'module_type' => $moduleType,
             'level' => $level,
             'stage' => $stage,
-            'duration_sec' => self::DURATION_SEC,
-            'spirit_cost' => self::SPIRIT_COST,
+            'duration_sec' => $durationSec,
+            'spirit_cost' => $spiritCost,
             'status' => 'running',
             'started_at' => now(),
             'asked_question_ids' => [],
@@ -317,46 +328,45 @@ class TimedChallengeService
             }
         }
 
-        if ($session->module_type === 'vocab') {
-            return $this->pickVocabQuestionPayload($asked);
+        $user = User::query()->find($session->user_id);
+        if (!$user) {
+            return null;
         }
 
-        $normal = Question::where('type', $session->module_type)
-            ->where('realm', $session->level)
-            ->where('stage', $session->stage)
-            ->whereNotIn('question_id', $asked)
-            ->inRandomOrder()
-            ->first();
+        if ($session->module_type === 'vocab') {
+            return $this->pickVocabQuestionPayload($user, $asked);
+        }
+
+        $pool = $this->levelService->getQuestionPool($user, (string) $session->module_type)
+            ->whereNotIn('question_id', $asked);
+
+        $normal = $pool->shuffle()->first();
         if ($normal) {
             return $this->questionResolver->resolve($normal->question_id);
         }
 
-        $fallback = Question::where('type', $session->module_type)
-            ->whereNotIn('question_id', $asked)
-            ->inRandomOrder()
-            ->first();
-        if ($fallback) {
-            return $this->questionResolver->resolve($fallback->question_id);
-        }
-
-        $any = Question::where('type', $session->module_type)->inRandomOrder()->first();
-
-        return $any ? $this->questionResolver->resolve($any->question_id) : null;
+        return null;
     }
 
     private function pickDemonQuestionPayload(TimedChallengeSession $session, array $asked): ?array
     {
+        $user = User::query()->find($session->user_id);
+        if (!$user) {
+            return null;
+        }
+
         $demonIds = HeartDemon::where('user_id', $session->user_id)
             ->where('is_mastered', false)
             ->where('type', $session->module_type)
-            ->where(function ($q) use ($session) {
-                $q->where('realm', $session->level)->orWhereNull('realm');
-            })
+            ->where('realm', (string) ($user->realm ?? $session->level))
             ->whereNotIn('question_id', $asked)
             ->limit(30)
             ->pluck('question_id');
 
         foreach ($demonIds->shuffle() as $questionId) {
+            if (!$this->levelService->isQuestionInUserPool($user, (string) $session->module_type, (string) $questionId)) {
+                continue;
+            }
             $resolved = $this->questionResolver->resolve((string) $questionId);
             if ($resolved) {
                 return $resolved;
@@ -366,14 +376,16 @@ class TimedChallengeService
         return null;
     }
 
-    private function pickVocabQuestionPayload(array $asked): ?array
+    private function pickVocabQuestionPayload(User $user, array $asked): ?array
     {
-        $word = \App\Models\VocabularyWord::query()
-            ->whereNotIn('id', collect($asked)
-                ->map(fn ($qid) => preg_match('/^VW-(\d+)$/', (string) $qid, $m) ? (int) $m[1] : null)
-                ->filter()
-                ->all())
-            ->inRandomOrder()
+        $usedWordIds = collect($asked)
+            ->map(fn ($qid) => preg_match('/^VW-(\d+)$/', (string) $qid, $m) ? (int) $m[1] : null)
+            ->filter()
+            ->all();
+
+        $word = $this->levelService->getVocabWordPool($user)
+            ->when(!empty($usedWordIds), fn ($pool) => $pool->whereNotIn('id', $usedWordIds))
+            ->shuffle()
             ->first();
 
         return $word ? $this->questionResolver->resolve('VW-' . $word->id) : null;

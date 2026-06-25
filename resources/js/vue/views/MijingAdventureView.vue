@@ -4,7 +4,7 @@
       <header v-if="stage !== 'challenge'" class="cult-panel-header">
         <div class="cult-panel-title">
           <span class="cult-panel-icon">✧</span>
-          <span>秘境试炼 · 限时挑战</span>
+          <span>{{ challengeTitle }}</span>
         </div>
         <button class="cult-panel-back" type="button" @click="backHall" title="返回大厅">✕</button>
       </header>
@@ -26,8 +26,12 @@
           <div class="cult-notice info mijing-intro">
             <span class="cult-notice-icon">⏳</span>
             <div class="cult-notice-body">
-              <div class="cult-notice-title">60 秒限时挑战</div>
-              <div class="cult-notice-desc">答题越快、连对越高，得分越高。每次挑战消耗灵力 5 点。</div>
+              <div class="cult-notice-title">{{ isBossMode ? '90 秒世界挑战' : '60 秒限时挑战' }}</div>
+              <div class="cult-notice-desc">
+                {{ isBossMode
+                  ? '上古蜃龙降临！综合六维随机出题，连击越高伤害越大。消耗灵力 8 点。'
+                  : '答题越快、连对越高，得分越高。每次挑战消耗灵力 5 点。' }}
+              </div>
             </div>
           </div>
 
@@ -85,6 +89,21 @@
             <div class="quest-ornament right">✧</div>
           </div>
 
+          <div v-if="optionEntries.length" class="mijing-options">
+            <button
+              v-for="opt in optionEntries"
+              :key="opt.value"
+              type="button"
+              class="mijing-option-btn"
+              :class="{ selected: selectedAnswer === opt.value }"
+              :disabled="answerSubmitting"
+              @click="selectOption(opt.value)"
+            >
+              <span class="opt-label">{{ opt.label }}</span>
+              <span class="opt-text">{{ opt.text }}</span>
+            </button>
+          </div>
+
           <div class="mijing-bottom-bar">
             <button class="mijing-settle-btn" type="button" @click="finishChallenge">提前结算</button>
           </div>
@@ -110,7 +129,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useApiClient } from '../services/api';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
@@ -134,6 +153,7 @@ type MijingSession = {
 };
 
 const router = useRouter();
+const route = useRoute();
 const api = useApiClient();
 const bridge = useLegacyBridge();
 const ui = useUiStore();
@@ -153,6 +173,8 @@ const finishing = ref(false);
 const resultData = ref<Record<string, any> | null>(null);
 const ticker = ref<number | null>(null);
 const resumeCandidate = ref<MijingSession | null>(null);
+const isBossMode = computed(() => String(route.query.mode || '') === 'boss');
+const challengeTitle = computed(() => (isBossMode.value ? '世界挑战 · 虚空蜃龙' : '秘境试炼 · 限时挑战'));
 
 const entry = reactive({
   moduleType: 'vocab',
@@ -296,9 +318,10 @@ async function startChallenge() {
   ui.showLoading('正在开启秘境试炼...');
   try {
     const res = await api.post('/mijing/timed-challenge/start', {
-      module_type: entry.moduleType,
+      module_type: isBossMode.value ? 'vocab' : entry.moduleType,
       level: entry.level.trim().toUpperCase(),
       stage: entry.stage.trim().padStart(2, '0'),
+      mode: isBossMode.value ? 'boss' : 'normal',
     });
     if (!res?.success || !res?.data) {
       ElMessage.error(res?.message || '开启挑战失败');
@@ -473,6 +496,12 @@ async function finishChallenge(opts: { silent?: boolean } = {}) {
   }
 }
 
+function selectOption(value: string) {
+  if (answerSubmitting.value || stage.value !== 'challenge') return;
+  selectedAnswer.value = value;
+  void submitAnswer();
+}
+
 function retry() {
   stage.value = 'entry';
   resultData.value = null;
@@ -592,6 +621,53 @@ function backHall() {
 @keyframes ornament-glow {
   from { opacity: 0.5; }
   to { opacity: 1; }
+}
+
+/* ===== 2D 选项兜底（3D 场景不可用时） ===== */
+.mijing-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  max-width: 700px;
+  margin: 0 auto 12px;
+  padding: 0 16px;
+  position: relative;
+  z-index: 10;
+}
+.mijing-option-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(162, 155, 254, 0.35);
+  background: rgba(20, 10, 40, 0.75);
+  color: #e8e4ff;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+}
+.mijing-option-btn:hover:not(:disabled) {
+  border-color: rgba(85, 239, 196, 0.6);
+  background: rgba(30, 15, 55, 0.9);
+  transform: translateY(-1px);
+}
+.mijing-option-btn.selected {
+  border-color: #55efc4;
+  box-shadow: 0 0 12px rgba(85, 239, 196, 0.25);
+}
+.mijing-option-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.opt-label {
+  flex-shrink: 0;
+  font-weight: 800;
+  color: #a29bfe;
+}
+.opt-text {
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 

@@ -1,0 +1,423 @@
+{
+    "summary": {
+        "realm": "H1",
+        "education_stage": "研究生",
+        "total_passages": 9
+    },
+    "passages": [
+        {
+            "realm": "H1",
+            "stage": "01",
+            "level_tag": "研究生",
+            "grade_level": "研一",
+            "title": "Reading Papers Critically",
+            "content": "In my first graduate seminar, the professor assigned three empirical papers per week and asked us to write one-page critiques. I initially summarized conclusions and thought that was enough. After feedback, I learned to compare sample size, measurement tools, and whether authors acknowledged limits. One paper on online learning showed strong results, but the survey reached only private-school students. Pointing out that limit did not mean rejecting the paper; it meant understanding where findings apply. Graduate reading, I realized, is less about finishing pages and more about judging how evidence is built.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What was wrong with the writer’s first critiques?",
+                    "options": {
+                        "A": "They were too long.",
+                        "B": "They ignored conclusions.",
+                        "C": "They only summarized conclusions.",
+                        "D": "They refused feedback."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "起初只复述结论不够。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "What limit did one online-learning paper have?",
+                    "options": {
+                        "A": "No measurement tools.",
+                        "B": "The survey reached only private-school students.",
+                        "C": "It had no results.",
+                        "D": "It banned seminars."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "样本仅限私立学校学生。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What is graduate reading about?",
+                    "options": {
+                        "A": "Judging how evidence is built.",
+                        "B": "Finishing pages quickly.",
+                        "C": "Rejecting every limit.",
+                        "D": "Avoiding comparisons."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "研究生阅读重在评判证据构建。。（来源：研究生阅读）"
+                }
+            ]
+        },
+        {
+            "realm": "H1",
+            "stage": "02",
+            "level_tag": "研究生",
+            "grade_level": "研一",
+            "title": "Designing a Small Study",
+            "content": "My advisor asked me to design a pilot study on peer feedback in writing classes. I proposed comparing two groups of ten students each. The ethics board reminded me to obtain consent forms and store data anonymously. During the pilot, two students dropped out, so I revised the plan and documented changes transparently. Results were inconclusive, yet the advisor called the pilot successful because it revealed recruitment problems before the full study. I learned that good research documents failures as carefully as successes.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What did the ethics board require?",
+                    "options": {
+                        "A": "Publishing names online.",
+                        "B": "Skipping consent.",
+                        "C": "Larger groups only.",
+                        "D": "Consent forms and anonymous storage."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "伦理审查要求知情同意与匿名存储。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "Why was the pilot still successful?",
+                    "options": {
+                        "A": "It revealed recruitment problems early.",
+                        "B": "No students dropped out.",
+                        "C": "Results were perfect.",
+                        "D": "The advisor cancelled the study."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "试点提前暴露招募问题。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What did the writer learn about research?",
+                    "options": {
+                        "A": "Failures should be hidden.",
+                        "B": "Pilots are useless.",
+                        "C": "Good research documents failures as carefully as successes.",
+                        "D": "Ethics boards block all studies."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "好研究同样认真记录失败。。（来源：研究生阅读）"
+                }
+            ]
+        },
+        {
+            "realm": "H1",
+            "stage": "03",
+            "level_tag": "研究生",
+            "grade_level": "研二",
+            "title": "Presenting at a Conference",
+            "content": "I presented a poster at a regional linguistics conference. Visitors asked sharp questions about whether my coding categories overlapped. I had prepared a one-minute summary, but I had not practiced shorter answers for busy professors walking between posters. After the session, a researcher suggested merging two categories and emailing a revised chart. I sent the chart within two days and received an invitation to join a reading group. Conferences, I learned, are conversations that continue after the hall closes.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What challenge appeared during the session?",
+                    "options": {
+                        "A": "No visitors came.",
+                        "B": "Busy professors needed shorter answers.",
+                        "C": "Posters were banned.",
+                        "D": "Categories never overlapped."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "忙碌学者需要更短回答。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "What did the writer send within two days?",
+                    "options": {
+                        "A": "A new poster only.",
+                        "B": "A conference ticket.",
+                        "C": "A revised chart merging categories.",
+                        "D": "A refusal email."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "两天内寄出修订图表。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What are conferences really like?",
+                    "options": {
+                        "A": "One-minute events only.",
+                        "B": "Conversations that end in the hall.",
+                        "C": "Places to avoid questions.",
+                        "D": "Conversations that continue afterward."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "会议是会后仍在继续的对话。。（来源：研究生阅读）"
+                }
+            ]
+        },
+        {
+            "realm": "H1",
+            "stage": "04",
+            "level_tag": "研究生",
+            "grade_level": "研二",
+            "title": "Teaching Undergraduates",
+            "content": "As a teaching assistant, I led discussion sections for thirty undergraduates. I prepared slides, but students stayed silent until I asked them to write one-sentence responses on paper first. Small written answers became seeds for debate. When a student gave a wrong example, I learned to thank the attempt and redirect with evidence from the reading. Office hours grew crowded before midterms, so I created a shared FAQ document. Teaching taught me that clarity grows when students feel safe to try.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What made students start talking?",
+                    "options": {
+                        "A": "Writing one-sentence responses first.",
+                        "B": "Longer slides only.",
+                        "C": "Removing office hours.",
+                        "D": "Banning wrong examples."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "先写一句话促使讨论。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "How did the writer handle wrong examples?",
+                    "options": {
+                        "A": "By ignoring students.",
+                        "B": "By thanking attempts and redirecting with evidence.",
+                        "C": "By cancelling sections.",
+                        "D": "By removing readings."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "感谢尝试并用文本证据引导。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What helps clarity grow?",
+                    "options": {
+                        "A": "Silence in class.",
+                        "B": "Hiding FAQs.",
+                        "C": "Students feeling safe to try.",
+                        "D": "Avoiding midterms."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "学生敢尝试时讲解更清晰。。（来源：研究生阅读）"
+                }
+            ]
+        },
+        {
+            "realm": "H1",
+            "stage": "05",
+            "level_tag": "研究生",
+            "grade_level": "研三",
+            "title": "Balancing Research and Health",
+            "content": "During thesis drafting, I worked late nights and drank too much coffee. Headaches slowed my writing, and my advisor noticed uneven chapter quality. She recommended time blocks: ninety minutes of writing, fifteen minutes away from screens, and no email before breakfast. I also scheduled a weekly run with labmates. Progress felt slower at first, yet chapters became more coherent. Health, I learned, is not a reward after graduation; it is part of sustainable scholarship.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What problem followed late nights?",
+                    "options": {
+                        "A": "More coherent chapters immediately.",
+                        "B": "Fewer advisor meetings.",
+                        "C": "No coffee available.",
+                        "D": "Headaches and uneven chapter quality."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "熬夜导致头痛与章节质量不稳。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "What schedule did the advisor recommend?",
+                    "options": {
+                        "A": "Email before breakfast.",
+                        "B": "Ninety-minute blocks with breaks and no early email.",
+                        "C": "All-night writing only.",
+                        "D": "No exercise ever."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "建议九十分钟后休息并早起少看邮件。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What is health in scholarship?",
+                    "options": {
+                        "A": "Part of sustainable scholarship.",
+                        "B": "A reward only after graduation.",
+                        "C": "Unrelated to writing.",
+                        "D": "Something to avoid during thesis work."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "健康是可持续学术的一部分。。（来源：研究生阅读）"
+                }
+            ]
+        },
+        {
+            "realm": "H1",
+            "stage": "06",
+            "level_tag": "研究生",
+            "grade_level": "研三",
+            "title": "Collaborating Across Labs",
+            "content": "Our lab partnered with an engineering team to build a language-learning app for migrant children. Weekly meetings failed at first because vocabulary differed: we said \"learners,\" they said \"users,\" and deadlines slipped. We created a shared glossary and assigned one note-taker to publish minutes within six hours. When engineers needed simpler survey wording, linguistics students tested sentences with five families. The app prototype improved, and I learned that interdisciplinary work needs translation between fields, not just between languages.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "Why did early meetings fail?",
+                    "options": {
+                        "A": "Families refused surveys.",
+                        "B": "No prototype existed.",
+                        "C": "Vocabulary differed and deadlines slipped.",
+                        "D": "Minutes were too fast."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "术语不一且进度拖延。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "What tools improved collaboration?",
+                    "options": {
+                        "A": "A shared glossary and quick minutes.",
+                        "B": "Removing all engineers.",
+                        "C": "Avoiding families.",
+                        "D": "Longer deadlines only."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "共享术语表与快速纪要改善合作。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What does interdisciplinary work need?",
+                    "options": {
+                        "A": "Only language translation.",
+                        "B": "No user testing.",
+                        "C": "Separate glossaries.",
+                        "D": "Translation between fields."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "跨学科合作需要不同领域之间的翻译。。（来源：研究生阅读）"
+                }
+            ]
+        },
+        {
+            "realm": "H1",
+            "stage": "07",
+            "level_tag": "研究生",
+            "grade_level": "研三",
+            "title": "Applying for Funding",
+            "content": "I applied for a small research grant to support interview travel. The application required a budget, a timeline, and a plain-language summary for non-experts. I asked a friend outside my field to read the summary and highlight confusing sentences. Reviewers rejected my first attempt but praised the revised budget and community impact section. They funded the second proposal. Grant writing taught me that expert work must be understandable to people who care about outcomes, not only methods.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What did the application require?",
+                    "options": {
+                        "A": "Only exam scores.",
+                        "B": "Budget, timeline, and plain-language summary.",
+                        "C": "A published book.",
+                        "D": "No community impact section."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "申请需预算、时间表与通俗摘要。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "Why was the first attempt rejected?",
+                    "options": {
+                        "A": "It still needed clearer impact and revision though budget later praised.",
+                        "B": "Travel was unnecessary.",
+                        "C": "Friends refused to read.",
+                        "D": "Funding was illegal."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "首轮因影响阐述不足等原因未过。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What does grant writing teach?",
+                    "options": {
+                        "A": "Only methods matter.",
+                        "B": "Experts should avoid plain language.",
+                        "C": "Work must be understandable to people who care about outcomes.",
+                        "D": "Budgets are optional."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "经费写作要让关注结果的人也能理解。。（来源：研究生阅读）"
+                }
+            ]
+        },
+        {
+            "realm": "H1",
+            "stage": "08",
+            "level_tag": "研究生",
+            "grade_level": "研三",
+            "title": "Publishing a First Article",
+            "content": "After revising my thesis chapter, I submitted it to a journal and received major revision comments. Reviewer 2 asked for clearer definitions and more recent references. I initially felt defensive, but my advisor said reviewers were pointing to places readers might stumble. I reorganized the literature review and added a limitations paragraph. The article was accepted eight months later. Publication taught me that revision is dialogue with future readers I may never meet.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What did Reviewer 2 request?",
+                    "options": {
+                        "A": "Removing all references.",
+                        "B": "Shorter definitions only.",
+                        "C": "Immediate acceptance.",
+                        "D": "Clearer definitions and newer references."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "审稿人要求定义更清晰并补充新文献。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "How did the advisor frame the comments?",
+                    "options": {
+                        "A": "As personal attacks.",
+                        "B": "As signs where readers might stumble.",
+                        "C": "As reasons to withdraw.",
+                        "D": "As optional suggestions."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "导师把意见看作读者易困惑之处。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What is revision according to the writer?",
+                    "options": {
+                        "A": "Dialogue with future readers.",
+                        "B": "A sign of failure.",
+                        "C": "Unnecessary after submission.",
+                        "D": "A way to avoid limitations."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "修改是与未来读者的对话。。（来源：研究生阅读）"
+                }
+            ]
+        },
+        {
+            "realm": "H1",
+            "stage": "09",
+            "level_tag": "研究生",
+            "grade_level": "研三",
+            "title": "Planning After the Degree",
+            "content": "Near graduation, I weighed three paths: industry research, a postdoctoral fellowship, and public education policy. I interviewed alumni in each track and noticed that none described a straight line. One friend moved from a lab to a museum education team and said skills transferred through projects, not job titles. I built a portfolio showcasing studies, teaching, and community workshops. Planning after the degree feels less like choosing forever and more like arranging the next experiments in a longer career.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "How many paths did the writer consider?",
+                    "options": {
+                        "A": "One.",
+                        "B": "Two.",
+                        "C": "Three.",
+                        "D": "Five."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "作者考虑三条职业路径。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "What did alumni interviews show?",
+                    "options": {
+                        "A": "Everyone followed one straight line.",
+                        "B": "Careers rarely follow a straight line.",
+                        "C": "Job titles transfer all skills.",
+                        "D": "Portfolios are useless."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "校友职业路径很少笔直。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "How does planning after the degree feel?",
+                    "options": {
+                        "A": "Like choosing forever.",
+                        "B": "Like avoiding experiments.",
+                        "C": "Like hiding workshops.",
+                        "D": "Like arranging the next experiments in a longer career."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "毕业后规划像安排更长职业中的下几步实验。。（来源：研究生阅读）"
+                }
+            ]
+        }
+    ]
+}

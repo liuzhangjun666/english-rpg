@@ -76,6 +76,12 @@ class ShareRewardService
 
         // 给新用户奖励（无条件，不受邀请方限流影响）
         $reward = self::REWARDS['register'];
+        $inviter->increment('spirit_power', $reward['sharer']);
+        $inviter->save();
+
+        app(AchievementService::class)->onInviteRegistered($inviter->fresh());
+
+        // 给新用户奖励
         $newUser->increment('spirit_power', $reward['new_user_spirit']);
         $newUser->spirit_power_max = max($newUser->spirit_power_max, 100);
         $newUser->save();

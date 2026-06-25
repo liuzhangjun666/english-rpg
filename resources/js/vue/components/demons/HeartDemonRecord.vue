@@ -195,7 +195,7 @@ async function startEncounter(demon: DemonViewModel) {
 async function clearMastered() {
   ui.showLoading('净化中...');
   try {
-    await api.post('/demons/clear-mastered'); // 假设之前后端有个 clear 接口，现在改成 clear-mastered 或者使用旧的
+    await api.post('/demons/clear');
     await loadDemons();
   } catch {
     ElMessage.error('清理失败');
@@ -215,7 +215,7 @@ async function clearMastered() {
   justify-content: center;
   z-index: 2000;
   backdrop-filter: blur(8px);
-  font-family: 'Ma Shan Zheng', 'STXingkai', 'KaiTi', serif;
+  font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', sans-serif;
 }
 
 .heart-demon-container {
@@ -246,8 +246,8 @@ async function clearMastered() {
   gap: 4px;
 }
 
-.title-text { font-size: 28px; color: #fca5a5; font-weight: bold; text-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
-.title-sub { font-size: 14px; color: #71717a; }
+.title-text { font-size: 26px; color: #fca5a5; font-weight: bold; text-shadow: 0 0 10px rgba(239, 68, 68, 0.4); letter-spacing: 0.04em; }
+.title-sub { font-size: 14px; color: #a1a1aa; font-family: 'Microsoft YaHei', system-ui, sans-serif; }
 
 .hd-stats {
   display: flex;
@@ -258,16 +258,18 @@ async function clearMastered() {
   text-align: center;
 }
 .stat-val { font-size: 24px; color: #e4e4e7; font-family: monospace; font-weight: bold; }
-.stat-label { font-size: 12px; color: #71717a; }
+.stat-label { font-size: 12px; color: #a1a1aa; font-family: 'Microsoft YaHei', system-ui, sans-serif; }
 
 .hd-close-btn {
   background: rgba(255,255,255,0.05);
   border: 1px solid #3f3f46;
-  color: #a1a1aa;
+  color: #d4d4d8;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
+  font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', sans-serif;
+  font-size: 14px;
 }
 .hd-close-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
@@ -287,7 +289,14 @@ async function clearMastered() {
 }
 
 .hd-section { margin-bottom: 40px; }
-.section-title { font-size: 20px; font-weight: bold; margin-bottom: 16px; border-bottom: 1px solid #27272a; padding-bottom: 8px; }
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #27272a;
+  padding-bottom: 8px;
+  letter-spacing: 0.06em;
+}
 
 .boss-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
 .normal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
@@ -318,13 +327,23 @@ async function clearMastered() {
 }
 .boss-card:hover { border-color: #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
 
-.demon-realm { font-size: 12px; color: #a1a1aa; margin-bottom: 4px; }
+.demon-realm { font-size: 12px; color: #a1a1aa; margin-bottom: 6px; font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', sans-serif; }
 .boss-card .demon-realm { color: #fca5a5; }
 
-.demon-title { font-size: 16px; color: #e4e4e7; margin-bottom: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.boss-card .demon-title { font-size: 20px; color: #f87171; font-weight: bold; }
+.demon-title {
+  font-size: 14px;
+  color: #e4e4e7;
+  margin-bottom: 12px;
+  line-height: 1.5;
+  font-family: 'Microsoft YaHei', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.boss-card .demon-title { font-size: 16px; color: #f87171; font-weight: 600; -webkit-line-clamp: 3; }
 
-.demon-meta { display: flex; justify-content: space-between; font-size: 12px; color: #a1a1aa; }
+.demon-meta { display: flex; justify-content: space-between; font-size: 12px; color: #a1a1aa; font-family: 'Microsoft YaHei', system-ui, sans-serif; }
 
 .demon-progress-bar { height: 4px; background: #27272a; border-radius: 2px; overflow: hidden; margin-top: 10px; }
 .progress-fill { height: 100%; background: #10b981; }
@@ -344,6 +363,8 @@ async function clearMastered() {
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
+  font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', sans-serif;
+  font-size: 14px;
 }
 .rpg-btn:hover { background: rgba(255,255,255,0.1); border-color: #a1a1aa; }
 
@@ -375,16 +396,16 @@ async function clearMastered() {
 .detail-close { background: none; border: none; color: #a1a1aa; font-size: 24px; cursor: pointer; }
 .detail-close:hover { color: #fff; }
 
-.detail-title { font-size: 24px; color: #e4e4e7; margin-bottom: 20px; }
-.detail-story { font-size: 16px; color: #a1a1aa; line-height: 1.8; margin-bottom: 30px; text-align: left; background: #0f1219; padding: 16px; border-radius: 4px; }
+.detail-title { font-size: 20px; color: #e4e4e7; margin-bottom: 20px; line-height: 1.4; font-family: 'Microsoft YaHei', system-ui, sans-serif; }
+.detail-story { font-size: 15px; color: #c4c4cc; line-height: 1.8; margin-bottom: 30px; text-align: left; background: #0f1219; padding: 16px; border-radius: 4px; font-family: 'Microsoft YaHei', system-ui, sans-serif; }
 
 .rpg-btn-slay {
   background: rgba(153, 27, 27, 0.2);
   border: 1px solid #ef4444;
   color: #fca5a5;
   padding: 12px 30px;
-  font-size: 18px;
-  font-family: inherit;
+  font-size: 16px;
+  font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', sans-serif;
   cursor: pointer;
   border-radius: 4px;
   transition: all 0.3s;

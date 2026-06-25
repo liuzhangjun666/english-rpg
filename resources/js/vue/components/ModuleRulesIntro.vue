@@ -26,8 +26,8 @@
     </div>
 
     <div class="cult-actions">
-      <el-button type="primary" @click="emit('confirm')">{{ rules.confirmText || '已了解，开始修炼' }}</el-button>
-      <el-button v-if="showBack" @click="emit('back')">返回大厅</el-button>
+      <el-button type="primary" data-btn-skin="enter" @click="emit('confirm')">{{ rules.confirmText || '已了解，开始修炼' }}</el-button>
+      <el-button v-if="showBack" data-btn-skin="back" @click="emit('back')">返回大厅</el-button>
     </div>
   </div>
 </template>

@@ -4,8 +4,11 @@
     'is-assessment': isAssessmentRoute,
     'has-top-hud': showGlobalHeader,
   }">
-    <div v-if="!auth.bootstrapped" class="boot-splash">
-      <div class="boot-text">正在恢复会话...</div>
+    <div v-if="!auth.bootstrapped" class="boot-splash" aria-hidden="true">
+      <div class="boot-splash-inner">
+        <div class="boot-spinner-ring"></div>
+        <div class="boot-text">正在恢复会话...</div>
+      </div>
     </div>
 
     <template v-else>
@@ -33,13 +36,12 @@
       <AchievementsModal v-model:visible="showGlobalAchievements" />
     </template>
 
-    <el-dialog :model-value="ui.loading" width="280px" :show-close="false" :close-on-click-modal="false"
-      :close-on-press-escape="false" class="loading-dialog">
-      <div class="loading-content">{{ ui.loadingText }}</div>
-    </el-dialog>
+    <CultLoadingOverlay :visible="ui.loading" :text="ui.loadingText" />
 
-    <ProfilePanel v-model:visible="showProfile" @open-review="openReviewFromProfile" />
+    <ProfilePanel v-model:visible="showProfile" @open-review="openReviewFromProfile"
+      @open-parent="showParentDashboard = true" />
     <ReviewModal v-model:visible="showReviewFromProfile" />
+    <ParentDashboardPanel v-model:visible="showParentDashboard" />
     <DemonEncounter />
 
     <WorldMapOverlay :visible="ui.mapOverlayVisible" @close="ui.hideMapOverlay()" />
@@ -56,9 +58,11 @@ import { useUiStore } from './stores/ui';
 import { useStoryStore } from './stores/story';
 import { resolveProfileRealm } from '../utils/cultivation.js';
 import { useLegacyBridge } from './composables/useLegacyBridge';
+import { initGameSoundSettings } from './composables/useGameSound';
 import TopHud from './components/layout/TopHud.vue';
 import ProfilePanel from './components/profile/ProfilePanel.vue';
 import ReviewModal from './views/ReviewModal.vue';
+import ParentDashboardPanel from './components/features/ParentDashboardPanel.vue';
 import DemonEncounter from './components/demons/DemonEncounter.vue';
 import WorldMapOverlay from './views/WorldMapOverlay.vue';
 import LoadingSplash from './components/layout/LoadingSplash.vue';
@@ -194,6 +198,7 @@ const handleProfileUpdate = (e: Event) => {
 };
 
 onMounted(() => {
+  initGameSoundSettings();
   window.addEventListener('profile-updated', handleProfileUpdate);
   router.afterEach(() => { ui.hideMapOverlay(); });
   // 后台预热改由 LoadingSplash + assetPreloader.preloadEssentials() 统一承载，

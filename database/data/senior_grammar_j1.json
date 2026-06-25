@@ -1,0 +1,4268 @@
+{
+    "sources": [
+        "database\/scripts\/SeniorGrammarGenerator.php"
+    ],
+    "summary": {
+        "total_questions": 212,
+        "stage_counts": {
+            "J1-01": 23,
+            "J1-02": 23,
+            "J1-03": 22,
+            "J1-04": 24,
+            "J1-05": 23,
+            "J1-06": 23,
+            "J1-07": 25,
+            "J1-08": 25,
+            "J1-09": 24
+        },
+        "education_stage": "高中",
+        "realm": "J1",
+        "grades": [
+            "高一",
+            "高二",
+            "高三"
+        ]
+    },
+    "questions": [
+        {
+            "question_id": "JGV-J1-01-0001",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "By the time I arrived, the lecture ___.",
+            "options": {
+                "A": "starts",
+                "B": "started",
+                "C": "had started",
+                "D": "has started"
+            },
+            "correct_answer": "C",
+            "explanation": "过去的过去用过去完成时。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0001",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She ___ in this city since she graduated from college.",
+            "options": {
+                "A": "works",
+                "B": "worked",
+                "C": "is working",
+                "D": "has worked"
+            },
+            "correct_answer": "D",
+            "explanation": "since 引导的时间状语用现在完成时。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0001",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "While I ___ along the street, I met an old friend.",
+            "options": {
+                "A": "walk",
+                "B": "was walking",
+                "C": "walked",
+                "D": "have walked"
+            },
+            "correct_answer": "B",
+            "explanation": "while 引导过去进行时。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0002",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I ___ my homework when the power went out.",
+            "options": {
+                "A": "do",
+                "B": "did",
+                "C": "was doing",
+                "D": "have done"
+            },
+            "correct_answer": "C",
+            "explanation": "when 从句一般过去，主句过去进行。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0002",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "They ___ three cities by the end of last month.",
+            "options": {
+                "A": "visit",
+                "B": "visited",
+                "C": "have visited",
+                "D": "had visited"
+            },
+            "correct_answer": "D",
+            "explanation": "by the end of last month 用过去完成时。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0002",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The scientist ___ on this project for five years.",
+            "options": {
+                "A": "works",
+                "B": "worked",
+                "C": "has been working",
+                "D": "had worked"
+            },
+            "correct_answer": "C",
+            "explanation": "for five years 可用现在完成进行时。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0003",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "At this time tomorrow, we ___ an English exam.",
+            "options": {
+                "A": "take",
+                "B": "will be taking",
+                "C": "are taking",
+                "D": "took"
+            },
+            "correct_answer": "B",
+            "explanation": "at this time tomorrow 用将来进行时。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0003",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He said he ___ the book the week before.",
+            "options": {
+                "A": "reads",
+                "B": "read",
+                "C": "had read",
+                "D": "has read"
+            },
+            "correct_answer": "C",
+            "explanation": "间接引语中 the week before 用 had read。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0003",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I have never ___ such a beautiful sunset before.",
+            "options": {
+                "A": "see",
+                "B": "saw",
+                "C": "seen",
+                "D": "seeing"
+            },
+            "correct_answer": "C",
+            "explanation": "never 与现在完成时连用 have seen。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0004",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "When we got to the cinema, the film ___ for ten minutes.",
+            "options": {
+                "A": "begins",
+                "B": "began",
+                "C": "had been on",
+                "D": "has been on"
+            },
+            "correct_answer": "C",
+            "explanation": "电影已开始用 had been on。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0004",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The boy ___ on the sofa is my cousin.",
+            "options": {
+                "A": "sleep",
+                "B": "sleeping",
+                "C": "slept",
+                "D": "to sleep"
+            },
+            "correct_answer": "B",
+            "explanation": "现在分词作后置定语。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0004",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I have a lot of homework ___.",
+            "options": {
+                "A": "do",
+                "B": "doing",
+                "C": "to do",
+                "D": "done"
+            },
+            "correct_answer": "C",
+            "explanation": "不定式作定语。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0005",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ from the hill, the city looks more beautiful.",
+            "options": {
+                "A": "Seen",
+                "B": "Seeing",
+                "C": "To see",
+                "D": "See"
+            },
+            "correct_answer": "A",
+            "explanation": "过去分词作状语表被动。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0005",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The teacher came in, ___ by two students.",
+            "options": {
+                "A": "follow",
+                "B": "following",
+                "C": "followed",
+                "D": "to follow"
+            },
+            "correct_answer": "C",
+            "explanation": "followed 表被动“被跟随”。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0005",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is important for us ___ a foreign language.",
+            "options": {
+                "A": "learn",
+                "B": "to learn",
+                "C": "learning",
+                "D": "learned"
+            },
+            "correct_answer": "B",
+            "explanation": "It is + adj + for sb to do。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0006",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She seems ___ the truth.",
+            "options": {
+                "A": "know",
+                "B": "knowing",
+                "C": "to know",
+                "D": "known"
+            },
+            "correct_answer": "C",
+            "explanation": "seem to do。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0006",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I regret ___ you that you failed the test.",
+            "options": {
+                "A": "tell",
+                "B": "to tell",
+                "C": "telling",
+                "D": "told"
+            },
+            "correct_answer": "B",
+            "explanation": "regret to do 遗憾地做（将做）。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0006",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Remember ___ the door when you leave.",
+            "options": {
+                "A": "lock",
+                "B": "to lock",
+                "C": "locking",
+                "D": "locked"
+            },
+            "correct_answer": "B",
+            "explanation": "remember to do 记得去做。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0007",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The problem is difficult ___.",
+            "options": {
+                "A": "solve",
+                "B": "solving",
+                "C": "to solve",
+                "D": "solved"
+            },
+            "correct_answer": "C",
+            "explanation": "不定式作表语补语。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0007",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He was made ___ the truth.",
+            "options": {
+                "A": "say",
+                "B": "to say",
+                "C": "saying",
+                "D": "said"
+            },
+            "correct_answer": "B",
+            "explanation": "被动语态 make 后 to 不省略。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0007",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "This is the school ___ I studied for three years.",
+            "options": {
+                "A": "who",
+                "B": "where",
+                "C": "which",
+                "D": "that"
+            },
+            "correct_answer": "B",
+            "explanation": "where 引导定语从句表地点。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0008",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The reason ___ he was late was that he missed the bus.",
+            "options": {
+                "A": "which",
+                "B": "who",
+                "C": "why",
+                "D": "that"
+            },
+            "correct_answer": "C",
+            "explanation": "the reason why 固定搭配。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0008",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I will never forget the day ___ I first met my best friend.",
+            "options": {
+                "A": "which",
+                "B": "when",
+                "C": "where",
+                "D": "that"
+            },
+            "correct_answer": "B",
+            "explanation": "时间先行词用 when。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0008",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Anyone ___ breaks the law will be punished.",
+            "options": {
+                "A": "who",
+                "B": "which",
+                "C": "whom",
+                "D": "whose"
+            },
+            "correct_answer": "A",
+            "explanation": "修饰人用 who。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0009",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The house ___ windows face south is for sale.",
+            "options": {
+                "A": "who",
+                "B": "which",
+                "C": "whom",
+                "D": "whose"
+            },
+            "correct_answer": "D",
+            "explanation": "whose 表所属关系。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0009",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is not the man ___ he used to be.",
+            "options": {
+                "A": "who",
+                "B": "whom",
+                "C": "that",
+                "D": "which"
+            },
+            "correct_answer": "C",
+            "explanation": "the man that he used to be。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0009",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ is known to all, the earth goes around the sun.",
+            "options": {
+                "A": "As",
+                "B": "Which",
+                "C": "That",
+                "D": "What"
+            },
+            "correct_answer": "A",
+            "explanation": "as 引导非限制性定语从句。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0010",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I don't like the way ___ he speaks to his parents.",
+            "options": {
+                "A": "which",
+                "B": "who",
+                "C": "that",
+                "D": "whom"
+            },
+            "correct_answer": "C",
+            "explanation": "the way that\/in which。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0010",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The book ___ cover is red belongs to Tom.",
+            "options": {
+                "A": "who",
+                "B": "which",
+                "C": "whom",
+                "D": "whose"
+            },
+            "correct_answer": "D",
+            "explanation": "whose cover 书的封面。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0010",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He has two sons, both of ___ are doctors.",
+            "options": {
+                "A": "who",
+                "B": "which",
+                "C": "whom",
+                "D": "them"
+            },
+            "correct_answer": "C",
+            "explanation": "both of whom 非限制性定语从句。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0011",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ it was raining heavily, they continued their journey.",
+            "options": {
+                "A": "Because",
+                "B": "Although",
+                "C": "Since",
+                "D": "As"
+            },
+            "correct_answer": "B",
+            "explanation": "although 表让步“尽管”。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0011",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He spoke loudly ___ everyone could hear him.",
+            "options": {
+                "A": "so that",
+                "B": "because",
+                "C": "although",
+                "D": "unless"
+            },
+            "correct_answer": "A",
+            "explanation": "so that 表目的“以便”。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0011",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I will call you ___ I arrive at the airport.",
+            "options": {
+                "A": "as soon as",
+                "B": "while",
+                "C": "until",
+                "D": "since"
+            },
+            "correct_answer": "A",
+            "explanation": "as soon as 一……就。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0012",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ you work hard, you will succeed.",
+            "options": {
+                "A": "If",
+                "B": "Unless",
+                "C": "Until",
+                "D": "While"
+            },
+            "correct_answer": "A",
+            "explanation": "if 引导条件状语从句。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0012",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She has been living here ___ she was born.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "since",
+                "D": "from"
+            },
+            "correct_answer": "C",
+            "explanation": "since + 时间点。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0012",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He didn't go to bed ___ he finished his work.",
+            "options": {
+                "A": "when",
+                "B": "while",
+                "C": "until",
+                "D": "since"
+            },
+            "correct_answer": "C",
+            "explanation": "not...until 直到……才。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0013",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ hard you try, you can't solve it alone.",
+            "options": {
+                "A": "What",
+                "B": "However",
+                "C": "Whatever",
+                "D": "Whichever"
+            },
+            "correct_answer": "B",
+            "explanation": "however hard 无论怎样努力。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0013",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ I have time, I will help you.",
+            "options": {
+                "A": "If",
+                "B": "Although",
+                "C": "Because",
+                "D": "Since"
+            },
+            "correct_answer": "A",
+            "explanation": "if 表条件。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0013",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The ___ look on her face told us something was wrong.",
+            "options": {
+                "A": "worry",
+                "B": "worried",
+                "C": "worrying",
+                "D": "worries"
+            },
+            "correct_answer": "B",
+            "explanation": "worried look 担忧的表情。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0014",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The ___ news made everyone excited.",
+            "options": {
+                "A": "excite",
+                "B": "excited",
+                "C": "exciting",
+                "D": "excites"
+            },
+            "correct_answer": "C",
+            "explanation": "exciting news 令人兴奋的消息。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0014",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He spoke in a ___ voice.",
+            "options": {
+                "A": "fright",
+                "B": "frightened",
+                "C": "frightening",
+                "D": "frighten"
+            },
+            "correct_answer": "B",
+            "explanation": "frightened voice 惊恐的声音。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0014",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is ___ to travel without a map in a strange city.",
+            "options": {
+                "A": "danger",
+                "B": "dangerous",
+                "C": "endangered",
+                "D": "endanger"
+            },
+            "correct_answer": "B",
+            "explanation": "It is dangerous to do。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0015",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The number of students in our school ___ increasing.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "the number of 谓语单数。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0015",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "A large number of students ___ against the plan.",
+            "options": {
+                "A": "is",
+                "B": "was",
+                "C": "are",
+                "D": "be"
+            },
+            "correct_answer": "C",
+            "explanation": "a large number of 谓语复数。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0015",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Not only the students but also the teacher ___ present.",
+            "options": {
+                "A": "are",
+                "B": "was",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "就近原则 teacher → was。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0016",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Every student and every teacher ___ to attend.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "every...and every... 谓语单数。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0016",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The United States ___ a developed country.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "国名单数谓语。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0016",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Mathematics ___ my favorite subject.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "学科名单数谓语。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0017",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It was in this lab ___ the experiment was carried out.",
+            "options": {
+                "A": "which",
+                "B": "that",
+                "C": "where",
+                "D": "when"
+            },
+            "correct_answer": "B",
+            "explanation": "强调句 It was...that。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0017",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Only when he apologized ___ she forgive him.",
+            "options": {
+                "A": "did",
+                "B": "did",
+                "C": "does",
+                "D": "do"
+            },
+            "correct_answer": "B",
+            "explanation": "Only when 置于句首部分倒装。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0017",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Never ___ such a wonderful performance.",
+            "options": {
+                "A": "I have seen",
+                "B": "I had seen",
+                "C": "have I seen",
+                "D": "had I seen"
+            },
+            "correct_answer": "C",
+            "explanation": "Never 置于句首倒装。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0018",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "If I ___ you, I would accept the offer.",
+            "options": {
+                "A": "am",
+                "B": "were",
+                "C": "was",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "虚拟语气 If I were you。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0018",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I wish I ___ taller.",
+            "options": {
+                "A": "am",
+                "B": "was",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "C",
+            "explanation": "wish 从句用过去式表虚拟。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0018",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Only when he apologized ___ she forgive him.",
+            "options": {
+                "A": "did",
+                "B": "does",
+                "C": "do",
+                "D": "would"
+            },
+            "correct_answer": "A",
+            "explanation": "Only when 部分倒装 did。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0019",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is necessary that he ___ the rules.",
+            "options": {
+                "A": "obey",
+                "B": "should obey",
+                "C": "obeys",
+                "D": "obeyed"
+            },
+            "correct_answer": "B",
+            "explanation": "necessary that 用 (should) do。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0019",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The doctor insisted that he ___ nothing serious.",
+            "options": {
+                "A": "has",
+                "B": "have",
+                "C": "had",
+                "D": "having"
+            },
+            "correct_answer": "C",
+            "explanation": "insist 坚持说，用陈述语气过去时。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0019",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "What he said sounds ___.",
+            "options": {
+                "A": "reason",
+                "B": "reasonable",
+                "C": "reasonably",
+                "D": "reasoning"
+            },
+            "correct_answer": "B",
+            "explanation": "sound 系动词后接形容词。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0020",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The project is well worth ___.",
+            "options": {
+                "A": "do",
+                "B": "to do",
+                "C": "doing",
+                "D": "done"
+            },
+            "correct_answer": "C",
+            "explanation": "be worth doing。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0020",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is used to ___ up early.",
+            "options": {
+                "A": "get",
+                "B": "getting",
+                "C": "got",
+                "D": "gets"
+            },
+            "correct_answer": "B",
+            "explanation": "be used to doing。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0020",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "There is no point ___ about it.",
+            "options": {
+                "A": "worry",
+                "B": "to worry",
+                "C": "in worrying",
+                "D": "worried"
+            },
+            "correct_answer": "C",
+            "explanation": "there is no point in doing。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0021",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She can't help ___ when she hears the joke.",
+            "options": {
+                "A": "laugh",
+                "B": "to laugh",
+                "C": "laughing",
+                "D": "laughed"
+            },
+            "correct_answer": "C",
+            "explanation": "can't help doing 忍不住。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0021",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I would appreciate ___ if you could help me.",
+            "options": {
+                "A": "that",
+                "B": "it",
+                "C": "this",
+                "D": "one"
+            },
+            "correct_answer": "B",
+            "explanation": "appreciate it if 固定句型。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0021",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is the first time that I ___ Beijing.",
+            "options": {
+                "A": "visit",
+                "B": "visited",
+                "C": "have visited",
+                "D": "had visited"
+            },
+            "correct_answer": "C",
+            "explanation": "It is the first time + 现在完成时。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0022",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Hardly ___ home when it began to rain.",
+            "options": {
+                "A": "had he got",
+                "B": "he had got",
+                "C": "did he get",
+                "D": "he got"
+            },
+            "correct_answer": "A",
+            "explanation": "Hardly had he got when。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0022",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "So difficult ___ that few students can answer it.",
+            "options": {
+                "A": "the problem is",
+                "B": "is the problem",
+                "C": "was the problem",
+                "D": "the problem was"
+            },
+            "correct_answer": "B",
+            "explanation": "So difficult is the problem 倒装。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-03-0022",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "03",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The meeting ___ next Monday has been put off.",
+            "options": {
+                "A": "hold",
+                "B": "to hold",
+                "C": "to be held",
+                "D": "holding"
+            },
+            "correct_answer": "C",
+            "explanation": "不定式被动作定语。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-01-0023",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "01",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I have no idea ___ he will come back.",
+            "options": {
+                "A": "what",
+                "B": "when",
+                "C": "which",
+                "D": "who"
+            },
+            "correct_answer": "B",
+            "explanation": "when 引导同位语从句\/宾语从句。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-02-0023",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "02",
+            "education_stage": "高中",
+            "grade_level": "高一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He devoted all his time ___ the research.",
+            "options": {
+                "A": "do",
+                "B": "to do",
+                "C": "to doing",
+                "D": "doing"
+            },
+            "correct_answer": "C",
+            "explanation": "devote...to doing。（来源：高中语法 · 高一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0001",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The bridge ___ next year.",
+            "options": {
+                "A": "builds",
+                "B": "built",
+                "C": "will be built",
+                "D": "is building"
+            },
+            "correct_answer": "C",
+            "explanation": "将来被动 will be built。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0001",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The problem is believed ___ by human activity.",
+            "options": {
+                "A": "cause",
+                "B": "to cause",
+                "C": "to be caused",
+                "D": "causing"
+            },
+            "correct_answer": "C",
+            "explanation": "be believed to be done 被动不定式。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0001",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is said ___ abroad for three years.",
+            "options": {
+                "A": "study",
+                "B": "to have studied",
+                "C": "to study",
+                "D": "studying"
+            },
+            "correct_answer": "B",
+            "explanation": "be said to have done 据说已经。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0002",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The book is worth ___.",
+            "options": {
+                "A": "read",
+                "B": "to read",
+                "C": "reading",
+                "D": "being read"
+            },
+            "correct_answer": "C",
+            "explanation": "be worth reading 值得读。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0002",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The window needs ___.",
+            "options": {
+                "A": "repair",
+                "B": "to repair",
+                "C": "repairing",
+                "D": "repaired"
+            },
+            "correct_answer": "C",
+            "explanation": "need doing 需要被修。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0002",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He had his wallet ___ on the bus.",
+            "options": {
+                "A": "steal",
+                "B": "to steal",
+                "C": "stolen",
+                "D": "stealing"
+            },
+            "correct_answer": "C",
+            "explanation": "have sth done 使某事被做。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0003",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I'd like my hair ___ this afternoon.",
+            "options": {
+                "A": "cut",
+                "B": "to cut",
+                "C": "cut",
+                "D": "cutting"
+            },
+            "correct_answer": "C",
+            "explanation": "have\/get sth done。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0003",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The murderer was reported ___ in a nearby village.",
+            "options": {
+                "A": "see",
+                "B": "to see",
+                "C": "to have been seen",
+                "D": "seeing"
+            },
+            "correct_answer": "C",
+            "explanation": "据报道曾被看见。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0003",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "English ___ as an official language in many countries.",
+            "options": {
+                "A": "speaks",
+                "B": "is spoken",
+                "C": "spoke",
+                "D": "speaking"
+            },
+            "correct_answer": "B",
+            "explanation": "被动 is spoken。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0004",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "A new teaching building ___ in our school now.",
+            "options": {
+                "A": "builds",
+                "B": "built",
+                "C": "is being built",
+                "D": "was built"
+            },
+            "correct_answer": "C",
+            "explanation": "现在进行被动 is being built。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0004",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The fact ___ he succeeded encouraged us.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "the fact that 同位语从句。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0004",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is obvious ___ he is lying.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "It is obvious that。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0005",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I have no doubt ___ she will win the competition.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "if"
+            },
+            "correct_answer": "C",
+            "explanation": "no doubt that 毫无疑问。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0005",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The question is ___ we can finish it on time.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "whether",
+                "D": "that"
+            },
+            "correct_answer": "C",
+            "explanation": "whether 是否。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0005",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Word came ___ our team had won the game.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "word came that 消息传来。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0006",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "What surprised me was ___ he refused the offer.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "表语从句 that。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0006",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It remains to be seen ___ the plan will work.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "whether",
+                "D": "that"
+            },
+            "correct_answer": "C",
+            "explanation": "whether 是否。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0006",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He told me ___ he had already finished the task.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "陈述句转 that 从句。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0007",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I wonder ___ caused the accident.",
+            "options": {
+                "A": "what",
+                "B": "that",
+                "C": "which",
+                "D": "who"
+            },
+            "correct_answer": "A",
+            "explanation": "what 作主语。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0007",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The reason why he left is ___ he was unhappy.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "because"
+            },
+            "correct_answer": "C",
+            "explanation": "the reason is that 不用 because。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0007",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ from the top of the mountain, the city is breathtaking.",
+            "options": {
+                "A": "Seen",
+                "B": "Seeing",
+                "C": "To see",
+                "D": "See"
+            },
+            "correct_answer": "A",
+            "explanation": "Seen 表被动“被看”。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0008",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ carefully, the problem can be solved.",
+            "options": {
+                "A": "Analyze",
+                "B": "Analyzed",
+                "C": "Analyzing",
+                "D": "To analyze"
+            },
+            "correct_answer": "B",
+            "explanation": "Analyzed 表条件“如果被分析”。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0008",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The girl ___ in the corner is my sister.",
+            "options": {
+                "A": "seat",
+                "B": "seated",
+                "C": "seating",
+                "D": "sit"
+            },
+            "correct_answer": "B",
+            "explanation": "seated 表状态。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0008",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ more attention, the trees could have grown better.",
+            "options": {
+                "A": "Given",
+                "B": "Giving",
+                "C": "To give",
+                "D": "Give"
+            },
+            "correct_answer": "A",
+            "explanation": "Given 表假设“如果被给予”。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0009",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The building ___ last year is our library.",
+            "options": {
+                "A": "complete",
+                "B": "completing",
+                "C": "completed",
+                "D": "to complete"
+            },
+            "correct_answer": "C",
+            "explanation": "completed 表被动完成。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0009",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ tired, he went to bed early.",
+            "options": {
+                "A": "Feel",
+                "B": "Feeling",
+                "C": "Felt",
+                "D": "To feel"
+            },
+            "correct_answer": "B",
+            "explanation": "feeling 表原因状语。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0009",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The speech ___ at the meeting was inspiring.",
+            "options": {
+                "A": "deliver",
+                "B": "delivering",
+                "C": "delivered",
+                "D": "to deliver"
+            },
+            "correct_answer": "C",
+            "explanation": "delivered 被动定语。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0010",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ time and money, we finished the project.",
+            "options": {
+                "A": "Lack",
+                "B": "Lacking",
+                "C": "Lacked",
+                "D": "To lack"
+            },
+            "correct_answer": "B",
+            "explanation": "lacking 表原因“由于缺乏”。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0010",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It was Tom ___ broke the window.",
+            "options": {
+                "A": "who",
+                "B": "that",
+                "C": "which",
+                "D": "whom"
+            },
+            "correct_answer": "B",
+            "explanation": "强调人可用 who\/that。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0010",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It was yesterday ___ we met the famous writer.",
+            "options": {
+                "A": "which",
+                "B": "that",
+                "C": "when",
+                "D": "where"
+            },
+            "correct_answer": "B",
+            "explanation": "强调时间用 that。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0011",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is kindness ___ the world needs most.",
+            "options": {
+                "A": "who",
+                "B": "which",
+                "C": "that",
+                "D": "what"
+            },
+            "correct_answer": "C",
+            "explanation": "强调句型 It is...that。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0011",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Was it in the library ___ you lost your keys?",
+            "options": {
+                "A": "which",
+                "B": "that",
+                "C": "where",
+                "D": "when"
+            },
+            "correct_answer": "B",
+            "explanation": "强调地点用 that。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0011",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It was not until midnight ___ he came back.",
+            "options": {
+                "A": "which",
+                "B": "that",
+                "C": "when",
+                "D": "then"
+            },
+            "correct_answer": "B",
+            "explanation": "not until 强调句。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0012",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ I need is your support.",
+            "options": {
+                "A": "What",
+                "B": "That",
+                "C": "Which",
+                "D": "Who"
+            },
+            "correct_answer": "A",
+            "explanation": "What 引导主语从句。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0012",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ matters most is not money but health.",
+            "options": {
+                "A": "What",
+                "B": "That",
+                "C": "Which",
+                "D": "Who"
+            },
+            "correct_answer": "A",
+            "explanation": "What matters most。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0012",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It doesn't matter ___ you start, as long as you don't stop.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "when",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "when 引导从句。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0013",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Little ___ that he would become a scientist.",
+            "options": {
+                "A": "he knew",
+                "B": "did he know",
+                "C": "he did know",
+                "D": "knew he"
+            },
+            "correct_answer": "B",
+            "explanation": "Little 置于句首倒装。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0013",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Not until he came back ___ go to bed.",
+            "options": {
+                "A": "did she",
+                "B": "she did",
+                "C": "does she",
+                "D": "she does"
+            },
+            "correct_answer": "A",
+            "explanation": "Not until 倒装 did she。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0013",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Only in this way ___ solve the problem.",
+            "options": {
+                "A": "we can",
+                "B": "can we",
+                "C": "we could",
+                "D": "could we"
+            },
+            "correct_answer": "B",
+            "explanation": "Only in this way can we。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0014",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Seldom ___ such a beautiful place.",
+            "options": {
+                "A": "I have seen",
+                "B": "I had seen",
+                "C": "have I seen",
+                "D": "had I seen"
+            },
+            "correct_answer": "C",
+            "explanation": "Seldom 倒装。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0014",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Under the tree ___ two old men playing chess.",
+            "options": {
+                "A": "are sitting",
+                "B": "sat",
+                "C": "sitting",
+                "D": "sit"
+            },
+            "correct_answer": "B",
+            "explanation": "地点状语前置倒装。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0014",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Such ___ the result that everyone was shocked.",
+            "options": {
+                "A": "is",
+                "B": "was",
+                "C": "were",
+                "D": "are"
+            },
+            "correct_answer": "B",
+            "explanation": "Such was the result 倒装。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0015",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "If it ___ for your help, I would have failed.",
+            "options": {
+                "A": "is not",
+                "B": "had not been",
+                "C": "were not",
+                "D": "has not been"
+            },
+            "correct_answer": "B",
+            "explanation": "与过去相反 had not been。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0015",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "If I ___ more time, I would travel around the world.",
+            "options": {
+                "A": "have",
+                "B": "had",
+                "C": "will have",
+                "D": "would have"
+            },
+            "correct_answer": "B",
+            "explanation": "与现在相反用 had。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0015",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I wish I ___ harder when I was in senior high.",
+            "options": {
+                "A": "study",
+                "B": "had studied",
+                "C": "studied",
+                "D": "would study"
+            },
+            "correct_answer": "B",
+            "explanation": "wish 与过去相反 had studied。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0016",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "But for the rain, we ___ the sports meeting.",
+            "options": {
+                "A": "hold",
+                "B": "held",
+                "C": "would have held",
+                "D": "will hold"
+            },
+            "correct_answer": "C",
+            "explanation": "but for 含蓄虚拟 would have done。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0016",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Without electricity, modern life ___ impossible.",
+            "options": {
+                "A": "is",
+                "B": "would be",
+                "C": "was",
+                "D": "will be"
+            },
+            "correct_answer": "B",
+            "explanation": "without 含蓄虚拟 would be。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0016",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is high time that we ___ action.",
+            "options": {
+                "A": "take",
+                "B": "took",
+                "C": "will take",
+                "D": "would take"
+            },
+            "correct_answer": "B",
+            "explanation": "It is high time that + 过去式。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0017",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "If only he ___ here now!",
+            "options": {
+                "A": "is",
+                "B": "were",
+                "C": "was",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "If only 与现在相反 were。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0017",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The boss ordered that the report ___ submitted by Friday.",
+            "options": {
+                "A": "is",
+                "B": "be",
+                "C": "was",
+                "D": "being"
+            },
+            "correct_answer": "B",
+            "explanation": "order that sb (should) be。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0017",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The way ___ he explained the problem was clear.",
+            "options": {
+                "A": "which",
+                "B": "in which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "the way that 或 in which。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0018",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is a man of few words but ___ he says counts.",
+            "options": {
+                "A": "which",
+                "B": "that",
+                "C": "what",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "what he says 主语从句。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0018",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is no wonder ___ he passed the exam.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "no wonder that。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0018",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "There is no denying ___ practice makes perfect.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "no denying that。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0019",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is thought ___ honest.",
+            "options": {
+                "A": "be",
+                "B": "to be",
+                "C": "being",
+                "D": "been"
+            },
+            "correct_answer": "B",
+            "explanation": "be thought to be。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0019",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I object to ___ treated like a child.",
+            "options": {
+                "A": "be",
+                "B": "being",
+                "C": "been",
+                "D": "to be"
+            },
+            "correct_answer": "B",
+            "explanation": "object to being done。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0019",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Rather than ___ idle, he volunteered to help.",
+            "options": {
+                "A": "stay",
+                "B": "staying",
+                "C": "stayed",
+                "D": "to stay"
+            },
+            "correct_answer": "A",
+            "explanation": "rather than do 而不是。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0020",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The more you read, the ___ you will understand.",
+            "options": {
+                "A": "much",
+                "B": "many",
+                "C": "more",
+                "D": "most"
+            },
+            "correct_answer": "C",
+            "explanation": "the more...the more。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0020",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is the last person ___ I want to see.",
+            "options": {
+                "A": "who",
+                "B": "whom",
+                "C": "that",
+                "D": "which"
+            },
+            "correct_answer": "C",
+            "explanation": "the last person that。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0020",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "All ___ is needed is time and patience.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "all that is needed。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0021",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He spoke as if he ___ everything.",
+            "options": {
+                "A": "knows",
+                "B": "knew",
+                "C": "had known",
+                "D": "know"
+            },
+            "correct_answer": "C",
+            "explanation": "as if 与过去相反 had known。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0021",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "You might as well ___ the truth.",
+            "options": {
+                "A": "tell",
+                "B": "telling",
+                "C": "to tell",
+                "D": "told"
+            },
+            "correct_answer": "A",
+            "explanation": "might as well do。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0021",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is likely ___ it will rain tomorrow.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "It is likely that。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0022",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He avoided ___ eye contact with the teacher.",
+            "options": {
+                "A": "make",
+                "B": "to make",
+                "C": "making",
+                "D": "made"
+            },
+            "correct_answer": "C",
+            "explanation": "avoid doing。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0022",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The accident resulted ___ three deaths.",
+            "options": {
+                "A": "in",
+                "B": "from",
+                "C": "of",
+                "D": "to"
+            },
+            "correct_answer": "A",
+            "explanation": "result in 导致。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0022",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "His success resulted ___ hard work.",
+            "options": {
+                "A": "in",
+                "B": "from",
+                "C": "of",
+                "D": "to"
+            },
+            "correct_answer": "B",
+            "explanation": "result from 源于。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0023",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She is capable ___ solving the problem.",
+            "options": {
+                "A": "for",
+                "B": "with",
+                "C": "of",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "capable of doing。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-05-0023",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "05",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is independent ___ his parents now.",
+            "options": {
+                "A": "with",
+                "B": "from",
+                "C": "of",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "independent of 不依赖。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-06-0023",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "06",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We must adapt ourselves ___ the new environment.",
+            "options": {
+                "A": "with",
+                "B": "for",
+                "C": "to",
+                "D": "in"
+            },
+            "correct_answer": "C",
+            "explanation": "adapt to 适应。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-04-0024",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "04",
+            "education_stage": "高中",
+            "grade_level": "高二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The plan aims ___ improving students' English.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "at",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "aim at 旨在。（来源：高中语法 · 高二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0001",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "—Will you join us? —I'd love to if ___.",
+            "options": {
+                "A": "invite",
+                "B": "invited",
+                "C": "inviting",
+                "D": "to invite"
+            },
+            "correct_answer": "B",
+            "explanation": "if invited 省略 if I am invited。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0001",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He didn't come, though ___.",
+            "options": {
+                "A": "ask",
+                "B": "asking",
+                "C": "asked",
+                "D": "to ask"
+            },
+            "correct_answer": "C",
+            "explanation": "though asked 省略 he was asked。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0001",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "—Are you a teacher? —No, but I ___.",
+            "options": {
+                "A": "want",
+                "B": "want to",
+                "C": "want to be",
+                "D": "want be"
+            },
+            "correct_answer": "C",
+            "explanation": "want to be 省略 a teacher。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0002",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He can play the piano and so ___.",
+            "options": {
+                "A": "can I",
+                "B": "I can",
+                "C": "do I",
+                "D": "I do"
+            },
+            "correct_answer": "A",
+            "explanation": "so can I。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0002",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He doesn't like coffee and neither ___.",
+            "options": {
+                "A": "I do",
+                "B": "do I",
+                "C": "I don't",
+                "D": "am I"
+            },
+            "correct_answer": "B",
+            "explanation": "neither do I。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0002",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "If ___, I will come tomorrow.",
+            "options": {
+                "A": "possible",
+                "B": "possible",
+                "C": "it possible",
+                "D": "is possible"
+            },
+            "correct_answer": "B",
+            "explanation": "if possible 省略 if it is。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0003",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "When ___, the machine should be checked.",
+            "options": {
+                "A": "use",
+                "B": "using",
+                "C": "used",
+                "D": "to use"
+            },
+            "correct_answer": "C",
+            "explanation": "when used 省略 when it is used。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0003",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "While ___, he fell asleep.",
+            "options": {
+                "A": "read",
+                "B": "reading",
+                "C": "readed",
+                "D": "to read"
+            },
+            "correct_answer": "B",
+            "explanation": "while reading 省略 while he was reading。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0003",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Had I known the truth, I ___ you.",
+            "options": {
+                "A": "tell",
+                "B": "told",
+                "C": "would have told",
+                "D": "will tell"
+            },
+            "correct_answer": "C",
+            "explanation": "Had I known 倒装虚拟。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0004",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Were it not for the doctor, the patient ___ dead.",
+            "options": {
+                "A": "is",
+                "B": "would be",
+                "C": "was",
+                "D": "will be"
+            },
+            "correct_answer": "B",
+            "explanation": "Were it not for 虚拟。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0004",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ you need help, please let me know.",
+            "options": {
+                "A": "Should",
+                "B": "Would",
+                "C": "Could",
+                "D": "Might"
+            },
+            "correct_answer": "A",
+            "explanation": "Should you need 倒装。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0004",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It was his courage ___ saved the child.",
+            "options": {
+                "A": "who",
+                "B": "that",
+                "C": "which",
+                "D": "what"
+            },
+            "correct_answer": "B",
+            "explanation": "强调主语 that。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0005",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "No matter ___ hard it is, don't give up.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "how",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "no matter how hard。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0005",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Whatever ___ said, he wouldn't change his mind.",
+            "options": {
+                "A": "is",
+                "B": "was",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "whatever was said。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0005",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The more carefully you plan, the ___ mistakes you will make.",
+            "options": {
+                "A": "little",
+                "B": "less",
+                "C": "fewer",
+                "D": "fewest"
+            },
+            "correct_answer": "C",
+            "explanation": "fewer mistakes 可数名词。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0006",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Not only ___ intelligent, but he is also hardworking.",
+            "options": {
+                "A": "he is",
+                "B": "is he",
+                "C": "he was",
+                "D": "was he"
+            },
+            "correct_answer": "B",
+            "explanation": "Not only 倒装 is he。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0006",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Such a strange thing ___ never happened before.",
+            "options": {
+                "A": "I have heard",
+                "B": "have I heard",
+                "C": "I heard",
+                "D": "did I hear"
+            },
+            "correct_answer": "B",
+            "explanation": "Such 置于句首倒装。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0006",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is generally believed ___ education is the key to success.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "It is believed that。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0007",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___, let me introduce our guest speaker.",
+            "options": {
+                "A": "First of all",
+                "B": "After all",
+                "C": "In all",
+                "D": "At all"
+            },
+            "correct_answer": "A",
+            "explanation": "First of all 首先。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0007",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He studied hard. ___, he passed the exam.",
+            "options": {
+                "A": "However",
+                "B": "Therefore",
+                "C": "Although",
+                "D": "Unless"
+            },
+            "correct_answer": "B",
+            "explanation": "Therefore 因此。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0007",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___, the plan sounds good, but it costs too much.",
+            "options": {
+                "A": "Therefore",
+                "B": "Moreover",
+                "C": "However",
+                "D": "Besides"
+            },
+            "correct_answer": "C",
+            "explanation": "However 然而。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0008",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___, we must consider the environmental impact.",
+            "options": {
+                "A": "In addition",
+                "B": "Instead",
+                "C": "However",
+                "D": "Therefore"
+            },
+            "correct_answer": "A",
+            "explanation": "In addition 此外。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0008",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "You must hurry; ___, you will miss the train.",
+            "options": {
+                "A": "however",
+                "B": "therefore",
+                "C": "otherwise",
+                "D": "moreover"
+            },
+            "correct_answer": "C",
+            "explanation": "otherwise 否则。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0008",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___, I disagree with your opinion.",
+            "options": {
+                "A": "In my opinion",
+                "B": "Personally",
+                "C": "Generally",
+                "D": "Actually"
+            },
+            "correct_answer": "B",
+            "explanation": "Personally 就个人而言。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0009",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The evidence is clear. ___, he is guilty.",
+            "options": {
+                "A": "However",
+                "B": "In conclusion",
+                "C": "Although",
+                "D": "Besides"
+            },
+            "correct_answer": "B",
+            "explanation": "In conclusion 总之。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0009",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___, technology has changed our lives greatly.",
+            "options": {
+                "A": "On the whole",
+                "B": "On the contrary",
+                "C": "In contrast",
+                "D": "Instead"
+            },
+            "correct_answer": "A",
+            "explanation": "On the whole 总体而言。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0009",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He ___ be at home now. His car is not here.",
+            "options": {
+                "A": "must",
+                "B": "should",
+                "C": "can",
+                "D": "can't"
+            },
+            "correct_answer": "D",
+            "explanation": "can't 不可能（否定推测）。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0010",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She ___ have left. Her bag is still here.",
+            "options": {
+                "A": "must",
+                "B": "should",
+                "C": "can",
+                "D": "can't"
+            },
+            "correct_answer": "D",
+            "explanation": "can't have done 不可能已经。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0010",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He ___ have missed the train. That's why he's late.",
+            "options": {
+                "A": "can",
+                "B": "may",
+                "C": "must",
+                "D": "should"
+            },
+            "correct_answer": "B",
+            "explanation": "may have done 可能已经。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0010",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "You ___ have seen him yesterday. He was abroad.",
+            "options": {
+                "A": "must",
+                "B": "should",
+                "C": "can",
+                "D": "couldn't"
+            },
+            "correct_answer": "D",
+            "explanation": "couldn't have done 不可能。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0011",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He ___ be the thief. I saw him at the scene.",
+            "options": {
+                "A": "must",
+                "B": "can",
+                "C": "may",
+                "D": "might"
+            },
+            "correct_answer": "A",
+            "explanation": "must 一定（肯定推测）。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0011",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "You ___ have been more careful.",
+            "options": {
+                "A": "can",
+                "B": "should",
+                "C": "must",
+                "D": "may"
+            },
+            "correct_answer": "B",
+            "explanation": "should have done 本应该。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0011",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I ___ have told you earlier, but I forgot.",
+            "options": {
+                "A": "can",
+                "B": "should",
+                "C": "must",
+                "D": "may"
+            },
+            "correct_answer": "B",
+            "explanation": "should have done 本应该却未。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0012",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He ___ have forgotten the appointment.",
+            "options": {
+                "A": "can",
+                "B": "should",
+                "C": "must",
+                "D": "need"
+            },
+            "correct_answer": "C",
+            "explanation": "must have done 一定已经。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0012",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It was not what he said but what he did ___ moved us.",
+            "options": {
+                "A": "which",
+                "B": "that",
+                "C": "who",
+                "D": "what"
+            },
+            "correct_answer": "B",
+            "explanation": "强调句 not...but...that。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0012",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "There is no doubt ___ climate change is a serious problem.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "whether"
+            },
+            "correct_answer": "C",
+            "explanation": "no doubt that。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0013",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is such a good teacher ___ we all respect him.",
+            "options": {
+                "A": "who",
+                "B": "which",
+                "C": "that",
+                "D": "as"
+            },
+            "correct_answer": "C",
+            "explanation": "such...that 如此……以至于。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0013",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is so kind a person ___ everyone likes him.",
+            "options": {
+                "A": "who",
+                "B": "which",
+                "C": "that",
+                "D": "as"
+            },
+            "correct_answer": "C",
+            "explanation": "so...that 句型。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0013",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The reason he gave ___ he was too busy.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "was that",
+                "D": "because"
+            },
+            "correct_answer": "C",
+            "explanation": "表语从句 was that。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0014",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is one of the students who ___ been awarded.",
+            "options": {
+                "A": "has",
+                "B": "have",
+                "C": "is",
+                "D": "was"
+            },
+            "correct_answer": "B",
+            "explanation": "定语从句修饰 students → have。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0014",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is the only one of the students who ___ passed.",
+            "options": {
+                "A": "has",
+                "B": "have",
+                "C": "is",
+                "D": "are"
+            },
+            "correct_answer": "A",
+            "explanation": "the only one of → has。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0014",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I'd rather you ___ here tomorrow.",
+            "options": {
+                "A": "come",
+                "B": "came",
+                "C": "will come",
+                "D": "coming"
+            },
+            "correct_answer": "B",
+            "explanation": "would rather sb did。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0015",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is essential that every student ___ the rules.",
+            "options": {
+                "A": "follow",
+                "B": "should follow",
+                "C": "follows",
+                "D": "followed"
+            },
+            "correct_answer": "B",
+            "explanation": "essential that (should) do。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0015",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Were I in your position, I ___ the same decision.",
+            "options": {
+                "A": "make",
+                "B": "made",
+                "C": "would make",
+                "D": "will make"
+            },
+            "correct_answer": "C",
+            "explanation": "Were I... would do 虚拟。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0015",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "With the economy ___, more jobs are being created.",
+            "options": {
+                "A": "grow",
+                "B": "growing",
+                "C": "grown",
+                "D": "to grow"
+            },
+            "correct_answer": "B",
+            "explanation": "with + n + doing 复合结构。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0016",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "With all the work ___, she felt relaxed.",
+            "options": {
+                "A": "finish",
+                "B": "finishing",
+                "C": "finished",
+                "D": "to finish"
+            },
+            "correct_answer": "C",
+            "explanation": "with work finished 工作完成后。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0016",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The professor, along with his students, ___ the experiment.",
+            "options": {
+                "A": "are doing",
+                "B": "is doing",
+                "C": "were doing",
+                "D": "be doing"
+            },
+            "correct_answer": "B",
+            "explanation": "along with 就远原则，谓语与 professor 一致。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0016",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "More than one student ___ absent today.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "more than one + 单数谓语。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0017",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Many a student ___ against the proposal.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "many a + 单数谓语。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0017",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "What he needs is ___ good rest.",
+            "options": {
+                "A": "have",
+                "B": "to have",
+                "C": "a",
+                "D": "having"
+            },
+            "correct_answer": "C",
+            "explanation": "What he needs is a good rest。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0017",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It ___ me an hour to get to school every day.",
+            "options": {
+                "A": "spends",
+                "B": "takes",
+                "C": "costs",
+                "D": "pays"
+            },
+            "correct_answer": "B",
+            "explanation": "It takes sb time to do。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0018",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The police ___ searching for the missing child.",
+            "options": {
+                "A": "is",
+                "B": "are",
+                "C": "was",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "police 集体名词复数谓语。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0018",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The audience ___ enjoying the performance.",
+            "options": {
+                "A": "is",
+                "B": "are",
+                "C": "was",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "audience 强调整体单数\/强调成员复数。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0018",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "A good knowledge of English ___ helpful.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "knowledge 不可数单数。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0019",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He came ___ he had promised.",
+            "options": {
+                "A": "like",
+                "B": "as",
+                "C": "for",
+                "D": "with"
+            },
+            "correct_answer": "B",
+            "explanation": "as 正如\/按照。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0019",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He works hard, ___ his brother is lazy.",
+            "options": {
+                "A": "and",
+                "B": "while",
+                "C": "so",
+                "D": "because"
+            },
+            "correct_answer": "B",
+            "explanation": "while 表对比。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0019",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He treated me as if I ___ his best friend.",
+            "options": {
+                "A": "am",
+                "B": "were",
+                "C": "was",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "as if 虚拟 were。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0020",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "By no means ___ give up your dreams.",
+            "options": {
+                "A": "you should",
+                "B": "should you",
+                "C": "you will",
+                "D": "will you"
+            },
+            "correct_answer": "B",
+            "explanation": "by no means 倒装 should you。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0020",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "So loudly ___ that everyone could hear him.",
+            "options": {
+                "A": "he spoke",
+                "B": "did he speak",
+                "C": "he did speak",
+                "D": "spoke he"
+            },
+            "correct_answer": "B",
+            "explanation": "So loudly did he speak 倒装。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0020",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It was because he was ill ___ he didn't come.",
+            "options": {
+                "A": "which",
+                "B": "that",
+                "C": "why",
+                "D": "because"
+            },
+            "correct_answer": "B",
+            "explanation": "强调原因 It was because...that。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0021",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is too young ___ such a responsibility.",
+            "options": {
+                "A": "bear",
+                "B": "to bear",
+                "C": "bearing",
+                "D": "bore"
+            },
+            "correct_answer": "B",
+            "explanation": "too...to 太……而不能。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0021",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is old enough ___ care of himself.",
+            "options": {
+                "A": "take",
+                "B": "to take",
+                "C": "taking",
+                "D": "took"
+            },
+            "correct_answer": "B",
+            "explanation": "enough to do。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0021",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I cannot emphasize ___ important education is.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "how",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "emphasize how important。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0022",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The situation is ___ serious that we must act now.",
+            "options": {
+                "A": "very",
+                "B": "so",
+                "C": "such",
+                "D": "too"
+            },
+            "correct_answer": "B",
+            "explanation": "so...that 句型。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0022",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is ___ honest man that we all trust him.",
+            "options": {
+                "A": "a very",
+                "B": "so",
+                "C": "such an",
+                "D": "too"
+            },
+            "correct_answer": "C",
+            "explanation": "such an honest man that。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0022",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Not until all the work ___ did he go home.",
+            "options": {
+                "A": "finish",
+                "B": "was finished",
+                "C": "finished",
+                "D": "finishes"
+            },
+            "correct_answer": "B",
+            "explanation": "被动 was finished。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0023",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I would appreciate ___ back by Friday.",
+            "options": {
+                "A": "you call",
+                "B": "your calling",
+                "C": "you to call",
+                "D": "you calling"
+            },
+            "correct_answer": "B",
+            "explanation": "appreciate your doing。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0023",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "There is no sense ___ about the past.",
+            "options": {
+                "A": "worry",
+                "B": "to worry",
+                "C": "in worrying",
+                "D": "worried"
+            },
+            "correct_answer": "C",
+            "explanation": "no sense in doing。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0023",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He insisted on ___ to the party.",
+            "options": {
+                "A": "invite",
+                "B": "inviting",
+                "C": "being invited",
+                "D": "be invited"
+            },
+            "correct_answer": "C",
+            "explanation": "insist on being invited。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0024",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The plan proved ___ successful.",
+            "options": {
+                "A": "to be",
+                "B": "being",
+                "C": "be",
+                "D": "been"
+            },
+            "correct_answer": "A",
+            "explanation": "prove to be 证明是。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0024",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is considered ___ the best player on the team.",
+            "options": {
+                "A": "be",
+                "B": "to be",
+                "C": "being",
+                "D": "been"
+            },
+            "correct_answer": "B",
+            "explanation": "be considered to be。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-09-0024",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "09",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I look forward to ___ from you soon.",
+            "options": {
+                "A": "hear",
+                "B": "hearing",
+                "C": "heard",
+                "D": "hear from"
+            },
+            "correct_answer": "B",
+            "explanation": "look forward to hearing。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-07-0025",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "07",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The experiment needs ___.",
+            "options": {
+                "A": "repeat",
+                "B": "to repeat",
+                "C": "repeating",
+                "D": "repeated"
+            },
+            "correct_answer": "C",
+            "explanation": "need doing 需要被重复。（来源：高中语法 · 高三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-J1-08-0025",
+            "type": "grammar",
+            "realm": "J1",
+            "stage": "08",
+            "education_stage": "高中",
+            "grade_level": "高三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He was caught ___ in the exam.",
+            "options": {
+                "A": "cheat",
+                "B": "to cheat",
+                "C": "cheating",
+                "D": "cheated"
+            },
+            "correct_answer": "C",
+            "explanation": "be caught doing 被抓正在做。（来源：高中语法 · 高三）",
+            "word": ""
+        }
+    ]
+}

@@ -51,6 +51,10 @@
                   <span class="profile-stat-label">修为灵气</span>
                   <span class="profile-stat-val">⚡ {{ profile.exp || 0 }}</span>
                 </div>
+                <div v-if="equippedTitle" class="profile-stat-item">
+                  <span class="profile-stat-label">佩戴称号</span>
+                  <span class="profile-stat-val text-gold">「{{ equippedTitle }}」</span>
+                </div>
               </div>
 
               <div class="profile-section-title">境界进度</div>
@@ -121,6 +125,7 @@ const props = defineProps<{ visible: boolean }>();
 const emit = defineEmits<{
   (e: 'update:visible', value: boolean): void;
   (e: 'open-review'): void;
+  (e: 'open-parent'): void;
 }>();
 
 const api = useApiClient();
@@ -138,6 +143,13 @@ const realmProgress = ref<Record<string, any> | null>(null);
 
 const profile = computed(() => user.profile || {});
 const currentRealmLabel = computed(() => resolveProfileRealm(profile.value) || '练气一层');
+const equippedTitle = computed(() => {
+  const pc = profile.value?.progress_currency;
+  if (pc && typeof pc === 'object' && pc.equipped_title) {
+    return String(pc.equipped_title);
+  }
+  return profile.value?.equipped_title ? String(profile.value.equipped_title) : '';
+});
 
 const abilityIcons: Record<string, string> = {
   vocabulary: abilityVocab,
@@ -313,8 +325,21 @@ async function finishEditNickname() {
   }
 }
 
-function shareInvite() {
-  showInvitePanel.value = true;
+async function shareInvite() {
+  try {
+    const res = await api.get('/share/info');
+    const code = res?.success ? res.data.invite_code : '';
+    const text = `我用 LevelUp 英语修仙学英语！🎯\n邀请码：${code}\n输入邀请码注册，我们各得灵力奖励！\n👉 一起来修炼吧～`;
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      ElMessage.success('邀请码已复制！分享给好友一起修炼吧 🎁');
+      try { await api.post('/share/record'); } catch { /* ignore */ }
+    } else {
+      window.prompt('复制以下内容去分享：', text);
+    }
+  } catch {
+    ElMessage.error('获取邀请码失败');
+  }
 }
 
 function openReview() {
@@ -322,10 +347,9 @@ function openReview() {
   emit('open-review');
 }
 
-async function openParentDashboard() {
+function openParentDashboard() {
   closePanel();
-  const game = await bridge.getGame();
-  await game.showParentDashboard();
+  emit('open-parent');
 }
 
 function logout() {

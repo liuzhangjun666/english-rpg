@@ -205,7 +205,7 @@ function playPurify() {
 
 async function purifyMastered() {
   try {
-    const res = await api.post('/demons/clear-mastered');
+    const res = await api.post('/demons/clear');
     const n = res?.data?.deleted ?? 0;
     ElMessage.success(n > 0 ? `已净化 ${n} 道已掌握心魔` : '暂无已掌握心魔');
     await loadDemons();

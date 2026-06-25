@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ExamResult;
 use App\Models\LearningRecord;
+use App\Services\AchievementService;
 use App\Services\CurrencyService;
 use App\Services\ExamService;
 use App\Services\HeartDemonService;
@@ -27,6 +28,7 @@ class ExamController extends Controller
         RealmService $realmService,
         HeartDemonService $demonService,
         private readonly QuestionResolverService $questionResolver,
+        private readonly AchievementService $achievementService,
     )
     {
         $this->examService = $examService;
@@ -97,6 +99,9 @@ class ExamController extends Controller
 
         $result = $this->realmService->breakthrough($user);
         $fresh = $user->fresh();
+        if (!empty($result['breakthrough'])) {
+            $this->achievementService->onBreakthrough($fresh);
+        }
         $latestStatus = $this->realmService->getBreakthroughStatus($fresh);
 
         return response()->json([
@@ -228,6 +233,8 @@ class ExamController extends Controller
             'passed' => $gradeResult['passed'],
             'breakdown' => ['results' => $results],
         ]);
+
+        $this->achievementService->onExamSubmit($user->fresh(), (string) $gradeResult['grade']);
 
         return response()->json([
             'success' => true,

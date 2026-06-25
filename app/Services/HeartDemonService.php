@@ -99,9 +99,7 @@ class HeartDemonService
         }
 
         if ($realm) {
-            $query->where(function ($q) use ($realm) {
-                $q->where('realm', $realm)->orWhereNull('realm');
-            });
+            $query->where('realm', $realm);
         }
 
         return $query
@@ -139,12 +137,16 @@ class HeartDemonService
         $injected = [];
         foreach ($demons as $demon) {
             $q = Question::where('question_id', $demon['question_id'])->first();
-            if ($q && $q->type === $type) {
-                $qArr = $q->toArray();
-                $qArr['_is_demon'] = true;
-                $qArr['_demon_wrong_count'] = $demon['wrong_count'];
-                $injected[] = $qArr;
+            if (!$q || $q->type !== $type) {
+                continue;
             }
+            if (!$this->levelService->isQuestionInUserPool($user, $type, (string) $q->question_id)) {
+                continue;
+            }
+            $qArr = $q->toArray();
+            $qArr['_is_demon'] = true;
+            $qArr['_demon_wrong_count'] = $demon['wrong_count'];
+            $injected[] = $qArr;
         }
 
         $injectedIds = array_column($injected, 'question_id');
@@ -163,13 +165,16 @@ class HeartDemonService
 
     public function getPreExamReview(int $userId, string $realm, int $limit = 5): array
     {
+        $user = User::query()->find($userId);
+        if (!$user) {
+            return [];
+        }
+
         $demons = HeartDemon::where('user_id', $userId)
             ->where('is_mastered', false)
-            ->where(function ($q) use ($realm) {
-                $q->where('realm', $realm)->orWhereNull('realm');
-            })
+            ->where('realm', $realm)
             ->orderByDesc('wrong_count')
-            ->limit($limit)
+            ->limit($limit * 3)
             ->get();
 
         $questions = [];
@@ -178,9 +183,20 @@ class HeartDemonService
             if (!$qArr) {
                 continue;
             }
+            $type = (string) ($qArr['type'] ?? $demon->type ?? '');
+            if (preg_match('/^VW-(\d+)$/', (string) $demon->question_id, $m)) {
+                if (!$this->levelService->isVocabWordInUserPool($user, (int) $m[1])) {
+                    continue;
+                }
+            } elseif ($type !== '' && !$this->levelService->isQuestionInUserPool($user, $type, (string) $demon->question_id)) {
+                continue;
+            }
             $qArr['_is_demon'] = true;
             $qArr['_demon_wrong_count'] = (int) $demon->wrong_count;
             $questions[] = $qArr;
+            if (count($questions) >= $limit) {
+                break;
+            }
         }
 
         return $questions;
@@ -188,18 +204,32 @@ class HeartDemonService
 
     public function getRecentWrongQuestions(int $userId, int $min = 3, int $max = 5): array
     {
+        $user = User::query()->find($userId);
+        if (!$user) {
+            return [];
+        }
+
         $take = max($min, $max);
         $demons = HeartDemon::where('user_id', $userId)
             ->where('is_mastered', false)
+            ->where('realm', (string) ($user->realm ?? ''))
             ->orderByDesc('last_wrong_at')
             ->orderByDesc('wrong_count')
-            ->limit($take)
+            ->limit($take * 3)
             ->get();
 
         $questions = [];
         foreach ($demons as $demon) {
             $arr = $this->questionResolver->resolve((string) $demon->question_id);
             if (!$arr) {
+                continue;
+            }
+            $type = (string) ($arr['type'] ?? $demon->type ?? '');
+            if (preg_match('/^VW-(\d+)$/', (string) $demon->question_id, $m)) {
+                if (!$this->levelService->isVocabWordInUserPool($user, (int) $m[1])) {
+                    continue;
+                }
+            } elseif ($type !== '' && !$this->levelService->isQuestionInUserPool($user, $type, (string) $demon->question_id)) {
                 continue;
             }
             $arr['_is_demon'] = true;
@@ -315,9 +345,7 @@ class HeartDemonService
             $query->where('type', $type);
         }
         if ($realm) {
-            $query->where(function ($q) use ($realm) {
-                $q->where('realm', $realm)->orWhereNull('realm');
-            });
+            $query->where('realm', $realm);
         }
 
         $demonCount = (int) $query->count();

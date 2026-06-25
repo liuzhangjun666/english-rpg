@@ -6,6 +6,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import gsap from 'gsap';
 import { WorldCameraController } from './WorldCameraController';
+import { SCENE_NODE_META } from '../../data/mapBuildings';
 
 // ─── 数据 ─────────────────────────────────────────────────────────────────────
 
@@ -144,7 +145,7 @@ export class WorldSceneManager {
   private birds: THREE.Sprite[] = [];          // 飞鸟群
   private flyers: THREE.Sprite[] = [];         // 御剑仙人
   private petals: THREE.Points | null = null;  // 飘落灵气花瓣
-  private dracoLoader: DRACOLoader | null = null; // Draco 解码器，dispose 时释放 worker
+  private spiritDust: THREE.Points | null = null; // 上浮灵尘
   private perfProfile: ScenePerfProfile;
   private bloomPass: UnrealBloomPass | null = null;
   private delayedEffectsTimer: number | null = null;

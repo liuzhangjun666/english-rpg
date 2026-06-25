@@ -50,6 +50,38 @@ class MallController extends Controller
     public function inventory(Request $request): JsonResponse
     {
         $items = $this->mallService->getUserItems($request->user()->id);
-        return response()->json(['success'=>true, 'data'=>$items]);
+        return response()->json(['success' => true, 'data' => $items]);
+    }
+
+    /** GET /api/mall/buffs - 当前生效的道具增益 */
+    public function buffs(Request $request): JsonResponse
+    {
+        $buffs = $this->mallService->getActiveBuffs($request->user());
+        return response()->json(['success' => true, 'data' => $buffs]);
+    }
+
+    /** POST /api/mall/use - 使用储物袋物品 */
+    public function useItem(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'item_id' => 'required|string|max:50',
+        ]);
+
+        $result = $this->mallService->useItem($request->user(), $data['item_id']);
+        if (!$result['success']) {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'],
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $result['message'],
+            'data' => [
+                'buffs' => $result['buffs'] ?? [],
+                'user' => $request->user()->fresh(),
+            ],
+        ]);
     }
 }

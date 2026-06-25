@@ -1,0 +1,5668 @@
+{
+    "sources": [
+        "database\/scripts\/JuniorGrammarGenerator.php"
+    ],
+    "summary": {
+        "total_questions": 282,
+        "stage_counts": {
+            "Z1-01": 35,
+            "Z1-02": 34,
+            "Z1-03": 34,
+            "Z1-04": 30,
+            "Z1-05": 30,
+            "Z1-06": 30,
+            "Z1-07": 30,
+            "Z1-08": 30,
+            "Z1-09": 29
+        },
+        "education_stage": "初中",
+        "realm": "Z1",
+        "grades": [
+            "七年级",
+            "八年级",
+            "九年级"
+        ]
+    },
+    "questions": [
+        {
+            "question_id": "JGV-Z1-01-0001",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I ___ a student in Grade Seven.",
+            "options": {
+                "A": "am",
+                "B": "is",
+                "C": "are",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "主语 I 搭配 be 动词 am。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0001",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Tom and Jerry ___ good friends.",
+            "options": {
+                "A": "am",
+                "B": "is",
+                "C": "are",
+                "D": "be"
+            },
+            "correct_answer": "C",
+            "explanation": "复数主语用 are。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0001",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "There ___ a library in our school.",
+            "options": {
+                "A": "am",
+                "B": "is",
+                "C": "are",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "There be 句型：单数名词用 is。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0002",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "My parents ___ both teachers.",
+            "options": {
+                "A": "am",
+                "B": "is",
+                "C": "are",
+                "D": "be"
+            },
+            "correct_answer": "C",
+            "explanation": "复数主语 parents 用 are。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0002",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ your sister at home now?",
+            "options": {
+                "A": "Am",
+                "B": "Is",
+                "C": "Are",
+                "D": "Be"
+            },
+            "correct_answer": "B",
+            "explanation": "第三人称单数疑问句用 Is。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0002",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The books on the desk ___ mine.",
+            "options": {
+                "A": "am",
+                "B": "is",
+                "C": "are",
+                "D": "be"
+            },
+            "correct_answer": "C",
+            "explanation": "books 为复数，谓语用 are。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0003",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She ___ not from Beijing.",
+            "options": {
+                "A": "am",
+                "B": "is",
+                "C": "are",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "第三人称单数否定用 is not。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0003",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We ___ very happy today.",
+            "options": {
+                "A": "am",
+                "B": "is",
+                "C": "are",
+                "D": "be"
+            },
+            "correct_answer": "C",
+            "explanation": "主语 We 用 are。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0003",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "My brother ___ basketball after school.",
+            "options": {
+                "A": "play",
+                "B": "plays",
+                "C": "playing",
+                "D": "played"
+            },
+            "correct_answer": "B",
+            "explanation": "第三人称单数谓语加 -s。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0004",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "They ___ to the music club on Fridays.",
+            "options": {
+                "A": "go",
+                "B": "goes",
+                "C": "going",
+                "D": "went"
+            },
+            "correct_answer": "A",
+            "explanation": "复数主语用动词原形。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0004",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She ___ her homework every evening.",
+            "options": {
+                "A": "do",
+                "B": "doing",
+                "C": "does",
+                "D": "did"
+            },
+            "correct_answer": "C",
+            "explanation": "does 用于第三人称单数。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0004",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He ___ English very well.",
+            "options": {
+                "A": "speak",
+                "B": "speaks",
+                "C": "speaking",
+                "D": "spoke"
+            },
+            "correct_answer": "B",
+            "explanation": "speak → speaks。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0005",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The sun ___ in the east.",
+            "options": {
+                "A": "rise",
+                "B": "rises",
+                "C": "rising",
+                "D": "rose"
+            },
+            "correct_answer": "B",
+            "explanation": "客观真理用一般现在时，第三人称单数。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0005",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We ___ TV only on weekends.",
+            "options": {
+                "A": "watch",
+                "B": "watches",
+                "C": "watching",
+                "D": "watched"
+            },
+            "correct_answer": "A",
+            "explanation": "主语 We 用动词原形。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0005",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Lucy ___ a letter to her pen pal every month.",
+            "options": {
+                "A": "write",
+                "B": "writing",
+                "C": "writes",
+                "D": "wrote"
+            },
+            "correct_answer": "C",
+            "explanation": "writes 第三人称单数。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0006",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I ___ milk for breakfast every day.",
+            "options": {
+                "A": "drink",
+                "B": "drinks",
+                "C": "drinking",
+                "D": "drank"
+            },
+            "correct_answer": "A",
+            "explanation": "主语 I 用动词原形。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0006",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "His father ___ in a hospital.",
+            "options": {
+                "A": "work",
+                "B": "works",
+                "C": "working",
+                "D": "worked"
+            },
+            "correct_answer": "B",
+            "explanation": "works 第三人称单数。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0006",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Do you ___ music?",
+            "options": {
+                "A": "like",
+                "B": "likes",
+                "C": "liking",
+                "D": "liked"
+            },
+            "correct_answer": "A",
+            "explanation": "助动词 Do 后接动词原形。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0007",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She doesn't ___ coffee.",
+            "options": {
+                "A": "like",
+                "B": "likes",
+                "C": "liking",
+                "D": "liked"
+            },
+            "correct_answer": "A",
+            "explanation": "否定句：doesn't + 动词原形。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0007",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ he play the guitar?",
+            "options": {
+                "A": "Does",
+                "B": "Do",
+                "C": "Is",
+                "D": "Are"
+            },
+            "correct_answer": "A",
+            "explanation": "第三人称单数疑问句用 Does。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0007",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Look! The children ___ in the playground.",
+            "options": {
+                "A": "play",
+                "B": "plays",
+                "C": "are playing",
+                "D": "played"
+            },
+            "correct_answer": "C",
+            "explanation": "Look 提示现在进行时。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0008",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She ___ a book in the classroom now.",
+            "options": {
+                "A": "read",
+                "B": "is reading",
+                "C": "reads",
+                "D": "readed"
+            },
+            "correct_answer": "B",
+            "explanation": "now 提示现在进行时。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0008",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "They ___ for the bus at the moment.",
+            "options": {
+                "A": "wait",
+                "B": "waits",
+                "C": "are waiting",
+                "D": "waited"
+            },
+            "correct_answer": "C",
+            "explanation": "at the moment 用现在进行时。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0008",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I ___ my room right now.",
+            "options": {
+                "A": "clean",
+                "B": "am cleaning",
+                "C": "cleans",
+                "D": "cleaned"
+            },
+            "correct_answer": "B",
+            "explanation": "right now 用 am cleaning。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0009",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Listen! Someone ___ at the door.",
+            "options": {
+                "A": "knock",
+                "B": "is knocking",
+                "C": "knocks",
+                "D": "knocked"
+            },
+            "correct_answer": "B",
+            "explanation": "Listen 提示正在进行。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0009",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The students ___ an English song now.",
+            "options": {
+                "A": "sing",
+                "B": "sings",
+                "C": "are singing",
+                "D": "sang"
+            },
+            "correct_answer": "C",
+            "explanation": "now + 复数主语 → are singing。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0009",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He ___ TV, so don't talk to him.",
+            "options": {
+                "A": "watch",
+                "B": "is watching",
+                "C": "watches",
+                "D": "watched"
+            },
+            "correct_answer": "B",
+            "explanation": "语境表明正在看电视。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0010",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We ___ dinner at home this evening.",
+            "options": {
+                "A": "have",
+                "B": "has",
+                "C": "are having",
+                "D": "had"
+            },
+            "correct_answer": "C",
+            "explanation": "this evening 可表计划中的进行时。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0010",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I have ___ uncle. He is a doctor.",
+            "options": {
+                "A": "a",
+                "B": "an",
+                "C": "the",
+                "D": "\/"
+            },
+            "correct_answer": "B",
+            "explanation": "uncle 以元音音素开头，用 an。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0010",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She wants to be ___ engineer in the future.",
+            "options": {
+                "A": "a",
+                "B": "an",
+                "C": "the",
+                "D": "\/"
+            },
+            "correct_answer": "B",
+            "explanation": "engineer 以元音音素开头。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0011",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ sun rises in the east.",
+            "options": {
+                "A": "A",
+                "B": "An",
+                "C": "The",
+                "D": "\/"
+            },
+            "correct_answer": "C",
+            "explanation": "世界上独一无二的事物用 the。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0011",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He plays ___ piano every day.",
+            "options": {
+                "A": "a",
+                "B": "an",
+                "C": "the",
+                "D": "\/"
+            },
+            "correct_answer": "C",
+            "explanation": "西洋乐器前常用 the。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0011",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I eat ___ apple after lunch.",
+            "options": {
+                "A": "a",
+                "B": "an",
+                "C": "the",
+                "D": "\/"
+            },
+            "correct_answer": "B",
+            "explanation": "apple 以元音音素开头。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0012",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "This is ___ useful book.",
+            "options": {
+                "A": "a",
+                "B": "an",
+                "C": "the",
+                "D": "\/"
+            },
+            "correct_answer": "A",
+            "explanation": "useful 发音以辅音 \/j\/ 开头，用 a。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0012",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We live near ___ school.",
+            "options": {
+                "A": "a",
+                "B": "an",
+                "C": "the",
+                "D": "\/"
+            },
+            "correct_answer": "C",
+            "explanation": "特指双方都知道的学校用 the。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0012",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She is ___ honest girl.",
+            "options": {
+                "A": "a",
+                "B": "an",
+                "C": "the",
+                "D": "\/"
+            },
+            "correct_answer": "B",
+            "explanation": "honest 的 h 不发音，用 an。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0013",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We have classes ___ Monday morning.",
+            "options": {
+                "A": "in",
+                "B": "on",
+                "C": "at",
+                "D": "to"
+            },
+            "correct_answer": "B",
+            "explanation": "具体某天的上午用 on。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0013",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "My birthday is ___ July 5th.",
+            "options": {
+                "A": "in",
+                "B": "on",
+                "C": "at",
+                "D": "by"
+            },
+            "correct_answer": "B",
+            "explanation": "具体日期用 on。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0013",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "They usually get up ___ 6:30.",
+            "options": {
+                "A": "in",
+                "B": "on",
+                "C": "at",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "具体时刻用 at。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0014",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The cat is hiding ___ the bed.",
+            "options": {
+                "A": "in",
+                "B": "under",
+                "C": "on",
+                "D": "at"
+            },
+            "correct_answer": "B",
+            "explanation": "under 表示在……下面。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0014",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "There is a picture ___ the wall.",
+            "options": {
+                "A": "in",
+                "B": "under",
+                "C": "on",
+                "D": "at"
+            },
+            "correct_answer": "C",
+            "explanation": "在墙上用 on the wall。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0014",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We will meet ___ the school gate.",
+            "options": {
+                "A": "in",
+                "B": "on",
+                "C": "at",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "at the gate 表示在门口。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0015",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She was born ___ 2012.",
+            "options": {
+                "A": "in",
+                "B": "on",
+                "C": "at",
+                "D": "by"
+            },
+            "correct_answer": "A",
+            "explanation": "年份前用 in。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0015",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The ball rolled ___ the table.",
+            "options": {
+                "A": "in",
+                "B": "under",
+                "C": "on",
+                "D": "at"
+            },
+            "correct_answer": "B",
+            "explanation": "under the table 在桌子底下。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0015",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He sits ___ front of the classroom.",
+            "options": {
+                "A": "in",
+                "B": "on",
+                "C": "in",
+                "D": "at"
+            },
+            "correct_answer": "C",
+            "explanation": "in front of 在……前面。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0016",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Put the book ___ your bag.",
+            "options": {
+                "A": "in",
+                "B": "on",
+                "C": "at",
+                "D": "to"
+            },
+            "correct_answer": "A",
+            "explanation": "in 表示在……里面。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0016",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ you swim?",
+            "options": {
+                "A": "Can",
+                "B": "Do",
+                "C": "Are",
+                "D": "Does"
+            },
+            "correct_answer": "A",
+            "explanation": "询问能力用 Can。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0016",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Birds ___ fly, but pigs can't.",
+            "options": {
+                "A": "can",
+                "B": "cans",
+                "C": "can to",
+                "D": "canning"
+            },
+            "correct_answer": "A",
+            "explanation": "can 后接动词原形。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0017",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "You ___ finish your homework first.",
+            "options": {
+                "A": "can",
+                "B": "must",
+                "C": "may",
+                "D": "might"
+            },
+            "correct_answer": "B",
+            "explanation": "must 表示必须。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0017",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ I borrow your ruler?",
+            "options": {
+                "A": "Must",
+                "B": "Should",
+                "C": "May",
+                "D": "Need"
+            },
+            "correct_answer": "C",
+            "explanation": "请求许可用 May I。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0017",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She ___ speak a little French.",
+            "options": {
+                "A": "can",
+                "B": "cans",
+                "C": "is",
+                "D": "does"
+            },
+            "correct_answer": "A",
+            "explanation": "表示能力用 can。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0018",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We ___ be late for class.",
+            "options": {
+                "A": "can",
+                "B": "mustn't",
+                "C": "may",
+                "D": "need"
+            },
+            "correct_answer": "B",
+            "explanation": "mustn't 表示禁止。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0018",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I have two ___.",
+            "options": {
+                "A": "box",
+                "B": "boxs",
+                "C": "boxes",
+                "D": "boxies"
+            },
+            "correct_answer": "C",
+            "explanation": "以 x 结尾变复数加 -es。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0018",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "There are many ___ in the river.",
+            "options": {
+                "A": "fishs",
+                "B": "fish",
+                "C": "fishes",
+                "D": "fishies"
+            },
+            "correct_answer": "B",
+            "explanation": "fish 表示鱼（条数）时复数常为 fish。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0019",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The ___ are playing football.",
+            "options": {
+                "A": "child",
+                "B": "children",
+                "C": "childs",
+                "D": "childrens"
+            },
+            "correct_answer": "B",
+            "explanation": "child 的复数是 children。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0019",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She bought three ___ yesterday.",
+            "options": {
+                "A": "tomatos",
+                "B": "tomato",
+                "C": "tomatoes",
+                "D": "tomatoe"
+            },
+            "correct_answer": "C",
+            "explanation": "tomato 复数加 -es。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0019",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Those ___ are my teachers.",
+            "options": {
+                "A": "woman",
+                "B": "women",
+                "C": "womans",
+                "D": "womens"
+            },
+            "correct_answer": "B",
+            "explanation": "woman → women。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0020",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We need two ___ of water.",
+            "options": {
+                "A": "bottles",
+                "B": "bottle",
+                "C": "bottleses",
+                "D": "bottled"
+            },
+            "correct_answer": "A",
+            "explanation": "two bottles 两瓶。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0020",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The ___ are running in the park.",
+            "options": {
+                "A": "goose",
+                "B": "gooses",
+                "C": "geese",
+                "D": "goosen"
+            },
+            "correct_answer": "C",
+            "explanation": "goose → geese。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0020",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "There are five ___ in the classroom.",
+            "options": {
+                "A": "mans",
+                "B": "men",
+                "C": "man",
+                "D": "mens"
+            },
+            "correct_answer": "B",
+            "explanation": "man → men。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0021",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "This is my book. ___ is on the desk.",
+            "options": {
+                "A": "You",
+                "B": "It",
+                "C": "They",
+                "D": "We"
+            },
+            "correct_answer": "B",
+            "explanation": "指代单数事物用 It。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0021",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "These are ___ pencils. (I)",
+            "options": {
+                "A": "my",
+                "B": "me",
+                "C": "mine",
+                "D": "I"
+            },
+            "correct_answer": "C",
+            "explanation": "名词性物主代词 mine。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0021",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ is your English teacher?",
+            "options": {
+                "A": "Who",
+                "B": "What",
+                "C": "Where",
+                "D": "When"
+            },
+            "correct_answer": "A",
+            "explanation": "询问人用 Who。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0022",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ do you live?",
+            "options": {
+                "A": "Who",
+                "B": "What",
+                "C": "Where",
+                "D": "Why"
+            },
+            "correct_answer": "C",
+            "explanation": "询问地点用 Where。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0022",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ old is your sister?",
+            "options": {
+                "A": "What",
+                "B": "How",
+                "C": "Who",
+                "D": "Where"
+            },
+            "correct_answer": "B",
+            "explanation": "How old 询问年龄。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0022",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The bag is ___. (she)",
+            "options": {
+                "A": "her",
+                "B": "she",
+                "C": "hers",
+                "D": "herself"
+            },
+            "correct_answer": "C",
+            "explanation": "名词性物主代词 hers。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0023",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ students are there in your class?",
+            "options": {
+                "A": "How many",
+                "B": "How much",
+                "C": "How long",
+                "D": "How often"
+            },
+            "correct_answer": "A",
+            "explanation": "How many 修饰可数名词。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0023",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Give ___ the map, please. (we)",
+            "options": {
+                "A": "we",
+                "B": "us",
+                "C": "our",
+                "D": "ours"
+            },
+            "correct_answer": "B",
+            "explanation": "动词后用人称代词宾格 us。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0023",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "There ___ some milk in the glass.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "be",
+                "D": "am"
+            },
+            "correct_answer": "B",
+            "explanation": "milk 不可数，用 is。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0024",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "There ___ two pens on the table.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "be",
+                "D": "am"
+            },
+            "correct_answer": "A",
+            "explanation": "two pens 复数用 are。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0024",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "There ___ going to be a meeting tomorrow.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "be",
+                "D": "am"
+            },
+            "correct_answer": "B",
+            "explanation": "a meeting 单数用 is。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0024",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ there any apples in the fridge?",
+            "options": {
+                "A": "Are",
+                "B": "Is",
+                "C": "Do",
+                "D": "Does"
+            },
+            "correct_answer": "A",
+            "explanation": "apples 复数疑问句用 Are。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0025",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "There ___ not any students in the lab now.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "be",
+                "D": "am"
+            },
+            "correct_answer": "A",
+            "explanation": "students 为复数，用 are。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0025",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___, please. The teacher is coming.",
+            "options": {
+                "A": "Quiet",
+                "B": "Be quiet",
+                "C": "To be quiet",
+                "D": "Being quiet"
+            },
+            "correct_answer": "B",
+            "explanation": "祈使句用动词原形开头。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0025",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ left at the second crossing.",
+            "options": {
+                "A": "Turn",
+                "B": "Turning",
+                "C": "To turn",
+                "D": "Turned"
+            },
+            "correct_answer": "A",
+            "explanation": "指路祈使句用动词原形。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0026",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Don't ___ in the library.",
+            "options": {
+                "A": "talk",
+                "B": "talks",
+                "C": "talking",
+                "D": "to talk"
+            },
+            "correct_answer": "A",
+            "explanation": "Don't + 动词原形。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0026",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Please ___ the window. It's hot.",
+            "options": {
+                "A": "open",
+                "B": "opens",
+                "C": "opening",
+                "D": "opened"
+            },
+            "correct_answer": "A",
+            "explanation": "Please + 动词原形。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0026",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ your hands before dinner.",
+            "options": {
+                "A": "Wash",
+                "B": "Washes",
+                "C": "Washing",
+                "D": "Washed"
+            },
+            "correct_answer": "A",
+            "explanation": "祈使句省略主语。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0027",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Tom ___ goes to bed after 11 p.m.",
+            "options": {
+                "A": "always",
+                "B": "usually",
+                "C": "seldom",
+                "D": "often"
+            },
+            "correct_answer": "C",
+            "explanation": "after 11 p.m. 提示很少晚睡。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0027",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I ___ get up at six on school days.",
+            "options": {
+                "A": "never",
+                "B": "usually",
+                "C": "seldom",
+                "D": "hardly"
+            },
+            "correct_answer": "B",
+            "explanation": "上学日通常六点起床。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0027",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She is ___ late for school.",
+            "options": {
+                "A": "never",
+                "B": "always",
+                "C": "often",
+                "D": "usually"
+            },
+            "correct_answer": "A",
+            "explanation": "never 表示从不迟到。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0028",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We ___ have PE on Wednesday.",
+            "options": {
+                "A": "never",
+                "B": "seldom",
+                "C": "hardly",
+                "D": "often"
+            },
+            "correct_answer": "D",
+            "explanation": "often 表示经常。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0028",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He ___ eats vegetables. That's unhealthy.",
+            "options": {
+                "A": "always",
+                "B": "usually",
+                "C": "seldom",
+                "D": "often"
+            },
+            "correct_answer": "C",
+            "explanation": "不吃蔬菜不健康 → seldom。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0028",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "English is ___ useful subject.",
+            "options": {
+                "A": "a",
+                "B": "an",
+                "C": "the",
+                "D": "\/"
+            },
+            "correct_answer": "A",
+            "explanation": "useful 以辅音\/j\/音素开头用 a。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0029",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ does your father do?",
+            "options": {
+                "A": "What",
+                "B": "Who",
+                "C": "Where",
+                "D": "How"
+            },
+            "correct_answer": "A",
+            "explanation": "What does sb do 询问职业。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0029",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "My shoes are under the bed. What about ___?",
+            "options": {
+                "A": "you",
+                "B": "your",
+                "C": "yours",
+                "D": "yourself"
+            },
+            "correct_answer": "C",
+            "explanation": "yours = your shoes。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0029",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Let's ___ basketball after school.",
+            "options": {
+                "A": "play",
+                "B": "plays",
+                "C": "playing",
+                "D": "to play"
+            },
+            "correct_answer": "A",
+            "explanation": "Let's + 动词原形。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0030",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "How ___ milk do you need?",
+            "options": {
+                "A": "many",
+                "B": "much",
+                "C": "often",
+                "D": "long"
+            },
+            "correct_answer": "B",
+            "explanation": "milk 不可数用 much。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0030",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The weather in Beijing is colder than ___ in Shanghai.",
+            "options": {
+                "A": "it",
+                "B": "that",
+                "C": "this",
+                "D": "one"
+            },
+            "correct_answer": "B",
+            "explanation": "同类事物比较用 that。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0030",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She likes music and she can play ___ guitar.",
+            "options": {
+                "A": "a",
+                "B": "an",
+                "C": "the",
+                "D": "\/"
+            },
+            "correct_answer": "C",
+            "explanation": "乐器前加 the。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0031",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ beautiful the flowers are!",
+            "options": {
+                "A": "How",
+                "B": "What",
+                "C": "What a",
+                "D": "How a"
+            },
+            "correct_answer": "A",
+            "explanation": "How + adj 感叹句。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0031",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I have two cousins. One is a doctor and ___ is a teacher.",
+            "options": {
+                "A": "other",
+                "B": "others",
+                "C": "the other",
+                "D": "another"
+            },
+            "correct_answer": "C",
+            "explanation": "one...the other 一个……另一个。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0031",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We should thank those ___ help us.",
+            "options": {
+                "A": "who",
+                "B": "which",
+                "C": "whom",
+                "D": "whose"
+            },
+            "correct_answer": "A",
+            "explanation": "修饰人用 who。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0032",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It takes me half an hour ___ to school.",
+            "options": {
+                "A": "walk",
+                "B": "to walk",
+                "C": "walking",
+                "D": "walked"
+            },
+            "correct_answer": "B",
+            "explanation": "It takes sb time to do。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0032",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "My mother tells me ___ late for school.",
+            "options": {
+                "A": "not be",
+                "B": "to not be",
+                "C": "not to be",
+                "D": "don't be"
+            },
+            "correct_answer": "C",
+            "explanation": "tell sb not to do。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0032",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "There are ___ students in our grade.",
+            "options": {
+                "A": "hundred",
+                "B": "hundreds",
+                "C": "hundreds of",
+                "D": "two hundreds"
+            },
+            "correct_answer": "C",
+            "explanation": "hundreds of 数百。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0033",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The little boy is old enough ___ himself.",
+            "options": {
+                "A": "dress",
+                "B": "to dress",
+                "C": "dressing",
+                "D": "dressed"
+            },
+            "correct_answer": "B",
+            "explanation": "adj enough to do。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0033",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Would you like ___ tea or coffee?",
+            "options": {
+                "A": "some",
+                "B": "any",
+                "C": "many",
+                "D": "much"
+            },
+            "correct_answer": "A",
+            "explanation": "Would you like some 礼貌邀请。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0033",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is ___ honest boy in our class.",
+            "options": {
+                "A": "a",
+                "B": "an",
+                "C": "the",
+                "D": "\/"
+            },
+            "correct_answer": "B",
+            "explanation": "honest 用 an。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0034",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The girl ___ long hair is my sister.",
+            "options": {
+                "A": "have",
+                "B": "has",
+                "C": "with",
+                "D": "and"
+            },
+            "correct_answer": "C",
+            "explanation": "with long hair 介词短语作定语。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-02-0034",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "02",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ is difficult to learn a foreign language well.",
+            "options": {
+                "A": "It",
+                "B": "That",
+                "C": "This",
+                "D": "One"
+            },
+            "correct_answer": "A",
+            "explanation": "It is + adj + to do 形式主语。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-03-0034",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "03",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Please keep the classroom ___.",
+            "options": {
+                "A": "cleanly",
+                "B": "clean",
+                "C": "cleaning",
+                "D": "to clean"
+            },
+            "correct_answer": "B",
+            "explanation": "keep + 宾语 + 形容词。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-01-0035",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "01",
+            "education_stage": "初中",
+            "grade_level": "七年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "My father often ___ me stories before bedtime.",
+            "options": {
+                "A": "speak",
+                "B": "tells",
+                "C": "says",
+                "D": "talks"
+            },
+            "correct_answer": "B",
+            "explanation": "tell stories 讲故事。（来源：初中语法 · 七年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0001",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I ___ my keys at home yesterday.",
+            "options": {
+                "A": "leave",
+                "B": "leaves",
+                "C": "left",
+                "D": "leaving"
+            },
+            "correct_answer": "C",
+            "explanation": "yesterday 用一般过去时 leave→left。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0001",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She ___ to the zoo last Sunday.",
+            "options": {
+                "A": "go",
+                "B": "goes",
+                "C": "going",
+                "D": "went"
+            },
+            "correct_answer": "D",
+            "explanation": "last Sunday 用过去时 went。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0001",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "They ___ a film two days ago.",
+            "options": {
+                "A": "see",
+                "B": "saw",
+                "C": "seen",
+                "D": "seeing"
+            },
+            "correct_answer": "B",
+            "explanation": "see→saw。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0002",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He ___ breakfast and rushed to school.",
+            "options": {
+                "A": "had",
+                "B": "has",
+                "C": "have",
+                "D": "having"
+            },
+            "correct_answer": "A",
+            "explanation": "had breakfast 吃早餐。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0002",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We ___ in this city in 2018.",
+            "options": {
+                "A": "live",
+                "B": "lives",
+                "C": "lived",
+                "D": "living"
+            },
+            "correct_answer": "C",
+            "explanation": "in 2018 用过去时。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0002",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Did you ___ the museum last week?",
+            "options": {
+                "A": "visit",
+                "B": "visited",
+                "C": "visits",
+                "D": "visiting"
+            },
+            "correct_answer": "A",
+            "explanation": "Did 后接动词原形。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0003",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She didn't ___ TV last night.",
+            "options": {
+                "A": "watch",
+                "B": "watched",
+                "C": "watches",
+                "D": "watching"
+            },
+            "correct_answer": "A",
+            "explanation": "didn't + 动词原形。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0003",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ they finish the project on time?",
+            "options": {
+                "A": "Did",
+                "B": "Do",
+                "C": "Does",
+                "D": "Are"
+            },
+            "correct_answer": "A",
+            "explanation": "过去时疑问句用 Did。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0003",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He ___ his leg when he fell off the bike.",
+            "options": {
+                "A": "hurt",
+                "B": "hurt",
+                "C": "hurts",
+                "D": "hurting"
+            },
+            "correct_answer": "B",
+            "explanation": "hurt 过去式仍为 hurt。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0004",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The story ___ very interesting.",
+            "options": {
+                "A": "sound",
+                "B": "sounds",
+                "C": "sounded",
+                "D": "sounding"
+            },
+            "correct_answer": "C",
+            "explanation": "过去时 sounded。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0004",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I ___ an email to my teacher just now.",
+            "options": {
+                "A": "write",
+                "B": "wrote",
+                "C": "written",
+                "D": "writing"
+            },
+            "correct_answer": "B",
+            "explanation": "write→wrote。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0004",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "They ___ happy when they heard the news.",
+            "options": {
+                "A": "are",
+                "B": "were",
+                "C": "were",
+                "D": "was"
+            },
+            "correct_answer": "C",
+            "explanation": "复数主语过去时用 were。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0005",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "At 8 p.m. yesterday, I ___ my homework.",
+            "options": {
+                "A": "do",
+                "B": "did",
+                "C": "was doing",
+                "D": "am doing"
+            },
+            "correct_answer": "C",
+            "explanation": "过去具体时刻用过去进行时。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0005",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "While I ___ TV, my mother came in.",
+            "options": {
+                "A": "watch",
+                "B": "was watching",
+                "C": "watched",
+                "D": "am watching"
+            },
+            "correct_answer": "B",
+            "explanation": "while 引导过去进行时。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0005",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "They ___ football when it started to rain.",
+            "options": {
+                "A": "play",
+                "B": "played",
+                "C": "were playing",
+                "D": "are playing"
+            },
+            "correct_answer": "C",
+            "explanation": "when 从句一般过去，主句过去进行。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0006",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She ___ at that time, so she didn't answer the phone.",
+            "options": {
+                "A": "sleep",
+                "B": "was sleeping",
+                "C": "slept",
+                "D": "sleeps"
+            },
+            "correct_answer": "B",
+            "explanation": "at that time 用过去进行时。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0006",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "What ___ you doing at this time yesterday?",
+            "options": {
+                "A": "do",
+                "B": "did",
+                "C": "were",
+                "D": "are"
+            },
+            "correct_answer": "C",
+            "explanation": "过去进行时疑问句用 were。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0006",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The students ___ quietly when the head teacher entered.",
+            "options": {
+                "A": "read",
+                "B": "were reading",
+                "C": "are reading",
+                "D": "readed"
+            },
+            "correct_answer": "B",
+            "explanation": "entered 提示过去进行时。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0007",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Tom is ___ than his brother.",
+            "options": {
+                "A": "tall",
+                "B": "taller",
+                "C": "tallest",
+                "D": "more tall"
+            },
+            "correct_answer": "B",
+            "explanation": "than 用比较级 taller。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0007",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "This book is ___ than that one.",
+            "options": {
+                "A": "interesting",
+                "B": "interestinger",
+                "C": "more interesting",
+                "D": "most interesting"
+            },
+            "correct_answer": "C",
+            "explanation": "多音节形容词比较级用 more。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0007",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She runs ___ in our class.",
+            "options": {
+                "A": "fast",
+                "B": "faster",
+                "C": "more fast",
+                "D": "fastest"
+            },
+            "correct_answer": "D",
+            "explanation": "in our class 用最高级。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0008",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Winter is the ___ season in the north.",
+            "options": {
+                "A": "cold",
+                "B": "colder",
+                "C": "coldest",
+                "D": "more cold"
+            },
+            "correct_answer": "C",
+            "explanation": "最高级 coldest。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0008",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The Yellow River is the second ___ river in China.",
+            "options": {
+                "A": "long",
+                "B": "longest",
+                "C": "longer",
+                "D": "most long"
+            },
+            "correct_answer": "B",
+            "explanation": "the second longest 第二长。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0008",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Health is ___ than wealth.",
+            "options": {
+                "A": "important",
+                "B": "importanter",
+                "C": "more important",
+                "D": "most important"
+            },
+            "correct_answer": "C",
+            "explanation": "more important than。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0009",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Of the three girls, Lucy is ___.",
+            "options": {
+                "A": "young",
+                "B": "the youngest",
+                "C": "younger",
+                "D": "more young"
+            },
+            "correct_answer": "B",
+            "explanation": "三者比较用最高级。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0009",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He speaks English ___ than before.",
+            "options": {
+                "A": "well",
+                "B": "better",
+                "C": "best",
+                "D": "more well"
+            },
+            "correct_answer": "B",
+            "explanation": "well 比较级 better。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0009",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We ___ a class meeting tomorrow afternoon.",
+            "options": {
+                "A": "have",
+                "B": "had",
+                "C": "will have",
+                "D": "having"
+            },
+            "correct_answer": "C",
+            "explanation": "tomorrow 用一般将来时。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0010",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She ___ Beijing next week.",
+            "options": {
+                "A": "visits",
+                "B": "is going to visit",
+                "C": "visited",
+                "D": "visiting"
+            },
+            "correct_answer": "B",
+            "explanation": "be going to 表计划。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0010",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "They ___ us if they have time.",
+            "options": {
+                "A": "will help",
+                "B": "helped",
+                "C": "help",
+                "D": "helping"
+            },
+            "correct_answer": "A",
+            "explanation": "if 条件从句一般现在，主句 will。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0010",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I think it ___ rain this evening.",
+            "options": {
+                "A": "is",
+                "B": "will",
+                "C": "was",
+                "D": "did"
+            },
+            "correct_answer": "B",
+            "explanation": "will rain 将会下雨。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0011",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Are you ___ to join the club?",
+            "options": {
+                "A": "go",
+                "B": "went",
+                "C": "going",
+                "D": "gone"
+            },
+            "correct_answer": "C",
+            "explanation": "Are you going to。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0011",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He ___ be fourteen years old next month.",
+            "options": {
+                "A": "will",
+                "B": "is",
+                "C": "was",
+                "D": "did"
+            },
+            "correct_answer": "A",
+            "explanation": "next month 用 will。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0011",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We ___ for you at the station.",
+            "options": {
+                "A": "wait",
+                "B": "will wait",
+                "C": "waited",
+                "D": "waiting"
+            },
+            "correct_answer": "B",
+            "explanation": "承诺\/打算用 will wait。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0012",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I wonder ___ he will come on time.",
+            "options": {
+                "A": "what",
+                "B": "if",
+                "C": "which",
+                "D": "who"
+            },
+            "correct_answer": "B",
+            "explanation": "whether\/if 引导宾语从句表是否。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0012",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Can you tell me ___ the library is?",
+            "options": {
+                "A": "what",
+                "B": "who",
+                "C": "where",
+                "D": "which"
+            },
+            "correct_answer": "C",
+            "explanation": "询问地点用 where。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0012",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She said ___ she liked the gift very much.",
+            "options": {
+                "A": "that",
+                "B": "what",
+                "C": "if",
+                "D": "who"
+            },
+            "correct_answer": "A",
+            "explanation": "陈述句用 that 引导宾语从句。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0013",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Do you know ___ they are waiting for?",
+            "options": {
+                "A": "who",
+                "B": "where",
+                "C": "when",
+                "D": "how"
+            },
+            "correct_answer": "A",
+            "explanation": "wait for 后缺宾语 who。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0013",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I don't know ___ we should leave now.",
+            "options": {
+                "A": "what",
+                "B": "who",
+                "C": "whether",
+                "D": "which"
+            },
+            "correct_answer": "C",
+            "explanation": "whether 表是否。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0013",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He asked me ___ I had finished the work.",
+            "options": {
+                "A": "what",
+                "B": "who",
+                "C": "if",
+                "D": "which"
+            },
+            "correct_answer": "C",
+            "explanation": "一般疑问句转宾语从句用 if\/whether。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0014",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Tell me ___ happened yesterday.",
+            "options": {
+                "A": "what",
+                "B": "who",
+                "C": "where",
+                "D": "when"
+            },
+            "correct_answer": "A",
+            "explanation": "what happened 发生了什么。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0014",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I believe ___ practice makes perfect.",
+            "options": {
+                "A": "that",
+                "B": "what",
+                "C": "if",
+                "D": "who"
+            },
+            "correct_answer": "A",
+            "explanation": "that 可省略的宾语从句。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0014",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "English ___ in many countries.",
+            "options": {
+                "A": "speak",
+                "B": "is spoken",
+                "C": "spoke",
+                "D": "speaks"
+            },
+            "correct_answer": "B",
+            "explanation": "被动语态 is spoken。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0015",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The bridge ___ last year.",
+            "options": {
+                "A": "build",
+                "B": "built",
+                "C": "was built",
+                "D": "is built"
+            },
+            "correct_answer": "C",
+            "explanation": "last year 用 was built。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0015",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "These flowers ___ every day.",
+            "options": {
+                "A": "water",
+                "B": "watered",
+                "C": "are watered",
+                "D": "were watered"
+            },
+            "correct_answer": "C",
+            "explanation": "每天被浇水 are watered。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0015",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The room ___ by Tom just now.",
+            "options": {
+                "A": "clean",
+                "B": "was cleaned",
+                "C": "cleans",
+                "D": "is clean"
+            },
+            "correct_answer": "B",
+            "explanation": "just now 用 was cleaned。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0016",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Rice ___ in the south of China.",
+            "options": {
+                "A": "grow",
+                "B": "is grown",
+                "C": "grew",
+                "D": "grows"
+            },
+            "correct_answer": "B",
+            "explanation": "被动 is grown。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0016",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The song ___ by many students.",
+            "options": {
+                "A": "sing",
+                "B": "sang",
+                "C": "is sung",
+                "D": "sings"
+            },
+            "correct_answer": "C",
+            "explanation": "is sung 被传唱。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0016",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He ___ play chess, but now he likes basketball.",
+            "options": {
+                "A": "used to",
+                "B": "is used to",
+                "C": "was used to",
+                "D": "uses to"
+            },
+            "correct_answer": "A",
+            "explanation": "used to do 过去常常。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0017",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I ___ get up late, but now I get up early.",
+            "options": {
+                "A": "used to",
+                "B": "am used to",
+                "C": "use to",
+                "D": "was use to"
+            },
+            "correct_answer": "A",
+            "explanation": "used to 表过去习惯。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0017",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She is ___ the cold weather in the north.",
+            "options": {
+                "A": "use to",
+                "B": "used to",
+                "C": "using to",
+                "D": "uses to"
+            },
+            "correct_answer": "B",
+            "explanation": "be used to the weather 习惯于天气。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0017",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Would you mind ___ the window?",
+            "options": {
+                "A": "open",
+                "B": "to open",
+                "C": "opening",
+                "D": "opened"
+            },
+            "correct_answer": "C",
+            "explanation": "mind doing sth。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0018",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He decided ___ harder from then on.",
+            "options": {
+                "A": "study",
+                "B": "to study",
+                "C": "studying",
+                "D": "studied"
+            },
+            "correct_answer": "B",
+            "explanation": "decide to do。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0018",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It's important ___ English every day.",
+            "options": {
+                "A": "to practice",
+                "B": "practice",
+                "C": "practicing",
+                "D": "practiced"
+            },
+            "correct_answer": "A",
+            "explanation": "It's + adj. + to do。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0018",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She enjoys ___ music after class.",
+            "options": {
+                "A": "listen",
+                "B": "to listen",
+                "C": "listening",
+                "D": "listened"
+            },
+            "correct_answer": "C",
+            "explanation": "enjoy doing。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0019",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I hope ___ good news soon.",
+            "options": {
+                "A": "hear",
+                "B": "to hear",
+                "C": "hearing",
+                "D": "heard"
+            },
+            "correct_answer": "B",
+            "explanation": "hope to do。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0019",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Remember ___ off the lights when you leave.",
+            "options": {
+                "A": "turn",
+                "B": "to turn",
+                "C": "turning",
+                "D": "turned"
+            },
+            "correct_answer": "B",
+            "explanation": "remember to do 记得去做。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0019",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Stop ___ and listen to me.",
+            "options": {
+                "A": "talk",
+                "B": "to talk",
+                "C": "talking",
+                "D": "talked"
+            },
+            "correct_answer": "C",
+            "explanation": "stop doing 停止正在做的事。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0020",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He wants ___ a doctor in the future.",
+            "options": {
+                "A": "be",
+                "B": "to be",
+                "C": "being",
+                "D": "been"
+            },
+            "correct_answer": "B",
+            "explanation": "want to be。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0020",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "If it ___ tomorrow, we will stay at home.",
+            "options": {
+                "A": "will rain",
+                "B": "rains",
+                "C": "rained",
+                "D": "is raining"
+            },
+            "correct_answer": "B",
+            "explanation": "if 条件句用一般现在时。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0020",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "If you ___ hard, you will pass the exam.",
+            "options": {
+                "A": "work",
+                "B": "worked",
+                "C": "will work",
+                "D": "working"
+            },
+            "correct_answer": "A",
+            "explanation": "主将从现。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0021",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I will call you if I ___ free.",
+            "options": {
+                "A": "will be",
+                "B": "was",
+                "C": "am",
+                "D": "be"
+            },
+            "correct_answer": "C",
+            "explanation": "if 从句用 am。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0021",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Unless you hurry, you ___ miss the bus.",
+            "options": {
+                "A": "miss",
+                "B": "missed",
+                "C": "will miss",
+                "D": "missing"
+            },
+            "correct_answer": "C",
+            "explanation": "unless = if not，主句 will。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0021",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "If she ___ early, she can catch the train.",
+            "options": {
+                "A": "leaves",
+                "B": "left",
+                "C": "will leave",
+                "D": "leaving"
+            },
+            "correct_answer": "A",
+            "explanation": "第三人称单数 leaves。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0022",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I was tired, ___ I went to bed early.",
+            "options": {
+                "A": "so",
+                "B": "but",
+                "C": "because",
+                "D": "and"
+            },
+            "correct_answer": "A",
+            "explanation": "结果用 so。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0022",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She stayed at home ___ it was raining heavily.",
+            "options": {
+                "A": "so",
+                "B": "but",
+                "C": "because",
+                "D": "and"
+            },
+            "correct_answer": "C",
+            "explanation": "原因用 because。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0022",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is young, ___ he knows a lot.",
+            "options": {
+                "A": "so",
+                "B": "but",
+                "C": "because",
+                "D": "and"
+            },
+            "correct_answer": "B",
+            "explanation": "转折用 but。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0023",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Study hard, ___ you will make progress.",
+            "options": {
+                "A": "and",
+                "B": "but",
+                "C": "or",
+                "D": "so"
+            },
+            "correct_answer": "A",
+            "explanation": "祈使句 + and 表顺承结果。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0023",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Hurry up, ___ we will be late.",
+            "options": {
+                "A": "and",
+                "B": "but",
+                "C": "or",
+                "D": "so"
+            },
+            "correct_answer": "C",
+            "explanation": "or 否则。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0023",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "My sister is good ___ drawing.",
+            "options": {
+                "A": "in",
+                "B": "on",
+                "C": "at",
+                "D": "for"
+            },
+            "correct_answer": "C",
+            "explanation": "be good at 擅长。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0024",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The film was ___ interesting that I watched it twice.",
+            "options": {
+                "A": "very",
+                "B": "so",
+                "C": "too",
+                "D": "such"
+            },
+            "correct_answer": "B",
+            "explanation": "so...that 如此……以至于。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0024",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He arrived ___ the airport an hour ago.",
+            "options": {
+                "A": "in",
+                "B": "on",
+                "C": "at",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "arrive at 到达。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0024",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We should learn from ___.",
+            "options": {
+                "A": "other",
+                "B": "others",
+                "C": "another",
+                "D": "the other"
+            },
+            "correct_answer": "B",
+            "explanation": "others 其他人。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0025",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Neither of the answers ___ correct.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "neither of 谓语单数。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0025",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The boy ___ father is a policeman is my classmate.",
+            "options": {
+                "A": "who",
+                "B": "which",
+                "C": "whom",
+                "D": "whose"
+            },
+            "correct_answer": "D",
+            "explanation": "whose 表所属。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0025",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I was doing my homework ___ my brother was watching TV.",
+            "options": {
+                "A": "when",
+                "B": "while",
+                "C": "after",
+                "D": "before"
+            },
+            "correct_answer": "B",
+            "explanation": "while 两动作同时进行。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0026",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She has been in Beijing ___ three days.",
+            "options": {
+                "A": "since",
+                "B": "from",
+                "C": "for",
+                "D": "in"
+            },
+            "correct_answer": "C",
+            "explanation": "for + 时间段。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0026",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Could you tell me how ___ this word?",
+            "options": {
+                "A": "spell",
+                "B": "to spell",
+                "C": "spelling",
+                "D": "spelled"
+            },
+            "correct_answer": "B",
+            "explanation": "how to do。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0026",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The teacher made us ___ the passage twice.",
+            "options": {
+                "A": "read",
+                "B": "to read",
+                "C": "reading",
+                "D": "reads"
+            },
+            "correct_answer": "A",
+            "explanation": "make sb do。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0027",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It's necessary ___ enough sleep every night.",
+            "options": {
+                "A": "have",
+                "B": "to have",
+                "C": "having",
+                "D": "had"
+            },
+            "correct_answer": "B",
+            "explanation": "necessary to do。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0027",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is the tallest ___ the three brothers.",
+            "options": {
+                "A": "between",
+                "B": "in",
+                "C": "of",
+                "D": "among"
+            },
+            "correct_answer": "C",
+            "explanation": "the tallest of the three。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0027",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I prefer walking ___ taking a bus.",
+            "options": {
+                "A": "than",
+                "B": "over",
+                "C": "to",
+                "D": "for"
+            },
+            "correct_answer": "C",
+            "explanation": "prefer doing to doing。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0028",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The news ___ very exciting.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "news 不可数，谓语单数。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0028",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Both Tom and I ___ interested in science.",
+            "options": {
+                "A": "is",
+                "B": "was",
+                "C": "are",
+                "D": "am"
+            },
+            "correct_answer": "C",
+            "explanation": "both...and 复数谓语。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0028",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He asked me ___ I could help him.",
+            "options": {
+                "A": "what",
+                "B": "if",
+                "C": "who",
+                "D": "which"
+            },
+            "correct_answer": "B",
+            "explanation": "if 引导宾语从句。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0029",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The classroom needs ___ every day.",
+            "options": {
+                "A": "clean",
+                "B": "to clean",
+                "C": "cleaning",
+                "D": "cleaned"
+            },
+            "correct_answer": "C",
+            "explanation": "need doing 需要被……。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0029",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She looks ___ today.",
+            "options": {
+                "A": "happy",
+                "B": "happily",
+                "C": "happiness",
+                "D": "happier"
+            },
+            "correct_answer": "B",
+            "explanation": "look 系动词后接形容词。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0029",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I have known him ___ we were children.",
+            "options": {
+                "A": "since",
+                "B": "for",
+                "C": "in",
+                "D": "from"
+            },
+            "correct_answer": "A",
+            "explanation": "since + 过去时间点。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-04-0030",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "04",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "You'd better ___ too much junk food.",
+            "options": {
+                "A": "eat",
+                "B": "to eat",
+                "C": "not eat",
+                "D": "not eating"
+            },
+            "correct_answer": "C",
+            "explanation": "had better not do。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-05-0030",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "05",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The meeting will be ___ in the hall.",
+            "options": {
+                "A": "hold",
+                "B": "held",
+                "C": "holding",
+                "D": "holds"
+            },
+            "correct_answer": "B",
+            "explanation": "will be held 将被举行。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-06-0030",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "06",
+            "education_stage": "初中",
+            "grade_level": "八年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He runs as ___ as his brother.",
+            "options": {
+                "A": "fast",
+                "B": "faster",
+                "C": "fastest",
+                "D": "more fast"
+            },
+            "correct_answer": "A",
+            "explanation": "as...as 中间用原级。（来源：初中语法 · 八年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0001",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I ___ this book for two weeks.",
+            "options": {
+                "A": "borrow",
+                "B": "borrowed",
+                "C": "have had",
+                "D": "had"
+            },
+            "correct_answer": "C",
+            "explanation": "for two weeks 用现在完成时 have had。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0001",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She ___ to London twice.",
+            "options": {
+                "A": "goes",
+                "B": "has been",
+                "C": "went",
+                "D": "is going"
+            },
+            "correct_answer": "B",
+            "explanation": "has been to 去过。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0001",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "They ___ the project already.",
+            "options": {
+                "A": "finish",
+                "B": "finished",
+                "C": "have finished",
+                "D": "finishing"
+            },
+            "correct_answer": "C",
+            "explanation": "already 用现在完成时。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0002",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We ___ each other since 2020.",
+            "options": {
+                "A": "know",
+                "B": "have known",
+                "C": "knew",
+                "D": "knowing"
+            },
+            "correct_answer": "B",
+            "explanation": "since + 时间点用 have known。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0002",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Have you ever ___ a plane?",
+            "options": {
+                "A": "fly",
+                "B": "flew",
+                "C": "flying",
+                "D": "flown"
+            },
+            "correct_answer": "D",
+            "explanation": "ever 与现在完成时连用 Have...flown。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0002",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He has just ___ his homework.",
+            "options": {
+                "A": "finish",
+                "B": "finishes",
+                "C": "finished",
+                "D": "finishing"
+            },
+            "correct_answer": "C",
+            "explanation": "just 与 has finished 连用。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0003",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "How long have you ___ here?",
+            "options": {
+                "A": "live",
+                "B": "lives",
+                "C": "lived",
+                "D": "living"
+            },
+            "correct_answer": "C",
+            "explanation": "How long 用 have lived。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0003",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I haven't seen him ___.",
+            "options": {
+                "A": "already",
+                "B": "ever",
+                "C": "yet",
+                "D": "just"
+            },
+            "correct_answer": "C",
+            "explanation": "否定句用 yet。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0003",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She has ___ finished reading the novel.",
+            "options": {
+                "A": "already",
+                "B": "yet",
+                "C": "ever",
+                "D": "never"
+            },
+            "correct_answer": "A",
+            "explanation": "肯定句用 already。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0004",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "This is the first time I ___ sushi.",
+            "options": {
+                "A": "eat",
+                "B": "ate",
+                "C": "have eaten",
+                "D": "am eating"
+            },
+            "correct_answer": "C",
+            "explanation": "This is the first time + 现在完成时。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0004",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "When I got to the station, the train ___.",
+            "options": {
+                "A": "leave",
+                "B": "left",
+                "C": "has left",
+                "D": "had left"
+            },
+            "correct_answer": "D",
+            "explanation": "过去的过去用过去完成时。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0004",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She told me she ___ the letter before lunch.",
+            "options": {
+                "A": "write",
+                "B": "wrote",
+                "C": "had written",
+                "D": "has written"
+            },
+            "correct_answer": "C",
+            "explanation": "told 之前已完成用 had written。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0005",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "By the end of last year, he ___ three novels.",
+            "options": {
+                "A": "write",
+                "B": "wrote",
+                "C": "had written",
+                "D": "has written"
+            },
+            "correct_answer": "C",
+            "explanation": "By the end of last year 用过去完成时。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0005",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "They ___ the house before it started to snow.",
+            "options": {
+                "A": "reach",
+                "B": "had reached",
+                "C": "reached",
+                "D": "have reached"
+            },
+            "correct_answer": "B",
+            "explanation": "下雪前已到达。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0005",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The meeting ___ at 3 p.m. yesterday.",
+            "options": {
+                "A": "hold",
+                "B": "held",
+                "C": "was held",
+                "D": "is held"
+            },
+            "correct_answer": "C",
+            "explanation": "was held 被举行。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0006",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "A new hospital ___ in our town next year.",
+            "options": {
+                "A": "builds",
+                "B": "will be built",
+                "C": "built",
+                "D": "is building"
+            },
+            "correct_answer": "B",
+            "explanation": "将来被动 will be built。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0006",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The problem must ___ at once.",
+            "options": {
+                "A": "solve",
+                "B": "solved",
+                "C": "be solved",
+                "D": "be solving"
+            },
+            "correct_answer": "C",
+            "explanation": "情态动词被动 be solved。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0006",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "English ___ all over the world.",
+            "options": {
+                "A": "speaks",
+                "B": "is spoken",
+                "C": "spoke",
+                "D": "speaking"
+            },
+            "correct_answer": "B",
+            "explanation": "is spoken 被使用。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0007",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The children ___ to bed early last night.",
+            "options": {
+                "A": "send",
+                "B": "sent",
+                "C": "were sent",
+                "D": "are sent"
+            },
+            "correct_answer": "C",
+            "explanation": "were sent 被送去。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0007",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The boy ___ is wearing a red hat is my cousin.",
+            "options": {
+                "A": "who",
+                "B": "which",
+                "C": "whom",
+                "D": "whose"
+            },
+            "correct_answer": "A",
+            "explanation": "修饰人用 who。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0007",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "This is the book ___ I bought yesterday.",
+            "options": {
+                "A": "who",
+                "B": "that",
+                "C": "whose",
+                "D": "whom"
+            },
+            "correct_answer": "B",
+            "explanation": "修饰物用 that\/which。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0008",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The girl ___ mother is a nurse studies hard.",
+            "options": {
+                "A": "who",
+                "B": "which",
+                "C": "whom",
+                "D": "whose"
+            },
+            "correct_answer": "D",
+            "explanation": "whose 表所属。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0008",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Do you know the man ___ we met yesterday?",
+            "options": {
+                "A": "who",
+                "B": "which",
+                "C": "whom",
+                "D": "whose"
+            },
+            "correct_answer": "C",
+            "explanation": "宾格 whom。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0008",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I will never forget the day ___ I joined the club.",
+            "options": {
+                "A": "who",
+                "B": "when",
+                "C": "which",
+                "D": "whose"
+            },
+            "correct_answer": "B",
+            "explanation": "时间用 when。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0009",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "This is the place ___ we visited last summer.",
+            "options": {
+                "A": "who",
+                "B": "when",
+                "C": "which",
+                "D": "whose"
+            },
+            "correct_answer": "C",
+            "explanation": "visit 缺宾语 which\/that。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0009",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Anyone ___ breaks the rule will be punished.",
+            "options": {
+                "A": "who",
+                "B": "which",
+                "C": "whom",
+                "D": "whose"
+            },
+            "correct_answer": "A",
+            "explanation": "anyone who 任何人……。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0009",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The house ___ roof is red belongs to Mr. Wang.",
+            "options": {
+                "A": "who",
+                "B": "which",
+                "C": "whom",
+                "D": "whose"
+            },
+            "correct_answer": "D",
+            "explanation": "whose roof 屋顶。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0010",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "If I ___ you, I would take the offer.",
+            "options": {
+                "A": "am",
+                "B": "were",
+                "C": "was",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "虚拟语气 If I were you。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0010",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "If it ___ fine tomorrow, we would go hiking.",
+            "options": {
+                "A": "were",
+                "B": "is",
+                "C": "will be",
+                "D": "was"
+            },
+            "correct_answer": "A",
+            "explanation": "与将来事实相反用 were。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0010",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I wish I ___ fly like a bird.",
+            "options": {
+                "A": "can",
+                "B": "will",
+                "C": "could",
+                "D": "may"
+            },
+            "correct_answer": "C",
+            "explanation": "wish 从句用过去式 could。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0011",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "If he ___ harder, he would pass the exam.",
+            "options": {
+                "A": "worked",
+                "B": "works",
+                "C": "will work",
+                "D": "work"
+            },
+            "correct_answer": "A",
+            "explanation": "与现在事实相反用过去式。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0011",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "You ___ smoke here. It's forbidden.",
+            "options": {
+                "A": "can",
+                "B": "may",
+                "C": "mustn't",
+                "D": "needn't"
+            },
+            "correct_answer": "C",
+            "explanation": "禁止 mustn't。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0011",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "You ___ worry. I can help you.",
+            "options": {
+                "A": "must",
+                "B": "should",
+                "C": "need",
+                "D": "needn't"
+            },
+            "correct_answer": "D",
+            "explanation": "needn't 不必。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0012",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Students ___ wear uniforms on weekdays.",
+            "options": {
+                "A": "can",
+                "B": "must",
+                "C": "may",
+                "D": "might"
+            },
+            "correct_answer": "B",
+            "explanation": "必须 must。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0012",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It ___ rain this afternoon. Take an umbrella.",
+            "options": {
+                "A": "can",
+                "B": "must",
+                "C": "might",
+                "D": "should"
+            },
+            "correct_answer": "C",
+            "explanation": "might 可能。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0012",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "You ___ listen carefully in class.",
+            "options": {
+                "A": "can",
+                "B": "should",
+                "C": "may",
+                "D": "might"
+            },
+            "correct_answer": "B",
+            "explanation": "should 应该。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0013",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He ___ be at home. The lights are off.",
+            "options": {
+                "A": "can",
+                "B": "must",
+                "C": "should",
+                "D": "can't"
+            },
+            "correct_answer": "D",
+            "explanation": "否定推测 can't。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0013",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He said he ___ tired.",
+            "options": {
+                "A": "is",
+                "B": "was",
+                "C": "will be",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "间接引语时态后退 was。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0013",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She told me she ___ the film the day before.",
+            "options": {
+                "A": "see",
+                "B": "sees",
+                "C": "had seen",
+                "D": "has seen"
+            },
+            "correct_answer": "C",
+            "explanation": "the day before 用 had seen。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0014",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Tom asked if I ___ help him.",
+            "options": {
+                "A": "can",
+                "B": "will",
+                "C": "could",
+                "D": "may"
+            },
+            "correct_answer": "C",
+            "explanation": "asked 后用 could。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0014",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The teacher said the earth ___ around the sun.",
+            "options": {
+                "A": "goes",
+                "B": "went",
+                "C": "go",
+                "D": "going"
+            },
+            "correct_answer": "A",
+            "explanation": "客观真理仍用一般现在时。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0014",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She asked me where I ___.",
+            "options": {
+                "A": "live",
+                "B": "lived",
+                "C": "will live",
+                "D": "living"
+            },
+            "correct_answer": "B",
+            "explanation": "特殊疑问句转间接引语用 lived。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0015",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She is a good student, ___?",
+            "options": {
+                "A": "is she",
+                "B": "isn't she",
+                "C": "does she",
+                "D": "doesn't she"
+            },
+            "correct_answer": "B",
+            "explanation": "前肯后否 isn't she。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0015",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "You don't like coffee, ___?",
+            "options": {
+                "A": "do you",
+                "B": "don't you",
+                "C": "are you",
+                "D": "aren't you"
+            },
+            "correct_answer": "A",
+            "explanation": "前否后肯 do you。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0015",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "They have finished the work, ___?",
+            "options": {
+                "A": "have they",
+                "B": "do they",
+                "C": "did they",
+                "D": "haven't they"
+            },
+            "correct_answer": "D",
+            "explanation": "have 完成时反义疑问。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0016",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Let's go to the park, ___?",
+            "options": {
+                "A": "will we",
+                "B": "do we",
+                "C": "shall we",
+                "D": "don't we"
+            },
+            "correct_answer": "C",
+            "explanation": "Let's 用 shall we。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0016",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Neither Tom nor his parents ___ at home.",
+            "options": {
+                "A": "is",
+                "B": "are",
+                "C": "was",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "neither...nor 就近原则 parents → are。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0016",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The number of students ___ increasing.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "the number of 谓语用单数 is。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0017",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "A lot of people ___ waiting outside.",
+            "options": {
+                "A": "is",
+                "B": "was",
+                "C": "are",
+                "D": "be"
+            },
+            "correct_answer": "C",
+            "explanation": "people 复数 are。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0017",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Each of the boys ___ a new bike.",
+            "options": {
+                "A": "have",
+                "B": "has",
+                "C": "having",
+                "D": "had"
+            },
+            "correct_answer": "B",
+            "explanation": "each of 谓语单数 has。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0017",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Physics ___ my favorite subject.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "学科 physics 单数 is。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0018",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We should ___ our best to protect the environment.",
+            "options": {
+                "A": "do",
+                "B": "try",
+                "C": "make",
+                "D": "take"
+            },
+            "correct_answer": "B",
+            "explanation": "try one's best 尽某人最大努力。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0018",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It's time for us ___ action.",
+            "options": {
+                "A": "take",
+                "B": "taking",
+                "C": "to take",
+                "D": "took"
+            },
+            "correct_answer": "C",
+            "explanation": "It's time to do。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0018",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is familiar ___ this area.",
+            "options": {
+                "A": "with",
+                "B": "to",
+                "C": "for",
+                "D": "at"
+            },
+            "correct_answer": "A",
+            "explanation": "be familiar with 熟悉。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0019",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She is proud ___ her son.",
+            "options": {
+                "A": "with",
+                "B": "for",
+                "C": "of",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "be proud of 为……骄傲。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0019",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Please ___ attention to the spelling.",
+            "options": {
+                "A": "pay",
+                "B": "give",
+                "C": "make",
+                "D": "take"
+            },
+            "correct_answer": "A",
+            "explanation": "pay attention to 注意。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0019",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The meeting was put ___ until next Monday.",
+            "options": {
+                "A": "on",
+                "B": "up",
+                "C": "off",
+                "D": "away"
+            },
+            "correct_answer": "C",
+            "explanation": "put off 推迟。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0020",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He ran ___ an old friend in the street.",
+            "options": {
+                "A": "on",
+                "B": "into",
+                "C": "at",
+                "D": "for"
+            },
+            "correct_answer": "B",
+            "explanation": "run into 偶遇。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0020",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We need to ___ up with new ideas.",
+            "options": {
+                "A": "come",
+                "B": "go",
+                "C": "get",
+                "D": "make"
+            },
+            "correct_answer": "A",
+            "explanation": "come up with 想出。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0020",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "By the time we arrived, the movie ___.",
+            "options": {
+                "A": "start",
+                "B": "started",
+                "C": "had started",
+                "D": "has started"
+            },
+            "correct_answer": "C",
+            "explanation": "过去的过去用 had started。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0021",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Not only he but also his friends ___ fond of music.",
+            "options": {
+                "A": "is",
+                "B": "was",
+                "C": "are",
+                "D": "am"
+            },
+            "correct_answer": "C",
+            "explanation": "not only...but also 就近原则 friends → are。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0021",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is said that the bridge ___ next month.",
+            "options": {
+                "A": "completes",
+                "B": "will be completed",
+                "C": "completed",
+                "D": "is completing"
+            },
+            "correct_answer": "B",
+            "explanation": "将来被动 will be completed。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0021",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I wonder ___ we can finish the work on time.",
+            "options": {
+                "A": "what",
+                "B": "whether",
+                "C": "who",
+                "D": "which"
+            },
+            "correct_answer": "B",
+            "explanation": "whether 是否。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0022",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The man ___ spoke at the meeting is our headmaster.",
+            "options": {
+                "A": "who",
+                "B": "which",
+                "C": "whom",
+                "D": "whose"
+            },
+            "correct_answer": "A",
+            "explanation": "修饰人用 who。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0022",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "You should keep on ___ until you succeed.",
+            "options": {
+                "A": "try",
+                "B": "to try",
+                "C": "trying",
+                "D": "tried"
+            },
+            "correct_answer": "C",
+            "explanation": "keep on doing。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0022",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He avoided ___ the same mistake again.",
+            "options": {
+                "A": "make",
+                "B": "to make",
+                "C": "making",
+                "D": "made"
+            },
+            "correct_answer": "C",
+            "explanation": "avoid doing。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0023",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I would rather ___ at home than go out.",
+            "options": {
+                "A": "stay",
+                "B": "to stay",
+                "C": "staying",
+                "D": "stayed"
+            },
+            "correct_answer": "A",
+            "explanation": "would rather do than do。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0023",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The harder you work, the ___ progress you will make.",
+            "options": {
+                "A": "much",
+                "B": "many",
+                "C": "more",
+                "D": "most"
+            },
+            "correct_answer": "C",
+            "explanation": "the more...the more 句型。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0023",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is one of the students who ___ passed the exam.",
+            "options": {
+                "A": "has",
+                "B": "have",
+                "C": "is",
+                "D": "was"
+            },
+            "correct_answer": "B",
+            "explanation": "定语从句修饰 students 用 have。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0024",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Great changes ___ in my hometown in recent years.",
+            "options": {
+                "A": "take place",
+                "B": "took place",
+                "C": "have taken place",
+                "D": "were taken"
+            },
+            "correct_answer": "C",
+            "explanation": "in recent years 用现在完成时。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0024",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She suggested ___ to the museum on Sunday.",
+            "options": {
+                "A": "go",
+                "B": "to go",
+                "C": "going",
+                "D": "went"
+            },
+            "correct_answer": "C",
+            "explanation": "suggest doing。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0024",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It's no use ___ about it. Just do it.",
+            "options": {
+                "A": "worry",
+                "B": "to worry",
+                "C": "worrying",
+                "D": "worried"
+            },
+            "correct_answer": "C",
+            "explanation": "It's no use doing。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0025",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is too young ___ such a difficult job.",
+            "options": {
+                "A": "do",
+                "B": "to do",
+                "C": "doing",
+                "D": "done"
+            },
+            "correct_answer": "B",
+            "explanation": "too...to 太……而不能。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0025",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The book ___ I borrowed from the library is very useful.",
+            "options": {
+                "A": "who",
+                "B": "that",
+                "C": "whose",
+                "D": "whom"
+            },
+            "correct_answer": "B",
+            "explanation": "修饰物用 that。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0025",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "You are supposed ___ on time for the interview.",
+            "options": {
+                "A": "come",
+                "B": "to come",
+                "C": "coming",
+                "D": "came"
+            },
+            "correct_answer": "B",
+            "explanation": "be supposed to do。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0026",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I can't imagine ___ without the Internet.",
+            "options": {
+                "A": "live",
+                "B": "to live",
+                "C": "living",
+                "D": "lived"
+            },
+            "correct_answer": "C",
+            "explanation": "imagine doing。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0026",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He has devoted himself ___ teaching.",
+            "options": {
+                "A": "in",
+                "B": "on",
+                "C": "to",
+                "D": "for"
+            },
+            "correct_answer": "C",
+            "explanation": "devote oneself to。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0026",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We are looking forward to ___ you soon.",
+            "options": {
+                "A": "see",
+                "B": "seeing",
+                "C": "seen",
+                "D": "saw"
+            },
+            "correct_answer": "B",
+            "explanation": "look forward to doing。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0027",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She was seen ___ into the building just now.",
+            "options": {
+                "A": "go",
+                "B": "to go",
+                "C": "going",
+                "D": "went"
+            },
+            "correct_answer": "B",
+            "explanation": "see sb do 被动省略 to。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0027",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It was ___ a difficult problem that nobody could solve it.",
+            "options": {
+                "A": "very",
+                "B": "too",
+                "C": "such",
+                "D": "so"
+            },
+            "correct_answer": "C",
+            "explanation": "such a\/an + adj + n。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0027",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He failed the exam because he didn't work ___.",
+            "options": {
+                "A": "hard",
+                "B": "hard enough",
+                "C": "hardly",
+                "D": "harder"
+            },
+            "correct_answer": "B",
+            "explanation": "not...enough 不够努力。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0028",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The students are busy ___ for the final exam.",
+            "options": {
+                "A": "prepare",
+                "B": "to prepare",
+                "C": "preparing",
+                "D": "prepared"
+            },
+            "correct_answer": "C",
+            "explanation": "be busy doing。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0028",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I have no idea ___ he will come back.",
+            "options": {
+                "A": "what",
+                "B": "when",
+                "C": "which",
+                "D": "who"
+            },
+            "correct_answer": "B",
+            "explanation": "when 引导同位语从句\/宾语从句。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0028",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "You must ___ your temper when things go wrong.",
+            "options": {
+                "A": "keep",
+                "B": "make",
+                "C": "take",
+                "D": "hold"
+            },
+            "correct_answer": "A",
+            "explanation": "keep one's temper 控制脾气。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0029",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is the only one of the boys who ___ the truth.",
+            "options": {
+                "A": "know",
+                "B": "knows",
+                "C": "knowing",
+                "D": "known"
+            },
+            "correct_answer": "B",
+            "explanation": "the only one of 谓语单数 knows。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0029",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The old man lives ___.",
+            "options": {
+                "A": "lonely",
+                "B": "alone",
+                "C": "loneliness",
+                "D": "lone"
+            },
+            "correct_answer": "B",
+            "explanation": "live alone 独自生活。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-09-0029",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "09",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "We must prevent the river from ___.",
+            "options": {
+                "A": "pollute",
+                "B": "polluted",
+                "C": "being polluted",
+                "D": "polluting"
+            },
+            "correct_answer": "C",
+            "explanation": "prevent from being done。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-07-0030",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "07",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She used to ___ shy, but now she is outgoing.",
+            "options": {
+                "A": "be",
+                "B": "being",
+                "C": "been",
+                "D": "was"
+            },
+            "correct_answer": "A",
+            "explanation": "used to be 过去是。（来源：初中语法 · 九年级）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Z1-08-0030",
+            "type": "grammar",
+            "realm": "Z1",
+            "stage": "08",
+            "education_stage": "初中",
+            "grade_level": "九年级",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It ___ me two hours to finish the report yesterday.",
+            "options": {
+                "A": "spends",
+                "B": "took",
+                "C": "cost",
+                "D": "paid"
+            },
+            "correct_answer": "B",
+            "explanation": "It takes sb time to do。（来源：初中语法 · 九年级）",
+            "word": ""
+        }
+    ]
+}

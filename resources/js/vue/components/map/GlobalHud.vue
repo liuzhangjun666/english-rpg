@@ -8,13 +8,7 @@
     <!-- 功能面板 -->
     <transition name="slide">
       <div v-show="isExpanded" class="hud-dock">
-        <div 
-          v-for="item in dockItems" 
-          :key="item.id"
-          class="hud-item"
-          @click="item.onClick"
-          :title="item.name"
-        >
+        <div v-for="item in dockItems" :key="item.id" class="hud-item" @click="item.onClick" :title="item.name">
           <div class="hud-icon-wrapper">
             <img v-if="item.iconUrl" :src="item.iconUrl" :alt="item.name" class="hud-icon-img" />
             <span v-else class="hud-icon-emoji">{{ item.emoji }}</span>
@@ -42,6 +36,9 @@ const emit = defineEmits<{
   (e: 'open-review'): void;
   (e: 'open-achievements'): void;
   (e: 'open-profile'): void;
+  (e: 'open-events'): void;
+  (e: 'open-mail'): void;
+  (e: 'open-settings'): void;
 }>();
 
 // 展开/收起状态由 ui store 持有，跨路由 + 跨会话保留
@@ -53,11 +50,12 @@ function toggleExpanded() {
 const dockItems = ref([
   { id: 'mall', name: '坊市', iconUrl: hallMall, onClick: () => router.push('/mall') },
   { id: 'leaderboard', name: '排行榜', iconUrl: hallLeaderboard, onClick: () => router.push('/leaderboard') },
-  { id: 'activities', name: '活动', emoji: '🎁', onClick: () => console.log('Activities clicked') },
-  { id: 'mail', name: '邮件', emoji: '✉️', onClick: () => console.log('Mail clicked') },
+  { id: 'activities', name: '活动', emoji: '🎁', onClick: () => emit('open-events') },
+  { id: 'mail', name: '邮件', emoji: '✉️', onClick: () => emit('open-mail') },
   { id: 'review', name: '复盘', iconUrl: hallReview, onClick: () => emit('open-review') },
   { id: 'achievements', name: '成就碑', iconUrl: hallAchievements, onClick: () => emit('open-achievements') },
   { id: 'profile', name: '洞府', iconUrl: hallProfile, onClick: () => emit('open-profile') },
+  { id: 'settings', name: '设置', emoji: '⚙️', onClick: () => emit('open-settings') },
 ]);
 </script>
 
@@ -155,7 +153,7 @@ const dockItems = ref([
   width: 26px;
   height: 26px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
 }
 
 .hud-icon-emoji {
