@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\VocabularyWord;
+use App\Support\VocabularyMeaningNormalizer;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
 
@@ -14,6 +15,7 @@ class VocabularyWordsSeeder extends Seeder
             database_path('seeders/data/vocabulary_words_import_小学词汇（统一表）.json'),
             database_path('seeders/data/vocabulary_words_import_初中词汇111.json'),
             database_path('seeders/data/vocabulary_words_import_高中词汇最终版.json'),
+            database_path('seeders/data/vocabulary_words_import_大学四六级.json'),
         ];
 
         $imported = 0;
@@ -98,6 +100,9 @@ class VocabularyWordsSeeder extends Seeder
         if (str_contains($grade, '高') || str_contains($grade, '10') || str_contains($grade, '11') || str_contains($grade, '12')) {
             return '高中';
         }
+        if (str_contains($grade, 'CET') || str_contains($grade, '大一') || str_contains($grade, '大二') || str_contains($grade, '大三') || str_contains($grade, '大四')) {
+            return '大学';
+        }
         if (str_contains($grade, '初') || str_contains($grade, '7') || str_contains($grade, '8') || str_contains($grade, '9')) {
             return '初中';
         }
@@ -111,11 +116,18 @@ class VocabularyWordsSeeder extends Seeder
             return null;
         }
         if (is_array($value)) {
-            return array_values(array_filter(array_map(fn ($v) => trim((string) $v), $value)));
+            $normalized = VocabularyMeaningNormalizer::normalize($value);
+
+            return $normalized === [] ? null : $normalized;
         }
 
         $text = trim((string) $value);
+        if ($text === '') {
+            return null;
+        }
 
-        return $text === '' ? null : [$text];
+        $normalized = VocabularyMeaningNormalizer::normalize([$text]);
+
+        return $normalized === [] ? null : $normalized;
     }
 }

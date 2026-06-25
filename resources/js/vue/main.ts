@@ -39,13 +39,15 @@ function normalizeButtonLabel(label: string) {
 function resolveSkinKey(label: string) {
   const normalized = normalizeButtonLabel(label);
   if (!normalized) return '';
-  if (normalized.includes('重新开始') || normalized.includes('重开') || normalized.includes('再来') || normalized.includes('再试') || normalized.includes('重试') || normalized.includes('再闯')) return 'restart';
-  if (normalized.includes('继续') || normalized.includes('下一')) return 'continue';
-  if (normalized.includes('挑战') || normalized.includes('试炼')) return 'challenge';
-  if (normalized.includes('提交') || normalized.includes('交卷')) return 'submit';
-  if (normalized.includes('确定') || normalized.includes('确认')) return 'confirm';
-  if (normalized.includes('返回') || normalized.includes('取消') || normalized.includes('离开') || normalized.includes('退出')) return 'back';
-  if (normalized.includes('进入') || normalized.includes('前往') || normalized.includes('开始')) return 'enter';
+  if (normalized.includes('重新开始') || normalized.includes('重开') || normalized.includes('再来') || normalized.includes('再试') || normalized.includes('重试') || normalized.includes('再闯') || normalized.includes('一局')) return 'restart';
+  if (normalized.includes('去常规') || normalized.includes('常规修炼') || normalized.includes('返回常规')) return 'continue';
+  if (normalized.includes('继续') || normalized.includes('下一关') || normalized.includes('下一题')) return 'continue';
+  if (normalized.includes('上一题') || normalized.includes('上一步') || normalized.includes('上一')) return 'back';
+  if (normalized.includes('挑战') || normalized.includes('试炼') || normalized.includes('冲榜')) return 'challenge';
+  if (normalized.includes('提交') || normalized.includes('交卷') || normalized.includes('结算') || normalized.includes('收卷')) return 'submit';
+  if (normalized.includes('确定') || normalized.includes('确认') || normalized.includes('绑定') || normalized.includes('复制')) return 'confirm';
+  if (normalized.includes('返回') || normalized.includes('取消') || normalized.includes('离开') || normalized.includes('退出') || normalized.includes('关闭') || normalized.includes('暂避') || normalized.includes('暂停') || normalized.includes('遁走')) return 'back';
+  if (normalized.includes('进入') || normalized.includes('前往') || normalized.includes('开始') || normalized.includes('开启') || normalized.includes('了解') || normalized.includes('坊市')) return 'enter';
   return '';
 }
 
@@ -78,6 +80,14 @@ function applyVueButtonSkins(root?: ParentNode) {
     btn.classList.add('btn-art', `btn-art-${skinKey}`);
     btn.style.setProperty('--btn-art-bg', `url("${asset}")`);
   });
+}
+
+const globalWindow = window as any;
+if (globalWindow.__levelupVueApp__) {
+  try { globalWindow.__levelupVueApp__.unmount(); } catch { /* ignore */ }
+}
+if (globalWindow.__levelupSkinObserver__) {
+  try { globalWindow.__levelupSkinObserver__.disconnect(); } catch { /* ignore */ }
 }
 
 const app = createApp(App);
@@ -148,6 +158,7 @@ bootstrapDone.finally(async () => {
 });
 
 app.mount('#vue-app');
+globalWindow.__levelupVueApp__ = app;
 
 let pendingSkinApply = false;
 const skinObserver = new MutationObserver(() => {
@@ -159,6 +170,14 @@ const skinObserver = new MutationObserver(() => {
   });
 });
 skinObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
+globalWindow.__levelupSkinObserver__ = skinObserver;
 router.afterEach(() => {
   requestAnimationFrame(() => applyVueButtonSkins(document.body));
 });
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    try { skinObserver.disconnect(); } catch { /* ignore */ }
+    try { app.unmount(); } catch { /* ignore */ }
+  });
+}

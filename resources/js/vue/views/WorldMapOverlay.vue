@@ -30,12 +30,7 @@
         <!-- GlobalHud 已提升至 App.vue 全局挂载，此处不再重复实例 -->
 
         <!-- 弹窗 -->
-        <ReviewModal v-model:visible="showReview" />
-        <HeartDemonRecord v-model:visible="showDemons" />
-        <AchievementsModal v-model:visible="showAchievements" />
-        <ProfilePanel v-model:visible="showProfile" @open-review="openReviewFromProfile" />
-        <DailyQuestPanel v-model:visible="showDailyQuest" />
-        <InnerDemonPanel v-model:visible="showInnerDemon" :auto-challenge="innerDemonAutoChallenge" />
+        <HallModals :panels="panels" @go-mijing="navigation.goMijing()" @go-world-boss="navigation.goWorldBoss()" />
       </div>
     </Transition>
   </Teleport>
@@ -52,7 +47,6 @@ import { useHallPanels } from '../composables/useHallPanels';
 import { WorldSceneManager } from '../core/sect/WorldSceneManager';
 
 import RadialMenu from '../components/map/RadialMenu.vue';
-import GlobalHud from '../components/map/GlobalHud.vue';
 import HallModals from '../components/features/HallModals.vue';
 
 const props = defineProps<{ visible: boolean }>();
@@ -115,7 +109,8 @@ watch(() => props.visible, async (val) => {
     worldManager.onFocusedMove = (screenX, screenY) => {
       radialPos.value = { x: screenX + 'px', y: screenY + 'px' };
     };
-  } catch {
+  } catch (error) {
+    console.error('[WorldMapOverlay] 地图初始化失败', error);
     ElMessage.error('地图加载失败，请重试');
   } finally {
     ui.hideLoading();

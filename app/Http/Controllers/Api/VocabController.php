@@ -10,6 +10,7 @@ use App\Services\CurrencyService;
 use App\Services\HeartDemonService;
 use App\Services\PracticeLevelService;
 use App\Services\RealmService;
+use App\Services\VocabQuestionBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -20,18 +21,21 @@ class VocabController extends Controller
     private RealmService $realmService;
 
     private PracticeLevelService $levelService;
+    private VocabQuestionBuilder $vocabQuestionBuilder;
 
     public function __construct(
         CurrencyService $currencyService,
         HeartDemonService $demonService,
         RealmService $realmService,
-        PracticeLevelService $levelService
+        PracticeLevelService $levelService,
+        VocabQuestionBuilder $vocabQuestionBuilder
     )
     {
         $this->currencyService = $currencyService;
         $this->demonService = $demonService;
         $this->realmService = $realmService;
         $this->levelService = $levelService;
+        $this->vocabQuestionBuilder = $vocabQuestionBuilder;
     }
 
     /**
@@ -52,7 +56,7 @@ class VocabController extends Controller
             return response()->json(['success'=>false,'code'=>'NO_QUESTIONS','message'=>'该关卡暂无题目'], 404);
         }
 
-        $normalQuestions = $this->buildQuestionsFromWords($words);
+        $normalQuestions = $this->vocabQuestionBuilder->buildFromPool($words);
         $allQuestions = $this->injectDemonWords($user->id, $normalQuestions, $normalCount, (string) ($user->realm ?? 'L1'));
 
         if (empty($allQuestions)) {
@@ -155,77 +159,13 @@ class VocabController extends Controller
         ]);
     }
 
-    private function buildQuestionsFromWords($words): array
-    {
-        $allMeaningsPool = VocabularyWord::query()
-            ->whereNotNull('meanings')
-            ->where('meanings', '<>', 'null')
-            ->inRandomOrder()
-            ->limit(500)
-            ->get();
-
-        $distractors = [];
-        foreach ($allMeaningsPool as $w) {
-            $meanings = is_array($w->meanings) ? $w->meanings : [];
-            foreach ($meanings as $m) {
-                $m = trim((string) $m);
-                if ($m !== '') {
-                    $distractors[] = $m;
-                }
-            }
-        }
-
-        $questions = [];
-        foreach ($words as $word) {
-            $meanings = is_array($word->meanings) ? $word->meanings : [];
-            $meanings = array_values(array_filter(array_map(fn ($v) => trim((string) $v), $meanings)));
-            if (empty($meanings)) {
-                continue;
-            }
-            $correctText = $meanings[0];
-
-            $opts = [$correctText];
-            shuffle($distractors);
-            foreach ($distractors as $d) {
-                if (count($opts) >= 4) {
-                    break;
-                }
-                if ($d === '' || in_array($d, $opts, true)) {
-                    continue;
-                }
-                $opts[] = $d;
-            }
-            while (count($opts) < 4) {
-                $opts[] = $correctText;
-            }
-
-            shuffle($opts);
-            $labels = ['A', 'B', 'C', 'D'];
-            $options = [];
-            $correctKey = 'A';
-            foreach ($labels as $i => $key) {
-                $options[$key] = (string) ($opts[$i] ?? '');
-                if ($options[$key] === $correctText) {
-                    $correctKey = $key;
-                }
-            }
-
-            $questions[] = [
-                'question_id' => 'VW-' . (string) $word->id,
-                'type' => 'vocab',
-                'word' => (string) $word->lemma,
-                'question' => '"' . (string) $word->lemma . '" 的中文意思是？',
-                'options' => $options,
-                'correct_answer' => $correctKey,
-                'explanation' => implode('；', $meanings),
-            ];
-        }
-
-        return $questions;
-    }
-
     private function injectDemonWords(int $userId, array $normalQuestions, int $normalCount, string $realmCode): array
     {
+        $user = \App\Models\User::query()->find($userId);
+        if (!$user) {
+            return array_slice($normalQuestions, 0, $normalCount);
+        }
+
         $demonCount = (int) round($normalCount * HeartDemonService::INJECTION_RATIO);
         if ($demonCount > 0) {
             $demonCount = max(1, $demonCount);
@@ -243,14 +183,14 @@ class VocabController extends Controller
             if (!$word && $lemma !== '') {
                 $word = VocabularyWord::query()->where('lemma', $lemma)->first();
             }
-            if (!$word) {
+            if (!$word || !$this->levelService->isVocabWordInUserPool($user, (int) $word->id)) {
                 continue;
             }
-            $qArr = $this->buildQuestionsFromWords(collect([$word]));
-            if (!empty($qArr[0])) {
-                $qArr[0]['_is_demon'] = true;
-                $qArr[0]['_demon_wrong_count'] = $demon['wrong_count'] ?? 0;
-                $injected[] = $qArr[0];
+            $qArr = $this->vocabQuestionBuilder->buildFromWord($word);
+            if ($qArr) {
+                $qArr['_is_demon'] = true;
+                $qArr['_demon_wrong_count'] = $demon['wrong_count'] ?? 0;
+                $injected[] = $qArr;
             }
         }
 
@@ -269,20 +209,6 @@ class VocabController extends Controller
         if ($answerText === '') {
             return false;
         }
-        if (!preg_match('/^VW-(\d+)$/', $questionId, $m)) {
-            return false;
-        }
-        $word = VocabularyWord::query()->find((int) $m[1]);
-        if (!$word) {
-            return false;
-        }
-        $meanings = is_array($word->meanings) ? $word->meanings : [];
-        $normalized = mb_strtolower(trim($answerText));
-        foreach ($meanings as $mng) {
-            if (mb_strtolower(trim((string) $mng)) === $normalized) {
-                return true;
-            }
-        }
-        return false;
+        return $this->vocabQuestionBuilder->isMeaningCorrect($questionId, $answerText);
     }
 }

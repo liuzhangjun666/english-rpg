@@ -25,18 +25,22 @@
           </div>
         </div>
 
-        <div class="ws-combo-wrap" :class="{ 'is-hidden': vocabCombo < 2 }">
-          <img v-if="vocabCombo >= 2" class="ws-combo-bg" :src="wsTopCombo" alt="连击" />
-          <div v-if="vocabCombo >= 2" class="ws-combo-text">x{{ vocabCombo }}</div>
-        </div>
-
+        <div class="ws-play-bottom">
         <div class="ws-stake-zone">
-          <img class="ws-stake-main" :src="wsStakePlain" alt="木桩" />
-          <div class="ws-word-row">
-            <div ref="wsWordRef" class="ws-word" :class="getWordTextClass(currentWord)">{{ currentWord }}</div>
-            <button class="ws-speaker-btn" type="button" title="播放读音" @click="playCurrentWordAudio">🔊</button>
+          <div class="ws-combo-wrap" :class="{ 'is-hidden': vocabCombo < 2 }">
+            <img v-if="vocabCombo >= 2" class="ws-combo-bg" :src="wsTopCombo" alt="连击" />
+            <div v-if="vocabCombo >= 2" class="ws-combo-text">x{{ vocabCombo }}</div>
           </div>
-          <img v-if="vocabFeedbackType === 'success'" class="ws-hit-fx" :src="wsFxHit" alt="击中" />
+          <div class="ws-stake-frame">
+            <img class="ws-stake-main" :src="wsStakePlain" alt="木桩" />
+            <div class="ws-word-plate">
+              <div class="ws-word-row">
+                <div ref="wsWordRef" class="ws-word" :class="getWordTextClass(currentWord)">{{ currentWord }}</div>
+              </div>
+              <button class="ws-speaker-btn" type="button" title="播放读音" @click="playCurrentWordAudio">🔊</button>
+            </div>
+            <img v-if="vocabFeedbackType === 'success'" class="ws-hit-fx" :src="wsFxHit" alt="击中" />
+          </div>
         </div>
 
         <div class="ws-options">
@@ -49,6 +53,7 @@
               :class="getOptionTextClass(option.text)">{{ option.text }}</span>
           </button>
         </div>
+        </div>
       </div>
 
       <div v-else-if="isGrammarModule" class="grammar-arena">
@@ -56,18 +61,16 @@
           <div class="zf-scene-stage">
             <img class="zf-bg" :src="zfSceneBg" alt="阵法峰场景" />
             <div class="zf-scene-mask"></div>
-          </div>
-        </div>
-        <div class="zf-bridge-frame">
-          <div
-            class="zf-bridge-wrap"
-            :class="{
-              'is-bridge-active': grammarBridgeVisible,
-              'is-bridge-success': grammarFeedbackType === 'success',
-              'is-bridge-error': grammarFeedbackType === 'error',
-            }"
-          >
-            <img v-if="grammarBridgeVisible" class="zf-bridge" :src="grammarBridgeImage" alt="机关桥" />
+            <div
+              class="zf-bridge-wrap"
+              :class="{
+                'is-bridge-active': grammarBridgeVisible,
+                'is-bridge-success': grammarFeedbackType === 'success',
+                'is-bridge-error': grammarFeedbackType === 'error',
+              }"
+            >
+              <img v-if="grammarBridgeVisible" class="zf-bridge" :src="grammarBridgeImage" alt="机关桥" />
+            </div>
           </div>
         </div>
         <div class="zf-arena-mask"></div>
@@ -171,12 +174,29 @@
           <span class="cult-panel-icon">⚔</span>
           <span>{{ venueTitle }}</span>
         </div>
-        <button class="cult-panel-back" type="button" @click="backHall">返回大厅</button>
+        <PracticeVariantSwitch
+          v-if="supportsArcadeMode && sessionState !== 'answering'"
+          :model-value="practiceVariant"
+          :arcade-enabled="true"
+          :arcade-playable="arcadePlayable"
+          @update:model-value="setPracticeVariant"
+        />
+        <button v-if="!isArcadeVariant" class="cult-panel-back" type="button" @click="backHall">返回大厅</button>
       </header>
 
       <div class="cult-panel-body">
-        <template v-if="sessionState === 'rules'">
+        <template v-if="sessionState === 'rules' && !isArcadeVariant">
           <ModuleRulesIntro :module-key="rulesModuleKey" @confirm="sessionState = 'idle'" @back="backHall" />
+        </template>
+
+        <template v-else-if="isArcadeVariant && (sessionState === 'rules' || sessionState === 'idle')">
+          <ArcadePracticePanel
+            :ability="arcadeAbility"
+            :stage-no="currentLevel.stageNo"
+            @back="backHall"
+            @switch-classic="setPracticeVariant('classic')"
+            @settled="onArcadeSettled"
+          />
         </template>
 
         <template v-else-if="sessionState === 'idle'">
@@ -215,11 +235,11 @@
           </div>
           <div class="cult-actions">
             <template v-if="hasQuestionBank && resumeSession">
-              <el-button type="primary" @click="continueFromResume">继续上次进度</el-button>
-              <el-button @click="restartFromResume">重新开始本关</el-button>
+              <el-button type="primary" data-btn-skin="continue" @click="continueFromResume">继续上次进度</el-button>
+              <el-button data-btn-skin="restart" @click="restartFromResume">重新开始本关</el-button>
             </template>
-            <el-button v-else-if="hasQuestionBank" type="primary" @click="startChallenge">开始修炼</el-button>
-            <el-button @click="backHall">返回大厅</el-button>
+            <el-button v-else-if="hasQuestionBank" type="primary" data-btn-skin="enter" @click="startChallenge">开始修炼</el-button>
+            <el-button data-btn-skin="back" @click="backHall">返回大厅</el-button>
           </div>
         </template>
 
@@ -232,8 +252,8 @@
             </div>
           </div>
           <div class="cult-actions">
-            <el-button type="primary" @click="confirmChallenge">确认开始</el-button>
-            <el-button @click="cancelChallenge">取消</el-button>
+            <el-button type="primary" data-btn-skin="confirm" @click="confirmChallenge">确认开始</el-button>
+            <el-button data-btn-skin="back" @click="cancelChallenge">取消</el-button>
           </div>
         </template>
 
@@ -259,8 +279,8 @@
             </el-radio>
           </el-radio-group>
           <div class="cult-actions">
-            <el-button @click="backQuestion">上一题</el-button>
-            <el-button type="primary" @click="nextQuestion">{{ isLastQuestion ? '提交结算' : '下一题' }}</el-button>
+            <el-button data-btn-skin="back" @click="backQuestion">上一题</el-button>
+            <el-button type="primary" data-btn-skin="submit" @click="nextQuestion">{{ isLastQuestion ? '提交结算' : '下一题' }}</el-button>
           </div>
         </template>
 
@@ -311,9 +331,10 @@
             </div>
 
             <div class="cult-actions">
-              <el-button type="primary" @click="retryLevel">再试一次</el-button>
-              <el-button v-if="resultPassed" @click="nextLevel">下一关</el-button>
-              <el-button @click="backHall">返回大厅</el-button>
+              <el-button type="primary" data-btn-skin="restart" @click="retryLevel">再试一次</el-button>
+              <el-button v-if="resultPassed" data-btn-skin="continue" @click="nextLevel">下一关</el-button>
+              <el-button v-if="arcadePlayable" data-btn-skin="challenge" @click="setPracticeVariant('arcade')">去试炼冲榜</el-button>
+              <el-button data-btn-skin="back" @click="backHall">返回大厅</el-button>
             </div>
           </div>
         </template>
@@ -349,6 +370,17 @@ import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
 import { useDemonStore } from '../stores/demon';
 import DemonTransition from '../components/demons/DemonTransition.vue';
+import PracticeVariantSwitch from '../components/practice/PracticeVariantSwitch.vue';
+import ArcadePracticePanel from '../components/practice/ArcadePracticePanel.vue';
+import {
+  getArcadeModeByAbility,
+  isArcadePlayable,
+  loadVariantPreference,
+  parsePracticeVariant,
+  saveVariantPreference,
+  type ArcadeAbility,
+  type PracticeVariant,
+} from '../data/arcadeModes';
 import wsSceneBg from '../../../assets/images/ui/wood_stake/background.png';
 import wsTopBack from '../../../assets/images/ui/wood_stake/back.png';
 import wsTopHelp from '../../../assets/images/ui/wood_stake/introduction.png';
@@ -487,6 +519,7 @@ const venueTitle = computed(() => {
 });
 
 const currentType = ref<PracticeType>('vocab');
+const practiceVariant = ref<PracticeVariant>('classic');
 const sessionState = ref<'rules' | 'idle' | 'confirm' | 'answering' | 'result'>('rules');
 const questions = ref<Array<Record<string, any>>>([]);
 const currentIndex = ref(0);
@@ -550,6 +583,14 @@ const isGrammarModule = computed(() => currentType.value === 'grammar');
 const isWritingModule = computed(() => currentType.value === 'writing');
 const isListeningModule = computed(() => currentType.value === 'listening');
 const isSpeakingModule = computed(() => currentType.value === 'speaking');
+const arcadeAbility = computed<ArcadeAbility>(() => {
+  const t = currentType.value;
+  if (t === 'reading') return 'reading';
+  return t as ArcadeAbility;
+});
+const supportsArcadeMode = computed(() => !!getArcadeModeByAbility(arcadeAbility.value));
+const arcadePlayable = computed(() => isArcadePlayable(arcadeAbility.value));
+const isArcadeVariant = computed(() => practiceVariant.value === 'arcade' && supportsArcadeMode.value);
 const isArenaMode = computed(
   () => sessionState.value === 'answering' && (isVocabModule.value || isGrammarModule.value || isWritingModule.value || isSpeakingModule.value)
 );
@@ -717,7 +758,7 @@ onBeforeUnmount(() => {
 });
 
 watch(
-  () => [route.path, route.query.mode],
+  () => [route.path, route.query.mode, route.query.variant],
   async () => {
     await bootstrapModuleFromRoute();
   }
@@ -1050,6 +1091,8 @@ async function bootstrapModuleFromRoute() {
   }
 
   currentType.value = type;
+  const fromQuery = route.query.variant != null ? parsePracticeVariant(route.query.variant) : null;
+  practiceVariant.value = fromQuery ?? loadVariantPreference(type);
   resetQuestionState();
   resumeSession.value = null;
 
@@ -1071,7 +1114,7 @@ async function bootstrapModuleFromRoute() {
         ElMessage.info('检测到上次修炼进度，请选择继续或重开');
       }
     }
-    sessionState.value = 'rules';
+    sessionState.value = resolveEntrySessionState(type, practiceVariant.value);
   } catch {
     ElMessage.error('练功场景切换失败');
   } finally {
@@ -1086,11 +1129,47 @@ function onLegacyEnterHall() {
 async function switchModule(type: PracticeType) {
   if (type === 'grammar') {
     if (sceneType.value === 'grammar') return;
-    await router.replace('/grammar');
+    await router.replace({ path: '/grammar', query: buildPracticeQuery(type, practiceVariant.value) });
     return;
   }
   if (sceneType.value === 'practice' && type === currentType.value && route.query.mode === type) return;
-  await router.replace({ path: '/practice', query: { mode: type } });
+  await router.replace({ path: '/practice', query: buildPracticeQuery(type, practiceVariant.value) });
+}
+
+function buildPracticeQuery(type: PracticeType, variant: PracticeVariant) {
+  const query: Record<string, string> = { mode: type };
+  if (variant === 'arcade' && getArcadeModeByAbility(type as ArcadeAbility)) {
+    query.variant = 'arcade';
+  }
+  return query;
+}
+
+function resolveEntrySessionState(type: PracticeType, variant: PracticeVariant) {
+  const ability = (type === 'grammar' ? 'grammar' : type) as ArcadeAbility;
+  if (variant === 'arcade' && getArcadeModeByAbility(ability)) {
+    return 'idle';
+  }
+  return 'rules';
+}
+
+async function setPracticeVariant(variant: PracticeVariant) {
+  if (variant === 'arcade' && !supportsArcadeMode.value) return;
+  saveVariantPreference(currentType.value, variant);
+  practiceVariant.value = variant;
+  sessionState.value = resolveEntrySessionState(currentType.value, variant);
+  resetQuestionState();
+  const path = sceneType.value === 'grammar' ? '/grammar' : '/practice';
+  const mode = sceneType.value === 'grammar' ? 'grammar' : currentType.value;
+  await router.replace({ path, query: buildPracticeQuery(mode as PracticeType, variant) });
+  if (variant === 'arcade' && !arcadePlayable.value) {
+    ElMessage.info('该模块试炼玩法接入中，词汇/语法/阅读试炼已开放');
+  }
+}
+
+function onArcadeSettled(payload: { exp: number; stones: number }) {
+  if (payload.exp || payload.stones) {
+    ElMessage.success(`试炼结算：修为 +${payload.exp}，灵石 +${payload.stones}`);
+  }
 }
 
 async function startChallenge() {
@@ -1521,8 +1600,8 @@ function applyArenaTextFit() {
     fitTextToBounds(wsWordRef.value, 12, 36);
   }
   if (isVocabModule.value) {
-    const optionMin = window.innerWidth <= 900 ? 10 : 14;
-    const optionMax = window.innerWidth <= 900 ? 20 : 28;
+    const optionMin = window.innerWidth <= 900 ? 9 : 12;
+    const optionMax = window.innerWidth <= 900 ? 22 : 26;
     woodStakeOptions.value.forEach((it) => {
       const key = String(it.key || '').toUpperCase();
       const el = optionTextRefs[key];
@@ -2080,9 +2159,18 @@ function backHall() {
   flex-direction: column;
   overflow: hidden;
   border-radius: 0;
-  /* 顶部留出 TopHud 高度（约 76px），避免标题"练功房·木桩连击"被状态栏盖住 */
-  padding-top: 80px;
-  padding-bottom: clamp(8px, 1.5vh, 20px);
+  /* 顶部留出 TopHud 高度（约 80px），避免标题被状态栏盖住 */
+  padding-top: var(--top-hud-height, 80px);
+  padding-bottom: clamp(4px, 0.8vh, 10px);
+}
+
+.ws-play-bottom {
+  width: 100%;
+  margin-top: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .ws-bg {
@@ -2141,7 +2229,7 @@ function backHall() {
 
 .ws-progress-wrap {
   position: relative;
-  margin: 2px auto 0;
+  margin: 2px auto clamp(6px, 1.2vh, 14px);
   width: min(95%, 980px);
   height: clamp(72px, 11vh, 112px);
   flex-shrink: 0;
@@ -2195,11 +2283,14 @@ function backHall() {
 }
 
 .ws-combo-wrap {
-  width: min(95%, 980px);
-  margin: 6px auto 0;
-  height: clamp(44px, 7vh, 72px);
-  position: relative;
-  flex-shrink: 0;
+  position: absolute;
+  left: clamp(0px, 4vw, 24px);
+  top: 46%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: auto;
+  height: auto;
+  pointer-events: none;
 }
 
 .ws-combo-bg {
@@ -2220,37 +2311,58 @@ function backHall() {
 
 .ws-combo-wrap.is-hidden {
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
 }
 
 .ws-stake-zone {
-  width: min(92%, 920px);
-  margin: clamp(8px, 1.5vh, 24px) auto 0;
-  flex: 1 1 auto;
-  min-height: 220px;
-  height: auto;
+  width: min(98%, 960px);
+  margin: 0 auto;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
   position: relative;
 }
 
+.ws-stake-frame {
+  position: relative;
+  width: min(76vw, 500px);
+  max-height: min(50vh, 520px);
+  flex-shrink: 0;
+  margin-bottom: clamp(2px, 0.6vh, 8px);
+}
+
 .ws-stake-main {
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
-  width: auto;
-  height: 100%;
-  max-width: 90%;
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: min(50vh, 520px);
   object-fit: contain;
   object-position: bottom center;
 }
 
-.ws-word-row {
+.ws-word-plate {
   position: absolute;
   left: 50%;
-  bottom: 72%;
-  transform: translateX(-50%);
-  width: min(28vh, 230px);
-  height: clamp(48px, 9vh, 88px);
+  top: 30%;
+  transform: translate(-50%, -50%);
+  width: 44%;
+  min-width: 108px;
+  max-width: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.ws-word-row {
+  position: relative;
+  width: 100%;
+  height: clamp(52px, 12vw, 92px);
+  pointer-events: auto;
 }
 
 .ws-word {
@@ -2261,7 +2373,7 @@ function backHall() {
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-size: clamp(17px, 2vw, 24px);
+  font-size: clamp(18px, 2.4vw, 28px);
   line-height: 1.06;
   font-weight: 700;
   color: #fff1cf;
@@ -2288,8 +2400,8 @@ function backHall() {
 
 .ws-speaker-btn {
   position: absolute;
+  left: calc(100% + 10px);
   top: 50%;
-  right: -52px;
   transform: translateY(-50%);
   width: 40px;
   height: 40px;
@@ -2299,21 +2411,25 @@ function backHall() {
   color: #ffe4b3;
   font-size: 20px;
   cursor: pointer;
+  pointer-events: auto;
 }
 
 .ws-hit-fx {
   position: absolute;
-  right: 162px;
-  bottom: 128px;
-  width: 132px;
+  right: 6%;
+  top: 42%;
+  width: 28%;
+  max-width: 150px;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .ws-options {
-  width: min(96%, 1140px);
-  margin: clamp(8px, 1.5vh, 16px) auto 0;
+  width: min(98%, 1180px);
+  margin: 0 auto clamp(2px, 0.5vh, 6px);
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(12px, 1.5vw, 20px);
+  gap: clamp(14px, 1.8vw, 22px);
   flex-shrink: 0;
 }
 
@@ -2333,7 +2449,7 @@ function backHall() {
 
 .ws-option-board {
   width: 100%;
-  max-width: clamp(160px, 22vh, 260px);
+  max-width: clamp(190px, 28vh, 310px);
   display: block;
   margin: 0 auto;
 }
@@ -2361,11 +2477,11 @@ function backHall() {
 .ws-option-text {
   position: absolute;
   left: 50%;
-  top: 37.6%;
+  top: 38.2%;
   transform: translate(-50%, -50%);
-  width: 62%;
-  height: 42%;
-  padding: 0 4px;
+  width: 54%;
+  height: 48%;
+  padding: 2px 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2373,7 +2489,7 @@ function backHall() {
   color: #3a230f;
   font-size: 22px;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.18;
   letter-spacing: 0;
   writing-mode: horizontal-tb;
   text-orientation: mixed;
@@ -2390,25 +2506,30 @@ function backHall() {
 }
 
 .ws-option-text.is-long {
-  width: 64%;
+  width: 55%;
   font-size: 15px;
-  line-height: 1.14;
+  line-height: 1.16;
 }
 
 .ws-option-text.is-xlong {
-  width: 66%;
+  width: 56%;
   font-size: 13px;
-  line-height: 1.12;
+  line-height: 1.14;
 }
 
 .grammar-arena {
   position: fixed;
-  inset: 0;
+  top: var(--top-hud-height, 80px);
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 80;
-  width: 100vw;
-  min-height: 100vh;
+  width: 100%;
+  height: calc(100vh - var(--top-hud-height, 80px));
+  min-height: 0;
   overflow: hidden;
   border-radius: 0;
+  box-sizing: border-box;
   color: #e9f4ff;
   background: #010816;
   /* background.png 941×1672，桥段锚点 y=860 x≈50.5% */
@@ -2416,9 +2537,9 @@ function backHall() {
   --zf-bg-h: 1672;
   --zf-bridge-x: 50.5%;
   --zf-bridge-y: 51.45%;
-  --zf-bridge-w: 58%;
-  --zf-bridge-tilt-x: 24deg;
-  --zf-bridge-scale-y: 0.68;
+  --zf-bridge-w: 74%;
+  --zf-bridge-tilt-x: 22deg;
+  --zf-bridge-scale-y: 0.76;
 }
 
 .zf-scene-frame {
@@ -2428,7 +2549,7 @@ function backHall() {
   z-index: 0;
 }
 
-/* 与 object-fit: cover 等价：铺满视口，桥段仍按原图百分比锚定 */
+/* 与 object-fit: cover 等价：铺满练功区，桥段按原图百分比锚定 */
 .zf-scene-stage {
   position: absolute;
   left: 50%;
@@ -2437,6 +2558,68 @@ function backHall() {
   aspect-ratio: var(--zf-bg-w) / var(--zf-bg-h);
   width: max(100vw, calc(100vh * var(--zf-bg-w) / var(--zf-bg-h)));
   height: max(100vh, calc(100vw * var(--zf-bg-h) / var(--zf-bg-w)));
+}
+
+.grammar-arena .zf-scene-stage {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  aspect-ratio: var(--zf-bg-w) / var(--zf-bg-h);
+  width: auto;
+  height: auto;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.grammar-arena .zf-bg {
+  object-fit: fill;
+  object-position: center center;
+}
+
+.grammar-arena .zf-scene-mask {
+  background: linear-gradient(180deg, rgba(1, 8, 22, 0.2), rgba(1, 8, 22, 0.24));
+}
+
+.grammar-arena .zf-arena-mask {
+  background: linear-gradient(180deg, rgba(1, 8, 22, 0.18) 0%, rgba(1, 8, 22, 0.02) 32%, rgba(1, 8, 22, 0.28) 100%);
+}
+
+.grammar-arena .zf-top {
+  position: relative;
+  padding-top: 6px;
+  min-height: 120px;
+}
+
+.grammar-arena .zf-top::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 52px;
+  background: linear-gradient(180deg, rgba(1, 8, 22, 0.5) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.grammar-arena .zf-title,
+.grammar-arena .zf-level-chip,
+.grammar-arena .zf-progress-chip {
+  position: relative;
+  z-index: 1;
+}
+
+.grammar-arena .zf-level-chip,
+.grammar-arena .zf-progress-chip {
+  position: absolute;
+}
+
+.grammar-arena .zf-title {
+  display: block;
+  width: min(78vw, 760px);
+  margin: 0 auto;
+  object-fit: contain;
 }
 
 .zf-bg {
@@ -2500,14 +2683,15 @@ function backHall() {
 
 .zf-top {
   width: min(94%, 1280px);
-  margin: 12px auto 0;
-  min-height: 120px;
+  margin: 0 auto;
+  padding-top: 8px;
+  min-height: 112px;
 }
 
 .zf-back-btn {
   position: fixed;
   left: 24px;
-  top: 24px;
+  top: calc(var(--top-hud-height, 80px) + 8px);
   z-index: 100;
   width: 94px;
   height: 94px;
@@ -2525,14 +2709,15 @@ function backHall() {
 
 .zf-title {
   display: block;
-  width: min(72vw, 760px);
+  width: min(78vw, 760px);
   margin: 0 auto;
+  object-fit: contain;
 }
 
 .zf-level-chip {
   position: absolute;
   right: 0;
-  top: 14px;
+  top: 12px;
   padding: 10px 20px;
   border-radius: 18px;
   border: 1px solid rgba(98, 214, 244, 0.62);
@@ -2545,13 +2730,13 @@ function backHall() {
 .zf-progress-chip {
   position: absolute;
   right: 0;
-  top: 72px;
-  width: min(230px, 26vw);
+  top: 68px;
+  width: min(200px, 24vw);
 }
 
 .zf-progress-text {
   text-align: center;
-  font-size: 38px;
+  font-size: 30px;
   line-height: 1;
   font-weight: 800;
   color: #f7fcff;
@@ -2598,8 +2783,8 @@ function backHall() {
 
 .zf-question-wrap {
   position: relative;
-  width: min(90%, 980px);
-  margin: 20px auto 0;
+  width: min(92%, 1040px);
+  margin: 4px auto 0;
   aspect-ratio: 1300 / 385;
 }
 
@@ -2638,17 +2823,17 @@ function backHall() {
   top: var(--zf-bridge-y);
   width: var(--zf-bridge-w);
   margin: 0;
-  transform: translate(-50%, -50%) perspective(760px) rotateX(var(--zf-bridge-tilt-x)) scaleY(var(--zf-bridge-scale-y)) scale(0.76);
+  transform: translate(-50%, -50%) perspective(760px) rotateX(var(--zf-bridge-tilt-x)) scaleY(var(--zf-bridge-scale-y)) scale(0.92);
   transform-origin: center center;
   opacity: 0;
   pointer-events: none;
-  z-index: 2;
+  z-index: 3;
   transition: opacity 0.28s ease, transform 0.38s cubic-bezier(0.22, 0.85, 0.3, 1);
 }
 
 .zf-bridge-wrap.is-bridge-active {
   opacity: 1;
-  transform: translate(-50%, -50%) perspective(760px) rotateX(var(--zf-bridge-tilt-x)) scaleY(var(--zf-bridge-scale-y)) scale(1);
+  transform: translate(-50%, -50%) perspective(760px) rotateX(var(--zf-bridge-tilt-x)) scaleY(var(--zf-bridge-scale-y)) scale(1.08);
 }
 
 .zf-bridge {
@@ -2702,7 +2887,7 @@ function backHall() {
   width: 100%;
   display: block;
   object-fit: contain;
-  transform: scale(1.24);
+  transform: scale(1.34);
   transform-origin: center;
 }
 
@@ -2777,8 +2962,8 @@ function backHall() {
   }
 
   .ws-combo-wrap {
-    height: 44px;
-    margin-top: 6px;
+    left: 2px;
+    top: 44%;
   }
 
   .ws-combo-bg {
@@ -2792,24 +2977,38 @@ function backHall() {
     font-size: 18px;
   }
 
+  .ws-play-bottom {
+    margin-top: auto;
+    padding-bottom: 2px;
+  }
+
   .ws-stake-zone {
-    margin-top: clamp(8px, 1.5vh, 24px);
-    min-height: 200px;
+    margin: 0 auto;
+  }
+
+  .ws-stake-frame {
+    width: min(86vw, 380px);
+    max-height: min(46vh, 420px);
+    margin-bottom: 2px;
   }
 
   .ws-stake-main {
-    bottom: 0;
-    width: auto;
+    max-height: min(46vh, 420px);
+  }
+
+  .ws-word-plate {
+    top: 30%;
+    width: 46%;
+    min-width: 88px;
+    max-width: 180px;
   }
 
   .ws-word-row {
-    bottom: 72%;
-    width: min(28vh, 170px);
-    height: clamp(40px, 8vh, 62px);
+    height: clamp(40px, 11vw, 68px);
   }
 
   .ws-word {
-    font-size: clamp(13px, 2.8vw, 17px);
+    font-size: clamp(14px, 3.2vw, 20px);
   }
 
   .ws-word.is-medium {
@@ -2825,21 +3024,26 @@ function backHall() {
   }
 
   .ws-speaker-btn {
-    right: -38px;
-    width: 26px;
-    height: 26px;
-    font-size: 13px;
+    left: calc(100% + 6px);
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
   }
 
   .ws-hit-fx {
-    right: 14px;
-    bottom: 96px;
-    width: 88px;
+    right: 2%;
+    top: 40%;
+    width: 32%;
+    max-width: 100px;
   }
 
   .ws-options {
-    margin-top: clamp(6px, 1.2vh, 12px);
-    gap: 8px;
+    margin: 0 auto 2px;
+    gap: 10px;
+  }
+
+  .ws-option-board {
+    max-width: clamp(168px, 30vw, 228px);
   }
 
   .ws-option-index {
@@ -2848,9 +3052,10 @@ function backHall() {
   }
 
   .ws-option-text {
-    top: 37.6%;
-    width: 63%;
-    height: 42%;
+    top: 38.2%;
+    width: 54%;
+    height: 48%;
+    padding: 2px 8px;
     font-size: 15px;
     letter-spacing: 0;
   }
@@ -2860,41 +3065,51 @@ function backHall() {
   }
 
   .ws-option-text.is-long {
-    width: 65%;
+    width: 55%;
     font-size: 11px;
   }
 
   .ws-option-text.is-xlong {
-    width: 66%;
+    width: 56%;
     font-size: 10px;
   }
 
   .zf-top {
     width: 96%;
-    margin-top: 8px;
-    min-height: 84px;
+    margin-top: 0;
+    padding-top: 2px;
+    min-height: 88px;
   }
 
   .zf-back-btn {
     width: 62px;
     height: 62px;
     left: 12px;
-    top: 12px;
+    top: calc(var(--top-hud-height, 80px) + 6px);
   }
 
-  .zf-title {
-    width: min(74vw, 430px);
+  .grammar-arena .zf-title {
+    width: min(86vw, 480px);
+  }
+
+  .grammar-arena .zf-top {
+    padding-top: 4px;
+    min-height: 96px;
+  }
+
+  .grammar-arena .zf-top::before {
+    height: 40px;
   }
 
   .zf-level-chip {
     right: 0;
-    top: 8px;
+    top: 6px;
     padding: 6px 12px;
     font-size: 14px;
   }
 
   .zf-progress-chip {
-    top: 40px;
+    top: 50px;
     width: min(132px, 34vw);
   }
 
@@ -2919,8 +3134,8 @@ function backHall() {
   }
 
   .zf-question-wrap {
-    width: 95%;
-    margin-top: 12px;
+    width: 96%;
+    margin-top: 6px;
   }
 
   .zf-question-text {
@@ -2929,11 +3144,11 @@ function backHall() {
     font-size: 26px;
   }
 
-  .zf-scene-stage {
-    --zf-bridge-y: 51.8%;
-    --zf-bridge-w: 62%;
+  .grammar-arena {
+    --zf-bridge-y: 51.6%;
+    --zf-bridge-w: 78%;
     --zf-bridge-tilt-x: 20deg;
-    --zf-bridge-scale-y: 0.72;
+    --zf-bridge-scale-y: 0.8;
   }
 
   .zf-options {

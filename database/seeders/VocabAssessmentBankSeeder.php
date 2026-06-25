@@ -59,10 +59,15 @@ class VocabAssessmentBankSeeder extends Seeder
                 foreach ($rows as $question) {
                     $level = $this->resolveAssessmentLevel(
                         (string) $question->realm,
-                        (string) $question->stage
+                        (string) $question->stage,
+                        $question,
+                    );
+                    $include = \App\Support\AssessmentLevelResolver::shouldIncludeInAssessment(
+                        (string) $question->type,
+                        $question->question,
                     );
                     $question->assessment_level = $level;
-                    $question->is_assessment = 1;
+                    $question->is_assessment = $include ? 1 : 0;
                     $question->expected_time = 5;
                     if (in_array((string) $question->type, ['vocabulary'], true)) {
                         $question->type = 'vocab';
@@ -453,31 +458,20 @@ class VocabAssessmentBankSeeder extends Seeder
         }
     }
 
-    private function resolveAssessmentLevel(string $realm, string $stage): int
+    private function resolveAssessmentLevel(string $realm, string $stage, ?Question $question = null): int
     {
-        $realm = strtoupper(trim($realm));
-        $stageNum = (int) ltrim(trim($stage), '0');
-        if ($stageNum <= 0) {
-            $stageNum = 1;
+        if ($question) {
+            return \App\Support\AssessmentLevelResolver::resolveFromParts(
+                $question->grade_level,
+                $question->explanation,
+                $question->question,
+                $realm,
+                $stage,
+                $question->question_id,
+            );
         }
 
-        if ($realm === 'L1') {
-            return $stageNum <= 3 ? 1 : 2;
-        }
-        if ($realm === 'L2') {
-            if ($stageNum <= 3) {
-                return 3;
-            }
-            if ($stageNum <= 6) {
-                return 4;
-            }
-            return 5;
-        }
-        if ($realm === 'L3') {
-            return $stageNum <= 3 ? 6 : 7;
-        }
-
-        return 1;
+        return \App\Support\AssessmentLevelResolver::resolveFromGameRealmStage($realm, $stage);
     }
 
     private function vocabTemplates(int $level): array

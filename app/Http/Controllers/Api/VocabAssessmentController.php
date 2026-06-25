@@ -73,13 +73,13 @@ class VocabAssessmentController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => [
-                'assessment_id' => (int) $assessment->id,
-                'current_level' => (int) $assessment->current_level,
-                'vocab_current_level' => (int) ($assessment->vocab_current_level ?? $assessment->current_level),
-                'grammar_current_level' => (int) ($assessment->grammar_current_level ?? $assessment->current_level),
-                'total_questions' => (int) $assessment->total_questions,
-            ],
+            'data' => array_merge(
+                [
+                    'assessment_id' => (int) $assessment->id,
+                    'total_questions' => (int) $assessment->total_questions,
+                ],
+                $this->service->buildAssessmentProgress($assessment)
+            ),
         ]);
     }
 
@@ -114,13 +114,7 @@ class VocabAssessmentController extends Controller
                 'data' => [
                     'finished' => true,
                     'question' => null,
-                    'progress' => [
-                        'current' => (int) $assessment->answered_count,
-                        'total' => (int) $assessment->total_questions,
-                        'current_level' => (int) $assessment->current_level,
-                        'vocab_current_level' => (int) ($assessment->vocab_current_level ?? $assessment->current_level),
-                        'grammar_current_level' => (int) ($assessment->grammar_current_level ?? $assessment->current_level),
-                    ],
+                    'progress' => $this->service->buildAssessmentProgress($assessment),
                 ],
             ]);
         }
@@ -137,13 +131,11 @@ class VocabAssessmentController extends Controller
             'success' => true,
             'data' => [
                 'question' => $picked['question'],
-                'progress' => [
-                    'current' => min((int) $assessment->answered_count + 1, (int) $assessment->total_questions),
-                    'total' => (int) $assessment->total_questions,
-                    'current_level' => (int) ($picked['current_level'] ?? $assessment->current_level),
-                    'vocab_current_level' => (int) ($assessment->vocab_current_level ?? $assessment->current_level),
-                    'grammar_current_level' => (int) ($assessment->grammar_current_level ?? $assessment->current_level),
-                ],
+                'progress' => $picked['progress'] ?? $this->service->buildAssessmentProgress(
+                    $assessment,
+                    $picked['dimension'] ?? null,
+                    (int) ($picked['current_level'] ?? $assessment->current_level),
+                ),
             ],
         ]);
     }
@@ -275,17 +267,17 @@ class VocabAssessmentController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => [
+            'data' => array_merge([
                 'is_correct' => $isCorrect,
                 'correct_answer' => (string) $checked['correct_answer'],
                 'explanation' => (string) $checked['explanation'],
                 'question_type' => $dimensionType,
                 'level_before' => (int) $adjusted['level_before'],
                 'level_after' => (int) $adjusted['level_after'],
-                'vocab_current_level' => (int) ($assessment->vocab_current_level ?? $assessment->current_level),
-                'grammar_current_level' => (int) ($assessment->grammar_current_level ?? $assessment->current_level),
                 'finished' => $finished,
-            ],
+            ], [
+                'progress' => $this->service->buildAssessmentProgress($assessment, $dimensionType),
+            ]),
         ]);
     }
 
@@ -346,6 +338,7 @@ class VocabAssessmentController extends Controller
                 'realm_code' => (string) ($result['realm_code'] ?? ''),
                 'realm_stage' => (int) ($result['realm_stage'] ?? 1),
                 'school_stage' => (string) ($result['school_stage'] ?? ''),
+                'start_level' => (int) ($result['start_level'] ?? 1),
                 'proven_level' => (int) ($result['proven_level'] ?? 0),
                 'peak_question_level' => (int) ($result['peak_question_level'] ?? 0),
                 'max_level_by_school' => (int) ($result['max_level_by_school'] ?? 0),

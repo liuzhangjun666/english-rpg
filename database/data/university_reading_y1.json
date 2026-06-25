@@ -1,0 +1,423 @@
+{
+    "summary": {
+        "realm": "Y1",
+        "education_stage": "大学",
+        "total_passages": 9
+    },
+    "passages": [
+        {
+            "realm": "Y1",
+            "stage": "01",
+            "level_tag": "大学",
+            "grade_level": "大一",
+            "title": "The First University Lecture",
+            "content": "My first university lecture had more than two hundred students in a hall with steep rows of seats. The professor walked in without calling names and began with a question: \"Why does evidence matter more than confidence?\" Students typed quickly on laptops while others took notes by hand. I missed part of the introduction because I sat too far back and hesitated to ask classmates. After class, I moved to the second row and introduced myself to the student beside me. She shared her annotated slides and suggested joining a study group on Thursday evenings. University learning, I realized, rewards those who prepare before class and connect with others early.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "How many students were in the lecture?",
+                    "options": {
+                        "A": "About fifty.",
+                        "B": "About one hundred.",
+                        "C": "More than two hundred.",
+                        "D": "Fewer than twenty."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "课堂有两百多人。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "What did the writer do after the first class?",
+                    "options": {
+                        "A": "Stopped taking notes.",
+                        "B": "Moved forward and joined a study network.",
+                        "C": "Dropped the course.",
+                        "D": "Asked the professor to reduce seats."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "作者前移座位并结识同学。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What does university learning reward according to the writer?",
+                    "options": {
+                        "A": "Preparing before class and connecting with others early.",
+                        "B": "Sitting far back silently.",
+                        "C": "Avoiding study groups.",
+                        "D": "Confidence without evidence."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "大学学习奖励课前准备和主动联结。。（来源：研究生阅读）"
+                }
+            ]
+        },
+        {
+            "realm": "Y1",
+            "stage": "02",
+            "level_tag": "大学",
+            "grade_level": "大一",
+            "title": "Life in the Dormitory",
+            "content": "During my first semester, I shared a dormitory with three roommates from different majors. We agreed on quiet hours after eleven p.m., but one roommate often edited videos late at night with bright lights. Instead of arguing, we bought a small desk lamp with a warm shade and set a rotating schedule for laundry day. We also taped a whiteboard near the door for messages about packages and exam weeks. The small system reduced friction and made the room feel like a team. I learned that adult roommates do not need identical habits; they need clear agreements and small compromises.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What problem appeared at night?",
+                    "options": {
+                        "A": "Laundry machines broke.",
+                        "B": "The dormitory banned lights.",
+                        "C": "Everyone studied loudly.",
+                        "D": "A roommate edited videos late with bright lights."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "室友深夜用亮灯剪辑视频。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "What solution did they use?",
+                    "options": {
+                        "A": "A softer lamp and a laundry schedule.",
+                        "B": "A new dormitory building.",
+                        "C": "Separate majors by floor.",
+                        "D": "No messages allowed."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "他们用暖色台灯和洗衣轮班解决。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What did the writer learn about roommates?",
+                    "options": {
+                        "A": "They must share one major.",
+                        "B": "They should never compromise.",
+                        "C": "Clear agreements and small compromises matter.",
+                        "D": "Whiteboards cause arguments."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "室友间需要明确约定与适度妥协。。（来源：研究生阅读）"
+                }
+            ]
+        },
+        {
+            "realm": "Y1",
+            "stage": "03",
+            "level_tag": "大学",
+            "grade_level": "大二",
+            "title": "Joining a Research Lab",
+            "content": "In my second year, I emailed five professors about research opportunities. Only one replied, inviting me to read two papers before an interview. I summarized each paper in one page and listed questions about methods I did not understand. During the interview, the professor cared less about my grades and more about whether I could explain why the research mattered. I joined a lab studying bilingual education and spent weeks coding interview transcripts. The work was slower than exams, yet it taught me patience and how knowledge is built step by step.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "How did the writer prepare for the interview?",
+                    "options": {
+                        "A": "By memorizing grades only.",
+                        "B": "By summarizing papers and listing method questions.",
+                        "C": "By skipping the reading.",
+                        "D": "By emailing ten more professors."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "作者精读论文并整理问题。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "What mattered most to the professor?",
+                    "options": {
+                        "A": "Perfect exam scores.",
+                        "B": "Fast coding speed only.",
+                        "C": "Avoiding interviews.",
+                        "D": "Whether the writer could explain why the research mattered."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "教授更看重能否说明研究意义。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What did lab work teach the writer?",
+                    "options": {
+                        "A": "Patience and how knowledge is built step by step.",
+                        "B": "That research is faster than exams.",
+                        "C": "That summaries are useless.",
+                        "D": "That grades replace reading."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "实验工作教会耐心与知识累积。。（来源：研究生阅读）"
+                }
+            ]
+        },
+        {
+            "realm": "Y1",
+            "stage": "04",
+            "level_tag": "大学",
+            "grade_level": "大二",
+            "title": "The Campus Career Fair",
+            "content": "Our career center hosted a fair with companies, NGOs, and graduate programs. I arrived with thirty copies of my resume and a short self-introduction in English. After two hours, I realized recruiters cared more about projects than course titles. One NGO manager asked how I handled failure in a team project. I described a science fair filter that failed twice before working. She said practical stories are more memorable than perfect GPAs. I followed up with a thank-you email that night and received an internship interview invitation the next week.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What did recruiters care about more?",
+                    "options": {
+                        "A": "Only course titles.",
+                        "B": "The number of resumes printed.",
+                        "C": "Projects and practical stories.",
+                        "D": "Perfect GPAs alone."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "招聘方更看重项目与实践故事。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "What example did the writer share?",
+                    "options": {
+                        "A": "Winning every competition.",
+                        "B": "A science fair filter that failed before working.",
+                        "C": "Avoiding team projects.",
+                        "D": "Skipping follow-up emails."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "作者分享科学展过滤器经历。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What happened after the thank-you email?",
+                    "options": {
+                        "A": "The fair was cancelled.",
+                        "B": "The writer lost the resume.",
+                        "C": "NGOs refused interviews.",
+                        "D": "The writer received an internship interview invitation."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "感谢信后收到实习面试邀请。。（来源：研究生阅读）"
+                }
+            ]
+        },
+        {
+            "realm": "Y1",
+            "stage": "05",
+            "level_tag": "大学",
+            "grade_level": "大三",
+            "title": "Studying Abroad for One Term",
+            "content": "I spent one term at a partner university in Canada. The first month was difficult: grocery labels, bus routes, and academic citations all followed different rules. I joined a conversation partner program and cooked dinner with local students every Sunday. They corrected my expressions gently and taught me campus slang I would never find in textbooks. My sociology professor required weekly reading responses instead of one final exam. That rhythm forced me to stay engaged all term. Studying abroad, I learned, is not only about seeing new places; it is about rebuilding daily systems in another language.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What made the first month difficult?",
+                    "options": {
+                        "A": "Different daily and academic rules.",
+                        "B": "No grocery stores.",
+                        "C": "No conversation partners.",
+                        "D": "Only one final exam."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "生活与学术规则都不同。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "How did the writer improve language skills?",
+                    "options": {
+                        "A": "By avoiding local students.",
+                        "B": "By reading only textbooks.",
+                        "C": "Through conversation partners and Sunday dinners.",
+                        "D": "By skipping citations."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "通过语伴和周日聚餐提升语言。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What is studying abroad really about for the writer?",
+                    "options": {
+                        "A": "Only tourism.",
+                        "B": "Rebuilding daily systems in another language.",
+                        "C": "Avoiding weekly responses.",
+                        "D": "Memorizing bus slang."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "留学是重建另一语言中的日常系统。。（来源：研究生阅读）"
+                }
+            ]
+        },
+        {
+            "realm": "Y1",
+            "stage": "06",
+            "level_tag": "大学",
+            "grade_level": "大三",
+            "title": "Managing Part-Time Work",
+            "content": "To cover living costs, I worked twelve hours a week at the campus café. At first I rushed between shifts and evening classes, often skipping dinner. My manager noticed tired mistakes and suggested we map my class timetable on the staff board. She also allowed me to swap shifts with trained coworkers during exam weeks. I started preparing simple meals on Sundays and setting phone reminders for assignment deadlines. My grades stabilized, and I even trained a new barista. The job taught me that time management is a skill practiced with others, not a secret formula.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "How many hours did the writer work weekly?",
+                    "options": {
+                        "A": "Five hours.",
+                        "B": "Twelve hours.",
+                        "C": "Twenty hours.",
+                        "D": "Forty hours."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "每周工作十二小时。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "What help did the manager offer?",
+                    "options": {
+                        "A": "Free tuition.",
+                        "B": "Longer shifts before exams.",
+                        "C": "No timetable planning.",
+                        "D": "Mapping classes and allowing shift swaps during exams."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "经理排课表并允许考试周换班。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What did the job teach about time management?",
+                    "options": {
+                        "A": "It is practiced with others, not a secret formula.",
+                        "B": "It requires skipping meals.",
+                        "C": "It means working more hours.",
+                        "D": "It avoids reminders."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "时间管理是与他人协作练出的技能。。（来源：研究生阅读）"
+                }
+            ]
+        },
+        {
+            "realm": "Y1",
+            "stage": "07",
+            "level_tag": "大学",
+            "grade_level": "大四",
+            "title": "A Public Speaking Course",
+            "content": "University required a public speaking course that terrified me. Each student delivered four speeches on values, solutions, and personal stories. I chose to speak about reducing plastic use in student clubs. My first draft was full of statistics without a clear storyline. The instructor asked, \"Who is affected on our campus tomorrow?\" I rewrote the speech around a photo of bins overflowing after a rainy sports day. Classmates gave structured feedback on eye contact and pacing. My final speech was not flawless, but classmates signed a pledge to reuse event banners. I learned that persuasion begins with a scene people can see.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "How many speeches were required?",
+                    "options": {
+                        "A": "One.",
+                        "B": "Two.",
+                        "C": "Four.",
+                        "D": "Ten."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "课程要求四次演讲。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "What question improved the writer’s draft?",
+                    "options": {
+                        "A": "How many statistics exist?",
+                        "B": "Who is affected on our campus tomorrow?",
+                        "C": "Why avoid personal stories?",
+                        "D": "Who won the sports day?"
+                    },
+                    "correct_answer": "B",
+                    "explanation": "“明天校园里谁受影响”改进了演讲。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What does persuasion begin with?",
+                    "options": {
+                        "A": "Perfect eye contact only.",
+                        "B": "Overflowing statistics.",
+                        "C": "Avoiding feedback.",
+                        "D": "A scene people can see."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "说服始于可见的场景。。（来源：研究生阅读）"
+                }
+            ]
+        },
+        {
+            "realm": "Y1",
+            "stage": "08",
+            "level_tag": "大学",
+            "grade_level": "大四",
+            "title": "Starting a Campus Podcast",
+            "content": "Two friends and I launched a podcast interviewing alumni about their first jobs. We borrowed recorders from the media center and edited episodes in the library’s quiet room. Downloads were low for the first month, so we asked listeners which topics they wanted—internships, switching majors, or moving to new cities. Episode quality improved when we prepared follow-up questions instead of reading scripts. A career counselor shared our channel in a newsletter, and listens tripled. The project showed me that creative work on campus grows through feedback loops, not one perfect launch.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What was the podcast about?",
+                    "options": {
+                        "A": "Alumni first jobs.",
+                        "B": "Sports scores.",
+                        "C": "Exam answer keys.",
+                        "D": "Library fines."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "播客采访校友第一份工作。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "What improved episode quality?",
+                    "options": {
+                        "A": "Reading scripts word for word.",
+                        "B": "Stopping listener feedback.",
+                        "C": "Preparing follow-up questions.",
+                        "D": "Avoiding the media center."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "追问准备提升节目质量。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What did the project show about creative work?",
+                    "options": {
+                        "A": "One perfect launch is enough.",
+                        "B": "It grows through feedback loops.",
+                        "C": "Newsletters reduce listeners.",
+                        "D": "Downloads never change."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "创作靠反馈循环成长。。（来源：研究生阅读）"
+                }
+            ]
+        },
+        {
+            "realm": "Y1",
+            "stage": "09",
+            "level_tag": "大学",
+            "grade_level": "大四",
+            "title": "Preparing for Graduation",
+            "content": "In my final year, I met with an academic advisor to review degree requirements and capstone progress. I had completed most credits but still needed an advanced writing course. The advisor helped me compare two seminars: one focused on policy writing, the other on science communication. I chose science communication because it matched my lab experience. We also discussed graduate school timelines and backup plans if applications were delayed. Leaving university now feels less like jumping off a cliff and more like choosing the next route with maps and spare tools.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What credit was still needed?",
+                    "options": {
+                        "A": "A sports course.",
+                        "B": "A language test only.",
+                        "C": "A first-year lecture.",
+                        "D": "An advanced writing course."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "还差一门高级写作课。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "Why did the writer choose science communication?",
+                    "options": {
+                        "A": "It had fewer assignments.",
+                        "B": "It matched lab experience.",
+                        "C": "Policy writing was banned.",
+                        "D": "The advisor refused seminars."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "科学传播课与实验经历契合。。（来源：大学阅读）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "How does leaving university feel now?",
+                    "options": {
+                        "A": "Like choosing the next route with maps and tools.",
+                        "B": "Like jumping off a cliff blindly.",
+                        "C": "Like avoiding backup plans.",
+                        "D": "Like cancelling capstone work."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "毕业像带地图与工具选择下一段路。。（来源：研究生阅读）"
+                }
+            ]
+        }
+    ]
+}

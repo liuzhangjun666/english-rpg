@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\VocabularyWord;
+use App\Support\VocabularyMeaningNormalizer;
 use Illuminate\Support\Collection;
 
 class VocabQuestionBuilder
@@ -45,7 +46,7 @@ class VocabQuestionBuilder
         }
 
         $normalized = mb_strtolower(trim($answerText));
-        $meanings = is_array($word->meanings) ? $word->meanings : [];
+        $meanings = VocabularyMeaningNormalizer::normalize($word->meanings);
         foreach ($meanings as $meaning) {
             if (mb_strtolower(trim((string) $meaning)) === $normalized) {
                 return true;
@@ -71,8 +72,7 @@ class VocabQuestionBuilder
 
     private function buildQuestionArray(VocabularyWord $word, array $distractors): ?array
     {
-        $meanings = is_array($word->meanings) ? $word->meanings : [];
-        $meanings = array_values(array_filter(array_map(fn ($v) => trim((string) $v), $meanings)));
+        $meanings = VocabularyMeaningNormalizer::normalize($word->meanings);
         if (empty($meanings)) {
             return null;
         }
@@ -127,8 +127,7 @@ class VocabQuestionBuilder
 
         $distractors = [];
         foreach ($pool as $word) {
-            $meanings = is_array($word->meanings) ? $word->meanings : [];
-            foreach ($meanings as $meaning) {
+            foreach (VocabularyMeaningNormalizer::normalize($word->meanings) as $meaning) {
                 $meaning = trim((string) $meaning);
                 if ($meaning !== '') {
                     $distractors[] = $meaning;

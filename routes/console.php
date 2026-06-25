@@ -148,6 +148,284 @@ Artisan::command('grammar:import-json {file=database/data/elementary_grammar_fro
     return 0;
 })->purpose('Import elementary grammar questions from generated JSON file');
 
+Artisan::command('grammar:generate-junior {--import : Import into database after generation} {--replace=JGV-Z1 : Delete existing questions with this prefix before import}', function () {
+    require_once base_path('database/scripts/JuniorGrammarGenerator.php');
+
+    $generator = new JuniorGrammarGenerator();
+    $questions = $generator->generate();
+    $stageCounts = $generator->stageCounts($questions);
+
+    $payload = [
+        'sources' => ['database/scripts/JuniorGrammarGenerator.php'],
+        'summary' => [
+            'total_questions' => count($questions),
+            'stage_counts' => $stageCounts,
+            'education_stage' => '初中',
+            'realm' => 'Z1',
+            'grades' => ['七年级', '八年级', '九年级'],
+        ],
+        'questions' => $questions,
+    ];
+
+    $outFile = base_path('database/data/junior_grammar_z1.json');
+    File::put($outFile, json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
+    $this->info('Generated junior grammar JSON: ' . $outFile);
+    $this->line('Total questions: ' . count($questions));
+    foreach ($stageCounts as $stage => $count) {
+        $this->line("  {$stage}: {$count}");
+    }
+
+    if (!$this->option('import')) {
+        $this->comment('Run with --import to load into database, or: php artisan grammar:import-json database/data/junior_grammar_z1.json --replace=JGV-Z1');
+        return 0;
+    }
+
+    $replacePrefix = (string) $this->option('replace');
+    if ($replacePrefix !== '') {
+        $deleted = Question::where('question_id', 'like', $replacePrefix . '-%')->delete();
+        $this->info("Deleted existing {$replacePrefix}-* questions: {$deleted}");
+    }
+
+    $allowed = [
+        'question_id', 'type', 'play_mode', 'scene', 'education_stage', 'grade_level',
+        'realm', 'stage', 'question', 'options', 'correct_answer', 'explanation', 'word', 'listening_text',
+    ];
+    $created = 0;
+    $updated = 0;
+
+    foreach ($questions as $row) {
+        $questionId = (string) ($row['question_id'] ?? '');
+        if ($questionId === '') {
+            continue;
+        }
+
+        $record = Arr::only($row, $allowed);
+        $record['type'] = 'grammar';
+        $record['realm'] = (string) ($record['realm'] ?? 'Z1');
+        $record['stage'] = str_pad((string) ($record['stage'] ?? '01'), 2, '0', STR_PAD_LEFT);
+        $record['options'] = is_array($record['options'] ?? null) ? $record['options'] : [];
+        $record['question'] = (string) ($record['question'] ?? '');
+        $record['correct_answer'] = (string) ($record['correct_answer'] ?? 'A');
+        $record['word'] = (string) ($record['word'] ?? '');
+
+        $exists = Question::where('question_id', $questionId)->exists();
+        Question::updateOrCreate(['question_id' => $questionId], $record);
+        if ($exists) {
+            $updated++;
+        } else {
+            $created++;
+        }
+    }
+
+    $this->info('Imported junior grammar questions.');
+    $this->line("Created: {$created}");
+    $this->line("Updated: {$updated}");
+
+    $zCount = Question::where('type', 'grammar')->where('realm', 'like', 'Z%')->count();
+    $this->line("Z-realm grammar in DB: {$zCount}");
+
+    return 0;
+})->purpose('Generate and optionally import junior high (Z1) grammar questions');
+
+Artisan::command('grammar:generate-senior {--import : Import into database after generation} {--replace=JGV-J1 : Delete existing questions with this prefix before import}', function () {
+    require_once base_path('database/scripts/SeniorGrammarGenerator.php');
+
+    $generator = new SeniorGrammarGenerator();
+    $questions = $generator->generate();
+    $stageCounts = $generator->stageCounts($questions);
+
+    $payload = [
+        'sources' => ['database/scripts/SeniorGrammarGenerator.php'],
+        'summary' => [
+            'total_questions' => count($questions),
+            'stage_counts' => $stageCounts,
+            'education_stage' => '高中',
+            'realm' => 'J1',
+            'grades' => ['高一', '高二', '高三'],
+        ],
+        'questions' => $questions,
+    ];
+
+    $outFile = base_path('database/data/senior_grammar_j1.json');
+    File::put($outFile, json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
+    $this->info('Generated senior grammar JSON: ' . $outFile);
+    $this->line('Total questions: ' . count($questions));
+    foreach ($stageCounts as $stage => $count) {
+        $this->line("  {$stage}: {$count}");
+    }
+
+    if (!$this->option('import')) {
+        $this->comment('Run with --import to load into database, or: php artisan grammar:import-json database/data/senior_grammar_j1.json --replace=JGV-J1');
+        return 0;
+    }
+
+    $replacePrefix = (string) $this->option('replace');
+    if ($replacePrefix !== '') {
+        $deleted = Question::where('question_id', 'like', $replacePrefix . '-%')->delete();
+        $this->info("Deleted existing {$replacePrefix}-* questions: {$deleted}");
+    }
+
+    $allowed = [
+        'question_id', 'type', 'play_mode', 'scene', 'education_stage', 'grade_level',
+        'realm', 'stage', 'question', 'options', 'correct_answer', 'explanation', 'word', 'listening_text',
+    ];
+    $created = 0;
+    $updated = 0;
+
+    foreach ($questions as $row) {
+        $questionId = (string) ($row['question_id'] ?? '');
+        if ($questionId === '') {
+            continue;
+        }
+
+        $record = Arr::only($row, $allowed);
+        $record['type'] = 'grammar';
+        $record['realm'] = (string) ($record['realm'] ?? 'J1');
+        $record['stage'] = str_pad((string) ($record['stage'] ?? '01'), 2, '0', STR_PAD_LEFT);
+        $record['options'] = is_array($record['options'] ?? null) ? $record['options'] : [];
+        $record['question'] = (string) ($record['question'] ?? '');
+        $record['correct_answer'] = (string) ($record['correct_answer'] ?? 'A');
+        $record['word'] = (string) ($record['word'] ?? '');
+
+        $exists = Question::where('question_id', $questionId)->exists();
+        Question::updateOrCreate(['question_id' => $questionId], $record);
+        if ($exists) {
+            $updated++;
+        } else {
+            $created++;
+        }
+    }
+
+    $this->info('Imported senior grammar questions.');
+    $this->line("Created: {$created}");
+    $this->line("Updated: {$updated}");
+
+    $jCount = Question::where('type', 'grammar')->where('realm', 'like', 'J%')->count();
+    $this->line("J-realm grammar in DB: {$jCount}");
+
+    return 0;
+})->purpose('Generate and optionally import senior high (J1) grammar questions');
+
+Artisan::command('grammar:generate-university {--import : Import into database after generation} {--replace=JGV-Y1 : Delete existing questions with this prefix before import}', function () {
+    require_once base_path('database/scripts/UniversityGrammarGenerator.php');
+
+    $generator = new UniversityGrammarGenerator();
+    $questions = $generator->generate();
+    $stageCounts = $generator->stageCounts($questions);
+
+    $payload = [
+        'sources' => ['database/scripts/UniversityGrammarGenerator.php'],
+        'summary' => [
+            'total_questions' => count($questions),
+            'stage_counts' => $stageCounts,
+            'education_stage' => '大学',
+            'realm' => 'Y1',
+            'grades' => ['大一', '大二', '大三', '大四'],
+        ],
+        'questions' => $questions,
+    ];
+
+    $outFile = base_path('database/data/university_grammar_y1.json');
+    File::put($outFile, json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
+    $this->info('Generated university grammar JSON: ' . $outFile);
+    $this->line('Total questions: ' . count($questions));
+    foreach ($stageCounts as $stage => $count) {
+        $this->line("  {$stage}: {$count}");
+    }
+
+    if (!$this->option('import')) {
+        $this->comment('Run with --import to load into database, or: php artisan grammar:import-json database/data/university_grammar_y1.json --replace=JGV-Y1');
+        return 0;
+    }
+
+    $replacePrefix = (string) $this->option('replace');
+    if ($replacePrefix !== '') {
+        $deleted = Question::where('question_id', 'like', $replacePrefix . '-%')->delete();
+        $this->info("Deleted existing {$replacePrefix}-* questions: {$deleted}");
+    }
+
+    $allowed = [
+        'question_id', 'type', 'play_mode', 'scene', 'education_stage', 'grade_level',
+        'realm', 'stage', 'question', 'options', 'correct_answer', 'explanation', 'word', 'listening_text',
+    ];
+    $created = 0;
+    $updated = 0;
+
+    foreach ($questions as $row) {
+        $questionId = (string) ($row['question_id'] ?? '');
+        if ($questionId === '') {
+            continue;
+        }
+
+        $record = Arr::only($row, $allowed);
+        $record['type'] = 'grammar';
+        $record['realm'] = (string) ($record['realm'] ?? 'Y1');
+        $record['stage'] = str_pad((string) ($record['stage'] ?? '01'), 2, '0', STR_PAD_LEFT);
+        $record['options'] = is_array($record['options'] ?? null) ? $record['options'] : [];
+        $record['question'] = (string) ($record['question'] ?? '');
+        $record['correct_answer'] = (string) ($record['correct_answer'] ?? 'A');
+        $record['word'] = (string) ($record['word'] ?? '');
+
+        $exists = Question::where('question_id', $questionId)->exists();
+        Question::updateOrCreate(['question_id' => $questionId], $record);
+        if ($exists) {
+            $updated++;
+        } else {
+            $created++;
+        }
+    }
+
+    $this->info('Imported university grammar questions.');
+    $this->line("Created: {$created}");
+    $this->line("Updated: {$updated}");
+
+    $yCount = Question::where('type', 'grammar')->where('realm', 'like', 'Y%')->count();
+    $this->line("Y-realm grammar in DB: {$yCount}");
+
+    return 0;
+})->purpose('Generate and optionally import university (Y1) grammar questions');
+
+Artisan::command('vocab:import-cet {--no-json : Do not write vocabulary_words_import_大学四六级.json}', function () {
+    require_once base_path('database/scripts/CetVocabImporter.php');
+
+    $this->info('Downloading CET4/CET6 vocabulary from KyleBing/english-vocabulary ...');
+
+    try {
+        $importer = new CetVocabImporter();
+        $result = $importer->importToDatabase(!$this->option('no-json'));
+    } catch (Throwable $e) {
+        $this->error($e->getMessage());
+        return 1;
+    }
+
+    $this->info('CET vocabulary import finished.');
+    $this->line("Created: {$result['created']}");
+    $this->line("Updated (merged CET tag): {$result['updated']}");
+    $this->line("Skipped (already tagged): {$result['skipped']}");
+
+    $cet4 = VocabularyWord::query()->where('level_tag', '大学')->where('grade_level', 'like', '%CET4%')->count();
+    $cet6Only = VocabularyWord::query()
+        ->where(function ($q) {
+            $q->where('level_tag', '大学')->orWhere('grade_level', 'like', '%CET6%');
+        })
+        ->where('grade_level', 'like', '%CET6%')
+        ->count();
+    $university = VocabularyWord::query()->where('level_tag', '大学')->count();
+
+    $this->line("University level_tag rows: {$university}");
+    $this->line("Rows with CET4 tag: {$cet4}");
+    $this->line("Rows with CET6 tag: {$cet6Only}");
+
+    if (!$this->option('no-json')) {
+        $this->line('JSON saved: database/seeders/data/vocabulary_words_import_大学四六级.json');
+    }
+
+    return 0;
+})->purpose('Download and import university CET4/CET6 vocabulary');
+
 Artisan::command('users:sync-grade-realm {--dry-run : 仅预览，不落库}', function () {
     $dryRun = (bool) $this->option('dry-run');
     /** @var RealmService $realmService */
@@ -439,6 +717,71 @@ Artisan::command('reading:import-json {file}', function () {
     $this->info("Imported reading questions: {$createdQuestions}");
     return 0;
 })->purpose('Import reading passages/questions from JSON into reading_passages & reading_questions');
+
+Artisan::command('reading:generate-json', function () {
+    require_once base_path('database/scripts/JuniorReadingGenerator.php');
+    require_once base_path('database/scripts/SeniorReadingGenerator.php');
+    require_once base_path('database/scripts/UniversityReadingGenerator.php');
+
+    $junior = (new JuniorReadingGenerator())->generate();
+    $senior = (new SeniorReadingGenerator())->generateAll();
+    $y1 = (new UniversityReadingGenerator())->forRealm('Y1');
+    $h1 = (new UniversityReadingGenerator())->forRealm('H1');
+
+    $files = [
+        'database/data/junior_reading_z1.json' => [
+            'summary' => ['realm' => 'Z1', 'education_stage' => '初中', 'total_passages' => count($junior)],
+            'passages' => $junior,
+        ],
+        'database/data/senior_reading_j1.json' => [
+            'summary' => ['realm' => 'J1', 'education_stage' => '高中', 'total_passages' => count($senior)],
+            'passages' => $senior,
+        ],
+        'database/data/university_reading_y1.json' => [
+            'summary' => ['realm' => 'Y1', 'education_stage' => '大学', 'total_passages' => count($y1)],
+            'passages' => $y1,
+        ],
+        'database/data/graduate_reading_h1.json' => [
+            'summary' => ['realm' => 'H1', 'education_stage' => '研究生', 'total_passages' => count($h1)],
+            'passages' => $h1,
+        ],
+    ];
+
+    foreach ($files as $path => $payload) {
+        $full = base_path($path);
+        File::put($full, json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        $this->line('Wrote ' . $path . ' (' . count($payload['passages']) . ' passages)');
+    }
+
+    $this->info('Reading JSON export complete.');
+    return 0;
+})->purpose('Export generated junior/senior/university reading passages to JSON');
+
+Artisan::command('reading:seed {--fresh-passages : Delete all reading passages before seeding}', function () {
+    if ($this->option('fresh-passages')) {
+        \App\Models\ReadingQuestion::query()->delete();
+        \App\Models\ReadingPassage::query()->delete();
+        $this->warn('Cleared reading_passages and reading_questions.');
+    }
+
+    $this->call('db:seed', [
+        '--class' => 'Database\\Seeders\\ReadingBankSeeder',
+        '--force' => true,
+    ]);
+
+    $counts = \App\Models\ReadingPassage::query()
+        ->selectRaw('realm, count(*) as total')
+        ->groupBy('realm')
+        ->orderBy('realm')
+        ->pluck('total', 'realm');
+
+    $this->info('Reading bank seeded.');
+    foreach ($counts as $realm => $total) {
+        $this->line("  {$realm}: {$total} passages");
+    }
+
+    return 0;
+})->purpose('Import elementary/junior reading JSON and generate senior reading passages');
 
 Artisan::command('app:bootstrap-content {--fresh : Run migrate:fresh before seeding}', function () {
     if ($this->option('fresh')) {

@@ -21,18 +21,15 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
-import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
 import { WorldSceneManager } from '../core/sect/WorldSceneManager';
 import { findMapBuilding, getSceneBuildingImages } from '../composables/useMapBuildings';
 import { useHallPanels } from '../composables/useHallPanels';
 
-import GlobalHud from '../components/map/GlobalHud.vue';
 import RadialMenu from '../components/map/RadialMenu.vue';
 import HallModals from '../components/features/HallModals.vue';
 
 const bridge = useLegacyBridge();
-const ui = useUiStore();
 const userStore = useUserStore();
 
 const hallSceneRef = ref<HTMLElement | null>(null);
@@ -44,7 +41,6 @@ const activeRadialBuilding = ref<any>(null);
 const { mapBuildings, panels, navigation } = useHallPanels();
 
 onMounted(async () => {
-  ui.showLoading('加载天地灵气...');
   try {
     const game = await bridge.getGame();
     await game.syncDailyStatus();
@@ -67,10 +63,9 @@ onMounted(async () => {
         if (building) handleBuildingClick(building);
       };
     }
-  } catch {
+  } catch (error) {
+    console.error('[HallView] 地图初始化失败', error);
     ElMessage.error('地图加载失败，请刷新重试');
-  } finally {
-    ui.hideLoading();
   }
 });
 

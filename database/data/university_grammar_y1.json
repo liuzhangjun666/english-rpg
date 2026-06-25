@@ -1,0 +1,4729 @@
+{
+    "sources": [
+        "database\/scripts\/UniversityGrammarGenerator.php"
+    ],
+    "summary": {
+        "total_questions": 235,
+        "stage_counts": {
+            "Y1-01": 19,
+            "Y1-02": 19,
+            "Y1-03": 19,
+            "Y1-04": 20,
+            "Y1-05": 20,
+            "Y1-06": 19,
+            "Y1-07": 40,
+            "Y1-08": 40,
+            "Y1-09": 39
+        },
+        "education_stage": "大学",
+        "realm": "Y1",
+        "grades": [
+            "大一",
+            "大二",
+            "大三",
+            "大四"
+        ]
+    },
+    "questions": [
+        {
+            "question_id": "JGV-Y1-01-0001",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The professor, as well as his assistants, ___ the experiment carefully.",
+            "options": {
+                "A": "are conducting",
+                "B": "is conducting",
+                "C": "were conducting",
+                "D": "have conducted"
+            },
+            "correct_answer": "B",
+            "explanation": "along with 就远原则，谓语与 professor 一致。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0001",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is high time that freshmen ___ more attention to academic writing.",
+            "options": {
+                "A": "pay",
+                "B": "paid",
+                "C": "will pay",
+                "D": "paying"
+            },
+            "correct_answer": "B",
+            "explanation": "It is high time that + 过去式。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0001",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Had I known the deadline, I ___ the application earlier.",
+            "options": {
+                "A": "submit",
+                "B": "submitted",
+                "C": "would have submitted",
+                "D": "will submit"
+            },
+            "correct_answer": "C",
+            "explanation": "与过去事实相反的虚拟语气。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0002",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The research findings suggest that sleep ___ memory consolidation.",
+            "options": {
+                "A": "promote",
+                "B": "promotes",
+                "C": "promoting",
+                "D": "promoted"
+            },
+            "correct_answer": "B",
+            "explanation": "宾语从句陈述事实用一般现在时。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0002",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Not until the lecture ended ___ realize how valuable it was.",
+            "options": {
+                "A": "I did",
+                "B": "did I",
+                "C": "I had",
+                "D": "had I"
+            },
+            "correct_answer": "B",
+            "explanation": "Not until 置于句首部分倒装。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0002",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The book is written in such simple English ___ beginners can understand it.",
+            "options": {
+                "A": "as",
+                "B": "so",
+                "C": "that",
+                "D": "which"
+            },
+            "correct_answer": "C",
+            "explanation": "such...that 如此……以至于。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0003",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I would rather you ___ the report by Friday.",
+            "options": {
+                "A": "finish",
+                "B": "finished",
+                "C": "will finish",
+                "D": "finishing"
+            },
+            "correct_answer": "B",
+            "explanation": "would rather sb did。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0003",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The number of international students on campus ___ risen sharply.",
+            "options": {
+                "A": "have",
+                "B": "has",
+                "C": "are",
+                "D": "were"
+            },
+            "correct_answer": "B",
+            "explanation": "the number of 谓语单数。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0003",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "A number of graduates ___ found jobs in tech companies.",
+            "options": {
+                "A": "has",
+                "B": "is",
+                "C": "have",
+                "D": "was"
+            },
+            "correct_answer": "C",
+            "explanation": "a number of 谓语复数。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0004",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It was in the library ___ I first met my research partner.",
+            "options": {
+                "A": "which",
+                "B": "that",
+                "C": "where",
+                "D": "when"
+            },
+            "correct_answer": "B",
+            "explanation": "强调地点 It was...that。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0004",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The manager insisted that every employee ___ the safety training.",
+            "options": {
+                "A": "attend",
+                "B": "attends",
+                "C": "attended",
+                "D": "attending"
+            },
+            "correct_answer": "A",
+            "explanation": "insist 表示坚持要求，从句用 (should) + 原形。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0004",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "With the final exam ___, students are reviewing harder than ever.",
+            "options": {
+                "A": "approach",
+                "B": "approaching",
+                "C": "approached",
+                "D": "to approach"
+            },
+            "correct_answer": "B",
+            "explanation": "with + n + doing 复合结构。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0005",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He speaks English as if he ___ in the UK for years.",
+            "options": {
+                "A": "lives",
+                "B": "lived",
+                "C": "had lived",
+                "D": "has lived"
+            },
+            "correct_answer": "C",
+            "explanation": "as if 与过去事实相反用 had lived。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0005",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The project proved ___ more challenging than we expected.",
+            "options": {
+                "A": "to be",
+                "B": "being",
+                "C": "be",
+                "D": "been"
+            },
+            "correct_answer": "A",
+            "explanation": "prove to be 证明是。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0005",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "There is no point ___ about things you cannot change.",
+            "options": {
+                "A": "worry",
+                "B": "to worry",
+                "C": "in worrying",
+                "D": "worried"
+            },
+            "correct_answer": "C",
+            "explanation": "there is no point in doing。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0006",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The data collected ___ analyzed by the research team last week.",
+            "options": {
+                "A": "is",
+                "B": "are",
+                "C": "were",
+                "D": "was"
+            },
+            "correct_answer": "C",
+            "explanation": "data 作复数时谓语用 were。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0006",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Only by practicing daily ___ improve your spoken English.",
+            "options": {
+                "A": "you can",
+                "B": "can you",
+                "C": "you could",
+                "D": "could you"
+            },
+            "correct_answer": "B",
+            "explanation": "Only by doing 置于句首倒装。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0006",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I have no idea ___ the professor will postpone the test.",
+            "options": {
+                "A": "what",
+                "B": "whether",
+                "C": "which",
+                "D": "who"
+            },
+            "correct_answer": "B",
+            "explanation": "whether 引导宾语从句表是否。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0007",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is the very person ___ I am looking for.",
+            "options": {
+                "A": "who",
+                "B": "whom",
+                "C": "that",
+                "D": "which"
+            },
+            "correct_answer": "C",
+            "explanation": "the very person that。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0007",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It remains a question ___ the policy will be effective.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "whether",
+                "D": "that"
+            },
+            "correct_answer": "C",
+            "explanation": "whether 是否。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0007",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The lecture, ___ was given by a Nobel laureate, attracted a large audience.",
+            "options": {
+                "A": "that",
+                "B": "which",
+                "C": "who",
+                "D": "what"
+            },
+            "correct_answer": "B",
+            "explanation": "非限制性定语从句用 which。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0008",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She avoided ___ personal questions during the interview.",
+            "options": {
+                "A": "answer",
+                "B": "to answer",
+                "C": "answering",
+                "D": "answered"
+            },
+            "correct_answer": "C",
+            "explanation": "avoid doing。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0008",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The university requires that each student ___ a thesis proposal.",
+            "options": {
+                "A": "submit",
+                "B": "submits",
+                "C": "submitted",
+                "D": "submitting"
+            },
+            "correct_answer": "A",
+            "explanation": "require that (should) do。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0008",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Hardly ___ the dormitory when the fire alarm went off.",
+            "options": {
+                "A": "had he entered",
+                "B": "he had entered",
+                "C": "did he enter",
+                "D": "he entered"
+            },
+            "correct_answer": "A",
+            "explanation": "Hardly had...when 倒装。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0009",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The more exposure you have to English, the ___ confident you become.",
+            "options": {
+                "A": "much",
+                "B": "many",
+                "C": "more",
+                "D": "most"
+            },
+            "correct_answer": "C",
+            "explanation": "the more...the more。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0009",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He was seen ___ into the laboratory late at night.",
+            "options": {
+                "A": "sneak",
+                "B": "to sneak",
+                "C": "sneaking",
+                "D": "sneaked"
+            },
+            "correct_answer": "C",
+            "explanation": "see sb doing 看见正在做。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0009",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I cannot help but ___ that the argument is flawed.",
+            "options": {
+                "A": "think",
+                "B": "thinking",
+                "C": "to think",
+                "D": "thought"
+            },
+            "correct_answer": "A",
+            "explanation": "cannot help but do 不得不。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0010",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The committee will discuss the proposal ___ at the meeting next Monday.",
+            "options": {
+                "A": "holding",
+                "B": "to be held",
+                "C": "held",
+                "D": "hold"
+            },
+            "correct_answer": "B",
+            "explanation": "不定式被动作后置定语。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0010",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is essential that every freshman ___ the orientation program.",
+            "options": {
+                "A": "attend",
+                "B": "attends",
+                "C": "attended",
+                "D": "attending"
+            },
+            "correct_answer": "A",
+            "explanation": "essential that (should) do。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0010",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Scarcely ___ the presentation when the power went out.",
+            "options": {
+                "A": "had she begun",
+                "B": "she had begun",
+                "C": "did she begin",
+                "D": "she began"
+            },
+            "correct_answer": "A",
+            "explanation": "Scarcely had...when。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0011",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The professor recommended that we ___ more academic journals.",
+            "options": {
+                "A": "read",
+                "B": "reads",
+                "C": "reading",
+                "D": "readed"
+            },
+            "correct_answer": "A",
+            "explanation": "recommend that (should) do。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0011",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He acted as if nothing ___ happened.",
+            "options": {
+                "A": "has",
+                "B": "had",
+                "C": "have",
+                "D": "having"
+            },
+            "correct_answer": "B",
+            "explanation": "as if + 过去完成时。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0011",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The way ___ the professor explains complex ideas is impressive.",
+            "options": {
+                "A": "which",
+                "B": "in which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "the way that\/in which。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0012",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I would appreciate ___ if you could reply before noon.",
+            "options": {
+                "A": "that",
+                "B": "it",
+                "C": "this",
+                "D": "one"
+            },
+            "correct_answer": "B",
+            "explanation": "appreciate it if 固定句型。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0012",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The scholarship is available to anyone ___ academic performance is outstanding.",
+            "options": {
+                "A": "who",
+                "B": "which",
+                "C": "whom",
+                "D": "whose"
+            },
+            "correct_answer": "D",
+            "explanation": "whose 表所属。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0012",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Little ___ that this discovery would change the field.",
+            "options": {
+                "A": "they knew",
+                "B": "did they know",
+                "C": "they know",
+                "D": "do they know"
+            },
+            "correct_answer": "B",
+            "explanation": "Little 置于句首倒装。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0013",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The experiment needs ___ under strict supervision.",
+            "options": {
+                "A": "conduct",
+                "B": "to conduct",
+                "C": "conducting",
+                "D": "conducted"
+            },
+            "correct_answer": "C",
+            "explanation": "need doing 需要被……。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0013",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is accustomed to ___ up early for morning classes.",
+            "options": {
+                "A": "get",
+                "B": "got",
+                "C": "getting",
+                "D": "gets"
+            },
+            "correct_answer": "C",
+            "explanation": "be accustomed to doing。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0013",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "What impressed the judges most was ___ she handled the Q&A session.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "how",
+                "D": "that"
+            },
+            "correct_answer": "C",
+            "explanation": "how 引导表语从句表方式。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0014",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The dean ordered that the report ___ submitted by Friday.",
+            "options": {
+                "A": "is",
+                "B": "be",
+                "C": "was",
+                "D": "being"
+            },
+            "correct_answer": "B",
+            "explanation": "order that (should) be done。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0014",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "So absorbed ___ in the book that he missed the announcement.",
+            "options": {
+                "A": "he was",
+                "B": "was he",
+                "C": "did he",
+                "D": "he did"
+            },
+            "correct_answer": "B",
+            "explanation": "So absorbed was he 倒装。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0014",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is generally acknowledged ___ education plays a vital role in society.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "It is acknowledged that。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0015",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The student was caught ___ on his phone during the lecture.",
+            "options": {
+                "A": "text",
+                "B": "to text",
+                "C": "texting",
+                "D": "texted"
+            },
+            "correct_answer": "C",
+            "explanation": "be caught doing。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0015",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Rather than ___ passive, she took the initiative to lead the group.",
+            "options": {
+                "A": "remain",
+                "B": "remaining",
+                "C": "remained",
+                "D": "to remain"
+            },
+            "correct_answer": "A",
+            "explanation": "rather than do。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0015",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The findings are consistent ___ previous studies in this area.",
+            "options": {
+                "A": "to",
+                "B": "for",
+                "C": "with",
+                "D": "of"
+            },
+            "correct_answer": "C",
+            "explanation": "consistent with 与……一致。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0016",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He devoted himself ___ advancing renewable energy research.",
+            "options": {
+                "A": "in",
+                "B": "for",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "C",
+            "explanation": "devote oneself to doing。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0016",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "There is no denying ___ teamwork is crucial in university projects.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "no denying that。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0016",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The lecture hall, ___ seats 500 students, was fully booked.",
+            "options": {
+                "A": "which",
+                "B": "that",
+                "C": "where",
+                "D": "who"
+            },
+            "correct_answer": "A",
+            "explanation": "非限制性定语从句 which。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0017",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I look forward to ___ from you regarding the internship.",
+            "options": {
+                "A": "hear",
+                "B": "hearing",
+                "C": "heard",
+                "D": "hear from"
+            },
+            "correct_answer": "B",
+            "explanation": "look forward to doing。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0017",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The issue is too complex ___ in a single paragraph.",
+            "options": {
+                "A": "explain",
+                "B": "to explain",
+                "C": "explaining",
+                "D": "explained"
+            },
+            "correct_answer": "B",
+            "explanation": "too...to 太……而不能。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0017",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is considered ___ one of the brightest students in the department.",
+            "options": {
+                "A": "be",
+                "B": "to be",
+                "C": "being",
+                "D": "been"
+            },
+            "correct_answer": "B",
+            "explanation": "be considered to be。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0018",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "By the end of this semester, I ___ all the required courses.",
+            "options": {
+                "A": "complete",
+                "B": "completed",
+                "C": "will have completed",
+                "D": "am completing"
+            },
+            "correct_answer": "C",
+            "explanation": "by the end of 将来完成时。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0018",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The professor had us ___ a summary after each chapter.",
+            "options": {
+                "A": "write",
+                "B": "writing",
+                "C": "to write",
+                "D": "wrote"
+            },
+            "correct_answer": "A",
+            "explanation": "have sb do。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0018",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It was not until midnight ___ he finished revising the paper.",
+            "options": {
+                "A": "which",
+                "B": "that",
+                "C": "when",
+                "D": "then"
+            },
+            "correct_answer": "B",
+            "explanation": "not until 强调句。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-01-0019",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "01",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The policy aims ___ reducing carbon emissions on campus.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "at",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "aim at 旨在。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-02-0019",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "02",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She insisted on ___ treated as an equal partner.",
+            "options": {
+                "A": "be",
+                "B": "been",
+                "C": "being",
+                "D": "to be"
+            },
+            "correct_answer": "C",
+            "explanation": "insist on being done。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-03-0019",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "03",
+            "education_stage": "大学",
+            "grade_level": "大一",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Whatever difficulties you face, never ___ sight of your goals.",
+            "options": {
+                "A": "lose",
+                "B": "loses",
+                "C": "losing",
+                "D": "lost"
+            },
+            "correct_answer": "A",
+            "explanation": "lose sight of 忽视。（来源：大学语法 · 大一）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0001",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The report is believed ___ by a team of senior researchers.",
+            "options": {
+                "A": "write",
+                "B": "to write",
+                "C": "to have been written",
+                "D": "writing"
+            },
+            "correct_answer": "C",
+            "explanation": "be believed to have been done 据说已被写。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0001",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The conference, ___ in Beijing next spring, will attract scholars worldwide.",
+            "options": {
+                "A": "hold",
+                "B": "to be held",
+                "C": "held",
+                "D": "holding"
+            },
+            "correct_answer": "B",
+            "explanation": "不定式被动表示将来被举行。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0001",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Were it not for scholarships, many students ___ afford tuition.",
+            "options": {
+                "A": "cannot",
+                "B": "could not",
+                "C": "will not",
+                "D": "would not"
+            },
+            "correct_answer": "B",
+            "explanation": "Were it not for 含蓄虚拟。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0002",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The professor spoke slowly ___ the students could take notes.",
+            "options": {
+                "A": "so that",
+                "B": "such that",
+                "C": "in order",
+                "D": "because"
+            },
+            "correct_answer": "A",
+            "explanation": "so that 以便。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0002",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is the ability to think critically ___ distinguishes top students.",
+            "options": {
+                "A": "who",
+                "B": "that",
+                "C": "which",
+                "D": "what"
+            },
+            "correct_answer": "B",
+            "explanation": "强调句 It is...that。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0002",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The experiment, ___ carefully, yielded unexpected results.",
+            "options": {
+                "A": "design",
+                "B": "designed",
+                "C": "designing",
+                "D": "to design"
+            },
+            "correct_answer": "B",
+            "explanation": "过去分词作状语表被动。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0003",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He denied ___ the confidential files to outsiders.",
+            "options": {
+                "A": "give",
+                "B": "to give",
+                "C": "having given",
+                "D": "giving"
+            },
+            "correct_answer": "C",
+            "explanation": "deny having done 否认做过。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0003",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The more data we collect, the ___ our conclusions will be.",
+            "options": {
+                "A": "reliable",
+                "B": "much reliable",
+                "C": "more reliable",
+                "D": "most reliable"
+            },
+            "correct_answer": "C",
+            "explanation": "the more...the more 比较级。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0003",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Not only ___ the theory, but he also applied it in practice.",
+            "options": {
+                "A": "he understood",
+                "B": "did he understand",
+                "C": "he did understand",
+                "D": "understood he"
+            },
+            "correct_answer": "B",
+            "explanation": "Not only 倒装。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0004",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The article was written in ___ academic style that few undergraduates could follow.",
+            "options": {
+                "A": "so",
+                "B": "very",
+                "C": "such an",
+                "D": "too"
+            },
+            "correct_answer": "C",
+            "explanation": "such an...that。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0004",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "I would rather have ___ the workshop than missed it.",
+            "options": {
+                "A": "attend",
+                "B": "attended",
+                "C": "attending",
+                "D": "to attend"
+            },
+            "correct_answer": "B",
+            "explanation": "would rather have done 宁愿做过。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0004",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The committee is composed ___ experts from various disciplines.",
+            "options": {
+                "A": "for",
+                "B": "with",
+                "C": "of",
+                "D": "by"
+            },
+            "correct_answer": "C",
+            "explanation": "be composed of 由……组成。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0005",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is qualified ___ the position of research assistant.",
+            "options": {
+                "A": "for",
+                "B": "with",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "A",
+            "explanation": "be qualified for。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0005",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The hypothesis, ___ at first, was eventually confirmed by experiments.",
+            "options": {
+                "A": "reject",
+                "B": "rejected",
+                "C": "rejecting",
+                "D": "to reject"
+            },
+            "correct_answer": "B",
+            "explanation": "rejected 过去分词作定语。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0005",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Seldom ___ a lecture so engaging and informative.",
+            "options": {
+                "A": "I have attended",
+                "B": "I had attended",
+                "C": "have I attended",
+                "D": "had I attended"
+            },
+            "correct_answer": "C",
+            "explanation": "Seldom 倒装。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0006",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The university is committed ___ fostering innovation among students.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "C",
+            "explanation": "be committed to doing。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0006",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is imperative that the lab ___ kept clean at all times.",
+            "options": {
+                "A": "is",
+                "B": "be",
+                "C": "was",
+                "D": "being"
+            },
+            "correct_answer": "B",
+            "explanation": "imperative that (should) be。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0006",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The findings contribute ___ our understanding of climate change.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "C",
+            "explanation": "contribute to 有助于。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0007",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is said ___ three papers in top journals this year.",
+            "options": {
+                "A": "publish",
+                "B": "to publish",
+                "C": "to have published",
+                "D": "publishing"
+            },
+            "correct_answer": "C",
+            "explanation": "be said to have done。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0007",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Under no circumstances ___ cheat on exams.",
+            "options": {
+                "A": "students should",
+                "B": "should students",
+                "C": "students will",
+                "D": "will students"
+            },
+            "correct_answer": "B",
+            "explanation": "Under no circumstances 倒装。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0007",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The professor, together with two colleagues, ___ a new textbook.",
+            "options": {
+                "A": "are writing",
+                "B": "is writing",
+                "C": "were writing",
+                "D": "have written"
+            },
+            "correct_answer": "B",
+            "explanation": "together with 就远原则。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0008",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "What we need is not more theory but practical skills ___ can be applied.",
+            "options": {
+                "A": "who",
+                "B": "whom",
+                "C": "that",
+                "D": "whose"
+            },
+            "correct_answer": "C",
+            "explanation": "skills that 定语从句。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0008",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The survey indicates that a majority of students ___ online resources for study.",
+            "options": {
+                "A": "rely on",
+                "B": "rely in",
+                "C": "rely at",
+                "D": "rely for"
+            },
+            "correct_answer": "A",
+            "explanation": "rely on 依赖。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0008",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He objected to ___ referred to as a beginner.",
+            "options": {
+                "A": "be",
+                "B": "been",
+                "C": "being",
+                "D": "to be"
+            },
+            "correct_answer": "C",
+            "explanation": "object to being done。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0009",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The thesis must ___ in accordance with university guidelines.",
+            "options": {
+                "A": "write",
+                "B": "be written",
+                "C": "writing",
+                "D": "wrote"
+            },
+            "correct_answer": "B",
+            "explanation": "must be done 被动。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0009",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Given more time, the team ___ the problem more thoroughly.",
+            "options": {
+                "A": "analyze",
+                "B": "analyzed",
+                "C": "would analyze",
+                "D": "will analyze"
+            },
+            "correct_answer": "C",
+            "explanation": "Given 含蓄条件 would do。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0009",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The lecture was so boring ___ half the audience fell asleep.",
+            "options": {
+                "A": "as",
+                "B": "very",
+                "C": "that",
+                "D": "which"
+            },
+            "correct_answer": "C",
+            "explanation": "so...that。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0010",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He cannot have ___ the exam. I saw him in the classroom.",
+            "options": {
+                "A": "miss",
+                "B": "missed",
+                "C": "missing",
+                "D": "misses"
+            },
+            "correct_answer": "B",
+            "explanation": "cannot have done 不可能已经。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0010",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The research is aimed ___ improving teaching quality.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "at",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "be aimed at。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0010",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It was because of his dedication ___ he won the award.",
+            "options": {
+                "A": "which",
+                "B": "that",
+                "C": "why",
+                "D": "because"
+            },
+            "correct_answer": "B",
+            "explanation": "强调原因 It was because...that。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0011",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The students are prohibited from ___ electronic devices in the exam hall.",
+            "options": {
+                "A": "use",
+                "B": "to use",
+                "C": "using",
+                "D": "used"
+            },
+            "correct_answer": "C",
+            "explanation": "prohibit from doing。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0011",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is the last person ___ I would suspect of cheating.",
+            "options": {
+                "A": "who",
+                "B": "whom",
+                "C": "that",
+                "D": "which"
+            },
+            "correct_answer": "C",
+            "explanation": "the last person that。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0011",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The impact of technology on education ___ widely debated.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "were",
+                "D": "have been"
+            },
+            "correct_answer": "B",
+            "explanation": "impact 单数谓语。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0012",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "All that is required ___ a willingness to learn.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "all that is required is。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0012",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He spoke as though he ___ an expert on the subject.",
+            "options": {
+                "A": "is",
+                "B": "were",
+                "C": "was",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "as though + were 虚拟。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0012",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The proposal, if ___, will benefit thousands of students.",
+            "options": {
+                "A": "approve",
+                "B": "approving",
+                "C": "approved",
+                "D": "to approve"
+            },
+            "correct_answer": "C",
+            "explanation": "if approved 省略 if it is approved。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0013",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "No sooner ___ the question than she gave the answer.",
+            "options": {
+                "A": "she had heard",
+                "B": "had she heard",
+                "C": "did she hear",
+                "D": "she heard"
+            },
+            "correct_answer": "B",
+            "explanation": "No sooner had...than。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0013",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The course is designed ___ students with fundamental research skills.",
+            "options": {
+                "A": "provide",
+                "B": "providing",
+                "C": "to provide",
+                "D": "provided"
+            },
+            "correct_answer": "C",
+            "explanation": "be designed to do。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0013",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He prides himself on ___ able to solve complex problems.",
+            "options": {
+                "A": "be",
+                "B": "been",
+                "C": "being",
+                "D": "to be"
+            },
+            "correct_answer": "C",
+            "explanation": "pride oneself on being。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0014",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The evidence is insufficient ___ a firm conclusion.",
+            "options": {
+                "A": "draw",
+                "B": "drawing",
+                "C": "to draw",
+                "D": "drawn"
+            },
+            "correct_answer": "C",
+            "explanation": "adj + enough \/ insufficient to do。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0014",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "What matters is not speed but ___ you understand the material.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "whether",
+                "D": "that"
+            },
+            "correct_answer": "C",
+            "explanation": "whether 是否。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0014",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The professor, ___ I have great respect, will retire next year.",
+            "options": {
+                "A": "who",
+                "B": "whom",
+                "C": "for whom",
+                "D": "whose"
+            },
+            "correct_answer": "C",
+            "explanation": "have respect for whom。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0015",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He would have passed CET-4 if he ___ harder.",
+            "options": {
+                "A": "study",
+                "B": "had studied",
+                "C": "studied",
+                "D": "studies"
+            },
+            "correct_answer": "B",
+            "explanation": "与过去相反 if had studied。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0015",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The library provides students ___ access to academic databases.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "with",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "provide sb with sth。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0015",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is advisable that you ___ a backup of your files.",
+            "options": {
+                "A": "make",
+                "B": "makes",
+                "C": "made",
+                "D": "making"
+            },
+            "correct_answer": "A",
+            "explanation": "advisable that (should) do。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0016",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The phenomenon, ___ scientists still cannot fully explain, remains a mystery.",
+            "options": {
+                "A": "that",
+                "B": "which",
+                "C": "who",
+                "D": "what"
+            },
+            "correct_answer": "B",
+            "explanation": "非限制性定语从句 which。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0016",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is too absorbed in research ___ notice the time.",
+            "options": {
+                "A": "notice",
+                "B": "to notice",
+                "C": "noticing",
+                "D": "noticed"
+            },
+            "correct_answer": "B",
+            "explanation": "too...to。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0016",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The grant enabled him ___ his studies abroad.",
+            "options": {
+                "A": "continue",
+                "B": "continuing",
+                "C": "to continue",
+                "D": "continued"
+            },
+            "correct_answer": "C",
+            "explanation": "enable sb to do。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0017",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is known ___ his contributions to environmental science.",
+            "options": {
+                "A": "for",
+                "B": "as",
+                "C": "to",
+                "D": "with"
+            },
+            "correct_answer": "A",
+            "explanation": "be known for。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0017",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The survey was conducted ___ gather student feedback.",
+            "options": {
+                "A": "for",
+                "B": "in order",
+                "C": "to",
+                "D": "so that"
+            },
+            "correct_answer": "C",
+            "explanation": "不定式表目的 to gather。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0017",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is known ___ his contributions to environmental science.",
+            "options": {
+                "A": "for",
+                "B": "as",
+                "C": "for",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "be known for 因……闻名。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0018",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The debate centered ___ the ethics of artificial intelligence.",
+            "options": {
+                "A": "in",
+                "B": "at",
+                "C": "on",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "center on 围绕。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0018",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She was awarded a fellowship, ___ enabled her to pursue a PhD.",
+            "options": {
+                "A": "that",
+                "B": "which",
+                "C": "who",
+                "D": "what"
+            },
+            "correct_answer": "B",
+            "explanation": "which 引导非限制性定语从句。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0018",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The internship offers valuable experience, without ___ many graduates struggle to find jobs.",
+            "options": {
+                "A": "it",
+                "B": "that",
+                "C": "which",
+                "D": "what"
+            },
+            "correct_answer": "C",
+            "explanation": "without which 介词+关系代词。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0019",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Much as I admire his talent, I ___ agree with his approach.",
+            "options": {
+                "A": "cannot",
+                "B": "must",
+                "C": "should",
+                "D": "may"
+            },
+            "correct_answer": "A",
+            "explanation": "much as 尽管……但。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0019",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The workshop focuses on ___ academic papers effectively.",
+            "options": {
+                "A": "write",
+                "B": "to write",
+                "C": "writing",
+                "D": "written"
+            },
+            "correct_answer": "C",
+            "explanation": "focus on doing。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-06-0019",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "06",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Much as I admire his talent, I ___ agree with his approach.",
+            "options": {
+                "A": "cannot",
+                "B": "cannot",
+                "C": "must",
+                "D": "should"
+            },
+            "correct_answer": "B",
+            "explanation": "much as 尽管。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-04-0020",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "04",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The workshop focuses on ___ academic papers effectively.",
+            "options": {
+                "A": "write",
+                "B": "write",
+                "C": "writing",
+                "D": "written"
+            },
+            "correct_answer": "C",
+            "explanation": "focus on doing。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-05-0020",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "05",
+            "education_stage": "大学",
+            "grade_level": "大二",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He left the meeting, his face ___ with anger.",
+            "options": {
+                "A": "fill",
+                "B": "filled",
+                "C": "filling",
+                "D": "to fill"
+            },
+            "correct_answer": "B",
+            "explanation": "独立主格 filled with。（来源：大学语法 · 大二）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0001",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The study concludes that prolonged screen time ___ cognitive performance.",
+            "options": {
+                "A": "affect",
+                "B": "affects",
+                "C": "affecting",
+                "D": "affected"
+            },
+            "correct_answer": "B",
+            "explanation": "宾语从句主语单数用 affects。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0001",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Had the funding been available, the project ___ completed on schedule.",
+            "options": {
+                "A": "will be",
+                "B": "would be",
+                "C": "would have been",
+                "D": "had been"
+            },
+            "correct_answer": "C",
+            "explanation": "与过去相反的虚拟被动。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0001",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The theory, ___ is widely accepted today, was once considered radical.",
+            "options": {
+                "A": "that",
+                "B": "which",
+                "C": "who",
+                "D": "what"
+            },
+            "correct_answer": "B",
+            "explanation": "非限制性定语从句 which。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0002",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is widely held ___ critical thinking is essential for academic success.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "It is held that。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0002",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The manuscript needs ___ before submission to the journal.",
+            "options": {
+                "A": "revise",
+                "B": "to revise",
+                "C": "revising",
+                "D": "revised"
+            },
+            "correct_answer": "C",
+            "explanation": "need doing 需要被修改。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0002",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "So complex ___ the problem that no simple solution exists.",
+            "options": {
+                "A": "the problem is",
+                "B": "is the problem",
+                "C": "was the problem",
+                "D": "the problem was"
+            },
+            "correct_answer": "B",
+            "explanation": "So complex is... 倒装。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0003",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The researcher is credited ___ discovering the new compound.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "with",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "be credited with 因……受到赞誉。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0003",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The data suggest that further investigation ___ necessary.",
+            "options": {
+                "A": "are",
+                "B": "is",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "B",
+            "explanation": "investigation 单数 is necessary。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0003",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is inclined ___ that the results are statistically significant.",
+            "options": {
+                "A": "believe",
+                "B": "to believe",
+                "C": "believing",
+                "D": "believed"
+            },
+            "correct_answer": "B",
+            "explanation": "be inclined to believe。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0004",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The argument rests ___ the assumption that all participants were honest.",
+            "options": {
+                "A": "in",
+                "B": "at",
+                "C": "on",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "rest on 基于。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0004",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Not until the data were verified ___ the paper published.",
+            "options": {
+                "A": "was",
+                "B": "is",
+                "C": "were",
+                "D": "be"
+            },
+            "correct_answer": "A",
+            "explanation": "Not until 倒装 was。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0004",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The professor recommended that the methodology ___ described in detail.",
+            "options": {
+                "A": "is",
+                "B": "be",
+                "C": "was",
+                "D": "being"
+            },
+            "correct_answer": "B",
+            "explanation": "recommend that (should) be。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0005",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Whatever the outcome, the experiment ___ valuable insights.",
+            "options": {
+                "A": "provide",
+                "B": "provides",
+                "C": "will provide",
+                "D": "provided"
+            },
+            "correct_answer": "C",
+            "explanation": "whatever 引导让步，主句将来时。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0005",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The findings are subject ___ revision as new evidence emerges.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "C",
+            "explanation": "be subject to 受制于。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0005",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is alleged ___ manipulated the research data.",
+            "options": {
+                "A": "have",
+                "B": "to have",
+                "C": "having",
+                "D": "to"
+            },
+            "correct_answer": "B",
+            "explanation": "be alleged to have done。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0006",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The conference proceedings, ___ over 300 pages, cover diverse topics.",
+            "options": {
+                "A": "span",
+                "B": "spanning",
+                "C": "spanned",
+                "D": "to span"
+            },
+            "correct_answer": "B",
+            "explanation": "现在分词作定语。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0006",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is conceivable ___ technology will reshape higher education.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "It is conceivable that。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0006",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The reviewer found the argument less convincing than ___.",
+            "options": {
+                "A": "expected",
+                "B": "expecting",
+                "C": "to expect",
+                "D": "expects"
+            },
+            "correct_answer": "A",
+            "explanation": "than expected 省略。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0007",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Students are encouraged ___ interdisciplinary collaboration.",
+            "options": {
+                "A": "pursue",
+                "B": "to pursue",
+                "C": "pursuing",
+                "D": "pursued"
+            },
+            "correct_answer": "B",
+            "explanation": "encourage to pursue。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0007",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The policy is intended ___ inequality in access to education.",
+            "options": {
+                "A": "reduce",
+                "B": "reducing",
+                "C": "to reduce",
+                "D": "reduced"
+            },
+            "correct_answer": "C",
+            "explanation": "be intended to do。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0007",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Rarely ___ such a comprehensive analysis of the issue.",
+            "options": {
+                "A": "we see",
+                "B": "we have seen",
+                "C": "do we see",
+                "D": "have we seen"
+            },
+            "correct_answer": "C",
+            "explanation": "Rarely 倒装。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0008",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The hypothesis was tested, ___ proved to be accurate.",
+            "options": {
+                "A": "that",
+                "B": "which",
+                "C": "who",
+                "D": "what"
+            },
+            "correct_answer": "B",
+            "explanation": "which 指代前面整件事。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0008",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is entitled ___ a full refund if the course is cancelled.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "with"
+            },
+            "correct_answer": "C",
+            "explanation": "be entitled to 有权获得。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0008",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The lecture challenged students ___ conventional assumptions.",
+            "options": {
+                "A": "question",
+                "B": "to question",
+                "C": "questioning",
+                "D": "questioned"
+            },
+            "correct_answer": "B",
+            "explanation": "challenge sb to do。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0009",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The results are indicative ___ a broader trend in the field.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "of",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "indicative of 表明。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0009",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "___ you require further assistance, please contact the office.",
+            "options": {
+                "A": "Should",
+                "B": "Would",
+                "C": "Could",
+                "D": "Might"
+            },
+            "correct_answer": "A",
+            "explanation": "Should you require 倒装。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0009",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The study was conducted so as ___ bias in sampling.",
+            "options": {
+                "A": "avoid",
+                "B": "avoiding",
+                "C": "to avoid",
+                "D": "avoided"
+            },
+            "correct_answer": "C",
+            "explanation": "so as to do 为了。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0010",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is prone ___ making hasty judgments without sufficient evidence.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "C",
+            "explanation": "be prone to doing。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0010",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The committee voted unanimously, ___ was unexpected.",
+            "options": {
+                "A": "that",
+                "B": "which",
+                "C": "who",
+                "D": "what"
+            },
+            "correct_answer": "B",
+            "explanation": "which 引导非限制性定语从句。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0010",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is doubtful ___ the current approach will yield better results.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "whether",
+                "D": "that"
+            },
+            "correct_answer": "C",
+            "explanation": "doubtful whether。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0011",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The author argues that globalization ___ both opportunities and challenges.",
+            "options": {
+                "A": "present",
+                "B": "presents",
+                "C": "presenting",
+                "D": "presented"
+            },
+            "correct_answer": "B",
+            "explanation": "globalization 单数谓语。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0011",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The experiment was repeated three times, each trial ___ consistent results.",
+            "options": {
+                "A": "produce",
+                "B": "producing",
+                "C": "producing",
+                "D": "produced"
+            },
+            "correct_answer": "C",
+            "explanation": "独立主格 producing。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0011",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The experiment was repeated three times, each trial ___ consistent results.",
+            "options": {
+                "A": "produce",
+                "B": "producing",
+                "C": "produced",
+                "D": "produces"
+            },
+            "correct_answer": "B",
+            "explanation": "独立主格 each trial producing。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0012",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The paper has been cited over 200 times, ___ its influence in the field.",
+            "options": {
+                "A": "reflect",
+                "B": "reflecting",
+                "C": "reflected",
+                "D": "reflects"
+            },
+            "correct_answer": "B",
+            "explanation": "reflecting 现在分词状语。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0012",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The university prohibits plagiarism in ___ form.",
+            "options": {
+                "A": "some",
+                "B": "any",
+                "C": "any",
+                "D": "every"
+            },
+            "correct_answer": "C",
+            "explanation": "in any form 任何形式。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0012",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The university prohibits plagiarism in ___ form.",
+            "options": {
+                "A": "some",
+                "B": "any",
+                "C": "every",
+                "D": "no"
+            },
+            "correct_answer": "B",
+            "explanation": "in any form。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0013",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The grant application must be accompanied ___ a detailed budget.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "by",
+                "D": "with"
+            },
+            "correct_answer": "C",
+            "explanation": "be accompanied by。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0013",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is estimated ___ over 60% of graduates pursue further studies.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "It is estimated that。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0013",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The professor emphasized the importance of ___ primary sources.",
+            "options": {
+                "A": "consult",
+                "B": "consult",
+                "C": "consulting",
+                "D": "consulted"
+            },
+            "correct_answer": "C",
+            "explanation": "of doing 动名词。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0014",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He was awarded the prize, an honor ___ he had long dreamed.",
+            "options": {
+                "A": "that",
+                "B": "which",
+                "C": "of which",
+                "D": "for which"
+            },
+            "correct_answer": "C",
+            "explanation": "dream of which。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0014",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The debate highlighted the need ___ stricter academic standards.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "A",
+            "explanation": "the need for。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0014",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She is regarded ___ one of the leading experts in linguistics.",
+            "options": {
+                "A": "for",
+                "B": "to",
+                "C": "as",
+                "D": "with"
+            },
+            "correct_answer": "C",
+            "explanation": "be regarded as。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0015",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The findings contradict ___ was previously believed.",
+            "options": {
+                "A": "that",
+                "B": "which",
+                "C": "what",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "what 引导宾语从句。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0015",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He submitted the assignment late, for ___ he lost ten points.",
+            "options": {
+                "A": "that",
+                "B": "which",
+                "C": "which",
+                "D": "what"
+            },
+            "correct_answer": "C",
+            "explanation": "for which 定语从句。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0015",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He submitted the assignment late, for ___ he lost ten points.",
+            "options": {
+                "A": "that",
+                "B": "which",
+                "C": "what",
+                "D": "whom"
+            },
+            "correct_answer": "B",
+            "explanation": "for which。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0016",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The research team is composed of twelve members, each ___ a specific role.",
+            "options": {
+                "A": "play",
+                "B": "plays",
+                "C": "playing",
+                "D": "played"
+            },
+            "correct_answer": "C",
+            "explanation": "each playing 独立主格。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0016",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The article provides a framework ___ analyzing social media trends.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "A",
+            "explanation": "framework for。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0016",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The article provides a framework ___ analyzing social media trends.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "for",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "framework for doing。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0017",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is paradoxical ___ success often comes after repeated failure.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "paradoxical that。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0017",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The speaker paused, as if ___ for the right words.",
+            "options": {
+                "A": "search",
+                "B": "searched",
+                "C": "searching",
+                "D": "to search"
+            },
+            "correct_answer": "C",
+            "explanation": "as if searching 好像正在寻找。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0017",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The contract is binding ___ both parties.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "on",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "binding on 对……有约束力。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0018",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is skeptical ___ the validity of the survey results.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "about",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "skeptical about 对……怀疑。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0018",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The methodology is comparable ___ that used in earlier studies.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "with"
+            },
+            "correct_answer": "C",
+            "explanation": "comparable to 与……可比。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0018",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The thesis defense went smoothly, much to the student's ___.",
+            "options": {
+                "A": "relieve",
+                "B": "relieved",
+                "C": "relief",
+                "D": "relieving"
+            },
+            "correct_answer": "C",
+            "explanation": "to one's relief 令人宽慰。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0019",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is intent ___ completing his dissertation before the deadline.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "on",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "be intent on doing。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0019",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The panel raised concerns ___ the ethical implications of the study.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "about",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "raise concerns about。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0019",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The volume of research in this field ___ grown exponentially.",
+            "options": {
+                "A": "have",
+                "B": "has",
+                "C": "are",
+                "D": "were"
+            },
+            "correct_answer": "B",
+            "explanation": "volume 单数 has grown。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0020",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He spoke with an authority ___ commanded the audience's attention.",
+            "options": {
+                "A": "who",
+                "B": "whom",
+                "C": "that",
+                "D": "whose"
+            },
+            "correct_answer": "C",
+            "explanation": "authority that。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0020",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大三",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The proposal was rejected, ___ came as a surprise to many.",
+            "options": {
+                "A": "that",
+                "B": "which",
+                "C": "who",
+                "D": "what"
+            },
+            "correct_answer": "B",
+            "explanation": "which 指代整件事。（来源：大学语法 · 大三）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0021",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The dissertation, ___ over two years, reflects original research.",
+            "options": {
+                "A": "write",
+                "B": "written",
+                "C": "writing",
+                "D": "to write"
+            },
+            "correct_answer": "B",
+            "explanation": "过去分词作定语表被动。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0021",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is mandatory that all graduates ___ their transcripts before leaving.",
+            "options": {
+                "A": "submit",
+                "B": "submit",
+                "C": "submits",
+                "D": "submitted"
+            },
+            "correct_answer": "B",
+            "explanation": "mandatory that (should) do。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0020",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "But for the pandemic, the graduation ceremony ___ held as scheduled.",
+            "options": {
+                "A": "will be",
+                "B": "would be",
+                "C": "would have been",
+                "D": "had been"
+            },
+            "correct_answer": "C",
+            "explanation": "but for 与过去相反。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0022",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The CEO, along with the board members, ___ the final decision.",
+            "options": {
+                "A": "make",
+                "B": "makes",
+                "C": "making",
+                "D": "made"
+            },
+            "correct_answer": "B",
+            "explanation": "along with 就远原则。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0022",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The report attributes the decline ___ a lack of investment in R&D.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "C",
+            "explanation": "attribute to 归因于。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0021",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is bound ___ succeed given his track record and determination.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "C",
+            "explanation": "be bound to do 注定。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0023",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The symposium served ___ a platform for exchanging cutting-edge ideas.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "as",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "serve as 充当。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0023",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The policy has far-reaching implications ___ the job market.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "A",
+            "explanation": "implications for。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0022",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He was the only applicant ___ met all the eligibility criteria.",
+            "options": {
+                "A": "who",
+                "B": "whom",
+                "C": "that",
+                "D": "which"
+            },
+            "correct_answer": "C",
+            "explanation": "the only applicant that。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0024",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The study lends support ___ the hypothesis that exercise boosts cognition.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "C",
+            "explanation": "lend support to 支持。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0024",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is incumbent ___ graduates to contribute positively to society.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "on",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "incumbent on sb to do。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0023",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The negotiations broke down, ___ led to a prolonged strike.",
+            "options": {
+                "A": "that",
+                "B": "which",
+                "C": "who",
+                "D": "what"
+            },
+            "correct_answer": "B",
+            "explanation": "which 引导非限制性定语从句。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0025",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is widely regarded ___ a pioneer in sustainable architecture.",
+            "options": {
+                "A": "for",
+                "B": "to",
+                "C": "as",
+                "D": "with"
+            },
+            "correct_answer": "C",
+            "explanation": "be regarded as。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0025",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The company is on the verge ___ bankruptcy.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "of",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "on the verge of 濒临。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0024",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She was reluctant ___ the offer without consulting her advisor.",
+            "options": {
+                "A": "accept",
+                "B": "accepting",
+                "C": "to accept",
+                "D": "accepted"
+            },
+            "correct_answer": "C",
+            "explanation": "reluctant to do。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0026",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The evidence falls short ___ proving guilt beyond reasonable doubt.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "of",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "fall short of 不足。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0026",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He spoke with such conviction ___ everyone was persuaded.",
+            "options": {
+                "A": "as",
+                "B": "so",
+                "C": "that",
+                "D": "which"
+            },
+            "correct_answer": "C",
+            "explanation": "such...that。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0025",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The reform is designed to be compatible ___ international standards.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "with",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "compatible with。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0027",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is preferable ___ the meeting be postponed until next week.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "preferable that。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0027",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The alumni network provides graduates ___ valuable career connections.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "with",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "provide sb with sth。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0026",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He was deprived ___ the opportunity due to bureaucratic delays.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "of",
+                "D": "from"
+            },
+            "correct_answer": "C",
+            "explanation": "be deprived of 被剥夺。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0028",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The professor's lecture was met ___ enthusiastic applause.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "with",
+                "D": "by"
+            },
+            "correct_answer": "C",
+            "explanation": "be met with 受到。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0028",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The initiative is geared ___ promoting lifelong learning.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "toward",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "be geared toward 面向。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0027",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is competent ___ handling complex negotiations.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "on",
+                "D": "at"
+            },
+            "correct_answer": "D",
+            "explanation": "competent at doing。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0029",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The outcome is predicated ___ several key assumptions.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "on",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "be predicated on 基于。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0029",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She was instrumental ___ securing funding for the project.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "on",
+                "D": "to"
+            },
+            "correct_answer": "B",
+            "explanation": "instrumental in。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0028",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The treaty is binding ___ all signatory nations.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "on",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "binding on。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0030",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is wary ___ making promises he cannot keep.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "of",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "wary of doing。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0030",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The analysis is premised ___ the notion that markets are efficient.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "on",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "premised on 以……为前提。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0029",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He acquitted himself well in the interview, ___ impressed the panel.",
+            "options": {
+                "A": "that",
+                "B": "which",
+                "C": "who",
+                "D": "what"
+            },
+            "correct_answer": "B",
+            "explanation": "which 非限制性定语从句。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0031",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The degree confers ___ graduates a competitive edge in the job market.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "on",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "confer on 授予。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0031",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "It is plausible ___ the trend will continue in the coming decade.",
+            "options": {
+                "A": "what",
+                "B": "which",
+                "C": "that",
+                "D": "who"
+            },
+            "correct_answer": "C",
+            "explanation": "plausible that。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0030",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The committee is tasked ___ evaluating all grant proposals.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "with",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "be tasked with。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0032",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is adamant ___ his refusal to compromise on quality.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "about",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "adamant about。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0032",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She was commended ___ her outstanding contribution to the community.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "A",
+            "explanation": "commend for。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0031",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She was commended ___ her outstanding contribution to the community.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "for",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "commend for。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0033",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The venture proved ___ than anyone had anticipated.",
+            "options": {
+                "A": "success",
+                "B": "successful",
+                "C": "more successful",
+                "D": "most successful"
+            },
+            "correct_answer": "C",
+            "explanation": "more successful than。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0033",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is exempt ___ taking the elective course due to prior experience.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "from",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "exempt from。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0032",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The symposium coincided ___ the university's centennial celebration.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "with",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "coincide with。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0034",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is receptive ___ constructive criticism.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "of"
+            },
+            "correct_answer": "C",
+            "explanation": "receptive to。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0034",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The findings have profound ramifications ___ public health policy.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "A",
+            "explanation": "ramifications for。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0033",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She was nominated ___ the prestigious scholarship.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "A",
+            "explanation": "nominate for。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0035",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The project ran ___ budget, forcing the team to cut costs.",
+            "options": {
+                "A": "over",
+                "B": "in",
+                "C": "on",
+                "D": "beyond"
+            },
+            "correct_answer": "A",
+            "explanation": "run over budget。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0035",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is conversant ___ the latest developments in AI research.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "with",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "conversant with 熟悉。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0034",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The board voted to divest ___ fossil fuel investments.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "from",
+                "D": "of"
+            },
+            "correct_answer": "C",
+            "explanation": "divest from 撤资。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0036",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The ceremony marked the culmination ___ four years of hard work.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "of",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "culmination of。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0036",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She was lauded ___ her groundbreaking research in neuroscience.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "A",
+            "explanation": "laud for。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0035",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The agreement stipulates that disputes ___ resolved through arbitration.",
+            "options": {
+                "A": "are",
+                "B": "be",
+                "C": "was",
+                "D": "being"
+            },
+            "correct_answer": "B",
+            "explanation": "stipulate that (should) be。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0037",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She was lauded ___ her groundbreaking research in neuroscience.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "for",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "laud for。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0037",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The economy is showing signs ___ recovery after the recession.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "of",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "signs of。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0036",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He is synonymous ___ innovation in the tech industry.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "with",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "synonymous with。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0038",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He was ___ an honorary doctorate at the commencement.",
+            "options": {
+                "A": "conferred",
+                "B": "awarded",
+                "C": "rewarded",
+                "D": "granted with"
+            },
+            "correct_answer": "B",
+            "explanation": "be awarded sth 被授予。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0038",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "Graduates are expected ___ uphold the university's values.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "C",
+            "explanation": "be expected to do。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0037",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The lecture series is tailored ___ the needs of senior students.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "C",
+            "explanation": "tailored to。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0039",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "He was conferred ___ an honorary doctorate at the commencement.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "with",
+                "D": "on"
+            },
+            "correct_answer": "C",
+            "explanation": "confer on sb sth \/ be conferred。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0039",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The capstone project is indicative ___ a student's overall competence.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "of",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "indicative of。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0038",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "She emerged ___ the most promising candidate in the cohort.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "as",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "emerge as 成为。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-07-0040",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "07",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The curriculum is structured ___ foster critical and creative thinking.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "C",
+            "explanation": "structured to do。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-08-0040",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "08",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "His thesis was deemed worthy ___ publication in a top-tier journal.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "of",
+                "D": "to"
+            },
+            "correct_answer": "C",
+            "explanation": "worthy of。（来源：大学语法 · 大四）",
+            "word": ""
+        },
+        {
+            "question_id": "JGV-Y1-09-0039",
+            "type": "grammar",
+            "realm": "Y1",
+            "stage": "09",
+            "education_stage": "大学",
+            "grade_level": "大四",
+            "play_mode": "语法机关桥",
+            "scene": "阵法峰",
+            "question": "The commencement address inspired graduates ___ pursue meaningful careers.",
+            "options": {
+                "A": "for",
+                "B": "in",
+                "C": "to",
+                "D": "on"
+            },
+            "correct_answer": "C",
+            "explanation": "inspire sb to do。（来源：大学语法 · 大四）",
+            "word": ""
+        }
+    ]
+}

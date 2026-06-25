@@ -5,6 +5,7 @@ export function useAudioPlayer() {
   const isPlaying = ref(false);
   const replayCount = ref(0);
   const maxReplays = ref(2); // 默认最多重播2次
+  const playbackRate = ref(1);
 
   /**
    * 初始化并加载音频
@@ -13,6 +14,7 @@ export function useAudioPlayer() {
   const loadAudio = (src: string) => {
     stop();
     audio.value = new Audio(src);
+    audio.value.playbackRate = playbackRate.value;
     audio.value.onended = () => {
       isPlaying.value = false;
     };
@@ -39,11 +41,20 @@ export function useAudioPlayer() {
 
     isPlaying.value = true;
     audio.value.currentTime = 0;
+    audio.value.playbackRate = playbackRate.value;
     audio.value.play().catch(e => {
       console.error('播放失败:', e);
       isPlaying.value = false;
     });
     return true;
+  };
+
+  const setPlaybackRate = (rate: number) => {
+    const nextRate = Number.isFinite(rate) ? Math.max(0.5, Math.min(1.5, rate)) : 1;
+    playbackRate.value = nextRate;
+    if (audio.value) {
+      audio.value.playbackRate = nextRate;
+    }
   };
 
   /**
@@ -73,9 +84,11 @@ export function useAudioPlayer() {
     isPlaying,
     replayCount,
     maxReplays,
+    playbackRate,
     loadAudio,
     play,
     stop,
-    resetReplayCount
+    resetReplayCount,
+    setPlaybackRate,
   };
 }

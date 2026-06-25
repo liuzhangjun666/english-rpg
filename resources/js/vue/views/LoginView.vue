@@ -146,12 +146,11 @@
             </div>
           </div>
 
-          <button type="submit" class="jade-btn"><span>塑 魂 注 册</span></button>
-          </form>
         </div>
-        <p class="brand-sub">英语修仙 · 背单词，修大道</p>
+      </transition>
+
+      <p class="brand-sub">英语修仙 · 背单词，修大道</p>
     </div>
-    </Transition>
 
     <!-- 开门白光过场 -->
     <div class="enter-flash" :class="{ on: entering }"></div>
@@ -218,6 +217,14 @@ const schoolStages = [
   { value: 'college', label: '大学' },
   { value: 'graduate', label: '研究生' },
 ] as const;
+
+const growthStages = [
+  { name: '练气期', desc: '入门', words: 100 },
+  { name: '筑基期', desc: '筑基', words: 500 },
+  { name: '金丹期', desc: '结丹', words: 2000 },
+  { name: '元婴期', desc: '化婴', words: 5000 },
+  { name: '化神期', desc: '神识', words: 8000 },
+];
 
 const registerForm = reactive({
   phone: '',

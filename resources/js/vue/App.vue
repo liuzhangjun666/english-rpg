@@ -4,8 +4,11 @@
     'is-assessment': isAssessmentRoute,
     'has-top-hud': showGlobalHeader,
   }">
-    <div v-if="!auth.bootstrapped" class="boot-splash">
-      <div class="boot-text">正在恢复会话...</div>
+    <div v-if="!auth.bootstrapped" class="boot-splash" aria-hidden="true">
+      <div class="boot-splash-inner">
+        <div class="boot-spinner-ring"></div>
+        <div class="boot-text">正在恢复会话...</div>
+      </div>
     </div>
 
     <template v-else>
@@ -33,10 +36,7 @@
       <AchievementsModal v-model:visible="showGlobalAchievements" />
     </template>
 
-    <el-dialog :model-value="ui.loading" width="280px" :show-close="false" :close-on-click-modal="false"
-      :close-on-press-escape="false" class="loading-dialog">
-      <div class="loading-content">{{ ui.loadingText }}</div>
-    </el-dialog>
+    <CultLoadingOverlay :visible="ui.loading" :text="ui.loadingText" />
 
     <ProfilePanel v-model:visible="showProfile" @open-review="openReviewFromProfile"
       @open-parent="showParentDashboard = true" />
@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useApiClient } from './services/api';
 import { useAuthStore } from './stores/auth';
@@ -65,6 +65,16 @@ import ReviewModal from './views/ReviewModal.vue';
 import ParentDashboardPanel from './components/features/ParentDashboardPanel.vue';
 import DemonEncounter from './components/demons/DemonEncounter.vue';
 import WorldMapOverlay from './views/WorldMapOverlay.vue';
+import LoadingSplash from './components/layout/LoadingSplash.vue';
+import CultLoadingOverlay from './components/layout/CultLoadingOverlay.vue';
+import GlobalHud from './components/map/GlobalHud.vue';
+import AchievementsModal from './views/AchievementsModal.vue';
+import {
+  preloadEssentials,
+  preloadProgress,
+  preloadCounts,
+  essentialDone,
+} from './services/assetPreloader';
 
 const router = useRouter();
 const route = useRoute();
@@ -110,25 +120,16 @@ async function logout() {
   window.location.assign('/login');
 }
 
-import { onMounted, onUnmounted, ref, watch } from 'vue';
-import TopHud from './components/layout/TopHud.vue';
-import ProfilePanel from './components/profile/ProfilePanel.vue';
-import DemonEncounter from './components/demons/DemonEncounter.vue';
-import WorldMapOverlay from './views/WorldMapOverlay.vue';
-import LoadingSplash from './components/layout/LoadingSplash.vue';
-import GlobalHud from './components/map/GlobalHud.vue';
-import ReviewModal from './views/ReviewModal.vue';
-import AchievementsModal from './views/AchievementsModal.vue';
-import {
-  preloadEssentials,
-  preloadProgress,
-  preloadCounts,
-  essentialDone,
-} from './services/assetPreloader';
-
 const showProfile = ref(false);
 const showGlobalReview = ref(false);
 const showGlobalAchievements = ref(false);
+const showReviewFromProfile = ref(false);
+const showParentDashboard = ref(false);
+
+function openReviewFromProfile() {
+  showProfile.value = false;
+  showReviewFromProfile.value = true;
+}
 
 // ─── 资源预热遮罩 ─────────────────────────────────────────────
 // auth 通过后 splash 立刻显示；预热完成（或保护超时）后隐藏。

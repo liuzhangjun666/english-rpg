@@ -1,0 +1,423 @@
+{
+    "summary": {
+        "realm": "Z1",
+        "education_stage": "初中",
+        "total_passages": 9
+    },
+    "passages": [
+        {
+            "realm": "Z1",
+            "stage": "01",
+            "level_tag": "初中",
+            "grade_level": "七年级",
+            "title": "My First Week in Middle School",
+            "content": "On my first day of middle school, I got lost twice before finding Classroom 705. The building looked huge compared with my primary school. Our homeroom teacher, Ms. Wu, asked each student to write a goal card for the term. I wrote, \"Speak English bravely in class.\" At lunch, I sat with two classmates from different primary schools. We discovered that we all loved basketball and the same science podcast. By Friday, I had joined the school basketball team and borrowed three English storybooks from the library. Middle school still feels new, but I am beginning to feel that I belong here.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What goal did the writer write on the card?",
+                    "options": {
+                        "A": "Win every basketball game.",
+                        "B": "Speak English bravely in class.",
+                        "C": "Become a homeroom teacher.",
+                        "D": "Find the library alone."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "目标卡上写的是勇敢开口说英语。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "What did the writer and new classmates have in common?",
+                    "options": {
+                        "A": "They went to the same primary school.",
+                        "B": "They disliked science.",
+                        "C": "They all loved basketball and the same podcast.",
+                        "D": "They lived in the same building."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "三人都喜欢篮球和同一档科学播客。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "How does the writer feel about middle school by Friday?",
+                    "options": {
+                        "A": "Still new but starting to belong.",
+                        "B": "Boring and lonely.",
+                        "C": "Too easy to get lost.",
+                        "D": "Ready to leave school."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "周五时作者仍觉新鲜，但开始有归属感。。（来源：初中阅读 · 推理）"
+                }
+            ]
+        },
+        {
+            "realm": "Z1",
+            "stage": "02",
+            "level_tag": "初中",
+            "grade_level": "七年级",
+            "title": "The English Corner",
+            "content": "Every Wednesday after class, our English teacher runs an English Corner in the school garden. Students can talk about books, movies, or daily life in simple English. At first I only listened because I was afraid of making mistakes. One rainy day, only four students came. The teacher asked us to describe our favorite weather. I said, \"I like sunny days because I can play badminton.\" Everyone nodded and asked follow-up questions. I realized they cared more about my ideas than perfect grammar. Since then, I try to speak at least two sentences each week. My pronunciation is still improving, but my confidence is growing.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "When does the English Corner take place?",
+                    "options": {
+                        "A": "Every Monday morning.",
+                        "B": "Every Wednesday after class.",
+                        "C": "Only on rainy days.",
+                        "D": "Every Friday in the library."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "英语角在每周三课后举行。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "Why did the writer begin to speak?",
+                    "options": {
+                        "A": "The teacher forced everyone to read aloud.",
+                        "B": "There were too many students.",
+                        "C": "Grammar tests became easier.",
+                        "D": "A small group talk showed that ideas mattered more than perfect grammar."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "小规模交流让作者意识到想法比语法完美更重要。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What change has the writer noticed?",
+                    "options": {
+                        "A": "Confidence is growing though pronunciation still needs work.",
+                        "B": "He stopped attending the English Corner.",
+                        "C": "He now speaks at least two sentences each week and feels more confident.",
+                        "D": "He only talks about grammar rules."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "作者每周至少说两句，信心在增强。。（来源：初中阅读 · 推理）"
+                }
+            ]
+        },
+        {
+            "realm": "Z1",
+            "stage": "03",
+            "level_tag": "初中",
+            "grade_level": "七年级",
+            "title": "Sports Day Memories",
+            "content": "Last month our grade held a sports day on the new playground. I signed up for the 800-meter race even though I had never run that far in a competition. During training, my legs hurt and I wanted to quit. My deskmate Lin ran beside me after school and taught me how to control breathing. On sports day, I fell behind in the second lap, but classmates cheered along the track. I finished last in my heat, yet the PE teacher gave me a \"Never Give Up\" badge. That small badge now hangs on my schoolbag. It reminds me that effort can be as valuable as winning.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "Which event did the writer join?",
+                    "options": {
+                        "A": "The 800-meter race.",
+                        "B": "The long jump.",
+                        "C": "The basketball final.",
+                        "D": "The relay only as a referee."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "作者参加了八百米比赛。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "How did Lin help the writer?",
+                    "options": {
+                        "A": "By writing a report for the teacher.",
+                        "B": "By running with the writer and teaching breathing control.",
+                        "C": "By replacing the writer in the race.",
+                        "D": "By buying a new playground."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "同桌陪跑并教作者控制呼吸。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "Why is the badge important to the writer?",
+                    "options": {
+                        "A": "It proves he won first place.",
+                        "B": "It was a gift from the playground.",
+                        "C": "It allows him to skip PE class.",
+                        "D": "It reminds him that effort can be as valuable as winning."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "徽章提醒作者努力同样珍贵。。（来源：初中阅读 · 推理）"
+                }
+            ]
+        },
+        {
+            "realm": "Z1",
+            "stage": "04",
+            "level_tag": "初中",
+            "grade_level": "八年级",
+            "title": "A Letter from My Pen Pal",
+            "content": "I have a pen pal named Emma who lives in New Zealand. We exchange emails twice a month. In her latest message, Emma described her school camp in the mountains. Students cooked simple meals, studied stars at night, and learned basic first aid. She sent photos of a glowworm cave that looked like a green sky underground. I told her about our school art festival and sent a picture of my paper-cut work. Emma replied that she had never tried paper-cutting and asked for a short video tutorial. Writing to her makes English feel useful, not just a subject on an exam paper. We are planning to meet online during the winter holiday.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "How often do the writer and Emma exchange emails?",
+                    "options": {
+                        "A": "Every day.",
+                        "B": "Once a year.",
+                        "C": "Twice a month.",
+                        "D": "Only before exams."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "两人每月通信两次。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "What did Emma do at school camp?",
+                    "options": {
+                        "A": "She sold paper-cut works.",
+                        "B": "She cooked, studied stars, and learned first aid.",
+                        "C": "She taught English grammar online.",
+                        "D": "She visited the writer in person."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "Emma 在营地做饭、观星并学急救。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What does writing to Emma make the writer feel?",
+                    "options": {
+                        "A": "English feels useful in real communication.",
+                        "B": "English is too difficult to use.",
+                        "C": "Art festivals are boring.",
+                        "D": "Pen pals should only use paper letters."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "与笔友通信让作者感到英语有实际用途。。（来源：初中阅读 · 推理）"
+                }
+            ]
+        },
+        {
+            "realm": "Z1",
+            "stage": "05",
+            "level_tag": "初中",
+            "grade_level": "八年级",
+            "title": "Learning About the Dragon Boat Festival",
+            "content": "In our history class, Mr. Li asked us to research a traditional festival and present it in English. I chose the Dragon Boat Festival. I read about Qu Yuan, zongzi, and dragon boat races. My grandmother taught me to wrap zongzi at home, and I took photos for my slides. During the presentation, a classmate asked why people throw rice into the river in some old stories. I explained that the custom shows respect and memory for Qu Yuan. After class, three students said they wanted to try making zongzi together. I learned that culture is easier to understand when we connect stories with real family experiences.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What was the class assignment?",
+                    "options": {
+                        "A": "To race dragon boats on campus.",
+                        "B": "To cook every festival dish in one day.",
+                        "C": "To write a poem about Qu Yuan in Chinese only.",
+                        "D": "To research a traditional festival and present it in English."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "作业是调研传统节日并用英语展示。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "How did the writer prepare for the presentation?",
+                    "options": {
+                        "A": "By reading about the festival and learning to wrap zongzi with his grandmother.",
+                        "B": "By buying slides from the internet.",
+                        "C": "By skipping history class.",
+                        "D": "By interviewing tourists in English only."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "作者查阅资料并向奶奶学包粽子。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What did the writer learn from the project?",
+                    "options": {
+                        "A": "Festivals should not be discussed in class.",
+                        "B": "Only grandmothers understand culture.",
+                        "C": "Culture is easier to understand when stories connect with family experiences.",
+                        "D": "English presentations must avoid photos."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "作者体会到结合家庭经历更容易理解文化。。（来源：初中阅读 · 推理）"
+                }
+            ]
+        },
+        {
+            "realm": "Z1",
+            "stage": "06",
+            "level_tag": "初中",
+            "grade_level": "八年级",
+            "title": "Our Science Fair Project",
+            "content": "Mei and I spent three weeks preparing a science fair project about water purification. We built a simple filter with sand, charcoal, and cotton cloth. On the first test, the water still looked cloudy. We changed the order of materials and recorded each result in a table. Our classmates joked that we were \"water chefs.\" On fair day, judges asked why clean water matters for rural schools. Mei answered with data we found online about children walking long distances to fetch water. We won second prize, but the judge’s question mattered more to us. It pushed us to think about science as a tool for solving real problems.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What was the project topic?",
+                    "options": {
+                        "A": "Cooking with clean water.",
+                        "B": "Water purification.",
+                        "C": "Building a new school.",
+                        "D": "Growing cotton plants."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "课题是净水。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "Why did the first test fail?",
+                    "options": {
+                        "A": "The water still looked cloudy after filtering.",
+                        "B": "They forgot to use a table.",
+                        "C": "Judges arrived too early.",
+                        "D": "They did not attend the fair."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "第一次过滤后水仍浑浊。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What mattered more than winning second prize?",
+                    "options": {
+                        "A": "The joke about water chefs.",
+                        "B": "Changing schools.",
+                        "C": "Avoiding judges’ questions.",
+                        "D": "Thinking about science as a tool for real problems."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "更重要的是把科学当作解决现实问题的工具。。（来源：初中阅读 · 推理）"
+                }
+            ]
+        },
+        {
+            "realm": "Z1",
+            "stage": "07",
+            "level_tag": "初中",
+            "grade_level": "九年级",
+            "title": "A Weekend at the Bookstore",
+            "content": "During the winter holiday, I worked part-time at a small bookstore near the subway station. My job was to shelve books and recommend children’s readers to parents. One afternoon, a boy about ten years old asked for a science book, but his budget was only twenty yuan. I helped him find a thin but well-illustrated book about space. He read the first page right there and smiled. The shop owner said I could borrow one book each week as a reward. I chose a bilingual edition of *The Old Man and the Sea*. Working at the bookstore taught me that recommending a book is like opening a door—people walk through only when they feel welcome.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What was the writer’s main job?",
+                    "options": {
+                        "A": "Driving the subway.",
+                        "B": "Writing novels for children.",
+                        "C": "Shelving books and recommending readers.",
+                        "D": "Teaching parents English grammar."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "主要工作是上架图书并推荐读物。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "How did the writer help the boy?",
+                    "options": {
+                        "A": "By giving him money.",
+                        "B": "By finding an affordable science book he enjoyed.",
+                        "C": "By telling him to leave the store.",
+                        "D": "By refusing to sell cheap books."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "作者帮男孩挑了一本买得起且喜欢的科普书。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What does the writer compare recommending a book to?",
+                    "options": {
+                        "A": "Opening a door when people feel welcome.",
+                        "B": "Closing a shop early.",
+                        "C": "Winning a speech contest.",
+                        "D": "Borrowing subway tickets."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "荐书像打开一扇让人愿意走进的门。。（来源：初中阅读 · 推理）"
+                }
+            ]
+        },
+        {
+            "realm": "Z1",
+            "stage": "08",
+            "level_tag": "初中",
+            "grade_level": "九年级",
+            "title": "The River Cleanup",
+            "content": "Our geography teacher organized a river cleanup near the old bridge. Twenty students joined on Saturday morning. We wore gloves, picked up plastic bags, and sorted waste into recycling bins. A local reporter interviewed us and asked why teenagers care about the river. I said, \"We drink water from this city too.\" An elderly fisherman thanked us and shared photos of the river from thirty years ago when fish were common. His stories made the pollution feel personal, not just a news headline. After the cleanup, our class wrote a proposal asking the community center to place more bins along the path. Two weeks later, six new bins appeared. Small actions can invite bigger changes.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What did students do during the cleanup?",
+                    "options": {
+                        "A": "They fished for dinner.",
+                        "B": "They painted the bridge only.",
+                        "C": "They interviewed tourists for homework.",
+                        "D": "They picked up waste and sorted it into recycling bins."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "学生捡垃圾并分类回收。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "Why did the fisherman’s photos matter?",
+                    "options": {
+                        "A": "They proved the reporter was wrong.",
+                        "B": "They made pollution feel personal by showing how the river used to be.",
+                        "C": "They showed students how to fish.",
+                        "D": "They replaced the class proposal."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "老照片让污染问题变得切身可感。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What happened after the class proposal?",
+                    "options": {
+                        "A": "The river was closed forever.",
+                        "B": "Students stopped caring about recycling.",
+                        "C": "Six new bins appeared along the path.",
+                        "D": "The teacher cancelled geography class."
+                    },
+                    "correct_answer": "C",
+                    "explanation": "两周后路边新增了六个垃圾桶。。（来源：初中阅读 · 推理）"
+                }
+            ]
+        },
+        {
+            "realm": "Z1",
+            "stage": "09",
+            "level_tag": "初中",
+            "grade_level": "九年级",
+            "title": "Before the High School Exam",
+            "content": "In the last term of junior high, time feels both fast and heavy. Every week we have mock exams, and the bulletin board updates target scores. I used to compare myself with the top student and feel anxious. Our English teacher asked us to keep a \"growth notebook\" recording one improvement each day, such as five new words or one corrected mistake. I also formed a study pair with my friend Jun. We quiz each other before breakfast and share healthy snacks instead of staying up too late. Last Friday, Jun said, \"We may not control the score, but we can control today’s effort.\" That sentence calmed me. The exam is important, yet it is only one station on a longer road.",
+            "questions": [
+                {
+                    "question_type": "detail",
+                    "question": "What did the English teacher ask students to keep?",
+                    "options": {
+                        "A": "A growth notebook.",
+                        "B": "A list of top students.",
+                        "C": "A phone game record.",
+                        "D": "A bulletin board at home."
+                    },
+                    "correct_answer": "A",
+                    "explanation": "老师让大家记录成长笔记本。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "detail",
+                    "question": "How do the writer and Jun support each other?",
+                    "options": {
+                        "A": "By comparing scores every hour.",
+                        "B": "By quizzing each other and avoiding staying up too late.",
+                        "C": "By skipping mock exams.",
+                        "D": "By hiding notebooks from teachers."
+                    },
+                    "correct_answer": "B",
+                    "explanation": "两人互考并避免熬夜。。（来源：初中阅读 · 细节）"
+                },
+                {
+                    "question_type": "infer",
+                    "question": "What attitude does the writer develop toward the exam?",
+                    "options": {
+                        "A": "The exam is the only goal in life.",
+                        "B": "Effort no longer matters.",
+                        "C": "Scores can be fully controlled.",
+                        "D": "The exam matters, but it is only one station on a longer road."
+                    },
+                    "correct_answer": "D",
+                    "explanation": "作者认为考试重要，只是长路中的一站。。（来源：初中阅读 · 推理）"
+                }
+            ]
+        }
+    ]
+}

@@ -27,6 +27,7 @@ class TimedChallengeService
         private readonly HeartDemonService $demonService,
         private readonly RealmService $realmService,
         private readonly QuestionResolverService $questionResolver,
+        private readonly PracticeLevelService $levelService,
     ) {
     }
 
@@ -327,46 +328,45 @@ class TimedChallengeService
             }
         }
 
-        if ($session->module_type === 'vocab') {
-            return $this->pickVocabQuestionPayload($asked);
+        $user = User::query()->find($session->user_id);
+        if (!$user) {
+            return null;
         }
 
-        $normal = Question::where('type', $session->module_type)
-            ->where('realm', $session->level)
-            ->where('stage', $session->stage)
-            ->whereNotIn('question_id', $asked)
-            ->inRandomOrder()
-            ->first();
+        if ($session->module_type === 'vocab') {
+            return $this->pickVocabQuestionPayload($user, $asked);
+        }
+
+        $pool = $this->levelService->getQuestionPool($user, (string) $session->module_type)
+            ->whereNotIn('question_id', $asked);
+
+        $normal = $pool->shuffle()->first();
         if ($normal) {
             return $this->questionResolver->resolve($normal->question_id);
         }
 
-        $fallback = Question::where('type', $session->module_type)
-            ->whereNotIn('question_id', $asked)
-            ->inRandomOrder()
-            ->first();
-        if ($fallback) {
-            return $this->questionResolver->resolve($fallback->question_id);
-        }
-
-        $any = Question::where('type', $session->module_type)->inRandomOrder()->first();
-
-        return $any ? $this->questionResolver->resolve($any->question_id) : null;
+        return null;
     }
 
     private function pickDemonQuestionPayload(TimedChallengeSession $session, array $asked): ?array
     {
+        $user = User::query()->find($session->user_id);
+        if (!$user) {
+            return null;
+        }
+
         $demonIds = HeartDemon::where('user_id', $session->user_id)
             ->where('is_mastered', false)
             ->where('type', $session->module_type)
-            ->where(function ($q) use ($session) {
-                $q->where('realm', $session->level)->orWhereNull('realm');
-            })
+            ->where('realm', (string) ($user->realm ?? $session->level))
             ->whereNotIn('question_id', $asked)
             ->limit(30)
             ->pluck('question_id');
 
         foreach ($demonIds->shuffle() as $questionId) {
+            if (!$this->levelService->isQuestionInUserPool($user, (string) $session->module_type, (string) $questionId)) {
+                continue;
+            }
             $resolved = $this->questionResolver->resolve((string) $questionId);
             if ($resolved) {
                 return $resolved;
@@ -376,14 +376,16 @@ class TimedChallengeService
         return null;
     }
 
-    private function pickVocabQuestionPayload(array $asked): ?array
+    private function pickVocabQuestionPayload(User $user, array $asked): ?array
     {
-        $word = \App\Models\VocabularyWord::query()
-            ->whereNotIn('id', collect($asked)
-                ->map(fn ($qid) => preg_match('/^VW-(\d+)$/', (string) $qid, $m) ? (int) $m[1] : null)
-                ->filter()
-                ->all())
-            ->inRandomOrder()
+        $usedWordIds = collect($asked)
+            ->map(fn ($qid) => preg_match('/^VW-(\d+)$/', (string) $qid, $m) ? (int) $m[1] : null)
+            ->filter()
+            ->all();
+
+        $word = $this->levelService->getVocabWordPool($user)
+            ->when(!empty($usedWordIds), fn ($pool) => $pool->whereNotIn('id', $usedWordIds))
+            ->shuffle()
             ->first();
 
         return $word ? $this->questionResolver->resolve('VW-' . $word->id) : null;

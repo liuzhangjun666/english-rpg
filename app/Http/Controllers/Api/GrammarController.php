@@ -151,8 +151,11 @@ class GrammarController extends Controller
         $allQuestions = $this->demonService->getInjectedQuestions($user->id, 'grammar', $stageNo, $normalCount);
 
         if (empty($allQuestions)) {
-            $stageCode = str_pad((string) $stageNo, 2, '0', STR_PAD_LEFT);
-            $allQuestions = $this->demoQuestionsForStage($layout['realm'], $stageCode, $normalCount);
+            $realmPrefix = strtoupper(substr((string) ($layout['realm'] ?? 'L1'), 0, 1));
+            if ($realmPrefix === 'L') {
+                $stageCode = str_pad((string) $stageNo, 2, '0', STR_PAD_LEFT);
+                $allQuestions = $this->demoQuestionsForStage($layout['realm'], $stageCode, $normalCount);
+            }
         }
         $spiritCost = CurrencyService::SPIRIT_COST_PER_LEVEL;
 

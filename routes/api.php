@@ -139,6 +139,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/pre-exam', [HeartDemonController::class, 'preExam']);
         Route::post('/review-submit', [HeartDemonController::class, 'reviewSubmit']);
         Route::post('/report-wrong', [HeartDemonController::class, 'reportWrong']);
+        Route::post('/report-wrongs', [HeartDemonController::class, 'reportWrongs']);
         Route::post('/clear', [HeartDemonController::class, 'clearMastered']);
         Route::post('/clear-mastered', [HeartDemonController::class, 'clearMastered']);
     });

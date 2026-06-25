@@ -141,7 +141,7 @@ export class WorldSceneManager {
   private birds: THREE.Sprite[] = [];          // 飞鸟群
   private flyers: THREE.Sprite[] = [];         // 御剑仙人
   private petals: THREE.Points | null = null;  // 飘落灵气花瓣
-  private dracoLoader: DRACOLoader | null = null; // Draco 解码器，dispose 时释放 worker
+  private spiritDust: THREE.Points | null = null; // 上浮灵尘
   private perfProfile: ScenePerfProfile;
   private bloomPass: UnrealBloomPass | null = null;
   private delayedEffectsTimer: number | null = null;
@@ -161,6 +161,7 @@ export class WorldSceneManager {
   private raycastDirty = true;                         // 标记 mesh 缓存是否需要刷新
   private buildingCircles: THREE.Mesh[] = [];           // 缓存法阵引用
   private buildingPointsList: { pts: THREE.Points; basePos: Float32Array; speed: number }[] = []; // 缓存粒子引用
+  private buildingFx: Array<(t: number) => void> = [];  // 建筑特效动画回调
   private mouseMoveThrottled = false;                  // mousemove 节流标记
 
   // 配置

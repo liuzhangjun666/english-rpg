@@ -16,7 +16,16 @@
       <div class="stage-chip" v-if="schoolGradeLabel">
         <span class="stage-chip-label">已选学段</span>
         <span class="stage-chip-value">{{ schoolGradeLabel }}</span>
-        <span class="stage-chip-hint">仅用于匹配试炼起点</span>
+        <span class="stage-chip-hint">决定试炼起点 {{ expectedStartLabel }}，不预定最终境界</span>
+      </div>
+
+      <div class="rules-box">
+        <div class="rules-title">试炼规则</div>
+        <ul class="rules-list">
+          <li>词汇、语法<strong>分开自适应</strong>，各自升降难度，互不影响</li>
+          <li><strong>答对升 1 级</strong>，<strong>答错降 1 级</strong>，最多比起点低一级（如高中 L4 最低 L3）</li>
+          <li>约 25 题（词汇 15 + 语法 10），约 10 分钟；最终境界取各维度<strong>末段稳定表现</strong></li>
+        </ul>
       </div>
 
       <div class="flow-steps">
@@ -24,14 +33,14 @@
           <span class="flow-num">壹</span>
           <div>
             <div class="flow-name">天机问心</div>
-            <div class="flow-desc">25 题自适应试炼（词汇 15 + 语法 10）</div>
+            <div class="flow-desc">25 题双轨自适应（词汇 15 + 语法 10）</div>
           </div>
         </div>
         <div class="flow-step">
           <span class="flow-num">贰</span>
           <div>
             <div class="flow-name">测定境界</div>
-            <div class="flow-desc">连对升阶、答错降阶，得出练气至化神真实层级</div>
+            <div class="flow-desc">按末段稳定难度与正确率，得出练气至化神真实层级</div>
           </div>
         </div>
         <div class="flow-step">
@@ -69,6 +78,11 @@ import { ElMessage } from 'element-plus';
 import { useRoute, useRouter } from 'vue-router';
 import { useApiClient } from '../services/api';
 import { useUserStore } from '../stores/user';
+import {
+  formatAssessmentLevel,
+  START_LEVEL_BY_SCHOOL_GRADE,
+  stageLabelForLevel,
+} from '../data/assessmentLevels';
 
 const SCHOOL_GRADE_LABELS: Record<string, string> = {
   primary: '小学',
@@ -90,6 +104,12 @@ const schoolGradeLabel = computed(() => {
   if (fromProfile) return fromProfile;
   const key = String(user.profile?.school_grade || '').trim();
   return SCHOOL_GRADE_LABELS[key] || '';
+});
+
+const expectedStartLabel = computed(() => {
+  const key = String(user.profile?.school_grade || '').trim();
+  const level = START_LEVEL_BY_SCHOOL_GRADE[key] || 1;
+  return `${formatAssessmentLevel(level)}（${stageLabelForLevel(level)}）`;
 });
 
 async function startAssessment() {
@@ -239,6 +259,35 @@ onMounted(async () => {
 .stage-chip-hint {
   font-size: 12px;
   color: #6b7280;
+}
+
+.rules-box {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(96, 165, 250, 0.25);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.rules-title {
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #93c5fd;
+  letter-spacing: 1px;
+}
+
+.rules-list {
+  margin: 0;
+  padding-left: 18px;
+  color: #c8d6e8;
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.rules-list strong {
+  color: #fde68a;
+  font-weight: 700;
 }
 
 .flow-steps {

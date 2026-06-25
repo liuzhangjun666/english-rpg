@@ -21,7 +21,22 @@
         <div v-if="result.school_stage" class="stage-banner">
           <span class="stage-label">注册学段</span>
           <span class="stage-value">{{ result.school_stage }}</span>
-          <span class="stage-hint">本学段最高试炼等级 L{{ result.max_level_by_school }}（{{ majorRealmLabel }}境）</span>
+          <span class="stage-hint">
+            试炼起点 L{{ result.start_level || '-' }} · 本学段上限 L{{ result.max_level_by_school }}（{{ majorRealmLabel }}境）
+          </span>
+        </div>
+
+        <div class="dual-result-grid">
+          <div class="dual-result-card">
+            <div class="dual-result-label">词汇稳定等级</div>
+            <div class="dual-result-value">L{{ result.vocab_final_level }}</div>
+            <div class="dual-result-hint">{{ formatAssessmentLevel(result.vocab_final_level) }}</div>
+          </div>
+          <div class="dual-result-card">
+            <div class="dual-result-label">语法稳定等级</div>
+            <div class="dual-result-value">L{{ result.grammar_final_level }}</div>
+            <div class="dual-result-hint">{{ formatAssessmentLevel(result.grammar_final_level) }}</div>
+          </div>
         </div>
 
         <div class="stat-grid">
@@ -38,7 +53,7 @@
           <div class="stat-card">
             <div class="stat-label">综合等级</div>
             <div class="stat-value">L{{ result.final_level }}</div>
-            <div class="stat-hint">词汇 L{{ result.vocab_final_level }} · 语法 L{{ result.grammar_final_level }}</div>
+            <div class="stat-hint">词汇 55% + 语法 45% 加权</div>
           </div>
         </div>
 
@@ -78,6 +93,7 @@ import { ElMessage } from 'element-plus';
 import { useRoute, useRouter } from 'vue-router';
 import { useApiClient } from '../services/api';
 import { useUserStore } from '../stores/user';
+import { formatAssessmentLevel } from '../data/assessmentLevels';
 
 const route = useRoute();
 const router = useRouter();
@@ -278,6 +294,39 @@ onMounted(async () => {
   color: var(--cult-parchment-dim, #c8b685);
 }
 
+.dual-result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.dual-result-card {
+  border: 1px solid rgba(212, 168, 67, 0.28);
+  border-radius: var(--cult-radius-sm, 10px);
+  padding: 12px 14px;
+  background: rgba(212, 168, 67, 0.06);
+  text-align: center;
+}
+
+.dual-result-label {
+  font-size: 12px;
+  color: var(--cult-parchment-muted, #9a8f6e);
+  margin-bottom: 4px;
+}
+
+.dual-result-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--cult-gold, #f4d98a);
+}
+
+.dual-result-hint {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--cult-parchment-dim, #c8b685);
+}
+
 .challenge-tip {
   margin-top: 10px;
   color: var(--cult-gold-dim, #d4a843);
@@ -308,6 +357,7 @@ onMounted(async () => {
     font-size: 26px;
   }
 
+  .dual-result-grid,
   .stat-grid {
     grid-template-columns: 1fr;
   }
