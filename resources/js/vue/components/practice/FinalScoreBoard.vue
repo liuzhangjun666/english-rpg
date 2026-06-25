@@ -92,11 +92,14 @@ const scoreLabel = computed(() => (isWriting.value ? '平均符品分' : '准确
   top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0,0,0,0.8);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 200;
+  overflow-y: auto;
+  padding: 40px 0;
 }
 .reward-popup {
+  margin: auto;
   background: var(--panel-bg, #1a1a2e);
   padding: 30px;
   border-radius: 16px;

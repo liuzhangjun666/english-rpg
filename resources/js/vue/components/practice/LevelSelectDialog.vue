@@ -70,11 +70,14 @@ const handleCancel = () => {
   top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0,0,0,0.7);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 100;
+  overflow-y: auto;
+  padding: 40px 0;
 }
 .dialog-panel {
+  margin: auto;
   max-width: 380px;
   background: var(--panel-bg, #1a1a2e);
   padding: 20px;
