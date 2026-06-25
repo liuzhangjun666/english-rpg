@@ -14,6 +14,7 @@ import hallReading from '../../../assets/images/ui/hall_reading.png';
 import hallWriting from '../../../assets/images/ui/hall_writing.png';
 import hallMijing from '../../../assets/images/ui/hall_mijing.png';
 import hallDemons from '../../../assets/images/ui/hall_demons.png';
+import hallWanyao from '../../../assets/images/ui/hall_wanyao.png';
 import hallProfile from '../../../assets/images/ui/hall_profile.png';
 
 const ABILITY_ICONS = {
@@ -33,7 +34,7 @@ const SCENE_BUILDING_IMAGES: Record<SceneBuildingId, string> = {
   innerDemonHall: hallDemons,
   beastGarden: hallProfile,
   farm: hallMijing,
-  wanyaoTower: hallDemons,
+  wanyaoTower: hallWanyao,
 };
 
 export interface MapBuildingHandlers {

@@ -64,9 +64,10 @@ const dockItems = ref([
 <style scoped>
 .global-hud {
   position: absolute;
-  top: 50%;
+  /* 从顶部导航栏下方开始，避免最上方图标顶进导航栏 */
+  top: calc(var(--top-hud-height, 76px) + 8px);
   right: 0;
-  transform: translateY(-50%);
+  bottom: 8px;
   z-index: 1000;
   pointer-events: none;
   display: flex;
@@ -106,11 +107,15 @@ const dockItems = ref([
 .hud-dock {
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
+  align-self: stretch;
   gap: 8px;
   background: rgba(15, 20, 35, 0.7);
   border: 1px solid rgba(212, 168, 67, 0.3);
   border-right: none;
-  padding: 10px 8px;
+  border-top: none;
+  border-bottom: none;
+  padding: 16px 8px;
   border-radius: 12px 0 0 12px;
   backdrop-filter: blur(8px);
   pointer-events: auto;
