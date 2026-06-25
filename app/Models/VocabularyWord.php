@@ -14,6 +14,8 @@ class VocabularyWord extends Model
         'pos',
         'grade_level',
         'level_tag',
+        'tier',
+        'theme',
         'meanings',
         'examples',
     ];

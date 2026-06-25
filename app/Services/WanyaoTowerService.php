@@ -41,13 +41,32 @@ class WanyaoTowerService
 
     protected function pickVocabWords(string $tier, string $theme, int $count): \Illuminate\Support\Collection
     {
-        // Phase 1: tier 字段假设词库导入时带，theme tag 缺失时 fallback 全 tier 池
-        $q = VocabularyWord::query()->where('tier', $tier);
-        if ($q->where('theme', $theme)->count() >= $count) {
-            return $q->where('theme', $theme)->inRandomOrder()->limit($count)->get();
+        // 三级降级：tier+theme → 仅 tier → 任意随机词。
+        // 词库 tier/theme 尚未标注（或某档词不足 $count）时逐级兜底，
+        // 保证 /start 始终能出题，绝不返回空题或抛错。
+        $tierTheme = VocabularyWord::query()
+            ->where('tier', $tier)
+            ->where('theme', $theme)
+            ->inRandomOrder()
+            ->limit($count)
+            ->get();
+        if ($tierTheme->count() >= $count) {
+            return $tierTheme;
         }
-        return VocabularyWord::query()->where('tier', $tier)
-            ->inRandomOrder()->limit($count)->get();
+
+        $tierOnly = VocabularyWord::query()
+            ->where('tier', $tier)
+            ->inRandomOrder()
+            ->limit($count)
+            ->get();
+        if ($tierOnly->count() >= $count) {
+            return $tierOnly;
+        }
+
+        return VocabularyWord::query()
+            ->inRandomOrder()
+            ->limit($count)
+            ->get();
     }
 
     private function pickBossPrompt(string $theme): array
