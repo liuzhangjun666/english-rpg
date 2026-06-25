@@ -144,7 +144,7 @@ function goHall() {
 onMounted(async () => {
   if (!assessmentId || Number.isNaN(assessmentId)) {
     ElMessage.error('assessment_id 无效');
-    router.replace('/hall');
+    router.replace('/practice');
     return;
   }
 
@@ -155,7 +155,7 @@ onMounted(async () => {
 
     if (!res?.success) {
       ElMessage.error(res?.message || '结算失败');
-      router.replace('/hall');
+      router.replace('/practice');
       return;
     }
 
