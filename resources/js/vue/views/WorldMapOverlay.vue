@@ -63,36 +63,10 @@ const userRealmLevel = ref(0);
 const radialPos = ref({ x: '50%', y: '50%' });
 
 const activeRadialBuilding = ref<any>(null);
-const showReview = ref(false);
-const showDemons = ref(false);
-const showAchievements = ref(false);
-const showProfile = ref(false);
-const showDailyQuest = ref(false);
-const showInnerDemon = ref(false);
-const innerDemonAutoChallenge = ref(false);
 
-function openReviewFromProfile() {
-  showReview.value = true;
-}
-
-const { goPractice, goReading, goExam, goMijing, goMall, goWanyaoTower } = useMapNavigation({ beforeNavigate: close });
-const { mapBuildings } = useMapBuildings({
-  goPractice,
-  goReading,
-  goExam,
-  goMijing,
-  goMall,
-  goWanyaoTower,
-  showDailyQuest: () => { showDailyQuest.value = true; },
-  showAchievements: () => { showAchievements.value = true; },
-  showProfile: () => { showProfile.value = true; },
-  showReview: () => { showReview.value = true; },
-  showDemons: () => { showDemons.value = true; },
-  showInnerDemon: (autoChallenge) => {
-    innerDemonAutoChallenge.value = autoChallenge;
-    showInnerDemon.value = true;
-  },
-});
+// 与 HallView 一致：panels（弹窗状态）/ mapBuildings（建筑+子菜单）/ navigation（秘境/世界boss）
+// 统一由 useHallPanels 提供，避免模板用 panels/navigation 而脚本各自为政导致 ReferenceError。
+const { mapBuildings, panels, navigation } = useHallPanels({ beforeNavigate: close });
 
 // 当 overlay 变为可见时初始化 3D 场景
 watch(() => props.visible, async (val) => {

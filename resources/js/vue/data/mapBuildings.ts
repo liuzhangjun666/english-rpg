@@ -38,7 +38,7 @@ export type MapBuildingAction =
   | { type: 'pets' }
   | { type: 'storage' }
   | { type: 'mail' }
-  | { type: 'settings' };
+  | { type: 'settings' }
   | { type: 'wanyaoTower' }
   | { type: 'message'; text: string };
 

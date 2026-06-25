@@ -66,6 +66,7 @@ import ParentDashboardPanel from './components/features/ParentDashboardPanel.vue
 import DemonEncounter from './components/demons/DemonEncounter.vue';
 import WorldMapOverlay from './views/WorldMapOverlay.vue';
 import LoadingSplash from './components/layout/LoadingSplash.vue';
+import CultLoadingOverlay from './components/layout/CultLoadingOverlay.vue';
 import GlobalHud from './components/map/GlobalHud.vue';
 import AchievementsModal from './views/AchievementsModal.vue';
 import {
@@ -120,6 +121,7 @@ async function logout() {
 }
 
 const showProfile = ref(false);
+const showParentDashboard = ref(false);
 const showGlobalReview = ref(false);
 const showGlobalAchievements = ref(false);
 const showReviewFromProfile = ref(false);
