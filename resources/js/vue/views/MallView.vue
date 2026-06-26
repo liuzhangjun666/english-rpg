@@ -1,46 +1,85 @@
 <template>
   <div class="mall-page cultivation-theme">
-    <div class="profile-container">
-      <div class="profile-header">
-        <div class="card-header" style="font-size: 24px; text-align: center; width: 100%;">
-          🏪 藏经阁 (坊市)
-        </div>
-        <button class="profile-close-btn" @click="goBack">返回宗门</button>
-      </div>
+    <div class="mall-scene">
+      <img class="mall-scene-bg" :src="sceneBg" alt="" />
+      <div class="mall-scene-vignette" />
+      <div class="mall-scene-glow mall-scene-glow--left" />
+      <div class="mall-scene-glow mall-scene-glow--right" />
 
-      <div class="profile-body" style="flex-direction: column; padding: 30px;">
-        <!-- User Stones -->
-        <div class="mall-stones">
-          灵石余额：💎 <span class="text-gold">{{ stones }}</span>
-        </div>
+      <button type="button" class="mall-back-btn" @click="goBack">← 返回宗门</button>
 
-        <!-- List -->
-        <div class="mall-list" v-loading="loading" element-loading-background="rgba(10, 10, 26, 0.8)">
-          <div v-if="!loading && items.length === 0" class="mall-empty">
-            坊市暂无商品
+      <div class="mall-shell">
+        <header class="mall-header">
+          <div class="mall-title-ornament" aria-hidden="true">
+            <span class="mall-title-ornament__line" />
+            <span class="mall-title-ornament__gem">◆</span>
+            <span class="mall-title-ornament__line" />
           </div>
-          <transition-group name="list" tag="div" v-else class="mall-grid">
-            <div v-for="item in items" :key="item.id" class="mall-item">
-              <div class="mall-item-icon">{{ item.icon || '📦' }}</div>
+          <h1 class="mall-title">灵石坊市</h1>
+          <p class="mall-subtitle">以灵石易奇珍 · 助君修行破境</p>
+        </header>
+
+        <div class="mall-wallet">
+          <span class="mall-wallet-label">灵石余额</span>
+          <span class="mall-wallet-value">💎 {{ stones }}</span>
+        </div>
+
+        <div class="mall-filters" role="tablist" aria-label="商品分类">
+          <button
+            v-for="tab in categoryTabs"
+            :key="tab.key"
+            type="button"
+            class="mall-filter-btn"
+            :class="{ 'is-active': activeCategory === tab.key }"
+            role="tab"
+            :aria-selected="activeCategory === tab.key"
+            @click="activeCategory = tab.key"
+          >
+            {{ tab.label }}
+          </button>
+        </div>
+
+        <div class="mall-list" v-loading="loading" element-loading-background="rgba(10, 10, 26, 0.82)">
+          <div v-if="!loading && items.length === 0" class="mall-empty">
+            坊市暂无商品，掌柜正在备货中…
+          </div>
+          <div v-else-if="!loading && filteredItems.length === 0" class="mall-empty">
+            该分类暂无商品
+          </div>
+          <transition-group v-else-if="!loading" name="list" tag="div" class="mall-grid">
+            <article
+              v-for="item in filteredItems"
+              :key="item.id"
+              class="mall-item"
+              :class="`mall-item--${item.category || 'consumable'}`"
+            >
+              <div class="mall-item-badge">{{ categoryLabel(item.category) }}</div>
+              <div class="mall-item-icon-wrap">
+                <span class="mall-item-icon">{{ item.icon || '📦' }}</span>
+              </div>
               <div class="mall-item-info">
                 <div class="mall-item-name">{{ item.name }}</div>
                 <div class="mall-item-desc">{{ item.description || '' }}</div>
               </div>
               <div class="mall-item-action">
                 <div class="mall-price">💎 {{ item.price || 0 }}</div>
-                <button class="mall-buy-btn" :disabled="stones < (item.price || 0) || buyingId === item.id"
-                  @click="buyItem(item)">
-                  {{ buyingId === item.id ? '兑换中...' : '兑换' }}
+                <button
+                  class="mall-buy-btn"
+                  :disabled="stones < (item.price || 0) || buyingId === item.id"
+                  @click="buyItem(item)"
+                >
+                  {{ buyingId === item.id ? '兑换中…' : stones < (item.price || 0) ? '灵石不足' : '兑换' }}
                 </button>
               </div>
-            </div>
+            </article>
           </transition-group>
         </div>
 
-        <!-- Message -->
-        <div class="mall-msg" :class="{ 'is-error': !!errorMsg }">
-          {{ errorMsg || successMsg }}
-        </div>
+        <transition name="fade">
+          <div v-if="errorMsg || successMsg" class="mall-msg" :class="{ 'is-error': !!errorMsg }">
+            {{ errorMsg || successMsg }}
+          </div>
+        </transition>
       </div>
     </div>
   </div>
@@ -53,6 +92,17 @@ import { useApiClient } from '../services/api';
 import { useUserStore } from '../stores/user';
 import { vLoading } from 'element-plus';
 
+const sceneBg = '/images/bg_hall_map.png';
+
+const categoryTabs = [
+  { key: 'all', label: '全部' },
+  { key: 'consumable', label: '灵材' },
+  { key: 'boost', label: '符箓' },
+  { key: 'title', label: '奇物' },
+] as const;
+
+type MallCategory = typeof categoryTabs[number]['key'];
+
 const router = useRouter();
 const api = useApiClient();
 const userStore = useUserStore();
@@ -61,15 +111,27 @@ const goBack = () => {
   router.push('/hall');
 };
 
-
-
 const loading = ref(false);
 const items = ref<any[]>([]);
+const activeCategory = ref<MallCategory>('all');
 const buyingId = ref<string | null>(null);
 const errorMsg = ref('');
 const successMsg = ref('');
 
 const stones = computed(() => Number(userStore.profile?.spirit_stone || 0));
+
+const filteredItems = computed(() => {
+  if (activeCategory.value === 'all') return items.value;
+  return items.value.filter((item) => (item.category || 'consumable') === activeCategory.value);
+});
+
+const categoryLabel = (category?: string) => {
+  switch (category) {
+    case 'boost': return '符箓';
+    case 'title': return '奇物';
+    default: return '灵材';
+  }
+};
 
 onMounted(() => {
   fetchItems();
@@ -121,160 +183,360 @@ const buyItem = async (item: any) => {
     }, 3000);
   }
 };
-
 </script>
 
 <style scoped>
 .mall-page {
   position: relative;
-  width: 100vw;
-  height: 100vh;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(212, 168, 67, 0.12), transparent 42%),
-    radial-gradient(circle at 80% 0%, rgba(86, 127, 197, 0.14), transparent 38%),
-    linear-gradient(180deg, #0f1630 0%, #0a0a1a 100%);
+  width: 100%;
+  min-height: var(--app-dvh, 100vh);
+  height: var(--app-dvh, 100vh);
+  overflow: hidden;
+}
+
+.mall-scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding:
+    calc(12px + env(safe-area-inset-top, 0px))
+    max(12px, env(safe-area-inset-right, 0px))
+    calc(12px + env(safe-area-inset-bottom, 0px))
+    max(12px, env(safe-area-inset-left, 0px));
 }
 
-.profile-container {
-  width: 90%;
-  max-width: 1000px;
-  height: 80vh;
-  background: rgba(26, 26, 46, 0.95);
-  border: 2px solid var(--gold, #d4a843);
-  border-radius: 12px;
+.mall-scene-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 42%;
+  z-index: 0;
+}
+
+.mall-scene-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(8, 12, 28, 0.15) 0%, rgba(8, 12, 28, 0.72) 72%),
+    linear-gradient(180deg, rgba(6, 8, 18, 0.55) 0%, rgba(6, 8, 18, 0.82) 100%);
+  pointer-events: none;
+}
+
+.mall-scene-glow {
+  position: absolute;
+  width: 42vw;
+  height: 42vw;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.mall-scene-glow--left {
+  left: -8vw;
+  top: 18%;
+  background: rgba(212, 168, 67, 0.35);
+}
+
+.mall-scene-glow--right {
+  right: -10vw;
+  bottom: 8%;
+  background: rgba(86, 127, 197, 0.28);
+}
+
+.mall-back-btn {
+  position: absolute;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  left: max(16px, env(safe-area-inset-left, 0px));
+  z-index: 4;
+  padding: 8px 14px;
+  border: 1px solid rgba(244, 217, 138, 0.45);
+  border-radius: 999px;
+  background: rgba(8, 12, 24, 0.62);
+  color: #f4d98a;
+  font-size: 14px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.mall-back-btn:hover {
+  background: rgba(196, 30, 58, 0.28);
+  border-color: rgba(244, 180, 138, 0.65);
+  transform: translateY(-1px);
+}
+
+.mall-shell {
+  position: relative;
+  z-index: 2;
+  width: min(980px, 100%);
+  max-height: calc(100% - 8px);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(10px);
+  padding: 22px 24px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(212, 168, 67, 0.42);
+  background:
+    linear-gradient(165deg, rgba(18, 24, 46, 0.92) 0%, rgba(10, 14, 30, 0.96) 100%);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 236, 184, 0.12);
+  backdrop-filter: blur(14px);
 }
 
-.profile-header {
+.mall-header {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid rgba(212, 168, 67, 0.3);
-}
-
-.profile-close-btn {
-  background: transparent;
-  border: 1px solid var(--gold, #d4a843);
-  color: var(--gold, #d4a843);
-  padding: 4px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.mall-stones {
-  text-align: center;
+  gap: 8px;
   margin-bottom: 14px;
-  font-size: 14px;
-  color: var(--cult-parchment-dim, #c8b685);
 }
 
-.text-gold {
-  color: var(--cult-gold, #f4d98a);
+.mall-title-ornament {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(280px, 70%);
+}
+
+.mall-title-ornament__line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 168, 67, 0.65), transparent);
+}
+
+.mall-title-ornament__gem {
+  color: #f4d98a;
+  font-size: 10px;
+  opacity: 0.85;
+}
+
+.mall-title {
+  margin: 0;
+  font-size: clamp(22px, 3vw, 30px);
   font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #f4d98a;
+  text-shadow: 0 2px 12px rgba(212, 168, 67, 0.35);
+}
+
+.mall-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: #c8b685;
+  letter-spacing: 0.08em;
+}
+
+.mall-wallet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 168, 67, 0.28);
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.mall-wallet-label {
+  font-size: 13px;
+  color: #c8b685;
+}
+
+.mall-wallet-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f4d98a;
+}
+
+.mall-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.mall-filter-btn {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 168, 67, 0.28);
+  background: rgba(0, 0, 0, 0.22);
+  color: #c8b685;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.mall-filter-btn:hover {
+  border-color: rgba(212, 168, 67, 0.45);
+  color: #f4d98a;
+}
+
+.mall-filter-btn.is-active {
+  border-color: rgba(212, 168, 67, 0.65);
+  background: rgba(212, 168, 67, 0.16);
+  color: #f4d98a;
+  font-weight: 600;
 }
 
 .mall-list {
-  max-height: 400px;
+  flex: 1;
+  min-height: 180px;
+  max-height: min(56vh, 520px);
   overflow-y: auto;
-  position: relative;
-  min-height: 150px;
+  padding-right: 4px;
+}
+
+.mall-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.mall-list::-webkit-scrollbar-thumb {
+  background: rgba(212, 168, 67, 0.35);
+  border-radius: 999px;
 }
 
 .mall-empty {
   text-align: center;
   color: #c8b685;
-  padding: 40px 0;
+  padding: 48px 16px;
+  font-size: 14px;
 }
 
 .mall-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-  padding: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
 }
 
 .mall-item {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  transition: all 0.3s;
+  gap: 10px;
+  padding: 18px 16px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .mall-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(212, 168, 67, 0.4);
-  transform: translateY(-4px);
+  transform: translateY(-3px);
+  border-color: rgba(212, 168, 67, 0.45);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+.mall-item--boost {
+  border-color: rgba(120, 170, 255, 0.22);
+}
+
+.mall-item--title {
+  border-color: rgba(255, 196, 120, 0.24);
+}
+
+.mall-item-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  color: #f4d98a;
+  border: 1px solid rgba(212, 168, 67, 0.35);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.mall-item-icon-wrap {
+  display: flex;
+  justify-content: center;
+  padding-top: 4px;
 }
 
 .mall-item-icon {
-  font-size: 40px;
-  text-align: center;
+  font-size: 42px;
+  line-height: 1;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
 }
 
 .mall-item-info {
   flex: 1;
+  text-align: center;
 }
 
 .mall-item-name {
-  font-size: 14px;
-  color: var(--cult-parchment, #f7f3e8);
+  font-size: 15px;
   font-weight: 700;
+  color: #f7f3e8;
 }
 
 .mall-item-desc {
+  margin-top: 6px;
   font-size: 12px;
-  color: var(--cult-parchment-dim, #c8b685);
-  margin-top: 4px;
+  line-height: 1.5;
+  color: #c8b685;
+  min-height: 36px;
 }
 
 .mall-item-action {
-  margin-top: auto;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  justify-content: space-between;
+  gap: 10px;
   padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .mall-price {
-  font-size: 13px;
-  color: var(--cult-gold-dim, #d4a843);
+  font-size: 15px;
   font-weight: 700;
-  margin-bottom: 6px;
+  color: #f4d98a;
+  white-space: nowrap;
 }
 
 .mall-buy-btn {
-  background: rgba(212, 168, 67, 0.1);
-  border: 1px solid rgba(212, 168, 67, 0.45);
-  color: var(--cult-gold, #f4d98a);
-  padding: 5px 12px;
-  border-radius: 8px;
+  min-width: 84px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 168, 67, 0.55);
+  background: linear-gradient(180deg, rgba(212, 168, 67, 0.22) 0%, rgba(212, 168, 67, 0.08) 100%);
+  color: #f4d98a;
   font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s, box-shadow 0.2s, opacity 0.2s;
 }
 
 .mall-buy-btn:hover:not(:disabled) {
-  background: rgba(212, 168, 67, 0.18);
-  box-shadow: 0 0 10px rgba(212, 168, 67, 0.2);
+  background: linear-gradient(180deg, rgba(212, 168, 67, 0.34) 0%, rgba(212, 168, 67, 0.14) 100%);
+  box-shadow: 0 0 14px rgba(212, 168, 67, 0.25);
 }
 
 .mall-buy-btn:disabled {
-  opacity: 0.45;
+  opacity: 0.5;
   cursor: not-allowed;
+}
+
+.mall-msg {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 13px;
+  color: #8fd4a0;
+  min-height: 20px;
+}
+
+.mall-msg.is-error {
+  color: #f0a0a0;
 }
 
 .list-enter-active,
@@ -303,26 +565,33 @@ const buyItem = async (item: any) => {
 }
 
 @media (max-width: 768px) {
-  .mall-page {
-    height: var(--app-dvh, 100vh);
+  .mall-scene {
     align-items: stretch;
-    padding: calc(6px + env(safe-area-inset-top, 0px)) max(6px, env(safe-area-inset-right, 0px))
-      calc(6px + env(safe-area-inset-bottom, 0px)) max(6px, env(safe-area-inset-left, 0px));
+    padding:
+      calc(8px + env(safe-area-inset-top, 0px))
+      max(8px, env(safe-area-inset-right, 0px))
+      calc(8px + env(safe-area-inset-bottom, 0px))
+      max(8px, env(safe-area-inset-left, 0px));
   }
 
-  .profile-container {
+  .mall-shell {
     width: 100%;
+    max-height: none;
     height: 100%;
-    border-radius: 10px;
+    padding: 16px 14px 12px;
+    border-radius: 14px;
   }
 
-  .profile-body {
-    padding: 14px !important;
+  .mall-list {
+    max-height: none;
   }
 
   .mall-grid {
     grid-template-columns: 1fr;
-    gap: 10px;
+  }
+
+  .mall-title {
+    letter-spacing: 0.1em;
   }
 }
 </style>

@@ -16,7 +16,11 @@ class MallController extends Controller
     public function items(Request $request): JsonResponse
     {
         $items = $this->mallService->getAvailableItems();
-        return response()->json(['success'=>true, 'data'=>$items]);
+        if (empty($items)) {
+            MallService::seedItems();
+            $items = $this->mallService->getAvailableItems();
+        }
+        return response()->json(['success' => true, 'data' => ['items' => $items]]);
     }
 
     /** POST /api/mall/purchase */

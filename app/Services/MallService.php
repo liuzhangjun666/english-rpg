@@ -14,7 +14,19 @@ class MallService
     /** 获取商城可购买物品列表 */
     public function getAvailableItems(): array
     {
-        return ShopItem::where('is_active', true)->orderBy('price_stones')->get()->toArray();
+        return ShopItem::where('is_active', true)
+            ->orderBy('price_stones')
+            ->get()
+            ->map(fn (ShopItem $item) => [
+                'id' => $item->item_id,
+                'name' => $item->name,
+                'description' => $item->description,
+                'category' => $item->category,
+                'price' => $item->price_stones,
+                'icon' => $item->icon,
+            ])
+            ->values()
+            ->all();
     }
 
     /** 购买物品 */
@@ -194,15 +206,15 @@ class MallService
     public static function seedItems(): void
     {
         $items = [
-            ['item_id' => 'spirit_potion', 'name' => '灵泉水', 'description' => '恢复30灵力', 'category' => 'consumable', 'price_stones' => 10, 'effect' => ['type' => 'spirit_restore', 'value' => 30]],
-            ['item_id' => 'exp_pill', 'name' => '修为丹', 'description' => '立即获得100修为', 'category' => 'consumable', 'price_stones' => 20, 'effect' => ['type' => 'exp_boost', 'value' => 100]],
-            ['item_id' => 'exp_boost_talisman', 'name' => '聚灵符', 'description' => '下次答题修为×1.5', 'category' => 'boost', 'price_stones' => 50, 'effect' => ['type' => 'exp_multiplier', 'value' => 1.5, 'duration' => 'next_batch']],
-            ['item_id' => 'streak_freeze', 'name' => '时光沙漏', 'description' => '保存一天连续修炼纪录', 'category' => 'consumable', 'price_stones' => 30, 'effect' => ['type' => 'streak_freeze']],
-            ['item_id' => 'herb_bundle', 'name' => '灵草药包', 'description' => '答题额外+5修为，共10次', 'category' => 'consumable', 'price_stones' => 15, 'effect' => ['type' => 'exp_bonus', 'value' => 5, 'count' => 10]],
-            ['item_id' => 'title_scroll', 'name' => '道号卷轴', 'description' => '解锁特殊称号「灵草居士」', 'category' => 'title', 'price_stones' => 100, 'effect' => ['type' => 'title', 'value' => '灵草居士']],
+            ['item_id' => 'spirit_potion', 'name' => '灵泉水', 'description' => '恢复30灵力', 'category' => 'consumable', 'price_stones' => 10, 'icon' => '💧', 'effect' => ['type' => 'spirit_restore', 'value' => 30]],
+            ['item_id' => 'exp_pill', 'name' => '修为丹', 'description' => '立即获得100修为', 'category' => 'consumable', 'price_stones' => 20, 'icon' => '💊', 'effect' => ['type' => 'exp_boost', 'value' => 100]],
+            ['item_id' => 'herb_bundle', 'name' => '灵草药包', 'description' => '答题额外+5修为，共10次', 'category' => 'consumable', 'price_stones' => 15, 'icon' => '🌿', 'effect' => ['type' => 'exp_bonus', 'value' => 5, 'count' => 10]],
+            ['item_id' => 'streak_freeze', 'name' => '时光沙漏', 'description' => '保存一天连续修炼纪录', 'category' => 'consumable', 'price_stones' => 30, 'icon' => '⏳', 'effect' => ['type' => 'streak_freeze']],
+            ['item_id' => 'exp_boost_talisman', 'name' => '聚灵符', 'description' => '下次修炼结算修为×1.5', 'category' => 'boost', 'price_stones' => 50, 'icon' => '📜', 'effect' => ['type' => 'exp_multiplier', 'value' => 1.5, 'duration' => 'next_batch']],
+            ['item_id' => 'title_scroll', 'name' => '道号卷轴', 'description' => '解锁特殊称号「灵草居士」', 'category' => 'title', 'price_stones' => 100, 'icon' => '🏷️', 'effect' => ['type' => 'title', 'value' => '灵草居士']],
         ];
         foreach ($items as $item) {
-            ShopItem::firstOrCreate(['item_id' => $item['item_id']], $item);
+            ShopItem::updateOrCreate(['item_id' => $item['item_id']], $item);
         }
     }
 

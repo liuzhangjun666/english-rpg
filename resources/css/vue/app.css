@@ -232,7 +232,22 @@
   }
 }
 
-#vue-app .mall-page,
+#vue-app .shell-main:has(.mall-page) {
+  padding: 0;
+  overflow: hidden;
+  background: #060812;
+}
+
+#vue-app .mall-page {
+  width: 100vw;
+  max-width: none;
+  margin: 0;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  min-height: var(--app-dvh, 100vh);
+  height: var(--app-dvh, 100vh);
+}
+
 #vue-app .leaderboard-page {
   width: min(720px, 100%);
   margin: 0 auto;

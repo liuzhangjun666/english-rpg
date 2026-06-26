@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call(VocabularyWordsSeeder::class);
         $this->call(ReadingBankSeeder::class);
         $this->call(VocabAssessmentBankSeeder::class);
+        $this->call(MallItemSeeder::class);
     }
 
     private function seedLevelConfig(): void
