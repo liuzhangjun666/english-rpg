@@ -48,7 +48,7 @@ watch(() => props.visible, async (val) => {
     const res = await api.get('/daily/tasks');
     if (res?.success) {
       signedToday.value = !!res.data?.signin_done;
-      streakDays.value = res.data?.streak_days ?? 0;
+      streakDays.value = res.data?.signin_streak ?? 0;
     }
   } catch { /* ignore */ }
 });
@@ -59,7 +59,7 @@ async function doSignIn() {
     const res = await api.post('/daily/signin');
     if (res?.success) {
       signedToday.value = true;
-      streakDays.value = res.data?.streak_days ?? streakDays.value;
+      streakDays.value = res.data?.signin_streak ?? streakDays.value;
       if (res.data?.user) user.updateProfile(res.data.user);
       ElMessage.success(res.message || '签到成功');
     }

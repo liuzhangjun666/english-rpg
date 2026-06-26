@@ -45,6 +45,7 @@ class DailyTaskService
 
         return [
             'streak_days' => $this->reportService->getStreakDays($user),
+            'signin_streak' => $this->displaySigninStreak($currency, $today),
             'claimed' => $claimed,
             'signin_done' => ($currency['daily_signin_date'] ?? '') === $today,
             'tasks' => [
@@ -113,14 +114,23 @@ class DailyTaskService
                 'already_signed' => true,
                 'message' => '今日已签到',
                 'streak_days' => $this->reportService->getStreakDays($user),
+                'signin_streak' => (int) ($currency['signin_streak'] ?? 0),
                 'user' => $user,
             ];
         }
+
+        // 连续签到天数：昨天签过则 +1，否则（断签 / 首次）重置为 1。
+        // 这是签到自身的连续天数，与基于学习记录的 streak_days 互不影响。
+        $yesterday = date('Y-m-d', strtotime($today . ' -1 day'));
+        $prevSigninDate = (string) ($currency['daily_signin_date'] ?? '');
+        $prevSigninStreak = (int) ($currency['signin_streak'] ?? 0);
+        $newSigninStreak = ($prevSigninDate === $yesterday) ? $prevSigninStreak + 1 : 1;
 
         $check = $this->currencyService->dailyCheck($user->fresh());
         $user = $user->fresh();
         $currency = is_array($user->progress_currency) ? $user->progress_currency : [];
         $currency['daily_signin_date'] = $today;
+        $currency['signin_streak'] = $newSigninStreak;
         $user->progress_currency = $currency;
         $user->increment('spirit_stone', 10);
         $user->save();
@@ -130,8 +140,22 @@ class DailyTaskService
             'already_signed' => false,
             'message' => '签到成功，灵石 +10',
             'streak_days' => $check['streak_days'] ?? $this->reportService->getStreakDays($user),
+            'signin_streak' => $newSigninStreak,
             'spirit_recovered' => (bool) ($check['recovered'] ?? false),
             'user' => $user->fresh(),
         ];
+    }
+
+    /**
+     * 用于展示的连续签到天数。
+     * 今天已签或昨天签过 → 沿用存储值；更早（已断签）→ 归零。
+     */
+    private function displaySigninStreak(array $currency, string $today): int
+    {
+        $stored = (int) ($currency['signin_streak'] ?? 0);
+        $last = (string) ($currency['daily_signin_date'] ?? '');
+        $yesterday = date('Y-m-d', strtotime($today . ' -1 day'));
+
+        return ($last === $today || $last === $yesterday) ? $stored : 0;
     }
 }
