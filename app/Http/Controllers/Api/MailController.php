@@ -32,4 +32,20 @@ class MailController extends Controller
             'data' => $this->mailService->markRead($request->user(), $data['message_id']),
         ]);
     }
+
+    /** POST /api/mail/claim — 领取附件奖励 */
+    public function claim(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'message_id' => 'required|string|max:64',
+        ]);
+
+        $result = $this->mailService->claim($request->user(), $data['message_id']);
+
+        return response()->json([
+            'success' => $result['success'] ?? false,
+            'message' => $result['message'] ?? null,
+            'data' => $result,
+        ]);
+    }
 }

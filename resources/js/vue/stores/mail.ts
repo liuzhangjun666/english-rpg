@@ -1,6 +1,19 @@
 import { defineStore } from 'pinia'
 import { useApiClient } from '../services/api'
 
+export interface MailRewardItem {
+  item_id: string
+  quantity: number
+  name?: string
+}
+
+export interface MailRewards {
+  spirit_stone?: number
+  exp?: number
+  spirit_power?: number
+  items?: MailRewardItem[]
+}
+
 export interface MailMessage {
   id: string
   title: string
@@ -8,7 +21,18 @@ export interface MailMessage {
   time?: string
   read: boolean
   type?: string
+  sender?: string
   action?: 'signin' | 'dailyQuest' | 'exam' | string
+  rewards?: MailRewards | null
+  has_rewards?: boolean
+  claimed?: boolean
+  claimable?: boolean
+}
+
+export interface ClaimResult {
+  success: boolean
+  message?: string
+  rewards?: MailRewards
 }
 
 export const useMailStore = defineStore('mail', {
@@ -57,6 +81,26 @@ export const useMailStore = defineStore('mail', {
         }
       } catch {
         // 乐观更新已生效，忽略网络错误
+      }
+    },
+
+    // 领取附件奖励。成功后用后端回传的最新收件箱覆盖本地状态。
+    async claim(messageId: string): Promise<ClaimResult> {
+      try {
+        const api = useApiClient()
+        const res = await api.post('/mail/claim', { message_id: messageId })
+        const data = res?.data ?? {}
+        if (res?.success && data.inbox) {
+          this.messages = data.inbox.messages ?? this.messages
+          this.unread = data.inbox.unread ?? this.unread
+        }
+        return {
+          success: !!res?.success,
+          message: res?.message ?? data.message,
+          rewards: data.rewards,
+        }
+      } catch {
+        return { success: false, message: '领取失败，请稍后再试' }
       }
     },
 

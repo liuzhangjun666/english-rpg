@@ -10,13 +10,45 @@
           </div>
           <div class="cultivation-body" v-loading="loading">
             <div v-if="messages.length === 0 && !loading" class="empty">暂无传音</div>
-            <div v-for="msg in messages" :key="msg.id" class="mail-item" :class="{ unread: !msg.read }" @click="handleMail(msg)">
+            <div
+              v-for="msg in messages"
+              :key="msg.id"
+              class="mail-item"
+              :class="{ unread: !msg.read }"
+              @click="onRead(msg)"
+            >
               <div class="mail-row">
                 <span class="mail-title">{{ msg.title }}</span>
+                <span v-if="msg.sender" class="mail-sender">{{ msg.sender }}</span>
                 <span v-if="!msg.read" class="dot" />
               </div>
               <div class="mail-body">{{ msg.body }}</div>
-              <div v-if="msg.time" class="mail-time">{{ msg.time }}</div>
+
+              <!-- 附件奖励 -->
+              <div v-if="msg.has_rewards && msg.rewards" class="reward-box">
+                <div class="reward-chips">
+                  <span v-for="(chip, i) in rewardChips(msg.rewards)" :key="i" class="reward-chip">
+                    {{ chip }}
+                  </span>
+                </div>
+                <button
+                  v-if="msg.claimed"
+                  class="claim-btn claimed"
+                  disabled
+                  @click.stop
+                >已领取</button>
+                <button
+                  v-else
+                  class="claim-btn"
+                  :disabled="claimingId === msg.id"
+                  @click.stop="onClaim(msg)"
+                >{{ claimingId === msg.id ? '领取中…' : '领取奖励' }}</button>
+              </div>
+
+              <div class="mail-footer">
+                <span v-if="msg.time" class="mail-time">{{ msg.time }}</span>
+                <button v-if="msg.action" class="goto-btn" @click.stop="onGoto(msg)">前往 ›</button>
+              </div>
             </div>
           </div>
         </div>
@@ -26,9 +58,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { useMailStore, type MailMessage } from '../../stores/mail';
+import { ElMessage } from 'element-plus';
+import { useMailStore, type MailMessage, type MailRewards } from '../../stores/mail';
+import { refreshUserProfileFromApi } from '../../services/profile';
 
 const props = defineProps<{
   visible: boolean;
@@ -39,6 +73,7 @@ const emit = defineEmits<{ (e: 'update:visible', value: boolean): void }>();
 
 const router = useRouter();
 const mail = useMailStore();
+const claimingId = ref<string | null>(null);
 
 const loading = computed(() => mail.loading);
 const messages = computed(() => mail.messages);
@@ -49,8 +84,41 @@ watch(() => props.visible, (val) => {
   if (val) mail.fetchInbox();
 });
 
-function handleMail(msg: MailMessage) {
-  mail.markRead(msg.id);
+function rewardChips(rewards: MailRewards): string[] {
+  const chips: string[] = [];
+  if (rewards.spirit_stone) chips.push(`💎 灵石 ×${rewards.spirit_stone}`);
+  if (rewards.exp) chips.push(`🌟 修为 +${rewards.exp}`);
+  if (rewards.spirit_power) chips.push(`⚡ 灵力 +${rewards.spirit_power}`);
+  for (const it of rewards.items ?? []) {
+    chips.push(`🎁 ${it.name || it.item_id} ×${it.quantity}`);
+  }
+  return chips;
+}
+
+// 点击邮件主体：仅标记已读，不关闭面板（让用户能继续领奖/查看）。
+function onRead(msg: MailMessage) {
+  if (!msg.read) mail.markRead(msg.id);
+}
+
+async function onClaim(msg: MailMessage) {
+  if (claimingId.value) return;
+  claimingId.value = msg.id;
+  try {
+    const result = await mail.claim(msg.id);
+    if (result.success) {
+      ElMessage.success(result.message || '奖励已领取');
+      // 灵石/修为/灵力已入账，刷新顶栏资源
+      await refreshUserProfileFromApi().catch(() => {});
+    } else {
+      ElMessage.warning(result.message || '领取失败');
+    }
+  } finally {
+    claimingId.value = null;
+  }
+}
+
+function onGoto(msg: MailMessage) {
+  if (!msg.read) mail.markRead(msg.id);
   close();
   if (msg.action === 'signin') props.onOpenSignIn?.();
   else if (msg.action === 'dailyQuest') props.onOpenDailyQuest?.();
@@ -75,8 +143,19 @@ function close() {
 .mail-item:hover { background: rgba(212,168,67,0.08); }
 .mail-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
 .mail-title { color: #f7f3e8; font-weight: 600; flex: 1; }
+.mail-sender { font-size: 11px; color: #9a8c5a; flex-shrink: 0; }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: #ff8c00; box-shadow: 0 0 6px rgba(255,140,0,0.7); flex-shrink: 0; }
 .mail-body { font-size: 13px; line-height: 1.6; }
-.mail-time { font-size: 11px; color: #6c6c80; margin-top: 6px; }
+.reward-box { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; padding: 8px 10px; border-radius: 8px; background: rgba(212,168,67,0.08); border: 1px solid rgba(212,168,67,0.2); }
+.reward-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.reward-chip { font-size: 12px; color: #ffd27a; background: rgba(0,0,0,0.25); border-radius: 4px; padding: 2px 7px; }
+.claim-btn { flex-shrink: 0; background: linear-gradient(135deg, #d4a843, #b8902f); border: none; color: #1a1a2e; font-weight: 700; font-size: 12px; padding: 6px 14px; border-radius: 5px; cursor: pointer; }
+.claim-btn:hover:not(:disabled) { filter: brightness(1.1); }
+.claim-btn:disabled { cursor: default; }
+.claim-btn.claimed { background: rgba(255,255,255,0.1); color: #8a8a9a; }
+.mail-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.mail-time { font-size: 11px; color: #6c6c80; }
+.goto-btn { background: transparent; border: 1px solid rgba(212,168,67,0.4); color: #d4a843; font-size: 12px; padding: 3px 10px; border-radius: 4px; cursor: pointer; }
+.goto-btn:hover { background: rgba(212,168,67,0.15); }
 .empty { text-align: center; padding: 30px; color: #8a8a9a; }
 </style>

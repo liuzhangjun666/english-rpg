@@ -73,6 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/mail/inbox', [MailController::class, 'inbox']);
     Route::post('/mail/read', [MailController::class, 'markRead']);
+    Route::post('/mail/claim', [MailController::class, 'claim']);
     Route::post('/ai-ask', [AiAskController::class, 'ask']);
 
     Route::prefix('pet')->group(function () {
