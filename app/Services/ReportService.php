@@ -207,7 +207,9 @@ class ReportService
         $freezeUsed = false;
 
         $streak = 0;
-        $check = now()->format('Y-m-d');
+        $today = now()->format('Y-m-d');
+        // 今天尚未学习时从昨天起算：连续天数不应在每天开始就清零，今天仍有补救机会。
+        $check = isset($dateSet[$today]) ? $today : date('Y-m-d', strtotime($today . ' -1 day'));
 
         while (true) {
             if (isset($dateSet[$check])) {
