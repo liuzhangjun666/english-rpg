@@ -22,6 +22,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUserStore } from '../stores/user';
+import { useUiStore } from '../stores/ui';
 import { WorldSceneManager } from '../core/sect/WorldSceneManager';
 import { findMapBuilding, getSceneBuildingImages } from '../composables/useMapBuildings';
 import { useHallPanels } from '../composables/useHallPanels';
@@ -31,6 +32,7 @@ import HallModals from '../components/features/HallModals.vue';
 
 const bridge = useLegacyBridge();
 const userStore = useUserStore();
+const ui = useUiStore();
 
 const hallSceneRef = ref<HTMLElement | null>(null);
 let worldManager: WorldSceneManager | null = null;
@@ -73,6 +75,9 @@ onMounted(async () => {
   } catch (error) {
     console.error('[HallView] 地图初始化失败', error);
     ElMessage.error('地图加载失败，请刷新重试');
+  } finally {
+    // 必须收掉分阶段 init 期间显示的 loading 浮层，否则“云海散开…”会一直盖住地图。
+    ui.hideLoading();
   }
 });
 
