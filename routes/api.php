@@ -12,7 +12,6 @@ use App\Http\Controllers\Api\HeartDemonController;
 use App\Http\Controllers\Api\LeaderboardController;
 use App\Http\Controllers\Api\MallController;
 use App\Http\Controllers\Api\MailController;
-use App\Http\Controllers\Api\ParentController;
 use App\Http\Controllers\Api\PetController;
 use App\Http\Controllers\Api\PracticeLevelController;
 use App\Http\Controllers\Api\MijingChallengeController;
@@ -159,11 +158,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/abandon',  [WanyaoTowerController::class, 'abandon']);
     });
 
-    Route::prefix('parent')->group(function () {
-        Route::post('/bind', [ParentController::class, 'bind']);
-        Route::get('/dashboard', [ParentController::class, 'dashboard']);
-        Route::get('/report', [ParentController::class, 'report']);
-    });
 
     Route::prefix('share')->group(function () {
         Route::get('/info', [ShareController::class, 'info']);

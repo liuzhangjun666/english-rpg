@@ -24,7 +24,6 @@
                   <span class="header-action-btn" @click="openPasswordModal">🔒 {{ hasPassword ? '修改密令' : '设置密令' }}</span>
                   <span class="header-action-btn" @click="shareInvite">📤 邀请道友</span>
                   <span class="header-action-btn" @click="openReview">🔄 温故复盘</span>
-                  <span class="header-action-btn" @click="openParentDashboard">📋 护道人</span>
                   <span class="header-action-btn text-danger" @click="logout">退出登出</span>
                 </div>
               </div>
@@ -158,7 +157,6 @@ const props = defineProps<{ visible: boolean }>();
 const emit = defineEmits<{
   (e: 'update:visible', value: boolean): void;
   (e: 'open-review'): void;
-  (e: 'open-parent'): void;
 }>();
 
 const api = useApiClient();
@@ -387,11 +385,6 @@ async function shareInvite() {
 function openReview() {
   closePanel();
   emit('open-review');
-}
-
-function openParentDashboard() {
-  closePanel();
-  emit('open-parent');
 }
 
 function resetPasswordForm() {

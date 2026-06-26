@@ -112,10 +112,6 @@
 
             <!-- Actions -->
             <div class="actions">
-              <button class="action-btn secondary" @click="openParent">
-                <span>📜</span>
-                <span>护道人札记</span>
-              </button>
               <button class="action-btn danger" @click="logout">
                 <span>🚪</span>
                 <span>退出宗门</span>
@@ -138,7 +134,6 @@ import { useGameSound } from '../../composables/useGameSound'
 const props = defineProps<{ visible: boolean }>()
 const emit = defineEmits<{
   (e: 'update:visible', v: boolean): void
-  (e: 'open-parent'): void
 }>()
 
 const user = useUserStore()
@@ -187,10 +182,6 @@ function onParticlesToggle(v: boolean) {
   settings.setParticlesEnabled(v)
 }
 
-function openParent() {
-  close()
-  emit('open-parent')
-}
 function logout() {
   close()
   window.dispatchEvent(new CustomEvent('auth:logout'))

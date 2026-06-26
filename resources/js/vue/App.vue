@@ -38,9 +38,8 @@
 
     <CultLoadingOverlay :visible="ui.loading" :text="ui.loadingText" />
 
-    <ProfilePanel v-model:visible="showProfile" @open-review="openReviewFromProfile"
-      @open-parent="showParentDashboard = true" />
-    <SettingsPanel v-model:visible="showSettings" @open-parent="showParentDashboard = true" />
+    <ProfilePanel v-model:visible="showProfile" @open-review="openReviewFromProfile" />
+    <SettingsPanel v-model:visible="showSettings" />
     <MailPanel
       v-model:visible="showMail"
       :on-open-sign-in="() => { showMail = false; showSignIn = true; }"
@@ -49,7 +48,6 @@
     <SignInPanel v-model:visible="showSignIn" />
     <DailyQuestPanel v-model:visible="showDailyQuest" />
     <ReviewModal v-model:visible="showReviewFromProfile" />
-    <ParentDashboardPanel v-model:visible="showParentDashboard" />
     <DemonEncounter />
 
     <WorldMapOverlay :visible="ui.mapOverlayVisible" @close="ui.hideMapOverlay()" />
@@ -71,7 +69,6 @@ import { initGameSoundSettings } from './composables/useGameSound';
 import TopHud from './components/layout/TopHud.vue';
 import ProfilePanel from './components/profile/ProfilePanel.vue';
 import ReviewModal from './views/ReviewModal.vue';
-import ParentDashboardPanel from './components/features/ParentDashboardPanel.vue';
 import SettingsPanel from './components/features/SettingsPanel.vue';
 import MailPanel from './components/features/MailPanel.vue';
 import SignInPanel from './components/features/SignInPanel.vue';
@@ -135,7 +132,6 @@ async function logout() {
 }
 
 const showProfile = ref(false);
-const showParentDashboard = ref(false);
 const showSettings = ref(false);
 const showMail = ref(false);
 const showSignIn = ref(false);

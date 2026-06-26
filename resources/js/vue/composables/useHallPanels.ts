@@ -15,7 +15,6 @@ export function useHallPanels(options: { beforeNavigate?: () => void } = {}) {
     showEvents: false,
     showInnerDemon: false,
     innerDemonAutoChallenge: false,
-    showParentDashboard: false,
     showAiAsk: false,
     showPets: false,
     showStorage: false,
