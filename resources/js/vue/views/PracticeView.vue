@@ -588,7 +588,10 @@ const arcadeAbility = computed<ArcadeAbility>(() => {
   if (t === 'reading') return 'reading';
   return t as ArcadeAbility;
 });
-const supportsArcadeMode = computed(() => !!getArcadeModeByAbility(arcadeAbility.value));
+const supportsArcadeMode = computed(() => {
+  if (currentType.value === 'speaking') return false;
+  return !!getArcadeModeByAbility(arcadeAbility.value);
+});
 const arcadePlayable = computed(() => isArcadePlayable(arcadeAbility.value));
 const isArcadeVariant = computed(() => practiceVariant.value === 'arcade' && supportsArcadeMode.value);
 const isArenaMode = computed(
@@ -1077,6 +1080,11 @@ function parseMode(raw: unknown): PracticeType {
   return supported.includes(str as PracticeType) ? (str as PracticeType) : 'vocab';
 }
 
+function normalizePracticeVariant(type: PracticeType, variant: PracticeVariant): PracticeVariant {
+  if (type === 'speaking' && variant === 'arcade') return 'classic';
+  return variant;
+}
+
 function sceneLoadingText(type: PracticeType): string {
   return `切换${VENUE_TITLES[type] || '练功房'}场景...`;
 }
@@ -1092,7 +1100,7 @@ async function bootstrapModuleFromRoute() {
 
   currentType.value = type;
   const fromQuery = route.query.variant != null ? parsePracticeVariant(route.query.variant) : null;
-  practiceVariant.value = fromQuery ?? loadVariantPreference(type);
+  practiceVariant.value = normalizePracticeVariant(type, fromQuery ?? loadVariantPreference(type));
   resetQuestionState();
   resumeSession.value = null;
 
@@ -1138,7 +1146,8 @@ async function switchModule(type: PracticeType) {
 
 function buildPracticeQuery(type: PracticeType, variant: PracticeVariant) {
   const query: Record<string, string> = { mode: type };
-  if (variant === 'arcade' && getArcadeModeByAbility(type as ArcadeAbility)) {
+  const normalized = normalizePracticeVariant(type, variant);
+  if (normalized === 'arcade' && getArcadeModeByAbility(type as ArcadeAbility)) {
     query.variant = 'arcade';
   }
   return query;
@@ -1146,7 +1155,8 @@ function buildPracticeQuery(type: PracticeType, variant: PracticeVariant) {
 
 function resolveEntrySessionState(type: PracticeType, variant: PracticeVariant) {
   const ability = (type === 'grammar' ? 'grammar' : type) as ArcadeAbility;
-  if (variant === 'arcade' && getArcadeModeByAbility(ability)) {
+  const normalized = normalizePracticeVariant(type, variant);
+  if (normalized === 'arcade' && getArcadeModeByAbility(ability)) {
     return 'idle';
   }
   return 'rules';
@@ -3167,5 +3177,45 @@ function backHall() {
 
 
 
+}
+
+@media (max-width: 768px) {
+  .writing-arena,
+  .speaking-arena {
+    top: var(--hud-offset-top, var(--arena-below-hud, calc(var(--top-hud-height, 76px) + 10px)));
+    width: 100%;
+    min-height: calc(var(--app-dvh, 100vh) - var(--hud-offset-top, var(--top-hud-height, 76px)));
+    padding-bottom: calc(26px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .fz-bg,
+  .fz-mask,
+  .sz-bg,
+  .sz-mask {
+    top: var(--hud-offset-top, var(--arena-below-hud, calc(var(--top-hud-height, 76px) + 10px)));
+  }
+
+  .fz-bg,
+  .sz-bg {
+    height: calc(var(--app-dvh, 100vh) - var(--hud-offset-top, var(--top-hud-height, 76px)));
+  }
+
+  .grammar-arena {
+    top: var(--hud-offset-top, var(--top-hud-height, 80px));
+    height: calc(var(--app-dvh, 100vh) - var(--hud-offset-top, var(--top-hud-height, 80px)));
+  }
+
+  .zf-scene-stage,
+  .zf-bridge-frame {
+    width: max(100vw, calc(var(--app-dvh, 100vh) * var(--zf-bg-w) / var(--zf-bg-h)));
+    height: max(var(--app-dvh, 100vh), calc(100vw * var(--zf-bg-h) / var(--zf-bg-w)));
+  }
+
+  .zf-back-btn {
+    left: max(8px, env(safe-area-inset-left, 0px));
+    top: calc(var(--hud-offset-top, var(--top-hud-height, 80px)) + 4px);
+    width: 72px;
+    height: 72px;
+  }
 }
 </style>

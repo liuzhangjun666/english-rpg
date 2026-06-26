@@ -31,9 +31,9 @@ export const SECT_NODES: SectNodeDef[] = [
   { id: 'swordHall',     name: '剑阁',     pos: [-430,  0, -300],  color: 0x66ccff, unlockRealm: 0, glbPath: '/models/swordHall.glb',     glbTargetSize: 270 },
   { id: 'scriptureHall', name: '藏经阁',   pos: [430,   0, -300],  color: 0x00ddff, unlockRealm: 0, glbPath: '/models/scriptureHall.glb', glbTargetSize: 255 },
   { id: 'alchemyHall',   name: '炼丹殿',   pos: [-370,  0, 390],   color: 0xff8833, unlockRealm: 1, glbPath: '/models/alchemyHall.glb',   glbTargetSize: 240, glbRotationY: 0 },
-  { id: 'innerDemonHall', name: '心魔殿',  pos: [620,   0, 820],   color: 0x33d6ff, unlockRealm: 2, glbPath: '/models/innerDemonHall.glb', glbTargetSize: 260, glbRotationY: 0 },
+  { id: 'innerDemonHall', name: '心魔殿',  pos: [620,   0, 820],   color: 0x33d6ff, unlockRealm: 0, glbPath: '/models/innerDemonHall.glb', glbTargetSize: 260, glbRotationY: 0 },
   { id: 'beastGarden',   name: '灵兽园',   pos: [-740,  0, 50],    color: 0x44ee88, unlockRealm: 0, glbPath: '/models/beastGarden.glb',   glbTargetSize: 300 },
-  { id: 'farm',          name: '灵田',     pos: [730,   0, 60],    color: 0x99ee44, unlockRealm: 3, glbPath: '/models/farm.glb',          glbTargetSize: 310 },
+  { id: 'farm',          name: '灵田',     pos: [730,   0, 60],    color: 0x99ee44, unlockRealm: 0, glbPath: '/models/farm.glb',          glbTargetSize: 310 },
   { id: 'wanyaoTower',   name: '万妖塔',   pos: [-620,  0, 820],   color: 0xcc3366, unlockRealm: 0, glbPath: '/models/wanyaoTower.glb',   glbTargetSize: 320, glbRotationY: 0 },
 ];
 
@@ -184,6 +184,7 @@ export class WorldSceneManager {
   public onBuildingClick?: (node: SectNodeDef, screenX: number, screenY: number) => void;
   public onBuildingHover?: (node: SectNodeDef | null) => void;
   public onFocusedMove?: (screenX: number, screenY: number) => void; // 特写时每帧更新菜单坐标
+  public onFocusDismiss?: () => void; // 特写时点击空白区域
 
   /** 预加载地图模型到缓存。critical 只加载首屏关键建筑，all 加载全部。 */
   public static preload(mode: PreloadMode = 'all') {
@@ -1605,26 +1606,37 @@ export class WorldSceneManager {
   };
 
   private onClick = (e: MouseEvent) => {
-    if (this.cameraController.flying || this.isFocused) return;
+    if (this.cameraController.flying) return;
     const dx = e.clientX - this.mouseDownPos.x;
     const dy = e.clientY - this.mouseDownPos.y;
     if (Math.sqrt(dx * dx + dy * dy) > 5) return;
     if (!this.onBuildingClick) return;
 
-    // 点击时再做一次命中测试，避免“没有先触发 hover 就点中无效”的情况
     const bldGp = this.pickBuildingAt(e.clientX, e.clientY) || this.hoveredBuilding;
-    if (!bldGp) return;
-    const def = bldGp.userData.def as SectNodeDef;
 
-    // ─ 第四层：镜头飞行 ─
+    if (this.isFocused) {
+      if (!bldGp) {
+        this.onFocusDismiss?.();
+        return;
+      }
+      if (bldGp === this.focusedBuilding) return;
+      this.focusOnBuilding(bldGp);
+      return;
+    }
+
+    if (!bldGp) return;
+    this.focusOnBuilding(bldGp);
+  };
+
+  private focusOnBuilding(bldGp: THREE.Group) {
+    const def = bldGp.userData.def as SectNodeDef;
     this.cameraController.flyToBuilding(bldGp.position, () => {
-      // 飞行结束后重新投影屏幕坐标
       const { sx, sy } = this.projectToScreen(bldGp.position);
       this.isFocused = true;
-      this.focusedBuilding = bldGp; // 标记特写建筑，animate 每帧更新菜单
+      this.focusedBuilding = bldGp;
       this.onBuildingClick!(def, sx, sy);
     });
-  };
+  }
 
   private pickBuildingAt(clientX: number, clientY: number): THREE.Group | null {
     const rect = this.container.getBoundingClientRect();

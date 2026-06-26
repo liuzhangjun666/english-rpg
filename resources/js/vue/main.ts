@@ -64,16 +64,29 @@ function resolveSkinAsset(skinKey: string) {
   return map[String(skinKey || '').trim()] || '';
 }
 
+function stripButtonSkin(btn: Element) {
+  const el = btn as HTMLElement;
+  BUTTON_SKIN_CLASSES.forEach((cls) => el.classList.remove(cls));
+  el.classList.remove('btn-art');
+  el.style.removeProperty('--btn-art-bg');
+}
+
 function applyVueButtonSkins(root?: ParentNode) {
   const scope = root && 'querySelectorAll' in root ? root : document;
   const buttons = Array.from(scope.querySelectorAll('button.el-button'));
   buttons.forEach((btn) => {
-    if (btn.classList.contains('nav-portal-btn') || btn.closest('.review-modal-overlay')) return;
+    if (
+      btn.classList.contains('nav-portal-btn')
+      || btn.closest('.review-modal-overlay')
+      || btn.closest('.el-message-box')
+      || btn.closest('.el-dialog')
+    ) {
+      stripButtonSkin(btn);
+      return;
+    }
     const forcedSkin = String(btn.getAttribute('data-btn-skin') || '').trim();
     const skinKey = forcedSkin || resolveSkinKey(btn.textContent || '');
-    BUTTON_SKIN_CLASSES.forEach((cls) => btn.classList.remove(cls));
-    btn.classList.remove('btn-art');
-    btn.style.removeProperty('--btn-art-bg');
+    stripButtonSkin(btn);
     if (!skinKey) return;
     const asset = resolveSkinAsset(skinKey);
     if (!asset) return;
@@ -100,6 +113,7 @@ const bridge = useLegacyBridge();
 const auth = useAuthStore();
 const user = useUserStore();
 const story = useStoryStore();
+const LAST_ROUTE_KEY = 'levelup_last_route';
 
 (window as any).__VUE_API_CLIENT__ = api;
 
@@ -148,6 +162,22 @@ app.use(router);
 bootstrapDone.finally(async () => {
   await router.isReady();
   const current = router.currentRoute.value;
+  const lastRoute = (() => {
+    try { return String(sessionStorage.getItem(LAST_ROUTE_KEY) || '').trim(); } catch { return ''; }
+  })();
+
+  // 某些初始化链路会把刷新后的页面拉回 /hall；这里优先恢复刷新前所在页面。
+  if (
+    auth.isAuthenticated
+    && current.path === '/hall'
+    && lastRoute
+    && lastRoute !== '/hall'
+    && lastRoute.startsWith('/')
+  ) {
+    router.replace(lastRoute).catch(() => {});
+    return;
+  }
+
   if (auth.isAuthenticated && current.path === '/login') {
     const done = await resolveAssessmentDone();
     const redirect = String(current.query.redirect || '/practice');
@@ -177,6 +207,11 @@ const skinObserver = new MutationObserver(() => {
 skinObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
 globalWindow.__levelupSkinObserver__ = skinObserver;
 router.afterEach(() => {
+  // 记录最近访问路由：用于刷新后恢复到原页面，而不是回到 /hall。
+  const fullPath = router.currentRoute.value.fullPath;
+  if (fullPath && fullPath !== '/login') {
+    try { sessionStorage.setItem(LAST_ROUTE_KEY, fullPath); } catch { /* ignore */ }
+  }
   requestAnimationFrame(() => applyVueButtonSkins(document.body));
 });
 

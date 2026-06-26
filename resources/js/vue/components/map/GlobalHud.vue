@@ -63,9 +63,9 @@ const dockItems = ref([
 .global-hud {
   position: absolute;
   /* 从顶部导航栏下方开始，避免最上方图标顶进导航栏 */
-  top: calc(var(--top-hud-height, 76px) + 8px);
-  right: 0;
-  bottom: 8px;
+  top: calc(var(--hud-offset-top, var(--top-hud-height, 76px)) + 8px);
+  right: max(0px, env(safe-area-inset-right, 0px));
+  bottom: calc(8px + env(safe-area-inset-bottom, 0px));
   z-index: 1000;
   pointer-events: none;
   display: flex;
@@ -170,5 +170,33 @@ const dockItems = ref([
 .slide-leave-to {
   opacity: 0;
   transform: translateX(60px);
+}
+
+@media (max-width: 768px) {
+  .global-hud {
+    top: calc(var(--hud-offset-top, var(--top-hud-height, 76px)) + 6px);
+    bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .toggle-btn {
+    width: 24px;
+    height: 48px;
+    font-size: 15px;
+  }
+
+  .hud-dock {
+    gap: 6px;
+    padding: 10px 6px;
+  }
+
+  .hud-icon-wrapper {
+    width: 34px;
+    height: 34px;
+  }
+
+  .hud-icon-img {
+    width: 22px;
+    height: 22px;
+  }
 }
 </style>

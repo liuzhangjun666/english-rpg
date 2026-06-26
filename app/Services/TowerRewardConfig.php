@@ -44,4 +44,29 @@ class TowerRewardConfig
         }
         return 'ielts';
     }
+
+    /** 万妖塔层数 → 题库 assessment_level（L4 高中 … L7 研究生） */
+    public static function assessmentLevelForFloor(int $floor): int
+    {
+        return match (true) {
+            $floor <= 20 => 4,
+            $floor <= 40 => 5,
+            $floor <= 60 => 6,
+            $floor <= 80 => 6,
+            default => 7,
+        };
+    }
+
+    /** assessment_level → 写作 prompt 境界 */
+    public static function realmForAssessmentLevel(int $level): ?string
+    {
+        return match ($level) {
+            1, 2 => 'L1',
+            3 => 'Z1',
+            4 => 'J1',
+            5 => 'Y1',
+            6, 7 => 'H1',
+            default => null,
+        };
+    }
 }

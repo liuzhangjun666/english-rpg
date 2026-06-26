@@ -16,7 +16,7 @@ class CurrencyServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = app(CurrencyService::class);
+        $this->service = $this->app->make(CurrencyService::class);
     }
 
     public function test_daily_check_recovers_spirit_power()
@@ -125,5 +125,35 @@ class CurrencyServiceTest extends TestCase
         $this->assertEquals(100, $settlement['accuracy']);
         $this->assertEquals(20 + CurrencyService::EXP_BONUS_PERFECT, $settlement['exp_gained']);
         $this->assertEquals(2 + CurrencyService::STONE_PERFECT_BONUS, $settlement['stones_gained']);
+    }
+
+    public function test_recover_spirit_power_caps_at_max_and_pauses()
+    {
+        $user = User::factory()->create([
+            'spirit_power' => 80,
+            'spirit_power_max' => 100,
+            'spirit_power_last_recover_at' => now()->subSeconds(900),
+        ]);
+
+        $result = $this->service->recoverSpiritPower($user);
+
+        $this->assertEquals(3, $result['recovered']);
+        $this->assertEquals(83, $result['spirit_power']);
+        $this->assertEquals(83, $user->fresh()->spirit_power);
+    }
+
+    public function test_recover_spirit_power_pauses_when_at_or_above_max()
+    {
+        $user = User::factory()->create([
+            'spirit_power' => 130,
+            'spirit_power_max' => 100,
+            'spirit_power_last_recover_at' => now()->subSeconds(900),
+        ]);
+
+        $result = $this->service->recoverSpiritPower($user);
+
+        $this->assertEquals(0, $result['recovered']);
+        $this->assertEquals(130, $result['spirit_power']);
+        $this->assertEquals(130, $user->fresh()->spirit_power);
     }
 }

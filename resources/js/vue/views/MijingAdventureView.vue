@@ -18,8 +18,22 @@
           <div v-if="resumeCandidate" class="cult-notice warning">
             <span class="cult-notice-icon">⟳</span>
             <div class="cult-notice-body">
-              <div class="cult-notice-title">检测到上次秘境进度</div>
-              <div class="cult-notice-desc">请选择继续上次挑战，或重新开始新的限时挑战。</div>
+              <div class="cult-notice-title">检测到{{ isBossMode ? '本周' : '上次' }}秘境进度</div>
+              <div class="cult-notice-desc">
+                {{ isBossMode
+                  ? '可继续本周未完成的挑战，不额外消耗次数；下周进度将清零。'
+                  : '请选择继续上次挑战，或重新开始新的限时挑战。' }}
+              </div>
+            </div>
+          </div>
+
+          <div v-if="isBossMode" class="cult-notice info">
+            <span class="cult-notice-icon">📅</span>
+            <div class="cult-notice-body">
+              <div class="cult-notice-title">每周重置</div>
+              <div class="cult-notice-desc">
+                本周内可继续未完成挑战；下周一次数与进度一并重置，需重新开始。
+              </div>
             </div>
           </div>
 
@@ -32,6 +46,31 @@
                   ? '上古蜃龙降临！综合六维随机出题，连击越高伤害越大。消耗灵力 8 点。'
                   : '答题越快、连对越高，得分越高。每次挑战消耗灵力 5 点。' }}
               </div>
+            </div>
+          </div>
+
+          <div v-if="entryStatus?.reward_tiers?.length" class="cult-notice reward-preview">
+            <span class="cult-notice-icon">🎁</span>
+            <div class="cult-notice-body">
+              <div class="cult-notice-title">得分奖励</div>
+              <div class="cult-notice-desc">{{ entryStatus.reward_hint || '按最终得分发放修为与灵石' }}</div>
+              <ul class="reward-tier-list">
+                <li v-for="tier in entryStatus.reward_tiers" :key="tier.min_score">
+                  得分 ≥ {{ tier.min_score }}：修为 +{{ tier.exp }} ｜ 灵石 +{{ tier.spirit_stone }}
+                </li>
+              </ul>
+              <div class="cult-notice-desc daily-limit-text">
+                {{ limitCountLabel }}：{{ entryStatus.plays_count ?? 0 }} / {{ entryStatus.play_limit ?? 1 }}
+                <span v-if="!entryStatus.can_start">（已用完，{{ entryStatus.limit_reset_hint || '明日再来' }}）</span>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="entryStatus && !entryStatus.can_start && !resumeCandidate" class="cult-notice warning">
+            <span class="cult-notice-icon">⛔</span>
+            <div class="cult-notice-body">
+              <div class="cult-notice-title">{{ limitExceededTitle }}</div>
+              <div class="cult-notice-desc">{{ limitExceededDesc }}</div>
             </div>
           </div>
 
@@ -60,10 +99,12 @@
 
           <div v-if="resumeCandidate" class="cult-actions">
             <el-button type="primary" @click="continueChallenge">继续上次进度</el-button>
-            <el-button type="danger" @click="restartChallenge">重新开始挑战</el-button>
+            <el-button v-if="!isBossMode" type="danger" @click="restartChallenge">重新开始挑战</el-button>
           </div>
           <div v-else class="cult-actions center">
-            <el-button type="primary" @click="startChallenge">开始限时挑战</el-button>
+            <el-button type="primary" :disabled="!canStartChallenge" @click="startChallenge">
+              {{ canStartChallenge ? startButtonLabel : limitBlockedButtonLabel }}
+            </el-button>
           </div>
         </template>
 
@@ -116,6 +157,9 @@
             <div class="cult-result-sub">
               得分 {{ resultData.final_score || 0 }} ｜ 正确率 {{ resultData.accuracy || 0 }}%
             </div>
+            <div class="cult-result-sub reward-line">
+              获得修为 +{{ resultData.exp_gained || 0 }} ｜ 灵石 +{{ resultData.spirit_stone_gained ?? resultData.points_gained ?? 0 }}
+            </div>
             <div class="cult-actions">
               <el-button type="primary" @click="retry">再闯一局</el-button>
               <el-button @click="backHall">返回大厅</el-button>
@@ -150,6 +194,7 @@ type MijingSession = {
   score: number;
   combo: number;
   currentQuestion: Record<string, any> | null;
+  weekPeriodStart?: string;
 };
 
 const router = useRouter();
@@ -172,9 +217,24 @@ const answerSubmitting = ref(false);
 const finishing = ref(false);
 const resultData = ref<Record<string, any> | null>(null);
 const ticker = ref<number | null>(null);
+const nowTick = ref(Date.now());
 const resumeCandidate = ref<MijingSession | null>(null);
+const entryStatus = ref<Record<string, any> | null>(null);
 const isBossMode = computed(() => String(route.query.mode || '') === 'boss');
 const challengeTitle = computed(() => (isBossMode.value ? '世界挑战 · 虚空蜃龙' : '秘境试炼 · 限时挑战'));
+const canStartChallenge = computed(() => Boolean(entryStatus.value?.can_start));
+const limitCountLabel = computed(() => (isBossMode.value ? '本周次数' : '今日次数'));
+const limitExceededTitle = computed(() => (isBossMode.value ? '本周世界挑战已用尽' : '今日秘境已挑战'));
+const limitExceededDesc = computed(() => (
+  isBossMode.value
+    ? '每位道友每周仅可开启世界挑战 1 次；本周次数用完后请下周再来。'
+    : '每位道友每日仅可进入秘境 1 次，请明日再来。'
+));
+const startButtonLabel = computed(() => (isBossMode.value ? '开始世界挑战' : '开始限时挑战'));
+const limitBlockedButtonLabel = computed(() => (isBossMode.value ? '本周次数已用完' : '今日次数已用完'));
+const limitBlockedMessage = computed(() => (
+  isBossMode.value ? '本周世界挑战次数已用完，请下周再来' : '今日秘境次数已用完，请明日再来'
+));
 
 const entry = reactive({
   moduleType: 'vocab',
@@ -183,6 +243,7 @@ const entry = reactive({
 });
 
 const remainSec = computed(() => {
+  void nowTick.value;
   if (!startedAtMs.value || stage.value !== 'challenge') return durationSec.value;
   const elapsed = Math.max(0, Math.floor((Date.now() - startedAtMs.value) / 1000));
   return Math.max(0, durationSec.value - elapsed);
@@ -219,6 +280,24 @@ const sync3dOptions = () => {
 };
 
 watch(
+  () => stage.value,
+  (val) => {
+    if (val === 'entry') {
+      void fetchEntryStatus();
+    }
+  },
+);
+
+watch(
+  () => isBossMode.value,
+  () => {
+    if (stage.value === 'entry') {
+      void fetchEntryStatus();
+    }
+  },
+);
+
+watch(
   () => optionEntries.value,
   () => {
     sync3dOptions();
@@ -232,12 +311,37 @@ onMounted(async () => {
   try {
     await bridge.switchToMijingScene();
     await bridge.closeLegacyPanels();
+    await fetchEntryStatus();
+
     const restored = loadSession();
-    if (restored && restored.stage === 'challenge' && Date.now() - restored.startedAtMs < restored.durationSec * 1000) {
+    const canRestore = restored
+      && restored.stage === 'challenge'
+      && Date.now() - restored.startedAtMs < restored.durationSec * 1000
+      && (!isBossMode.value || restored.weekPeriodStart === entryStatus.value?.week_period_start);
+
+    if (canRestore) {
       resumeCandidate.value = restored;
-      ElMessage.info('检测到上次秘境进度，请选择继续或重开');
+      ElMessage.info(isBossMode.value ? '检测到本周未完成挑战，可继续进度' : '检测到上次秘境进度，请选择继续或重开');
     } else {
       clearSession();
+    }
+
+    if (!resumeCandidate.value && entryStatus.value?.running_challenge) {
+      const running = entryStatus.value.running_challenge;
+      resumeCandidate.value = {
+        stage: 'challenge',
+        challengeId: String(running.challenge_id || ''),
+        durationSec: Number(running.duration_sec || 60),
+        startedAtMs: Date.parse(running.start_at || new Date().toISOString()),
+        moduleType: String(running.module_type || 'vocab'),
+        level: String(running.level || 'L1'),
+        stageCode: String(running.stage || '01'),
+        score: 0,
+        combo: 0,
+        currentQuestion: null,
+        weekPeriodStart: entryStatus.value?.week_period_start,
+      };
+      ElMessage.info(isBossMode.value ? '检测到本周未完成挑战，可继续进度' : '检测到进行中的秘境，可继续上次挑战');
     }
     // 场景加载完毕后，手动同步一次 3D 选项
     sync3dOptions();
@@ -257,6 +361,10 @@ onBeforeUnmount(() => {
 
 function getSessionKey() {
   const uid = user.profile?.id || 'guest';
+  if (isBossMode.value) {
+    const week = entryStatus.value?.week_period_start || 'week';
+    return `levelup_vue_mijing_boss_${uid}_${week}`;
+  }
   return `levelup_vue_mijing_session_${uid}`;
 }
 
@@ -276,6 +384,7 @@ function persistSession() {
     score: score.value,
     combo: combo.value,
     currentQuestion: currentQuestion.value ? { ...currentQuestion.value } : null,
+    weekPeriodStart: isBossMode.value ? entryStatus.value?.week_period_start : undefined,
   };
   localStorage.setItem(getSessionKey(), JSON.stringify(payload));
 }
@@ -312,7 +421,23 @@ function restoreSession(session: MijingSession) {
   ElMessage.info('已恢复上次秘境进度');
 }
 
+async function fetchEntryStatus() {
+  try {
+    const mode = isBossMode.value ? 'boss' : 'normal';
+    const res = await api.get(`/mijing/timed-challenge/status?mode=${mode}`);
+    if (res?.success && res.data) {
+      entryStatus.value = res.data;
+    }
+  } catch {
+    entryStatus.value = null;
+  }
+}
+
 async function startChallenge() {
+  if (!canStartChallenge.value) {
+    ElMessage.warning(limitBlockedMessage.value);
+    return;
+  }
   resumeCandidate.value = null;
   clearSession();
   ui.showLoading('正在开启秘境试炼...');
@@ -325,6 +450,7 @@ async function startChallenge() {
     });
     if (!res?.success || !res?.data) {
       ElMessage.error(res?.message || '开启挑战失败');
+      await fetchEntryStatus();
       return;
     }
 
@@ -354,6 +480,10 @@ async function continueChallenge() {
 }
 
 async function restartChallenge() {
+  if (!canStartChallenge.value) {
+    ElMessage.warning(limitBlockedMessage.value);
+    return;
+  }
   clearSession();
   resumeCandidate.value = null;
   await startChallenge();
@@ -430,8 +560,10 @@ async function submitAnswer() {
 
 function startTicker() {
   stopTicker();
+  nowTick.value = Date.now();
   ticker.value = window.setInterval(() => {
     if (stage.value !== 'challenge') return;
+    nowTick.value = Date.now();
     if (remainSec.value <= 0) {
       void finishChallenge();
       return;
@@ -440,7 +572,7 @@ function startTicker() {
     if ((window as any).__legacyGame?.scene?.currentSceneObj?.updateEnvironment) {
       (window as any).__legacyGame.scene.currentSceneObj.updateEnvironment(combo.value, remainSec.value);
     }
-  }, 500);
+  }, 1000);
 }
 
 function stopTicker() {
@@ -507,6 +639,7 @@ function retry() {
   resultData.value = null;
   score.value = 0;
   combo.value = 0;
+  void fetchEntryStatus();
 }
 
 function normalizeOptions(options: unknown) {
@@ -545,6 +678,11 @@ function backHall() {
 </script>
 
 <style scoped>
+.mijing-page {
+  min-height: calc(var(--app-dvh, 100vh) - var(--hud-offset-top, var(--top-hud-height, 76px)));
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+}
+
 /* ===== HUD 状态栏 ===== */
 .mijing-hud {
   display: flex;
@@ -693,5 +831,47 @@ function backHall() {
   background: rgba(255, 255, 255, 0.15);
   color: #fff;
   border-color: rgba(255, 255, 255, 0.4);
+}
+
+.daily-limit-text {
+  margin-top: 6px;
+  color: #c8b685;
+}
+
+.reward-tier-list {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: #e8e4ff;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.reward-line {
+  margin-top: 8px;
+  color: #f4d98a;
+}
+
+@media (max-width: 640px) {
+  .mijing-hud {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .hud-item {
+    padding: 5px 10px;
+  }
+
+  .hud-val {
+    font-size: 16px;
+  }
+
+  .mijing-options {
+    grid-template-columns: 1fr;
+    padding: 0 6px;
+  }
+
+  .mijing-bottom-bar {
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  }
 }
 </style>

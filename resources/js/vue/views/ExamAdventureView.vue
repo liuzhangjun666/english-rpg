@@ -70,13 +70,14 @@
           </div>
 
           <div v-if="resumeCandidate" class="cult-actions">
-            <el-button type="primary" @click="continueExam">继续上次进度</el-button>
-            <el-button type="danger" @click="restartExam">重新开始渡劫</el-button>
+            <el-button type="primary" :disabled="!canStartExam" @click="continueExam">继续上次进度</el-button>
+            <el-button type="danger" :disabled="!canStartExam" @click="restartExam">重新开始渡劫</el-button>
+            <el-button @click="clearPersistedExam">清除上次进度</el-button>
             <el-button @click="loadCurrent">刷新状态</el-button>
           </div>
           <div v-else class="cult-actions">
             <el-button type="primary" :disabled="!canBreakthrough" @click="manualBreakthrough">手动突破</el-button>
-            <el-button type="danger" :disabled="!canTakeExam" @click="startExam">开始渡劫</el-button>
+            <el-button type="danger" :disabled="!canStartExam" @click="startExam">开始渡劫</el-button>
             <el-button @click="loadCurrent">刷新状态</el-button>
           </div>
         </template>
@@ -162,6 +163,7 @@ const resumeCandidate = ref<ExamSession | null>(null);
 
 const canBreakthrough = computed(() => Boolean(examInfo.value?.breakthrough_status?.can_breakthrough));
 const canTakeExam = computed(() => Boolean(examInfo.value?.can_take));
+const canStartExam = computed(() => canTakeExam.value && canBreakthrough.value);
 const currentQuestion = computed(() => questions.value[currentIndex.value] || {});
 const optionEntries = computed(() => {
   const options = currentQuestion.value?.options;
@@ -212,6 +214,12 @@ function getSessionKey() {
 
 function clearSession() {
   localStorage.removeItem(getSessionKey());
+}
+
+function clearPersistedExam() {
+  clearSession();
+  resumeCandidate.value = null;
+  ElMessage.success('已清除上次渡劫进度');
 }
 
 function persistSession() {
@@ -319,6 +327,10 @@ async function manualBreakthrough() {
 
 async function startExam() {
   resumeCandidate.value = null;
+  if (!canStartExam.value) {
+    ElMessage.warning('突破条件未满足，无法开始渡劫');
+    return;
+  }
   ui.showLoading('天道感应中...');
   try {
     const res = await api.post('/exam/start');
@@ -345,6 +357,10 @@ async function startExam() {
 
 function continueExam() {
   if (!resumeCandidate.value) return;
+  if (!canStartExam.value) {
+    ElMessage.warning('突破条件未满足，无法继续渡劫');
+    return;
+  }
   restoreSession(resumeCandidate.value);
   resumeCandidate.value = null;
 }
@@ -457,3 +473,16 @@ function backHall() {
   router.push('/hall');
 }
 </script>
+
+<style scoped>
+.exam-page {
+  min-height: calc(var(--app-dvh, 100vh) - var(--hud-offset-top, var(--top-hud-height, 76px)));
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 640px) {
+  .exam-page {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+}
+</style>

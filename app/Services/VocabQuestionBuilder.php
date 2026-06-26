@@ -45,10 +45,10 @@ class VocabQuestionBuilder
             return false;
         }
 
-        $normalized = mb_strtolower(trim($answerText));
+        $normalized = $this->normalizeMeaningForCompare($answerText);
         $meanings = VocabularyMeaningNormalizer::normalize($word->meanings);
         foreach ($meanings as $meaning) {
-            if (mb_strtolower(trim((string) $meaning)) === $normalized) {
+            if ($this->normalizeMeaningForCompare((string) $meaning) === $normalized) {
                 return true;
             }
         }
@@ -78,22 +78,21 @@ class VocabQuestionBuilder
         }
 
         $correctText = $meanings[0];
-        $opts = [$correctText];
-        shuffle($distractors);
-        foreach ($distractors as $distractor) {
-            if (count($opts) >= 4) {
-                break;
-            }
-            if ($distractor === '' || in_array($distractor, $opts, true)) {
-                continue;
-            }
-            $opts[] = $distractor;
-        }
+        $seed = crc32('vocab-q:' . $word->id);
+
+        $uniqueDistractors = array_values(array_unique(array_filter(
+            $distractors,
+            fn ($distractor) => $distractor !== '' && $distractor !== $correctText
+        )));
+        sort($uniqueDistractors, SORT_STRING);
+        $picked = $this->deterministicPick($uniqueDistractors, $seed, 3);
+
+        $opts = array_merge([$correctText], $picked);
         while (count($opts) < 4) {
             $opts[] = $correctText;
         }
-
-        shuffle($opts);
+        $opts = array_slice($opts, 0, 4);
+        $this->deterministicShuffle($opts, $seed ^ 0x5f3759df);
         $labels = ['A', 'B', 'C', 'D'];
         $options = [];
         $correctKey = 'A';
@@ -121,7 +120,7 @@ class VocabQuestionBuilder
     {
         $pool = VocabularyWord::query()
             ->whereNotNull('meanings')
-            ->inRandomOrder()
+            ->orderBy('id')
             ->limit(500)
             ->get();
 
@@ -136,5 +135,38 @@ class VocabQuestionBuilder
         }
 
         return $distractors;
+    }
+
+    private function deterministicPick(array $items, int $seed, int $count): array
+    {
+        $items = array_values($items);
+        if ($items === []) {
+            return [];
+        }
+
+        $this->deterministicShuffle($items, $seed ^ 0x9e3779b9);
+
+        return array_slice($items, 0, min($count, count($items)));
+    }
+
+    private function deterministicShuffle(array &$items, int $seed): void
+    {
+        $count = count($items);
+        if ($count <= 1) {
+            return;
+        }
+
+        for ($i = $count - 1; $i > 0; $i--) {
+            $seed = (int) (($seed * 1103515245 + 12345) & 0x7fffffff);
+            $j = $seed % ($i + 1);
+            [$items[$i], $items[$j]] = [$items[$j], $items[$i]];
+        }
+    }
+
+    private function normalizeMeaningForCompare(string $text): string
+    {
+        $text = mb_strtolower(trim($text));
+
+        return str_replace(['（', '）', '(', ')', ' ', '　'], '', $text);
     }
 }

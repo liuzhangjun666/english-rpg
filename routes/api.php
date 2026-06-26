@@ -35,12 +35,15 @@ Route::post('/sms/send', [SmsController::class, 'send']);
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
     // 刷新必须在 auth:sanctum 之外：访问令牌过期后正靠它恢复会话，凭据是独立的刷新令牌。
     Route::post('/refresh', [AuthController::class, 'refresh']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/auth/password/send-code', [AuthController::class, 'sendSetPasswordCode']);
+    Route::post('/auth/password', [AuthController::class, 'updatePassword']);
 
     Route::prefix('user')->group(function () {
         Route::get('/profile', [UserController::class, 'profile']);
@@ -149,6 +152,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('wanyao-tower')->group(function () {
         Route::get('/status',    [WanyaoTowerController::class, 'status']);
+        Route::get('/run/{runId}', [WanyaoTowerController::class, 'show'])->whereNumber('runId');
         Route::post('/start',    [WanyaoTowerController::class, 'start'])->middleware('throttle:3,1');
         Route::post('/answer',   [WanyaoTowerController::class, 'answer']);
         Route::post('/settle',   [WanyaoTowerController::class, 'settle']);
@@ -184,6 +188,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('mijing/timed-challenge')->group(function () {
+        Route::get('/status', [MijingChallengeController::class, 'status']);
         Route::post('/start', [MijingChallengeController::class, 'start']);
         Route::post('/next-question', [MijingChallengeController::class, 'nextQuestion']);
         Route::post('/submit-answer', [MijingChallengeController::class, 'submitAnswer']);

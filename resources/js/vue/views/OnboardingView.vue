@@ -449,4 +449,37 @@ onMounted(() => {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+
+@media (max-width: 768px) {
+  .onboarding-page {
+    min-height: var(--app-dvh, 100vh);
+    padding: calc(8px + env(safe-area-inset-top, 0px)) max(8px, env(safe-area-inset-right, 0px))
+      calc(10px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
+  }
+
+  .hermes-dialog-wrap {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    max-width: 100%;
+    padding: 12px;
+  }
+
+  .hermes-bubble {
+    padding: 14px;
+  }
+
+  .onboarding-quiz {
+    width: 100%;
+    padding: 18px 12px;
+  }
+
+  .quiz-word {
+    font-size: 34px;
+  }
+
+  .quiz-options {
+    grid-template-columns: 1fr;
+  }
+}
 </style>

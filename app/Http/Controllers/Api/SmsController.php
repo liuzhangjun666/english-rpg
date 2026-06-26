@@ -26,7 +26,7 @@ class SmsController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'phone' => 'required|string|size:11',
-            'action' => 'nullable|string|in:login,register,bind',
+            'action' => 'nullable|string|in:login,register,bind,reset_password',
         ], [
             'phone.required' => '请输入手机号',
             'phone.size' => '请输入11位手机号',
@@ -48,6 +48,14 @@ class SmsController extends Controller
                 'next_action' => 'login',
                 'message' => '该手机号已被注册，请返回登录页面进行登录',
             ]);
+        }
+
+        if ($action === 'reset_password' && !User::where('phone', $request->phone)->exists()) {
+            return response()->json([
+                'success' => false,
+                'code' => 'USER_NOT_FOUND',
+                'message' => '该手机号未注册',
+            ], 404);
         }
 
         $result = $this->smsService->send($request->phone, $action);

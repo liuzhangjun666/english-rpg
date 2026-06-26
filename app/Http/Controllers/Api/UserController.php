@@ -89,6 +89,7 @@ class UserController extends Controller
         $data['current_realm'] = $resolvedRealm;
         $data['realm'] = (string) $user->realm;
         $data['realm_stage'] = max(1, (int) $user->realm_stage);
+        $data['has_password'] = filled($user->password);
 
         $currency = is_array($user->progress_currency) ? $user->progress_currency : [];
         if (!empty($currency['equipped_title'])) {

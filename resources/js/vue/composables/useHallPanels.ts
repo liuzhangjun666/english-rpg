@@ -31,6 +31,7 @@ export function useHallPanels(options: { beforeNavigate?: () => void } = {}) {
     goMijing,
     goLeaderboard,
     goMall,
+    goWanyaoTower,
   } = useMapNavigation({ beforeNavigate: options.beforeNavigate });
 
   const { mapBuildings } = useMapBuildings({
@@ -43,6 +44,7 @@ export function useHallPanels(options: { beforeNavigate?: () => void } = {}) {
     },
     goLeaderboard,
     goMall,
+    goWanyaoTower,
     showDailyQuest: () => { panels.showDailyQuest = true; },
     showSignIn: () => { panels.showSignIn = true; },
     showEvents: () => { panels.showEvents = true; },

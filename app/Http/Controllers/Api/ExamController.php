@@ -131,6 +131,19 @@ class ExamController extends Controller
     {
         $user = $request->user();
 
+        $status = $this->realmService->getBreakthroughStatus($user);
+        if (!($status['can_breakthrough'] ?? false)) {
+            return response()->json([
+                'success' => false,
+                'code' => 'BREAKTHROUGH_REQUIREMENTS_NOT_MET',
+                'message' => '突破条件未满足，无法开始渡劫',
+                'data' => [
+                    'status' => $status,
+                    'missing_requirements' => $status['missing_requirements'] ?? [],
+                ],
+            ], 422);
+        }
+
         $check = $this->examService->canTakeExam($user, $user->realm);
         if (!$check['allowed']) {
             return response()->json([
@@ -164,6 +177,19 @@ class ExamController extends Controller
         ]);
 
         $user = $request->user();
+
+        $status = $this->realmService->getBreakthroughStatus($user);
+        if (!($status['can_breakthrough'] ?? false)) {
+            return response()->json([
+                'success' => false,
+                'code' => 'BREAKTHROUGH_REQUIREMENTS_NOT_MET',
+                'message' => '突破条件未满足，无法提交渡劫',
+                'data' => [
+                    'status' => $status,
+                    'missing_requirements' => $status['missing_requirements'] ?? [],
+                ],
+            ], 422);
+        }
 
         // 扣除灵力
         if (!$this->currencyService->consumeSpirit($user, ExamService::SPIRIT_COST)) {

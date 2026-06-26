@@ -1,7 +1,11 @@
 <template>
-  <div class="hall-page" @wheel.prevent>
+  <div class="hall-page" @wheel.prevent @keydown.esc.capture="handleEsc" tabindex="-1" ref="hallPageRef">
     <div class="map-stage">
       <div class="hall-scene" ref="hallSceneRef"></div>
+
+      <button v-if="activeRadialBuilding" class="map-back-btn" type="button" @click="closeFocus" title="返回全景 (ESC)">
+        ↩ 返回全景
+      </button>
 
       <button class="daily-quest-fab" @click="panels.showDailyQuest = true" title="今日修炼任务">
         <span class="daily-quest-icon">📅</span>
@@ -11,14 +15,14 @@
     <!-- GlobalHud 已提升至 App.vue 全局挂载，此处不再重复实例 -->
 
     <RadialMenu v-if="activeRadialBuilding" :visible="!!activeRadialBuilding" :x="radialPos.x" :y="radialPos.y"
-      :nodes="activeRadialBuilding.subNodes" @close="activeRadialBuilding = null" />
+      :nodes="activeRadialBuilding.subNodes" @close="closeFocus" />
 
     <HallModals :panels="panels" @go-mijing="navigation.goMijing()" @go-world-boss="navigation.goWorldBoss()" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUserStore } from '../stores/user';
@@ -34,6 +38,7 @@ const bridge = useLegacyBridge();
 const userStore = useUserStore();
 const ui = useUiStore();
 
+const hallPageRef = ref<HTMLElement | null>(null);
 const hallSceneRef = ref<HTMLElement | null>(null);
 let worldManager: WorldSceneManager | null = null;
 const userRealmLevel = ref(0);
@@ -71,12 +76,21 @@ onMounted(async () => {
         const building = findMapBuilding(mapBuildings.value, nodeDef.id);
         if (building) handleBuildingClick(building);
       };
+
+      worldManager.onFocusDismiss = () => {
+        closeFocus();
+      };
+
+      worldManager.onFocusedMove = (screenX, screenY) => {
+        radialPos.value = { x: screenX + 'px', y: screenY + 'px' };
+      };
+
+      hallPageRef.value?.focus();
     }
   } catch (error) {
     console.error('[HallView] 地图初始化失败', error);
     ElMessage.error('地图加载失败，请刷新重试');
   } finally {
-    // 必须收掉分阶段 init 期间显示的 loading 浮层，否则“云海散开…”会一直盖住地图。
     ui.hideLoading();
   }
 });
@@ -86,9 +100,24 @@ onUnmounted(() => {
   worldManager = null;
 });
 
+function closeFocus() {
+  activeRadialBuilding.value = null;
+}
+
+function handleEsc() {
+  if (activeRadialBuilding.value) {
+    closeFocus();
+  }
+}
+
+watch(activeRadialBuilding, (val) => {
+  if (!val) worldManager?.flyToOverview();
+});
+
 function handleBuildingClick(building: any) {
   if (building.unlockRealm !== undefined && userRealmLevel.value < building.unlockRealm) {
     ElMessage.warning('道友资历不够，还需努力修行');
+    closeFocus();
     return;
   }
 
@@ -105,7 +134,7 @@ function handleBuildingClick(building: any) {
 .hall-page {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  height: var(--app-dvh, 100vh);
   overflow: hidden;
   background: #000;
   pointer-events: auto !important;
@@ -128,10 +157,37 @@ function handleBuildingClick(building: any) {
   z-index: 0;
 }
 
+.map-back-btn {
+  position: absolute;
+  top: calc(var(--hud-offset-top, var(--top-hud-height, 76px)) + 8px);
+  left: max(14px, env(safe-area-inset-left, 0px));
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(212, 168, 67, 0.55);
+  background: rgba(4, 12, 28, 0.85);
+  color: #ffd700;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: all 0.2s;
+}
+
+.map-back-btn:hover {
+  background: rgba(212, 168, 67, 0.2);
+  border-color: #ffd700;
+  transform: translateX(-3px);
+}
+
 .daily-quest-fab {
   position: absolute;
-  top: 80px;
-  right: 20px;
+  top: calc(var(--hud-offset-top, var(--top-hud-height, 80px)) + 8px);
+  right: max(12px, env(safe-area-inset-right, 0px));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -172,5 +228,29 @@ function handleBuildingClick(building: any) {
   font-size: 11px;
   color: #d4a843;
   white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .map-back-btn {
+    top: calc(var(--hud-offset-top, var(--top-hud-height, 76px)) + 4px);
+    left: max(8px, env(safe-area-inset-left, 0px));
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .daily-quest-fab {
+    padding: 8px 10px;
+    border-radius: 10px;
+    top: calc(var(--hud-offset-top, var(--top-hud-height, 80px)) + 4px);
+    right: max(8px, env(safe-area-inset-right, 0px));
+  }
+
+  .daily-quest-icon {
+    font-size: 18px;
+  }
+
+  .daily-quest-label {
+    font-size: 10px;
+  }
 }
 </style>

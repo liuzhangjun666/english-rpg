@@ -23,6 +23,12 @@
   z-index: 140;
   pointer-events: auto;
   --top-hud-height: 80px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --hud-offset-top: calc(var(--top-hud-height) + var(--safe-top));
+  --app-dvh: 100vh;
   --arena-below-hud: calc(var(--top-hud-height) + 10px);
 
   /* 修仙主题设计令牌 */
@@ -38,6 +44,12 @@
   --cult-radius: 14px;
   --cult-radius-sm: 10px;
   --cult-font-title: 'STKaiti', 'KaiTi', 'Microsoft YaHei', sans-serif;
+}
+
+@supports (height: 100dvh) {
+  #vue-app {
+    --app-dvh: 100dvh;
+  }
 }
 
 #vue-app .vue-shell {
@@ -193,6 +205,11 @@
   overflow: hidden;
 }
 
+#vue-app .shell-main:has(.wanyao-tower-view) {
+  padding: 0;
+  overflow: hidden;
+}
+
 #vue-app .vue-shell:not(.has-top-hud) .shell-main:has(.practice-page.practice-page-arena),
 #vue-app .vue-shell:not(.has-top-hud) .shell-main:has(.hall-page) {
   padding-top: 0;
@@ -215,7 +232,22 @@
   }
 }
 
-#vue-app .mall-page,
+#vue-app .shell-main:has(.mall-page) {
+  padding: 0;
+  overflow: hidden;
+  background: #060812;
+}
+
+#vue-app .mall-page {
+  width: 100vw;
+  max-width: none;
+  margin: 0;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  min-height: var(--app-dvh, 100vh);
+  height: var(--app-dvh, 100vh);
+}
+
 #vue-app .leaderboard-page {
   width: min(720px, 100%);
   margin: 0 auto;
@@ -274,12 +306,12 @@ html, body, #app {
   margin: 0;
   padding: 0;
   width: 100vw;
-  height: 100vh;
+  height: var(--app-dvh, 100vh);
   overflow: hidden;
 }
 
 #vue-app .hall-page {
-  height: calc(100vh - var(--top-hud-height));
+  height: calc(var(--app-dvh, 100vh) - var(--top-hud-height));
   width: 100vw;
   background: transparent;
   position: relative;
@@ -288,7 +320,7 @@ html, body, #app {
 }
 
 #vue-app .vue-shell:not(.has-top-hud) .hall-page {
-  height: 100vh;
+  height: var(--app-dvh, 100vh);
 }
 
 #vue-app .game-stage {
@@ -486,7 +518,7 @@ html, body, #app {
 #vue-app .cult-panel {
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - var(--top-hud-height, 60px) - 40px);
+  max-height: calc(var(--app-dvh, 100vh) - var(--hud-offset-top, var(--top-hud-height, 60px)) - 24px - var(--safe-bottom, 0px));
   background: linear-gradient(165deg, rgba(12, 16, 32, 0.92) 0%, rgba(8, 10, 22, 0.88) 100%);
   border: 1px solid rgba(212, 168, 67, 0.32);
   border-radius: 14px;
@@ -1247,7 +1279,7 @@ html, body, #app {
 
 .cult-overlay-panel {
   width: min(480px, 100%);
-  max-height: min(90vh, 720px);
+  max-height: min(calc(var(--app-dvh, 100vh) - 24px), 720px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -2108,12 +2140,22 @@ html, body, #app {
 }
 
 @media (max-width: 768px) {
+  #vue-app {
+    --top-hud-height: 68px;
+  }
+
+  #vue-app .vue-shell {
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
+    padding-bottom: var(--safe-bottom);
+  }
+
   #vue-app .shell-main {
     padding: 12px;
   }
 
   #vue-app .vue-shell.has-top-hud .shell-main {
-    padding-top: calc(var(--top-hud-height) + 12px);
+    padding-top: calc(var(--hud-offset-top) + 10px);
   }
 
   #vue-app .shell-header {
@@ -2134,6 +2176,35 @@ html, body, #app {
 
   #vue-app .el-button.btn-art {
     --btn-art-scale: 0.56;
+  }
+
+  #vue-app .mall-page,
+  #vue-app .leaderboard-page,
+  #vue-app .onboarding-page,
+  #vue-app .assessment-gate {
+    min-height: var(--app-dvh, 100vh);
+  }
+
+  #vue-app .cult-panel {
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  #vue-app .shell-main {
+    padding: 8px;
+  }
+
+  #vue-app .cult-panel-header {
+    padding: 12px 12px;
+  }
+
+  #vue-app .cult-panel-body {
+    padding: 12px 12px calc(16px + var(--safe-bottom));
+  }
+
+  .cult-overlay {
+    padding: 10px 8px calc(10px + var(--safe-bottom));
   }
 }
 
@@ -2803,17 +2874,57 @@ html, body, #app {
   color: #e8e0cc !important;
 }
 
-.el-message-box__btns .el-button {
-  background: rgba(212, 168, 67, 0.1) !important;
-  border: 1px solid rgba(212, 168, 67, 0.35) !important;
-  color: #f4d98a !important;
-  border-radius: 8px !important;
+.el-message-box__btns {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 12px 18px 4px !important;
 }
 
-.el-message-box__btns .el-button--primary {
-  background: rgba(212, 168, 67, 0.22) !important;
+.el-message-box__btns .el-button,
+.el-message-box__btns .el-button.btn-art {
+  width: auto !important;
+  min-width: 72px !important;
+  min-height: 36px !important;
+  height: auto !important;
+  aspect-ratio: auto !important;
+  margin: 0 !important;
+  padding: 8px 18px !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  color: #f4d98a !important;
+  background: rgba(212, 168, 67, 0.12) !important;
+  background-image: none !important;
+  border: 1px solid rgba(212, 168, 67, 0.35) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.el-message-box__btns .el-button > span,
+.el-message-box__btns .el-button .el-button__text,
+.el-message-box__btns .el-button * {
+  color: inherit !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.el-message-box__btns .el-button--primary,
+.el-message-box__btns .el-button.btn-art.btn-art-confirm {
+  background: rgba(212, 168, 67, 0.28) !important;
   border-color: rgba(212, 168, 67, 0.55) !important;
   color: #ffe9a8 !important;
+}
+
+.el-message-box__btns .el-button--primary > span,
+.el-message-box__btns .el-button--primary .el-button__text {
+  color: #ffe9a8 !important;
+}
+
+.el-message-box {
+  overflow: visible !important;
 }
 
 .el-loading-mask {

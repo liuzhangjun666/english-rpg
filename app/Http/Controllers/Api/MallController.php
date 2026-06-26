@@ -16,7 +16,11 @@ class MallController extends Controller
     public function items(Request $request): JsonResponse
     {
         $items = $this->mallService->getAvailableItems();
-        return response()->json(['success'=>true, 'data'=>$items]);
+        if (empty($items)) {
+            MallService::seedItems();
+            $items = $this->mallService->getAvailableItems();
+        }
+        return response()->json(['success' => true, 'data' => ['items' => $items]]);
     }
 
     /** POST /api/mall/purchase */
@@ -36,7 +40,12 @@ class MallController extends Controller
         $user = $request->user()->fresh();
         return response()->json([
             'success' => true,
-            'data' => ['message'=>$result['message'], 'user'=>$user],
+            'data' => [
+                'message' => $result['message'],
+                'item_id' => $result['item_id'] ?? $data['item_id'],
+                'item' => $result['item'] ?? null,
+                'user' => $user,
+            ],
         ]);
     }
 

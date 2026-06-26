@@ -14,6 +14,19 @@ class MijingChallengeController extends Controller
     ) {
     }
 
+    public function status(Request $request): JsonResponse
+    {
+        $mode = $request->query('mode', 'normal');
+        if (!in_array($mode, ['normal', 'boss'], true)) {
+            $mode = 'normal';
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $this->challengeService->getEntryStatus($request->user(), $mode),
+        ]);
+    }
+
     public function start(Request $request): JsonResponse
     {
         $data = $request->validate([

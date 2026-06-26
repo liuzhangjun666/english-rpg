@@ -7,7 +7,7 @@ const store = useTowerStore();
 const feedback = ref<'correct' | 'wrong' | null>(null);
 const submitting = ref(false);
 
-const currentQ = computed(() => store.currentRun?.questions[store.answerIndex] ?? null);
+const currentQ = computed(() => store.currentRun?.questions?.[store.answerIndex] ?? null);
 const total = computed(() => store.currentRun?.questions.length ?? 0);
 
 async function onSubmit(answer: string) {
@@ -29,12 +29,14 @@ async function onSubmit(answer: string) {
   <div class="tower-runner">
     <TowerMCQQuestion
       v-if="currentQ"
+      :key="currentQ.id"
       :question="currentQ"
       :index="store.answerIndex"
       :total="total"
       :disabled="submitting"
       @submit="onSubmit"
     />
+    <div v-else class="tower-runner__empty">题目加载失败，请返回大厅重新开始</div>
     <transition name="fade">
       <div v-if="feedback" class="tower-runner__feedback" :class="`is-${feedback}`">
         {{ feedback === 'correct' ? '✓ 答对了' : '✗ 答错' }}
@@ -44,7 +46,11 @@ async function onSubmit(answer: string) {
 </template>
 
 <style scoped>
-.tower-runner { position: relative; }
+.tower-runner { position: relative; min-height: 40vh; }
+.tower-runner__empty {
+  display: grid; place-items: center; min-height: 40vh;
+  color: #f4e7c1; font-size: 16px;
+}
 .tower-runner__feedback {
   position: absolute; inset: 0; display: grid; place-items: center;
   font-size: 48px; font-weight: bold; pointer-events: none;

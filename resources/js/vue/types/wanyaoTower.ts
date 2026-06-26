@@ -3,15 +3,19 @@ export type TowerStatus =
 
 export interface TowerQuestion {
   id: number;
-  type: 'vocab';
+  type: 'vocab' | 'grammar' | 'listening' | 'reading' | 'speaking' | string;
   prompt: string;
   options: string[];
+  word?: string | null;
+  listening_text?: string | null;
 }
 
 export interface BossPrompt {
   id: number;
   theme: string;
   title: string;
+  topic?: string;
+  passage?: string | null;
   min_chars: number;
   time_limit: number;
 }
@@ -23,6 +27,7 @@ export interface TowerRunPayload {
   vocab_tier: string;
   questions: TowerQuestion[];
   boss_prompt: BossPrompt;
+  answered_count?: number;
 }
 
 export interface TowerStatusPayload {

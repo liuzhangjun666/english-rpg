@@ -10,6 +10,7 @@ use App\Services\SmsService;
 use App\Support\CultivationProfile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -45,6 +46,14 @@ class AuthController extends Controller
         'birth_year.integer' => '出生年份格式错误',
         'birth_year.min' => '出生年份不早于1950年',
         'birth_year.max' => '出生年份不能晚于当前年份',
+        'password.required' => '请设置密码',
+        'password.min' => '密码至少6位',
+        'password.max' => '密码最长64位',
+        'password.confirmed' => '两次输入的密码不一致',
+        'login_type.in' => '登录方式无效',
+        'password.required_if' => '请输入密码',
+        'code.required_if' => '请输入验证码',
+        'current_password.required' => '请输入当前密码',
     ];
 
     private function verifyCode(Request $request, string $action): bool
@@ -77,6 +86,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'phone' => 'required|string|size:11',
             'code'  => 'required|string|size:6',
+            'password' => 'required|string|min:6|max:64|confirmed',
             'nickname' => 'nullable|string|max:50',
             'school_grade' => 'required|string|max:32',
             'birth_year' => 'nullable|integer|min:1950|max:' . date('Y'),
@@ -125,6 +135,7 @@ class AuthController extends Controller
 
         $user = User::create([
             'phone' => $request->phone,
+            'password' => $request->password,
             'nickname' => $request->nickname ?: ('道友' . substr($request->phone, -4)),
             'school_grade' => $request->school_grade,
             'realm' => $initialRealm['realm'],
@@ -175,9 +186,14 @@ class AuthController extends Controller
      */
     public function login(Request $request): JsonResponse
     {
+        $loginType = $request->input('login_type', 'sms');
+        $request->merge(['login_type' => $loginType]);
+
         $validator = Validator::make($request->all(), [
             'phone' => 'required|string|size:11',
-            'code'  => 'required|string|size:6',
+            'login_type' => 'nullable|string|in:sms,password',
+            'code'  => 'required_if:login_type,sms|nullable|string|size:6',
+            'password' => 'required_if:login_type,password|nullable|string|min:6|max:64',
         ], self::CHINESE_MESSAGES);
 
         if ($validator->fails()) {
@@ -186,6 +202,10 @@ class AuthController extends Controller
                 'code' => 'VALIDATION_ERROR',
                 'message' => $validator->errors()->first(),
             ], 422);
+        }
+
+        if ($loginType === 'password') {
+            return $this->loginWithPassword($request);
         }
 
         if (!$this->verifyCode($request, 'login')) {
@@ -206,6 +226,180 @@ class AuthController extends Controller
             ], 404);
         }
 
+        return $this->completeLogin($user);
+    }
+
+    private function loginWithPassword(Request $request): JsonResponse
+    {
+        $ipKey = 'login-password:' . $request->ip();
+        if (RateLimiter::tooManyAttempts($ipKey, 10)) {
+            $retryAfter = RateLimiter::availableIn($ipKey);
+            return response()->json([
+                'success' => false,
+                'code' => 'TOO_MANY_ATTEMPTS',
+                'message' => "登录尝试过于频繁，请 {$retryAfter} 秒后再试",
+                'retry_after' => $retryAfter,
+            ], 429);
+        }
+
+        $user = User::where('phone', $request->phone)->first();
+
+        if (!$user) {
+            RateLimiter::hit($ipKey, 900);
+            return response()->json([
+                'success' => false,
+                'code' => 'INVALID_CREDENTIALS',
+                'message' => '手机号或密码错误',
+            ], 401);
+        }
+
+        if (!$user->password || !Hash::check($request->password, $user->password)) {
+            RateLimiter::hit($ipKey, 900);
+            return response()->json([
+                'success' => false,
+                'code' => 'INVALID_CREDENTIALS',
+                'message' => '手机号或密码错误',
+            ], 401);
+        }
+
+        RateLimiter::clear($ipKey);
+
+        return $this->completeLogin($user);
+    }
+
+    /**
+     * 忘记密码：短信验证后重置
+     * POST /api/auth/reset-password
+     */
+    public function resetPassword(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'phone' => 'required|string|size:11',
+            'code' => 'required|string|size:6',
+            'password' => 'required|string|min:6|max:64|confirmed',
+        ], self::CHINESE_MESSAGES);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'code' => 'VALIDATION_ERROR',
+                'message' => $validator->errors()->first(),
+            ], 422);
+        }
+
+        $user = User::where('phone', $request->phone)->first();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'code' => 'USER_NOT_FOUND',
+                'message' => '该手机号未注册',
+            ], 404);
+        }
+
+        if (!$this->smsService->verify($request->phone, $request->code, 'reset_password')) {
+            return response()->json([
+                'success' => false,
+                'code' => 'INVALID_CODE',
+                'message' => '验证码错误或已过期',
+            ], 422);
+        }
+
+        $user->update(['password' => $request->password]);
+
+        return response()->json([
+            'success' => true,
+            'message' => '密码已重置，请使用新密码登录',
+        ]);
+    }
+
+    /**
+     * 已登录用户：发送设置密码验证码
+     * POST /api/auth/password/send-code
+     */
+    public function sendSetPasswordCode(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $result = $this->smsService->send($user->phone, 'set_password');
+
+        if (!$result['success']) {
+            $status = match ($result['code'] ?? null) {
+                'SMS_RESEND_COOLDOWN', 'SMS_DAILY_LIMIT' => 429,
+                default => 503,
+            };
+
+            return response()->json([
+                'success' => false,
+                'code' => $result['code'] ?? 'SMS_SEND_FAILED',
+                'message' => $result['message'],
+                'retry_after' => $result['retry_after'] ?? null,
+            ], $status);
+        }
+
+        $response = ['success' => true, 'message' => $result['message']];
+        if (isset($result['debug_code'])) {
+            $response['debug_code'] = $result['debug_code'];
+        }
+
+        return response()->json($response);
+    }
+
+    /**
+     * 已登录用户：设置或修改密码
+     * POST /api/auth/password
+     */
+    public function updatePassword(Request $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $hasPassword = filled($user->password);
+
+        $rules = $hasPassword
+            ? [
+                'current_password' => 'required|string',
+                'password' => 'required|string|min:6|max:64|confirmed',
+            ]
+            : [
+                'code' => 'required|string|size:6',
+                'password' => 'required|string|min:6|max:64|confirmed',
+            ];
+
+        $validator = Validator::make($request->all(), $rules, self::CHINESE_MESSAGES);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'code' => 'VALIDATION_ERROR',
+                'message' => $validator->errors()->first(),
+            ], 422);
+        }
+
+        if ($hasPassword) {
+            if (!Hash::check($request->current_password, $user->password)) {
+                return response()->json([
+                    'success' => false,
+                    'code' => 'INVALID_CURRENT_PASSWORD',
+                    'message' => '当前密码错误',
+                ], 422);
+            }
+        } elseif (!$this->smsService->verify($user->phone, $request->code, 'set_password')) {
+            return response()->json([
+                'success' => false,
+                'code' => 'INVALID_CODE',
+                'message' => '验证码错误或已过期',
+            ], 422);
+        }
+
+        $user->update(['password' => $request->password]);
+
+        return response()->json([
+            'success' => true,
+            'message' => $hasPassword ? '密码已修改' : '密码已设置',
+            'data' => ['has_password' => true],
+        ]);
+    }
+
+    private function completeLogin(User $user): JsonResponse
+    {
         $user->update(['last_login_at' => now()]);
         // 显式重新登录：清空旧令牌（含旧刷新令牌），等价于在此设备上重置会话。
         $user->tokens()->delete();

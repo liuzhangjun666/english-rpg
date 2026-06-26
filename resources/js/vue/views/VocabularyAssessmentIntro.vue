@@ -153,7 +153,7 @@ onMounted(async () => {
 <style scoped>
 .assessment-gate {
   position: relative;
-  min-height: 100vh;
+  min-height: var(--app-dvh, 100vh);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -356,8 +356,16 @@ onMounted(async () => {
 }
 
 @media (max-width: 640px) {
+  .assessment-gate {
+    padding: calc(18px + env(safe-area-inset-top, 0px)) 10px calc(18px + env(safe-area-inset-bottom, 0px));
+  }
+
   .gate-content {
     padding: 28px 20px 24px;
+  }
+
+  .start-btn {
+    min-width: 100%;
   }
 }
 </style>

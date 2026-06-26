@@ -48,11 +48,11 @@
           <span class="res-label">词汇</span>
         </div>
       </div>
-      <div class="resource-item" title="灵力">
+      <div class="resource-item" :title="spiritTitle">
         <span class="res-icon">⚡</span>
         <div class="res-copy">
-          <span class="res-value">{{ animatedSpiritPower }}/{{ user.profile?.spirit_power_max ?? 100 }}</span>
-          <span class="res-label">灵力</span>
+          <span class="res-value">{{ spiritDisplay }}</span>
+          <span class="res-label">{{ spiritSubLabel }}</span>
         </div>
       </div>
       <div class="resource-item" title="灵石">
@@ -105,6 +105,7 @@ import { useUserStore } from '../../stores/user';
 import { useUiStore } from '../../stores/ui';
 import { useMailStore } from '../../stores/mail';
 import { useCountUp } from '../../composables/useCountUp';
+import { useSpiritPower } from '../../composables/useSpiritPower';
 import gsap from 'gsap';
 import defaultAvatarImg from '../../../../assets/images/avatar_default.png';
 
@@ -128,8 +129,16 @@ function openSettings() {
 
 const animatedExp = useCountUp(() => user.profile?.exp ?? 0);
 const animatedVocab = useCountUp(() => user.profile?.vocabulary ?? 0);
-const animatedSpiritPower = useCountUp(() => user.profile?.spirit_power ?? 0);
 const animatedSpiritStone = useCountUp(() => user.profile?.spirit_stone ?? 0);
+const { view: spiritView, spiritTitle } = useSpiritPower();
+
+const spiritDisplay = computed(() => `${spiritView.value.current}/${spiritView.value.max}`);
+const spiritSubLabel = computed(() => {
+  if (spiritView.value.isNaturalFull) {
+    return spiritView.value.current > spiritView.value.max ? '灵力·溢满' : '灵力·已满';
+  }
+  return `灵力 · ${spiritView.value.countdownText}`;
+});
 
 const expPercent = computed(() => {
   const current = user.profile?.exp ?? 0;
@@ -139,10 +148,10 @@ const expPercent = computed(() => {
 });
 
 const powerPercent = computed(() => {
-  const current = user.profile?.spirit_power ?? 0;
-  const max = user.profile?.spirit_power_max ?? 100;
+  const current = spiritView.value.current;
+  const max = spiritView.value.max;
   if (max <= 0) return 0;
-  return Math.min(100, Math.max(0, (current / max) * 100));
+  return Math.min(100, Math.max(0, (Math.min(current, max) / max) * 100));
 });
 
 const levelNumber = computed(() => user.profile?.level ?? 1);
@@ -209,7 +218,7 @@ watch(() => ui.isMapDragging, (isDragging) => {
     inset 0 1px 0 rgba(255, 215, 0, 0.12);
   display: flex;
   align-items: center;
-  padding: 0 20px;
+  padding: env(safe-area-inset-top, 0px) max(10px, env(safe-area-inset-right, 0px)) 0 max(10px, env(safe-area-inset-left, 0px));
   z-index: 1000;
   backdrop-filter: blur(10px);
   pointer-events: auto;
@@ -678,6 +687,52 @@ watch(() => ui.isMapDragging, (isDragging) => {
 }
 
 @media (max-width: 600px) {
+  .top-hud {
+    height: 68px;
+    padding-right: max(8px, env(safe-area-inset-right, 0px));
+    padding-left: max(8px, env(safe-area-inset-left, 0px));
+  }
+
+  .hud-left {
+    gap: 8px;
+  }
+
+  .avatar-box {
+    width: 46px;
+    height: 46px;
+  }
+
+  .role-name {
+    font-size: 13px;
+    max-width: 104px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .exp-bar-bg {
+    width: 92px;
+  }
+
+  .map-btn {
+    padding: 5px 9px;
+  }
+
+  .map-btn-label {
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .map-btn-icon,
+  .sys-icon-img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .sys-btn {
+    width: 28px;
+    height: 28px;
+  }
+
   .hud-center {
     display: none;
   }

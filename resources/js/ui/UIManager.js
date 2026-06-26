@@ -607,7 +607,11 @@ export class UIManager {
         }
 
         if (spiritBase >= maxSpirit) {
-            return { spirit: maxSpirit, max: maxSpirit, countdownText: '已满' };
+            return {
+                spirit: spiritBase,
+                max: maxSpirit,
+                countdownText: spiritBase > maxSpirit ? '溢满' : '已满',
+            };
         }
 
         const rawLast = user?.spirit_power_last_recover_at;
