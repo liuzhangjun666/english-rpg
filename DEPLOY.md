@@ -2,6 +2,8 @@
 
 修仙主题英语学习 RPG（Laravel + Vue 3 + Vite）。
 
+> **Docker 部署（腾讯云 CVM）**：见 [docs/docker-deploy.md](docs/docker-deploy.md)
+
 ## 环境要求
 
 | 组件 | 版本建议 |
