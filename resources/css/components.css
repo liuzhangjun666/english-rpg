@@ -2861,6 +2861,51 @@
     line-height: 0 !important;
 }
 
+/* 确认弹窗 / 对话框：禁止图片皮肤，保留文字按钮 */
+.el-message-box__btns .el-button.btn-art,
+.el-dialog__footer .el-button.btn-art {
+    width: auto !important;
+    min-width: 72px !important;
+    min-height: 36px !important;
+    height: auto !important;
+    aspect-ratio: auto !important;
+    margin: 0 !important;
+    padding: 8px 18px !important;
+    color: #f4d98a !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    background: rgba(212, 168, 67, 0.12) !important;
+    background-image: none !important;
+    border: 1px solid rgba(212, 168, 67, 0.35) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+}
+
+.el-message-box__btns .el-button.btn-art > span,
+.el-message-box__btns .el-button.btn-art .el-button__text,
+.el-dialog__footer .el-button.btn-art > span,
+.el-dialog__footer .el-button.btn-art .el-button__text {
+    color: #f4d98a !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.el-message-box__btns .el-button.btn-art.el-button--primary,
+.el-dialog__footer .el-button.btn-art.el-button--primary {
+    color: #ffe9a8 !important;
+    background: rgba(212, 168, 67, 0.28) !important;
+    border-color: rgba(212, 168, 67, 0.55) !important;
+}
+
+.el-message-box__btns .el-button.btn-art.el-button--primary > span,
+.el-message-box__btns .el-button.btn-art.el-button--primary .el-button__text,
+.el-dialog__footer .el-button.btn-art.el-button--primary > span,
+.el-dialog__footer .el-button.btn-art.el-button--primary .el-button__text {
+    color: #ffe9a8 !important;
+}
+
 .confirm-dialog-actions .btn.btn-art,
 .practice-actions .btn.btn-art,
 .reading-action-right .btn.btn-art {

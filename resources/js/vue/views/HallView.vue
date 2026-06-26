@@ -22,6 +22,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUserStore } from '../stores/user';
+import { useUiStore } from '../stores/ui';
 import { WorldSceneManager } from '../core/sect/WorldSceneManager';
 import { findMapBuilding, getSceneBuildingImages } from '../composables/useMapBuildings';
 import { useHallPanels } from '../composables/useHallPanels';
@@ -31,6 +32,7 @@ import HallModals from '../components/features/HallModals.vue';
 
 const bridge = useLegacyBridge();
 const userStore = useUserStore();
+const ui = useUiStore();
 
 const hallSceneRef = ref<HTMLElement | null>(null);
 let worldManager: WorldSceneManager | null = null;
@@ -73,6 +75,8 @@ onMounted(async () => {
   } catch (error) {
     console.error('[HallView] 地图初始化失败', error);
     ElMessage.error('地图加载失败，请刷新重试');
+  } finally {
+    ui.hideLoading();
   }
 });
 
@@ -100,7 +104,7 @@ function handleBuildingClick(building: any) {
 .hall-page {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  height: var(--app-dvh, 100vh);
   overflow: hidden;
   background: #000;
   pointer-events: auto !important;
@@ -125,8 +129,8 @@ function handleBuildingClick(building: any) {
 
 .daily-quest-fab {
   position: absolute;
-  top: 80px;
-  right: 20px;
+  top: calc(var(--hud-offset-top, var(--top-hud-height, 80px)) + 8px);
+  right: max(12px, env(safe-area-inset-right, 0px));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -167,5 +171,22 @@ function handleBuildingClick(building: any) {
   font-size: 11px;
   color: #d4a843;
   white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .daily-quest-fab {
+    padding: 8px 10px;
+    border-radius: 10px;
+    top: calc(var(--hud-offset-top, var(--top-hud-height, 80px)) + 4px);
+    right: max(8px, env(safe-area-inset-right, 0px));
+  }
+
+  .daily-quest-icon {
+    font-size: 18px;
+  }
+
+  .daily-quest-label {
+    font-size: 10px;
+  }
 }
 </style>

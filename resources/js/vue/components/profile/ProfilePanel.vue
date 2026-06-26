@@ -21,6 +21,7 @@
                   <span class="profile-subtitle">的仙躯 · 命盘</span>
                 </div>
                 <div class="header-actions">
+                  <span class="header-action-btn" @click="openPasswordModal">🔒 {{ hasPassword ? '修改密令' : '设置密令' }}</span>
                   <span class="header-action-btn" @click="shareInvite">📤 邀请道友</span>
                   <span class="header-action-btn" @click="openReview">🔄 温故复盘</span>
                   <span class="header-action-btn" @click="openParentDashboard">📋 护道人</span>
@@ -100,6 +101,38 @@
     </transition>
   </Teleport>
 
+  <Teleport to="body">
+    <transition name="profile-fade">
+      <div v-if="showPasswordModal" class="password-modal-backdrop" @click.self="closePasswordModal">
+        <div class="password-modal">
+          <div class="password-modal-head">
+            <h3>{{ hasPassword ? '修改护道密令' : '设置护道密令' }}</h3>
+            <button type="button" class="profile-close-btn" @click="closePasswordModal">关闭</button>
+          </div>
+          <form class="password-form" @submit.prevent="submitPassword">
+            <div v-if="!hasPassword" class="password-field code-field">
+              <input v-model="passwordForm.code" type="text" maxlength="6" placeholder="短信验证码">
+              <button type="button" class="password-code-btn" :disabled="passwordCodeCountdown > 0"
+                @click="sendPasswordCode">
+                {{ passwordCodeCountdown > 0 ? `${passwordCodeCountdown}s` : '获取验证码' }}
+              </button>
+            </div>
+            <div v-else class="password-field">
+              <input v-model="passwordForm.current_password" type="password" maxlength="64" placeholder="当前密码">
+            </div>
+            <div class="password-field">
+              <input v-model="passwordForm.password" type="password" maxlength="64" placeholder="新密码（至少6位）">
+            </div>
+            <div class="password-field">
+              <input v-model="passwordForm.password_confirmation" type="password" maxlength="64" placeholder="确认新密码">
+            </div>
+            <button type="submit" class="password-submit-btn">{{ hasPassword ? '保存修改' : '确认设置' }}</button>
+          </form>
+        </div>
+      </div>
+    </transition>
+  </Teleport>
+
   <InviteFriendsPanel v-model:visible="showInvitePanel" />
 </template>
 
@@ -136,12 +169,21 @@ const bridge = useLegacyBridge();
 const fileInput = ref<HTMLInputElement | null>(null);
 const nicknameInputRef = ref<HTMLInputElement | null>(null);
 const showInvitePanel = ref(false);
+const showPasswordModal = ref(false);
+const passwordCodeCountdown = ref(0);
+const passwordForm = ref({
+  code: '',
+  current_password: '',
+  password: '',
+  password_confirmation: '',
+});
 const isEditingNickname = ref(false);
 const editNicknameValue = ref('');
 const progressLoading = ref(false);
 const realmProgress = ref<Record<string, any> | null>(null);
 
 const profile = computed(() => user.profile || {});
+const hasPassword = computed(() => Boolean(profile.value?.has_password));
 const currentRealmLabel = computed(() => resolveProfileRealm(profile.value) || '练气一层');
 const equippedTitle = computed(() => {
   const pc = profile.value?.progress_currency;
@@ -352,6 +394,91 @@ function openParentDashboard() {
   emit('open-parent');
 }
 
+function resetPasswordForm() {
+  passwordForm.value = {
+    code: '',
+    current_password: '',
+    password: '',
+    password_confirmation: '',
+  };
+  passwordCodeCountdown.value = 0;
+}
+
+function openPasswordModal() {
+  resetPasswordForm();
+  showPasswordModal.value = true;
+}
+
+function closePasswordModal() {
+  showPasswordModal.value = false;
+  resetPasswordForm();
+}
+
+function startPasswordCodeCountdown(seconds = 60) {
+  passwordCodeCountdown.value = seconds;
+  const timer = setInterval(() => {
+    passwordCodeCountdown.value -= 1;
+    if (passwordCodeCountdown.value <= 0) clearInterval(timer);
+  }, 1000);
+}
+
+async function sendPasswordCode() {
+  const res = await api.post('/auth/password/send-code', {});
+  if (!res?.success) {
+    ElMessage.error(res?.message || '发送失败');
+    return;
+  }
+  if (res?.debug_code) {
+    passwordForm.value.code = String(res.debug_code);
+  }
+  startPasswordCodeCountdown();
+  ElMessage.success('验证码已发送');
+}
+
+async function submitPassword() {
+  if (passwordForm.value.password.length < 6) {
+    ElMessage.error('密码至少6位');
+    return;
+  }
+  if (passwordForm.value.password !== passwordForm.value.password_confirmation) {
+    ElMessage.error('两次输入的密码不一致');
+    return;
+  }
+  if (!hasPassword.value && passwordForm.value.code.trim().length !== 6) {
+    ElMessage.error('请输入验证码');
+    return;
+  }
+  if (hasPassword.value && !passwordForm.value.current_password) {
+    ElMessage.error('请输入当前密码');
+    return;
+  }
+
+  ui.showLoading('正在更新密令...');
+  try {
+    const payload: Record<string, string> = {
+      password: passwordForm.value.password,
+      password_confirmation: passwordForm.value.password_confirmation,
+    };
+    if (hasPassword.value) {
+      payload.current_password = passwordForm.value.current_password;
+    } else {
+      payload.code = passwordForm.value.code.trim();
+    }
+
+    const res = await api.post('/auth/password', payload);
+    if (!res?.success) {
+      ElMessage.error(res?.message || '更新失败');
+      return;
+    }
+
+    user.updateProfile({ has_password: true });
+    ElMessage.success(res?.message || '密令已更新');
+    closePasswordModal();
+  } finally {
+    ui.hideLoading();
+  }
+}
+
 function logout() {
   closePanel();
   window.dispatchEvent(new CustomEvent('auth:logout'));
@@ -508,5 +635,97 @@ function logout() {
 .profile-fade-enter-from,
 .profile-fade-leave-to {
   opacity: 0;
+}
+
+.password-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2200;
+  background: rgba(4, 8, 18, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.password-modal {
+  width: min(400px, 92vw);
+  padding: 20px;
+  border-radius: 16px;
+  background: rgba(14, 28, 52, 0.95);
+  border: 1px solid rgba(150, 210, 255, 0.3);
+  box-shadow: 0 0 40px rgba(40, 90, 160, 0.35);
+}
+
+.password-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.password-modal-head h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--gold, #d4a843);
+}
+
+.password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.password-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(150, 210, 255, 0.2);
+  border-radius: 10px;
+  padding: 0 12px;
+}
+
+.password-field input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #eaf2ff;
+  font-size: 14px;
+  padding: 12px 0;
+}
+
+.password-field input::placeholder {
+  color: #6f93b8;
+}
+
+.password-code-btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: rgba(243, 201, 90, 0.12);
+  border: 1px solid rgba(243, 201, 90, 0.4);
+  color: #f3d98a;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.password-code-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.password-submit-btn {
+  margin-top: 4px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  color: #3a2606;
+  background: linear-gradient(135deg, #ffe6a0 0%, #f0c45e 45%, #cf9a34 100%);
 }
 </style>

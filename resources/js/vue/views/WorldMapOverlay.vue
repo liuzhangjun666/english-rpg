@@ -3,6 +3,11 @@
     <Transition name="map-overlay">
       <div v-if="visible" class="map-overlay" @keydown.esc.capture="handleEsc" tabindex="-1" ref="overlayRef">
 
+        <!-- 返回大厅（全景时显示） -->
+        <button v-if="!activeRadialBuilding" class="map-lobby-btn" @click="returnToLobby" title="返回大厅">
+          ← 返回大厅
+        </button>
+
         <!-- 关闭按钮 -->
         <button class="map-close-btn" @click="close" title="关闭地图 (ESC)">✕</button>
 
@@ -14,8 +19,8 @@
         <!-- Three.js + CSS2DRenderer 挂载点 -->
         <div class="hall-scene" ref="hallSceneRef"></div>
 
-        <!-- 特写时的点击空白遮罩：点空白处返回全景 -->
-        <div v-if="activeRadialBuilding" class="radial-backdrop" @click="closeFocus"></div>
+        <!-- 特写时的点击空白遮罩：pointer-events 穿透，由 3D 场景处理空白点击 -->
+        <div v-if="activeRadialBuilding" class="radial-backdrop"></div>
 
         <!-- 每日修炼悬浮按钮 -->
         <button class="daily-quest-fab" @click="panels.showDailyQuest = true" title="今日修炼任务">
@@ -38,6 +43,7 @@
 
 <script setup lang="ts">
 import { onUnmounted, ref, watch, nextTick } from 'vue';
+import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUiStore } from '../stores/ui';
@@ -50,9 +56,9 @@ import RadialMenu from '../components/map/RadialMenu.vue';
 import HallModals from '../components/features/HallModals.vue';
 
 const props = defineProps<{ visible: boolean }>();
-const emit = defineEmits<{ (e: 'close'): void }>();
 
 const bridge = useLegacyBridge();
+const router = useRouter();
 const ui = useUiStore();
 const userStore = useUserStore();
 
@@ -63,36 +69,15 @@ const userRealmLevel = ref(0);
 const radialPos = ref({ x: '50%', y: '50%' });
 
 const activeRadialBuilding = ref<any>(null);
-const showReview = ref(false);
-const showDemons = ref(false);
-const showAchievements = ref(false);
-const showProfile = ref(false);
-const showDailyQuest = ref(false);
-const showInnerDemon = ref(false);
-const innerDemonAutoChallenge = ref(false);
 
-function openReviewFromProfile() {
-  showReview.value = true;
+function returnToLobby() {
+  activeRadialBuilding.value = null;
+  ui.hideMapOverlay();
+  void bridge.closeLegacyPanels();
+  void router.push('/hall');
 }
 
-const { goPractice, goReading, goExam, goMijing, goMall, goWanyaoTower } = useMapNavigation({ beforeNavigate: close });
-const { mapBuildings } = useMapBuildings({
-  goPractice,
-  goReading,
-  goExam,
-  goMijing,
-  goMall,
-  goWanyaoTower,
-  showDailyQuest: () => { showDailyQuest.value = true; },
-  showAchievements: () => { showAchievements.value = true; },
-  showProfile: () => { showProfile.value = true; },
-  showReview: () => { showReview.value = true; },
-  showDemons: () => { showDemons.value = true; },
-  showInnerDemon: (autoChallenge) => {
-    innerDemonAutoChallenge.value = autoChallenge;
-    showInnerDemon.value = true;
-  },
-});
+const { panels, navigation, mapBuildings } = useHallPanels({ beforeNavigate: returnToLobby });
 
 // 当 overlay 变为可见时初始化 3D 场景
 watch(() => props.visible, async (val) => {
@@ -137,6 +122,10 @@ watch(() => props.visible, async (val) => {
       if (building) handleBuildingClick(building);
     };
 
+    worldManager.onFocusDismiss = () => {
+      closeFocus();
+    };
+
     // 特写时每帧跟随建筑更新菜单坐标
     worldManager.onFocusedMove = (screenX, screenY) => {
       radialPos.value = { x: screenX + 'px', y: screenY + 'px' };
@@ -155,7 +144,7 @@ onUnmounted(() => {
 });
 
 function close() {
-  emit('close');
+  ui.hideMapOverlay();
 }
 
 function closeFocus() {
@@ -173,7 +162,7 @@ function handleEsc() {
 function handleBuildingClick(building: any) {
   if (building.unlockRealm !== undefined && userRealmLevel.value < building.unlockRealm) {
     ElMessage.warning('道友境界不足，还需努力修行');
-    worldManager?.flyToOverview();
+    closeFocus();
     return;
   }
   if (building.subNodes?.length > 0) {
@@ -209,9 +198,8 @@ watch(activeRadialBuilding, (val) => {
 /* ── 关闭按钮 ── */
 .map-close-btn {
   position: absolute;
-  top: 88px;
-  /* TopHud 76px + 12px 间距 */
-  right: 24px;
+  top: calc(var(--hud-offset-top, var(--top-hud-height, 76px)) + 8px);
+  right: max(14px, env(safe-area-inset-right, 0px));
   z-index: 100;
   width: 40px;
   height: 40px;
@@ -234,11 +222,39 @@ watch(activeRadialBuilding, (val) => {
   transform: scale(1.1) rotate(90deg);
 }
 
+/* ── 返回大厅按钮 ── */
+.map-lobby-btn {
+  position: absolute;
+  top: calc(var(--hud-offset-top, var(--top-hud-height, 76px)) + 8px);
+  left: max(14px, env(safe-area-inset-left, 0px));
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(212, 168, 67, 0.55);
+  background: rgba(4, 12, 28, 0.85);
+  color: #ffd700;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: all 0.2s;
+}
+
+.map-lobby-btn:hover {
+  background: rgba(212, 168, 67, 0.2);
+  border-color: #ffd700;
+  transform: translateX(-3px);
+}
+
 /* ── 返回全景按钮 ── */
 .map-back-btn {
   position: absolute;
-  top: 88px;
-  left: 24px;
+  top: calc(var(--hud-offset-top, var(--top-hud-height, 76px)) + 8px);
+  left: max(14px, env(safe-area-inset-left, 0px));
   z-index: 100;
   display: flex;
   align-items: center;
@@ -267,16 +283,15 @@ watch(activeRadialBuilding, (val) => {
   position: absolute;
   inset: 0;
   z-index: 30;
-  /* 在 canvas(2) 之上，RadialMenu(50) 之下 */
+  pointer-events: none;
   background: transparent;
-  cursor: default;
 }
 
 /* ── 每日任务 FAB ── */
 .daily-quest-fab {
   position: absolute;
-  top: 88px;
-  right: 80px;
+  top: calc(var(--hud-offset-top, var(--top-hud-height, 76px)) + 8px);
+  right: max(62px, calc(env(safe-area-inset-right, 0px) + 48px));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -317,6 +332,43 @@ watch(activeRadialBuilding, (val) => {
   font-size: 11px;
   color: #d4a843;
   white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .map-close-btn {
+    top: calc(var(--hud-offset-top, var(--top-hud-height, 76px)) + 4px);
+    right: max(8px, env(safe-area-inset-right, 0px));
+    width: 36px;
+    height: 36px;
+  }
+
+  .map-lobby-btn {
+    top: calc(var(--hud-offset-top, var(--top-hud-height, 76px)) + 4px);
+    left: max(8px, env(safe-area-inset-left, 0px));
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .map-back-btn {
+    top: calc(var(--hud-offset-top, var(--top-hud-height, 76px)) + 4px);
+    left: max(8px, env(safe-area-inset-left, 0px));
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .daily-quest-fab {
+    top: calc(var(--hud-offset-top, var(--top-hud-height, 76px)) + 4px);
+    right: max(50px, calc(env(safe-area-inset-right, 0px) + 42px));
+    padding: 8px 10px;
+  }
+
+  .daily-quest-icon {
+    font-size: 18px;
+  }
+
+  .daily-quest-label {
+    font-size: 10px;
+  }
 }
 
 /* ── 进入/离开动画 ── */

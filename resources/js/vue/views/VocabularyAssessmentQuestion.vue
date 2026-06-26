@@ -315,6 +315,8 @@ onBeforeUnmount(() => {
 <style scoped>
 .assessment-page {
   max-width: 920px;
+  min-height: calc(var(--app-dvh, 100vh) - var(--hud-offset-top, var(--top-hud-height, 76px)));
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
 }
 
 .assessment-panel .cult-panel-header {
@@ -489,6 +491,25 @@ onBeforeUnmount(() => {
 
   .stem {
     font-size: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .assessment-page {
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .counter-pill {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+
+  .question-panel {
+    padding: 10px;
+  }
+
+  .stem {
+    font-size: 16px;
   }
 }
 </style>

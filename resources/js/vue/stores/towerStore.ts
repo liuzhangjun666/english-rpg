@@ -8,15 +8,43 @@ import type {
   SettleResult,
 } from '../types/wanyaoTower';
 
+function towerErrorMessage(data: Record<string, unknown> | null | undefined, fallback: string): string {
+  if (!data) return fallback;
+  if (typeof data.message === 'string' && data.message) return data.message;
+  if (data.error === 'run_in_progress') return '已有进行中的闯关，正在为你恢复…';
+  if (data.error === 'no_questions') return '题库不足，暂无法闯关';
+  return fallback;
+}
+
+function isTowerRunPayload(data: unknown): data is TowerRunPayload {
+  if (!data || typeof data !== 'object') return false;
+  const payload = data as TowerRunPayload;
+  return typeof payload.run_id === 'number'
+    && Array.isArray(payload.questions)
+    && payload.questions.length > 0;
+}
+
 export const useTowerStore = defineStore('tower', () => {
   const status = ref<TowerStatus>('idle');
   const currentFloor = ref(1);
   const highestFloor = ref(0);
   const inProgressRunId = ref<number | null>(null);
   const currentRun = ref<TowerRunPayload | null>(null);
-  const answerIndex = ref(0); // 当前答到第几题
+  const answerIndex = ref(0);
   const correctMap = ref<Record<number, boolean>>({});
   const lastSettle = ref<SettleResult | null>(null);
+
+  function applyRunPayload(data: TowerRunPayload) {
+    if (!isTowerRunPayload(data)) {
+      throw new Error('闯关数据异常，请稍后重试');
+    }
+
+    currentRun.value = data;
+    inProgressRunId.value = data.run_id;
+    answerIndex.value = data.answered_count ?? 0;
+    correctMap.value = {};
+    status.value = answerIndex.value >= data.questions.length ? 'boss' : 'answering';
+  }
 
   async function fetchStatus(): Promise<void> {
     const api = useApiClient();
@@ -26,16 +54,42 @@ export const useTowerStore = defineStore('tower', () => {
     inProgressRunId.value = data.in_progress_run_id;
   }
 
+  async function resumeRun(runId?: number | null): Promise<void> {
+    const id = runId ?? inProgressRunId.value;
+    if (!id) {
+      throw new Error('没有进行中的闯关');
+    }
+
+    status.value = 'starting';
+    try {
+      const api = useApiClient();
+      const data = await api.get(`/wanyao-tower/run/${id}`);
+      if (data?.error) {
+        throw new Error(towerErrorMessage(data, '恢复闯关失败'));
+      }
+      applyRunPayload(data as TowerRunPayload);
+    } catch (e) {
+      status.value = 'idle';
+      throw e;
+    }
+  }
+
   async function startRun(): Promise<void> {
     status.value = 'starting';
     try {
       const api = useApiClient();
-      const data = (await api.post('/wanyao-tower/start', null)) as TowerRunPayload;
-      currentRun.value = data;
-      inProgressRunId.value = data.run_id;
-      answerIndex.value = 0;
-      correctMap.value = {};
-      status.value = 'answering';
+      const data = await api.post('/wanyao-tower/start', null);
+
+      if (data?.error === 'run_in_progress' && data?.run_id) {
+        await resumeRun(Number(data.run_id));
+        return;
+      }
+
+      if (data?.error) {
+        throw new Error(towerErrorMessage(data, '启动闯关失败'));
+      }
+
+      applyRunPayload(data as TowerRunPayload);
     } catch (e) {
       status.value = 'idle';
       throw e;
@@ -89,13 +143,36 @@ export const useTowerStore = defineStore('tower', () => {
     }
   }
 
-  async function abandon(): Promise<void> {
-    if (!currentRun.value) return;
+  async function abandonInProgress(): Promise<void> {
+    const runId = currentRun.value?.run_id ?? inProgressRunId.value;
+    if (!runId) return;
+
     const api = useApiClient();
-    await api.post('/wanyao-tower/abandon', { run_id: currentRun.value.run_id });
+    await api.post('/wanyao-tower/abandon', { run_id: runId });
     currentRun.value = null;
-    status.value = 'idle';
     inProgressRunId.value = null;
+    status.value = 'idle';
+  }
+
+  async function restartRun(): Promise<void> {
+    if (inProgressRunId.value || currentRun.value) {
+      await abandonInProgress();
+    }
+    await startRun();
+  }
+
+  async function abandon(): Promise<void> {
+    await abandonInProgress();
+  }
+
+  function pauseRun(): void {
+    if (currentRun.value) {
+      inProgressRunId.value = currentRun.value.run_id;
+    }
+    currentRun.value = null;
+    answerIndex.value = 0;
+    correctMap.value = {};
+    status.value = 'idle';
   }
 
   function resetToIdle(): void {
@@ -114,10 +191,14 @@ export const useTowerStore = defineStore('tower', () => {
     lastSettle,
     fetchStatus,
     startRun,
+    resumeRun,
     submitAnswer,
     advanceAfterAnswer,
     settle,
     abandon,
+    abandonInProgress,
+    restartRun,
+    pauseRun,
     resetToIdle,
   };
 });

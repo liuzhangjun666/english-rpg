@@ -1,30 +1,28 @@
 <?php
 namespace App\Services;
 
+use App\Models\Question;
 use App\Models\User;
+use App\Models\WritingPrompt;
 use App\Models\WanyaoTowerProgress;
 use App\Models\WanyaoTowerRun;
-use App\Models\VocabularyWord;
 use App\Services\CurrencyService;
 use App\Services\HeartDemonService;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class WanyaoTowerService
 {
-    private const QUESTION_TYPE_VOCAB = 'vocab';
-
-    public function __construct(
-        private readonly VocabQuestionBuilder $vocabBuilder,
-    ) {}
+    private const MCQ_TYPES = ['vocab', 'grammar', 'listening', 'reading', 'speaking'];
+    private const QUESTIONS_PER_RUN = 5;
 
     public function assembleRunPayload(int $floor): array
     {
         $theme = TowerRewardConfig::themeForFloor($floor);
-        $tier  = TowerRewardConfig::vocabTier($floor);
-        $words = $this->pickVocabWords($tier, $theme, count: 5);
-        $built = $this->vocabBuilder->buildFromPool($words);
-        $questions = array_map(fn($q) => $this->stripAnswer($q), $built);
-        $bossPrompt = $this->pickBossPrompt($theme);
+        $tier = TowerRewardConfig::vocabTier($floor);
+        $questions = $this->pickQuestions($floor, self::QUESTIONS_PER_RUN);
+        $bossPrompt = $this->pickBossPrompt($floor, $theme);
+
         return [
             'theme' => $theme,
             'vocab_tier' => $tier,
@@ -33,45 +31,83 @@ class WanyaoTowerService
         ];
     }
 
-    private function stripAnswer(array $q): array
+    protected function pickQuestions(int $floor, int $count): array
     {
-        unset($q['answer']);
-        return $q;
-    }
+        $level = TowerRewardConfig::assessmentLevelForFloor($floor);
+        $picked = $this->queryBankQuestions($level, $count);
 
-    protected function pickVocabWords(string $tier, string $theme, int $count): \Illuminate\Support\Collection
-    {
-        // 三级降级：tier+theme → 仅 tier → 任意随机词。
-        // 词库 tier/theme 尚未标注（或某档词不足 $count）时逐级兜底，
-        // 保证 /start 始终能出题，绝不返回空题或抛错。
-        $tierTheme = VocabularyWord::query()
-            ->where('tier', $tier)
-            ->where('theme', $theme)
-            ->inRandomOrder()
-            ->limit($count)
-            ->get();
-        if ($tierTheme->count() >= $count) {
-            return $tierTheme;
+        if ($picked->count() < $count) {
+            $picked = $this->queryBankQuestions($level, $count, widen: true);
+        }
+        if ($picked->count() < $count) {
+            $picked = Question::query()
+                ->whereIn('type', self::MCQ_TYPES)
+                ->inRandomOrder()
+                ->limit($count)
+                ->get();
         }
 
-        $tierOnly = VocabularyWord::query()
-            ->where('tier', $tier)
-            ->inRandomOrder()
-            ->limit($count)
-            ->get();
-        if ($tierOnly->count() >= $count) {
-            return $tierOnly;
-        }
-
-        return VocabularyWord::query()
-            ->inRandomOrder()
-            ->limit($count)
-            ->get();
+        return $picked
+            ->map(fn (Question $q) => $this->snapshotQuestion($q))
+            ->all();
     }
 
-    private function pickBossPrompt(string $theme): array
+    protected function queryBankQuestions(int $level, int $count, bool $widen = false): Collection
     {
-        // Phase 1 stub：返回一个写作 prompt 占位
+        $query = Question::query()->whereIn('type', self::MCQ_TYPES);
+
+        if ($widen) {
+            $query->whereBetween('assessment_level', [max(1, $level - 1), min(7, $level + 1)]);
+        } else {
+            $query->where('assessment_level', $level);
+        }
+
+        return $query->inRandomOrder()->limit($count)->get();
+    }
+
+    private function snapshotQuestion(Question $q): array
+    {
+        return [
+            'id' => $q->id,
+            'question_id' => $q->question_id,
+            'type' => $q->type,
+            'realm' => $q->realm,
+            'stage' => $q->stage,
+            'question' => $q->question,
+            'options' => $q->options,
+            'correct_answer' => $q->correct_answer,
+            'explanation' => $q->explanation,
+            'word' => $q->word,
+            'listening_text' => $q->listening_text,
+        ];
+    }
+
+    protected function pickBossPrompt(int $floor, string $theme): array
+    {
+        $level = TowerRewardConfig::assessmentLevelForFloor($floor);
+        $realm = TowerRewardConfig::realmForAssessmentLevel($level);
+
+        $prompt = WritingPrompt::query()
+            ->when($realm, fn ($q) => $q->where('realm', $realm))
+            ->inRandomOrder()
+            ->first()
+            ?? WritingPrompt::query()->inRandomOrder()->first();
+
+        if ($prompt) {
+            $minWords = max(30, (int) ($prompt->word_limit_min ?? 30));
+
+            return [
+                'id' => $prompt->id,
+                'prompt_id' => $prompt->prompt_id,
+                'theme' => $theme,
+                'title' => trim((string) ($prompt->title ?: $prompt->topic)),
+                'topic' => (string) $prompt->topic,
+                'passage' => $prompt->passage,
+                'min_chars' => min(120, $minWords),
+                'time_limit' => 120,
+            ];
+        }
+
         return [
             'id' => 0,
             'theme' => $theme,
@@ -102,10 +138,13 @@ class WanyaoTowerService
                 throw new \DomainException("RUN_IN_PROGRESS:{$existing->id}");
             }
             $payload = $this->assembleRunPayload($p->current_floor);
+            if (empty($payload['questions'])) {
+                throw new \DomainException('NO_QUESTIONS');
+            }
             $run = WanyaoTowerRun::create([
                 'user_id' => $user->id,
                 'floor' => $p->current_floor,
-                'questions_json' => $payload, // 含答案的完整快照存 DB
+                'questions_json' => $payload,
                 'boss_question_id' => $payload['boss_prompt']['id'] ?? 0,
                 'status' => 'in_progress',
             ]);
@@ -118,11 +157,36 @@ class WanyaoTowerService
     public function gradeAnswer(array $snapshot, int $qid, string $given): bool
     {
         foreach ($snapshot['questions'] ?? [] as $q) {
-            if ((int)($q['id'] ?? 0) === $qid) {
-                return strcasecmp($q['answer'] ?? '', $given) === 0;
+            if ($this->extractQuestionId($q) !== $qid) {
+                continue;
             }
+
+            $options = $q['options'] ?? [];
+            $correctKey = (string) ($q['correct_answer'] ?? '');
+            if (is_array($options) && !array_is_list($options) && $correctKey !== '') {
+                $correctText = (string) ($options[$correctKey] ?? '');
+                if ($correctText !== '' && strcasecmp(trim($correctText), trim($given)) === 0) {
+                    return true;
+                }
+            }
+
+            return strcasecmp(trim($correctKey), trim($given)) === 0;
         }
         throw new \DomainException("UNKNOWN_QID:{$qid}");
+    }
+
+    private function extractQuestionId(array $q): ?int
+    {
+        if (isset($q['id'])) {
+            return (int) $q['id'];
+        }
+
+        $questionId = (string) ($q['question_id'] ?? '');
+        if (preg_match('/^VW-(\d+)$/', $questionId, $m)) {
+            return (int) $m[1];
+        }
+
+        return null;
     }
 
     public function computeSettleResult(int $correctCount, bool $bossPassed): array
@@ -191,9 +255,18 @@ class WanyaoTowerService
                 $run->status = 'cleared';
             } else {
                 foreach ($run->questions_json['questions'] ?? [] as $q) {
-                    $wasCorrect = $run->questions_json['answered'][$q['id']]['correct'] ?? null;
+                    $qid = $this->extractQuestionId($q);
+                    if ($qid === null) {
+                        continue;
+                    }
+                    $wasCorrect = $run->questions_json['answered'][$qid]['correct'] ?? null;
                     if ($wasCorrect !== true) {
-                        $heartDemon->recordWrong($run->user_id, (string)$q['id'], self::QUESTION_TYPE_VOCAB);
+                        $heartDemon->recordWrong(
+                            $run->user_id,
+                            (string) ($q['question_id'] ?? $qid),
+                            (string) ($q['type'] ?? 'vocab'),
+                            $q['realm'] ?? null,
+                        );
                         $demonsAdded++;
                     }
                 }

@@ -3168,4 +3168,44 @@ function backHall() {
 
 
 }
+
+@media (max-width: 768px) {
+  .writing-arena,
+  .speaking-arena {
+    top: var(--hud-offset-top, var(--arena-below-hud, calc(var(--top-hud-height, 76px) + 10px)));
+    width: 100%;
+    min-height: calc(var(--app-dvh, 100vh) - var(--hud-offset-top, var(--top-hud-height, 76px)));
+    padding-bottom: calc(26px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .fz-bg,
+  .fz-mask,
+  .sz-bg,
+  .sz-mask {
+    top: var(--hud-offset-top, var(--arena-below-hud, calc(var(--top-hud-height, 76px) + 10px)));
+  }
+
+  .fz-bg,
+  .sz-bg {
+    height: calc(var(--app-dvh, 100vh) - var(--hud-offset-top, var(--top-hud-height, 76px)));
+  }
+
+  .grammar-arena {
+    top: var(--hud-offset-top, var(--top-hud-height, 80px));
+    height: calc(var(--app-dvh, 100vh) - var(--hud-offset-top, var(--top-hud-height, 80px)));
+  }
+
+  .zf-scene-stage,
+  .zf-bridge-frame {
+    width: max(100vw, calc(var(--app-dvh, 100vh) * var(--zf-bg-w) / var(--zf-bg-h)));
+    height: max(var(--app-dvh, 100vh), calc(100vw * var(--zf-bg-h) / var(--zf-bg-w)));
+  }
+
+  .zf-back-btn {
+    left: max(8px, env(safe-area-inset-left, 0px));
+    top: calc(var(--hud-offset-top, var(--top-hud-height, 80px)) + 4px);
+    width: 72px;
+    height: 72px;
+  }
+}
 </style>

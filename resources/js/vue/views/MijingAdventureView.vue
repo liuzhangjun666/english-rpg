@@ -545,6 +545,11 @@ function backHall() {
 </script>
 
 <style scoped>
+.mijing-page {
+  min-height: calc(var(--app-dvh, 100vh) - var(--hud-offset-top, var(--top-hud-height, 76px)));
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+}
+
 /* ===== HUD 状态栏 ===== */
 .mijing-hud {
   display: flex;
@@ -693,5 +698,29 @@ function backHall() {
   background: rgba(255, 255, 255, 0.15);
   color: #fff;
   border-color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 640px) {
+  .mijing-hud {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .hud-item {
+    padding: 5px 10px;
+  }
+
+  .hud-val {
+    font-size: 16px;
+  }
+
+  .mijing-options {
+    grid-template-columns: 1fr;
+    padding: 0 6px;
+  }
+
+  .mijing-bottom-bar {
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  }
 }
 </style>

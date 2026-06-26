@@ -37,6 +37,8 @@ async function submit(timeout = false) {
 <template>
   <div v-if="boss" class="tower-boss">
     <div class="tower-boss__title">{{ boss.title }}</div>
+    <div v-if="boss.topic && boss.topic !== boss.title" class="tower-boss__topic">{{ boss.topic }}</div>
+    <div v-if="boss.passage" class="tower-boss__passage">{{ boss.passage }}</div>
     <div class="tower-boss__blood">
       <div class="tower-boss__blood-fill" :style="{ width: bloodPercent + '%' }"></div>
       <div class="tower-boss__blood-text">{{ remaining }}s</div>
@@ -60,6 +62,11 @@ async function submit(timeout = false) {
 <style scoped>
 .tower-boss { padding: 24px; color: #f4e7c1; }
 .tower-boss__title { font-size: 20px; margin-bottom: 12px; }
+.tower-boss__topic { font-size: 15px; line-height: 1.6; opacity: 0.9; margin-bottom: 12px; }
+.tower-boss__passage {
+  font-size: 14px; line-height: 1.6; margin-bottom: 12px; padding: 10px 12px;
+  background: rgba(255,255,255,0.06); border-radius: 6px;
+}
 .tower-boss__blood {
   position: relative; height: 28px; background: rgba(60,0,0,0.5);
   border: 1px solid #c41e3a; border-radius: 4px; overflow: hidden; margin-bottom: 16px;

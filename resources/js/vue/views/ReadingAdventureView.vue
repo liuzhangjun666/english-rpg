@@ -1010,7 +1010,7 @@ function backHall() {
 
 <style scoped>
 .cangjing-page {
-  min-height: calc(100vh - var(--top-hud-height, 76px));
+  min-height: calc(var(--app-dvh, 100vh) - var(--hud-offset-top, var(--top-hud-height, 76px)));
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -1019,7 +1019,7 @@ function backHall() {
 }
 
 .cangjing-shell {
-  min-height: calc(100vh - var(--top-hud-height, 76px) - 20px);
+  min-height: calc(var(--app-dvh, 100vh) - var(--hud-offset-top, var(--top-hud-height, 76px)) - 20px);
   padding: 10px;
   overflow: hidden;
   border: 1px solid rgba(212, 168, 67, 0.4);
@@ -1126,7 +1126,7 @@ function backHall() {
   border-radius: 12px;
   background-position: center;
   background-size: cover;
-  min-height: 760px;
+  min-height: 720px;
   border: 1px solid rgba(212, 168, 67, 0.35);
 }
 
@@ -1929,6 +1929,21 @@ function backHall() {
 
   .reward-strip {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .cangjing-page {
+    padding: 6px;
+  }
+
+  .cangjing-shell {
+    min-height: calc(var(--app-dvh, 100vh) - var(--hud-offset-top, var(--top-hud-height, 76px)) - 12px);
+    padding: 8px;
+  }
+
+  .mechanism-stage {
+    min-height: 560px;
   }
 }
 </style>

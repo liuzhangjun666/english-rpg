@@ -77,7 +77,6 @@ export class WorldCameraController {
     this.flying = true;
     this.controls.enabled = false;
 
-    // 相机飞到建筑斜后方并抬高，确保整座建筑（含浮岛）完整入镜
     const dir = new THREE.Vector3()
       .subVectors(this.camera.position, this.controls.target)
       .setY(0).normalize();
@@ -85,13 +84,10 @@ export class WorldCameraController {
       .addScaledVector(dir, 520)
       .add(new THREE.Vector3(0, 300, 0));
 
-    // 目标点对准建筑中部，让建筑垂直居中
     const tgt = { x: buildingWorldPos.x, y: buildingWorldPos.y + 170, z: buildingWorldPos.z };
 
     gsap.timeline({
       onComplete: () => {
-        // 近景为焦点态：完全锁住——禁用 pan，并让 OrbitControls 内部 spherical
-        // 与 gsap 直接 set 的 camera.position / target 重新对齐，防止零输入漂动。
         this.controls.enablePan = false;
         this.controls.target.set(tgt.x, tgt.y, tgt.z);
         this.controls.enabled = true;

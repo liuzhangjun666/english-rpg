@@ -16,7 +16,7 @@ class CurrencyServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new CurrencyService();
+        $this->service = $this->app->make(CurrencyService::class);
     }
 
     public function test_daily_check_recovers_spirit_power()

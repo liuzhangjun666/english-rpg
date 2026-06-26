@@ -114,6 +114,7 @@ function resolveAction(action: MapBuildingAction, handlers: MapBuildingHandlers)
       break;
     case 'message':
       ElMessage.info(action.text);
+      break;
     case 'askHeart':
       handlers.showAskHeart();
       break;
@@ -139,17 +140,23 @@ function resolveAction(action: MapBuildingAction, handlers: MapBuildingHandlers)
 
 export function useMapBuildings(handlers: MapBuildingHandlers) {
   const mapBuildings = computed(() =>
-    MAP_BUILDING_DEFS.map((def) => ({
-      key: def.sceneId,
-      title: def.title,
-      unlockRealm: def.unlockRealm,
-      subNodes: def.subNodes.map((node) => ({
-        key: node.key,
-        title: node.title,
-        icon: ABILITY_ICONS[node.iconKey],
-        onClick: () => resolveAction(node.action, handlers),
-      })),
-    }))
+    MAP_BUILDING_DEFS.map((def) => {
+      const subNodes = def.subNodes
+        .filter((node) => node.enabled !== false)
+        .map((node) => ({
+          key: node.key,
+          title: node.title,
+          icon: ABILITY_ICONS[node.iconKey],
+          onClick: () => resolveAction(node.action, handlers),
+        }));
+
+      return {
+        key: def.sceneId,
+        title: def.title,
+        unlockRealm: def.unlockRealm,
+        subNodes,
+      };
+    }).filter((def) => def.subNodes.length > 0)
   );
 
   return { mapBuildings };

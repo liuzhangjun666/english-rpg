@@ -193,6 +193,8 @@ onMounted(async () => {
 <style scoped>
 .assessment-page {
   max-width: 920px;
+  min-height: calc(var(--app-dvh, 100vh) - var(--hud-offset-top, var(--top-hud-height, 76px)));
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
 }
 
 .status-box {
@@ -360,6 +362,14 @@ onMounted(async () => {
   .dual-result-grid,
   .stat-grid {
     grid-template-columns: 1fr;
+  }
+
+  .assessment-page {
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .level-table :deep(.el-table__cell) {
+    padding: 8px 4px;
   }
 }
 </style>

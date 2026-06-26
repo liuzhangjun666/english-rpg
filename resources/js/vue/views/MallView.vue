@@ -129,7 +129,10 @@ const buyItem = async (item: any) => {
   position: relative;
   width: 100vw;
   height: 100vh;
-  background: #0a0a1a url('../../../assets/images/bg_mall.jpg') center/cover no-repeat;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(212, 168, 67, 0.12), transparent 42%),
+    radial-gradient(circle at 80% 0%, rgba(86, 127, 197, 0.14), transparent 38%),
+    linear-gradient(180deg, #0f1630 0%, #0a0a1a 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -297,5 +300,29 @@ const buyItem = async (item: any) => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+@media (max-width: 768px) {
+  .mall-page {
+    height: var(--app-dvh, 100vh);
+    align-items: stretch;
+    padding: calc(6px + env(safe-area-inset-top, 0px)) max(6px, env(safe-area-inset-right, 0px))
+      calc(6px + env(safe-area-inset-bottom, 0px)) max(6px, env(safe-area-inset-left, 0px));
+  }
+
+  .profile-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+  }
+
+  .profile-body {
+    padding: 14px !important;
+  }
+
+  .mall-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
 </style>

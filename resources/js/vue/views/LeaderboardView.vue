@@ -114,7 +114,10 @@ const fetchLeaderboard = async (tab: string) => {
   position: relative;
   width: 100vw;
   height: 100vh;
-  background: #0a0a1a url('../../../assets/images/bg_mall.jpg') center/cover no-repeat;
+  background:
+    radial-gradient(circle at 16% 16%, rgba(212, 168, 67, 0.12), transparent 44%),
+    radial-gradient(circle at 84% 0%, rgba(86, 127, 197, 0.15), transparent 40%),
+    linear-gradient(180deg, #0f1630 0%, #0a0a1a 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -305,5 +308,34 @@ const fetchLeaderboard = async (tab: string) => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+@media (max-width: 768px) {
+  .leaderboard-page {
+    height: var(--app-dvh, 100vh);
+    align-items: stretch;
+    padding: calc(6px + env(safe-area-inset-top, 0px)) max(6px, env(safe-area-inset-right, 0px))
+      calc(6px + env(safe-area-inset-bottom, 0px)) max(6px, env(safe-area-inset-left, 0px));
+  }
+
+  .profile-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+  }
+
+  .profile-body {
+    padding: 14px !important;
+  }
+
+  .lb-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .lb-item {
+    padding: 12px 14px;
+    gap: 10px;
+  }
 }
 </style>

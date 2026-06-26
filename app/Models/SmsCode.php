@@ -19,11 +19,13 @@ class SmsCode extends Model
 
     public function scopeValid($query, string $phone, string $code, string $action = 'login')
     {
+        $maxAttempts = (int) config('sms.code_max_attempts', 5);
+
         return $query->where('phone', $phone)
             ->where('code', $code)
             ->where('action', $action)
             ->whereNull('used_at')
             ->where('expires_at', '>', now())
-            ->where('attempts', '<', 5);
+            ->where('attempts', '<', $maxAttempts);
     }
 }

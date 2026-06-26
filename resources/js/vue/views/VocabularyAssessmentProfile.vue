@@ -54,6 +54,11 @@ async function startAssessment() {
 </script>
 
 <style scoped>
+.assessment-page {
+  min-height: calc(var(--app-dvh, 100vh) - var(--hud-offset-top, var(--top-hud-height, 76px)));
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+}
+
 .assessment-desc {
   color: var(--cult-parchment-dim, #c8b685);
   font-size: 14px;

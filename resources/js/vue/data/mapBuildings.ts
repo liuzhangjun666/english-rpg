@@ -38,7 +38,7 @@ export type MapBuildingAction =
   | { type: 'pets' }
   | { type: 'storage' }
   | { type: 'mail' }
-  | { type: 'settings' };
+  | { type: 'settings' }
   | { type: 'wanyaoTower' }
   | { type: 'message'; text: string };
 
@@ -47,6 +47,8 @@ export interface MapSubNodeDef {
   title: string;
   iconKey: AbilityIconKey;
   action: MapBuildingAction;
+  /** 默认 true；未完整实现的入口设为 false，宗门地图径向菜单不展示 */
+  enabled?: boolean;
 }
 
 export interface MapBuildingDef {
@@ -87,7 +89,7 @@ export const MAP_BUILDING_DEFS: MapBuildingDef[] = [
     subNodes: [
       { key: 'writing-game', title: '写作', iconKey: 'writing', action: { type: 'practice', mode: 'writing' } },
       { key: 'speaking', title: '口语', iconKey: 'speaking', action: { type: 'practice', mode: 'speaking' } },
-      { key: 'ai', title: 'AI问道', iconKey: 'reading', action: { type: 'aiAsk' } },
+      { key: 'ai', title: 'AI问道', iconKey: 'reading', action: { type: 'aiAsk' }, enabled: false },
     ],
   },
   {
@@ -117,7 +119,7 @@ export const MAP_BUILDING_DEFS: MapBuildingDef[] = [
     subNodes: [
       { key: 'info', title: '个人信息', iconKey: 'vocab', action: { type: 'profile' } },
       { key: 'achieve', title: '成就碑', iconKey: 'reading', action: { type: 'achievements' } },
-      { key: 'pets', title: '灵宠园', iconKey: 'grammar', action: { type: 'pets' } },
+      { key: 'pets', title: '灵宠园', iconKey: 'grammar', action: { type: 'pets' }, enabled: false },
       { key: 'storage', title: '仓库', iconKey: 'listening', action: { type: 'storage' } },
     ],
   },
@@ -127,7 +129,7 @@ export const MAP_BUILDING_DEFS: MapBuildingDef[] = [
     unlockRealm: 3,
     subNodes: [
       { key: 'dungeon', title: '副本', iconKey: 'writing', action: { type: 'mijing' } },
-      { key: 'event', title: '活动', iconKey: 'speaking', action: { type: 'events' } },
+      { key: 'event', title: '活动', iconKey: 'speaking', action: { type: 'events' }, enabled: false },
       { key: 'world-boss', title: '世界挑战', iconKey: 'reading', action: { type: 'worldBoss' } },
     ],
   },
@@ -137,8 +139,8 @@ export const MAP_BUILDING_DEFS: MapBuildingDef[] = [
     unlockRealm: 0,
     subNodes: [
       { key: 'tower-climb', title: '登塔挑战', iconKey: 'vocab', action: { type: 'wanyaoTower' } },
-      { key: 'tower-rank', title: '镇妖榜', iconKey: 'reading', action: { type: 'message', text: '镇妖榜推演中...' } },
-      { key: 'tower-spoils', title: '妖魂兑换', iconKey: 'grammar', action: { type: 'message', text: '妖魂阁稍后开放' } },
+      { key: 'tower-rank', title: '镇妖榜', iconKey: 'reading', action: { type: 'message', text: '镇妖榜推演中...' }, enabled: false },
+      { key: 'tower-spoils', title: '妖魂兑换', iconKey: 'grammar', action: { type: 'message', text: '妖魂阁稍后开放' }, enabled: false },
     ],
   },
 ];

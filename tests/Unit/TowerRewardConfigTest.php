@@ -44,4 +44,19 @@ class TowerRewardConfigTest extends TestCase
         $this->assertSame('kaoyan',  TowerRewardConfig::vocabTier(70));
         $this->assertSame('ielts',   TowerRewardConfig::vocabTier(95));
     }
+
+    public function test_assessment_level_for_floor()
+    {
+        $this->assertSame(4, TowerRewardConfig::assessmentLevelForFloor(1));
+        $this->assertSame(5, TowerRewardConfig::assessmentLevelForFloor(30));
+        $this->assertSame(6, TowerRewardConfig::assessmentLevelForFloor(50));
+        $this->assertSame(7, TowerRewardConfig::assessmentLevelForFloor(90));
+    }
+
+    public function test_realm_for_assessment_level()
+    {
+        $this->assertSame('L1', TowerRewardConfig::realmForAssessmentLevel(1));
+        $this->assertSame('J1', TowerRewardConfig::realmForAssessmentLevel(4));
+        $this->assertSame('H1', TowerRewardConfig::realmForAssessmentLevel(7));
+    }
 }

@@ -1,5 +1,16 @@
 /* LevelUp 英语修仙 - 移动端适配 */
+@supports (height: 100dvh) {
+    #vue-app {
+        --app-dvh: 100dvh;
+    }
+}
+
 @media (max-width: 768px) {
+    #vue-app {
+        --safe-top: env(safe-area-inset-top, 0px);
+        --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
     .reading-actions {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));

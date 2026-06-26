@@ -195,7 +195,7 @@ watch(() => ui.isMapDragging, (isDragging) => {
     inset 0 1px 0 rgba(255, 215, 0, 0.12);
   display: flex;
   align-items: center;
-  padding: 0 20px;
+  padding: env(safe-area-inset-top, 0px) max(10px, env(safe-area-inset-right, 0px)) 0 max(10px, env(safe-area-inset-left, 0px));
   z-index: 1000;
   backdrop-filter: blur(10px);
   pointer-events: auto;
@@ -664,6 +664,52 @@ watch(() => ui.isMapDragging, (isDragging) => {
 }
 
 @media (max-width: 600px) {
+  .top-hud {
+    height: 68px;
+    padding-right: max(8px, env(safe-area-inset-right, 0px));
+    padding-left: max(8px, env(safe-area-inset-left, 0px));
+  }
+
+  .hud-left {
+    gap: 8px;
+  }
+
+  .avatar-box {
+    width: 46px;
+    height: 46px;
+  }
+
+  .role-name {
+    font-size: 13px;
+    max-width: 104px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .exp-bar-bg {
+    width: 92px;
+  }
+
+  .map-btn {
+    padding: 5px 9px;
+  }
+
+  .map-btn-label {
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .map-btn-icon,
+  .sys-icon-img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .sys-btn {
+    width: 28px;
+    height: 28px;
+  }
+
   .hud-center {
     display: none;
   }

@@ -23,31 +23,51 @@
           <span class="portal-glow"></span>
 
           <div class="portal-head">
-            <h2>{{ isLogin ? '修士登入' : '凝聚仙魂' }}</h2>
-            <button class="switch-link" @click="toggleFormType">
-              {{ isLogin ? '前往注册 →' : '← 返回登入' }}
+            <h2>{{ portalTitle }}</h2>
+            <button v-if="formMode !== 'reset'" class="switch-link" @click="toggleFormType">
+              {{ formMode === 'login' ? '前往注册 →' : '← 返回登入' }}
+            </button>
+            <button v-else class="switch-link" @click="backToLogin">← 返回登入</button>
+          </div>
+
+          <!-- 登录方式切换（仅登录页） -->
+          <div v-if="formMode === 'login'" class="login-mode-tabs">
+            <button type="button" class="mode-tab" :class="{ 'is-active': loginMode === 'sms' }"
+              @click="loginMode = 'sms'">
+              短信登录
+            </button>
+            <button type="button" class="mode-tab" :class="{ 'is-active': loginMode === 'password' }"
+              @click="loginMode = 'password'">
+              密码登录
             </button>
           </div>
 
           <!-- 登录 -->
-          <form v-if="isLogin" class="form" @submit.prevent="doLogin">
+          <form v-if="formMode === 'login'" class="form" @submit.prevent="doLogin">
             <div class="field">
               <span class="field-ico">📡</span>
               <input v-model="loginForm.phone" type="tel" maxlength="11" placeholder="传音符（手机号）" />
             </div>
-            <div class="field code-field">
+            <div v-if="loginMode === 'sms'" class="field code-field">
               <span class="field-ico">✦</span>
               <input v-model="loginForm.code" type="text" maxlength="6" placeholder="灵力印记（验证码）" />
               <button type="button" class="code-btn" :disabled="loginCountdown > 0" @click="sendCode('login')">
                 {{ loginCountdown > 0 ? `${loginCountdown}息` : '获取印记' }}
               </button>
             </div>
+            <div v-else class="field">
+              <span class="field-ico">🔒</span>
+              <input v-model="loginForm.password" type="password" maxlength="64" placeholder="护道密令（密码）" />
+            </div>
+            <button v-if="loginMode === 'password'" type="button" class="forgot-link" @click="openResetPassword">
+              忘记密令？
+            </button>
             <button type="submit" class="jade-btn"><span>破 关 登 入</span></button>
             <button type="button" class="ghost-btn" @click="guestLogin">神游太虚（游客体验）</button>
           </form>
 
           <!-- 注册 -->
-          <form v-else class="form" @submit.prevent="doRegister">
+          <form v-else-if="formMode === 'register'" class="form" @submit.prevent="doRegister">
             <div class="field">
               <span class="field-ico">📡</span>
               <input v-model="registerForm.phone" type="tel" maxlength="11" placeholder="传音符（手机号）" />
@@ -80,7 +100,42 @@
               <input v-model="registerForm.nickname" type="text" maxlength="50" placeholder="道号（选填，不填由天道赐名）" />
             </div>
 
+            <div class="field">
+              <span class="field-ico">🔒</span>
+              <input v-model="registerForm.password" type="password" maxlength="64" placeholder="护道密令（密码，至少6位）" />
+            </div>
+            <div class="field">
+              <span class="field-ico">🔒</span>
+              <input v-model="registerForm.password_confirmation" type="password" maxlength="64"
+                placeholder="确认护道密令" />
+            </div>
+
             <button type="submit" class="jade-btn"><span>塑 魂 注 册</span></button>
+          </form>
+
+          <!-- 重置密码 -->
+          <form v-else class="form" @submit.prevent="doResetPassword">
+            <div class="field">
+              <span class="field-ico">📡</span>
+              <input v-model="resetForm.phone" type="tel" maxlength="11" placeholder="传音符（手机号）" />
+            </div>
+            <div class="field code-field">
+              <span class="field-ico">✦</span>
+              <input v-model="resetForm.code" type="text" maxlength="6" placeholder="灵力印记（验证码）" />
+              <button type="button" class="code-btn" :disabled="resetCountdown > 0" @click="sendCode('reset')">
+                {{ resetCountdown > 0 ? `${resetCountdown}息` : '获取印记' }}
+              </button>
+            </div>
+            <div class="field">
+              <span class="field-ico">🔒</span>
+              <input v-model="resetForm.password" type="password" maxlength="64" placeholder="新护道密令（至少6位）" />
+            </div>
+            <div class="field">
+              <span class="field-ico">🔒</span>
+              <input v-model="resetForm.password_confirmation" type="password" maxlength="64"
+                placeholder="确认新护道密令" />
+            </div>
+            <button type="submit" class="jade-btn"><span>重 置 密 令</span></button>
           </form>
         </div>
         <p class="brand-sub">英语修仙 · 背单词，修大道</p>
@@ -94,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted, onBeforeUnmount } from 'vue';
+import { reactive, ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useApiClient } from '../services/api';
@@ -117,7 +172,14 @@ const ui = useUiStore();
 const bridge = useLegacyBridge();
 
 const showForm = ref(false);
-const isLogin = ref(true);
+const formMode = ref<'login' | 'register' | 'reset'>('login');
+const loginMode = ref<'sms' | 'password'>('sms');
+
+const portalTitle = computed(() => {
+  if (formMode.value === 'register') return '凝聚仙魂';
+  if (formMode.value === 'reset') return '重置密令';
+  return '修士登入';
+});
 
 const gateCanvasRef = ref<HTMLDivElement | null>(null);
 let gateScene: LoginGateScene | null = null;
@@ -139,10 +201,12 @@ onBeforeUnmount(() => {
 
 const loginCountdown = ref(0);
 const registerCountdown = ref(0);
+const resetCountdown = ref(0);
 
 const loginForm = reactive({
   phone: '',
   code: '',
+  password: '',
 });
 
 const schoolStages = [
@@ -167,17 +231,39 @@ const registerForm = reactive({
   nickname: '',
   school_grade: '',
   birth_year: '',
+  password: '',
+  password_confirmation: '',
+});
+
+const resetForm = reactive({
+  phone: '',
+  code: '',
+  password: '',
+  password_confirmation: '',
 });
 
 function toggleFormType() {
-  isLogin.value = !isLogin.value;
-  if (!isLogin.value) {
+  formMode.value = formMode.value === 'login' ? 'register' : 'login';
+  if (formMode.value === 'register') {
     registerForm.school_grade = '';
   }
 }
 
-function startCountdown(target: 'login' | 'register', seconds = 60) {
-  const refTarget = target === 'login' ? loginCountdown : registerCountdown;
+function openResetPassword() {
+  resetForm.phone = loginForm.phone.trim();
+  resetForm.code = '';
+  resetForm.password = '';
+  resetForm.password_confirmation = '';
+  formMode.value = 'reset';
+}
+
+function backToLogin() {
+  formMode.value = 'login';
+  loginMode.value = 'password';
+}
+
+function startCountdown(target: 'login' | 'register' | 'reset', seconds = 60) {
+  const refTarget = target === 'login' ? loginCountdown : target === 'register' ? registerCountdown : resetCountdown;
   refTarget.value = seconds;
   const timer = setInterval(() => {
     refTarget.value -= 1;
@@ -185,13 +271,18 @@ function startCountdown(target: 'login' | 'register', seconds = 60) {
   }, 1000);
 }
 
-async function sendCode(action: 'login' | 'register') {
-  const phone = action === 'login' ? loginForm.phone.trim() : registerForm.phone.trim();
+async function sendCode(action: 'login' | 'register' | 'reset') {
+  const phone = action === 'login'
+    ? loginForm.phone.trim()
+    : action === 'register'
+      ? registerForm.phone.trim()
+      : resetForm.phone.trim();
   if (phone.length !== 11) {
     ElMessage.error('请输入11位手机号');
     return;
   }
-  const res = await api.post('/sms/send', { phone, action });
+  const smsAction = action === 'reset' ? 'reset_password' : action;
+  const res = await api.post('/sms/send', { phone, action: smsAction });
   if (!res?.success && res?.code === 'PHONE_ALREADY_REGISTERED' && action === 'register') {
     promptRegisteredPhoneAndGoLogin(phone);
     return;
@@ -203,6 +294,7 @@ async function sendCode(action: 'login' | 'register') {
   if (res?.debug_code) {
     if (action === 'login') loginForm.code = String(res.debug_code);
     if (action === 'register') registerForm.code = String(res.debug_code);
+    if (action === 'reset') resetForm.code = String(res.debug_code);
   }
   startCountdown(action);
   ElMessage.success('验证码已发送');
@@ -260,17 +352,34 @@ function navigateAfterAuth(needsAssessment: boolean, options?: { fromRegister?: 
 }
 
 async function doLogin() {
-  if (loginForm.phone.trim().length !== 11 || loginForm.code.trim().length !== 6) {
-    ElMessage.error('请填写正确的手机号和验证码');
+  if (loginForm.phone.trim().length !== 11) {
+    ElMessage.error('请输入11位手机号');
+    return;
+  }
+
+  if (loginMode.value === 'sms') {
+    if (loginForm.code.trim().length !== 6) {
+      ElMessage.error('请填写正确的验证码');
+      return;
+    }
+  } else if (loginForm.password.length < 6) {
+    ElMessage.error('密码至少6位');
     return;
   }
 
   ui.showLoading('正在登入...');
   try {
-    const res = await api.post('/auth/login', {
+    const payload: Record<string, string> = {
       phone: loginForm.phone.trim(),
-      code: loginForm.code.trim(),
-    });
+      login_type: loginMode.value,
+    };
+    if (loginMode.value === 'sms') {
+      payload.code = loginForm.code.trim();
+    } else {
+      payload.password = loginForm.password;
+    }
+
+    const res = await api.post('/auth/login', payload);
 
     if (!res?.success || !res?.data?.token) {
       ElMessage.error(res?.message || '登录失败');
@@ -299,6 +408,14 @@ async function doRegister() {
     ElMessage.error('请选择修炼学段');
     return;
   }
+  if (registerForm.password.length < 6) {
+    ElMessage.error('密码至少6位');
+    return;
+  }
+  if (registerForm.password !== registerForm.password_confirmation) {
+    ElMessage.error('两次输入的密码不一致');
+    return;
+  }
 
   ui.showLoading('正在凝聚仙魂...');
   try {
@@ -306,6 +423,8 @@ async function doRegister() {
       phone: registerForm.phone.trim(),
       code: registerForm.code.trim(),
       school_grade: registerForm.school_grade.trim(),
+      password: registerForm.password,
+      password_confirmation: registerForm.password_confirmation,
     };
     if (registerForm.nickname.trim()) payload.nickname = registerForm.nickname.trim();
     if (registerForm.birth_year.trim()) payload.birth_year = Number(registerForm.birth_year.trim());
@@ -350,6 +469,43 @@ async function doRegister() {
   }
 }
 
+async function doResetPassword() {
+  if (resetForm.phone.trim().length !== 11 || resetForm.code.trim().length !== 6) {
+    ElMessage.error('请填写正确的手机号和验证码');
+    return;
+  }
+  if (resetForm.password.length < 6) {
+    ElMessage.error('密码至少6位');
+    return;
+  }
+  if (resetForm.password !== resetForm.password_confirmation) {
+    ElMessage.error('两次输入的密码不一致');
+    return;
+  }
+
+  ui.showLoading('正在重置密令...');
+  try {
+    const res = await api.post('/auth/reset-password', {
+      phone: resetForm.phone.trim(),
+      code: resetForm.code.trim(),
+      password: resetForm.password,
+      password_confirmation: resetForm.password_confirmation,
+    });
+
+    if (!res?.success) {
+      ElMessage.error(res?.message || '重置失败');
+      return;
+    }
+
+    ElMessage.success('密令已重置，请使用新密码登录');
+    loginForm.phone = resetForm.phone.trim();
+    loginForm.password = '';
+    backToLogin();
+  } finally {
+    ui.hideLoading();
+  }
+}
+
 async function guestLogin() {
   loginForm.phone = '13800138000';
   await sendCode('login');
@@ -365,7 +521,7 @@ async function promptRegisteredPhoneAndGoLogin(phone: string) {
       '手机号已注册',
       { confirmButtonText: '去登录', cancelButtonText: '取消', type: 'warning' }
     );
-    isLogin.value = true;
+    formMode.value = 'login';
     loginForm.phone = String(phone || '').trim();
     loginForm.code = '';
   } catch {
@@ -563,6 +719,50 @@ async function promptRegisteredPhoneAndGoLogin(phone: string) {
 }
 
 .switch-link:hover {
+  color: #f3d98a;
+}
+
+.login-mode-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.mode-tab {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(150, 210, 255, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+  color: #9fc4e6;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-tab:hover {
+  border-color: rgba(243, 201, 90, 0.55);
+  color: #f3d98a;
+}
+
+.mode-tab.is-active {
+  border-color: rgba(243, 201, 90, 0.85);
+  background: rgba(243, 201, 90, 0.16);
+  color: #fde68a;
+}
+
+.forgot-link {
+  align-self: flex-end;
+  margin-top: -6px;
+  background: none;
+  border: none;
+  color: #8fbfe6;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.forgot-link:hover {
   color: #f3d98a;
 }
 
@@ -779,5 +979,25 @@ async function promptRegisteredPhoneAndGoLogin(phone: string) {
 
 .enter-flash.on {
   opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .login-page {
+    padding: calc(10px + env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-right, 0px))
+      calc(12px + env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px));
+  }
+
+  .gate-panel {
+    width: min(94vw, 520px);
+  }
+
+  .gate-title {
+    width: min(86vw, 420px);
+  }
+
+  .hint-scroll {
+    bottom: max(14px, env(safe-area-inset-bottom, 0px));
+    width: min(88vw, 460px);
+  }
 }
 </style>

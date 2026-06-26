@@ -33,7 +33,19 @@ class WanyaoTowerController extends Controller
                 [, $id] = explode(':', $e->getMessage());
                 return response()->json(['error' => 'run_in_progress', 'run_id' => (int)$id], 409);
             }
+            if ($e->getMessage() === 'NO_QUESTIONS') {
+                return response()->json(['error' => 'no_questions', 'message' => '题库不足，暂无法闯关'], 422);
+            }
             throw $e;
+        }
+        return response()->json($this->responsePayload($run));
+    }
+
+    public function show(Request $r, int $runId): JsonResponse
+    {
+        $run = $this->findOwnedRun($r, $runId);
+        if ($run->status !== 'in_progress') {
+            return response()->json(['error' => 'run_not_active'], 422);
         }
         return response()->json($this->responsePayload($run));
     }
@@ -109,10 +121,15 @@ class WanyaoTowerController extends Controller
     private function responsePayload(WanyaoTowerRun $run): array
     {
         $snap = $run->questions_json ?? [];
-        $clientQuestions = array_map(function ($q) {
-            unset($q['answer']);
-            return $q;
-        }, $snap['questions'] ?? []);
+        $clientQuestions = [];
+        foreach ($snap['questions'] ?? [] as $q) {
+            $normalized = $this->normalizeClientQuestion($q);
+            if ($normalized) {
+                $clientQuestions[] = $normalized;
+            }
+        }
+        $answered = $snap['answered'] ?? [];
+
         return [
             'run_id' => $run->id,
             'floor' => $run->floor,
@@ -120,6 +137,34 @@ class WanyaoTowerController extends Controller
             'vocab_tier' => $snap['vocab_tier'] ?? null,
             'questions' => $clientQuestions,
             'boss_prompt' => $snap['boss_prompt'] ?? null,
+            'answered_count' => is_array($answered) ? count($answered) : 0,
+        ];
+    }
+
+    private function normalizeClientQuestion(array $q): ?array
+    {
+        $optionsMap = $q['options'] ?? [];
+        if (!is_array($optionsMap) || $optionsMap === []) {
+            return null;
+        }
+
+        $id = (int) ($q['id'] ?? 0);
+        if ($id <= 0) {
+            $questionId = (string) ($q['question_id'] ?? '');
+            if (preg_match('/^VW-(\d+)$/', $questionId, $m)) {
+                $id = (int) $m[1];
+            } else {
+                return null;
+            }
+        }
+
+        return [
+            'id' => $id,
+            'type' => (string) ($q['type'] ?? 'vocab'),
+            'prompt' => (string) ($q['question'] ?? $q['prompt'] ?? ''),
+            'options' => array_is_list($optionsMap) ? $optionsMap : array_values($optionsMap),
+            'word' => $q['word'] ?? null,
+            'listening_text' => $q['listening_text'] ?? null,
         ];
     }
 }

@@ -184,6 +184,7 @@ export class WorldSceneManager {
   public onBuildingClick?: (node: SectNodeDef, screenX: number, screenY: number) => void;
   public onBuildingHover?: (node: SectNodeDef | null) => void;
   public onFocusedMove?: (screenX: number, screenY: number) => void; // 特写时每帧更新菜单坐标
+  public onFocusDismiss?: () => void; // 特写时点击空白区域
 
   /** 预加载地图模型到缓存。critical 只加载首屏关键建筑，all 加载全部。 */
   public static preload(mode: PreloadMode = 'all') {
@@ -1605,26 +1606,37 @@ export class WorldSceneManager {
   };
 
   private onClick = (e: MouseEvent) => {
-    if (this.cameraController.flying || this.isFocused) return;
+    if (this.cameraController.flying) return;
     const dx = e.clientX - this.mouseDownPos.x;
     const dy = e.clientY - this.mouseDownPos.y;
     if (Math.sqrt(dx * dx + dy * dy) > 5) return;
     if (!this.onBuildingClick) return;
 
-    // 点击时再做一次命中测试，避免“没有先触发 hover 就点中无效”的情况
     const bldGp = this.pickBuildingAt(e.clientX, e.clientY) || this.hoveredBuilding;
-    if (!bldGp) return;
-    const def = bldGp.userData.def as SectNodeDef;
 
-    // ─ 第四层：镜头飞行 ─
+    if (this.isFocused) {
+      if (!bldGp) {
+        this.onFocusDismiss?.();
+        return;
+      }
+      if (bldGp === this.focusedBuilding) return;
+      this.focusOnBuilding(bldGp);
+      return;
+    }
+
+    if (!bldGp) return;
+    this.focusOnBuilding(bldGp);
+  };
+
+  private focusOnBuilding(bldGp: THREE.Group) {
+    const def = bldGp.userData.def as SectNodeDef;
     this.cameraController.flyToBuilding(bldGp.position, () => {
-      // 飞行结束后重新投影屏幕坐标
       const { sx, sy } = this.projectToScreen(bldGp.position);
       this.isFocused = true;
-      this.focusedBuilding = bldGp; // 标记特写建筑，animate 每帧更新菜单
+      this.focusedBuilding = bldGp;
       this.onBuildingClick!(def, sx, sy);
     });
-  };
+  }
 
   private pickBuildingAt(clientX: number, clientY: number): THREE.Group | null {
     const rect = this.container.getBoundingClientRect();
