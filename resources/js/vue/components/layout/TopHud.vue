@@ -73,17 +73,21 @@
         <span class="map-btn-label">宗门地图</span>
       </button>
       <div class="sys-group">
-        <button class="sys-btn" title="邮件">
+        <button class="sys-btn" title="传音信箱" @click="emit('open-mail')">
           <img class="sys-icon-img" :src="'/images/hud-icons/mail.png'" alt="邮件" />
-          <span class="sys-badge">3</span>
+          <span v-if="mail.unread > 0" class="sys-badge">{{ mail.unread > 99 ? '99+' : mail.unread }}</span>
         </button>
-        <el-popover placement="bottom-end" :width="160" trigger="click" popper-class="hud-settings-popover">
+        <el-popover ref="settingsPopRef" placement="bottom-end" :width="160" trigger="click" popper-class="hud-settings-popover">
           <template #reference>
             <button class="sys-btn" title="设置">
               <img class="sys-icon-img" :src="'/images/hud-icons/settings.png'" alt="设置" />
             </button>
           </template>
           <div class="settings-menu">
+            <div class="settings-item" @click="openSettings">
+              <span class="item-icon">⚙️</span>
+              <span>修炼设置</span>
+            </div>
             <div class="settings-item" @click="emit('logout')">
               <span class="item-icon">🚪</span>
               <span>退出宗门</span>
@@ -99,6 +103,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useUserStore } from '../../stores/user';
 import { useUiStore } from '../../stores/ui';
+import { useMailStore } from '../../stores/mail';
 import { useCountUp } from '../../composables/useCountUp';
 import gsap from 'gsap';
 import defaultAvatarImg from '../../../../assets/images/avatar_default.png';
@@ -106,11 +111,20 @@ import defaultAvatarImg from '../../../../assets/images/avatar_default.png';
 const emit = defineEmits<{
   (e: 'open-profile'): void;
   (e: 'logout'): void;
+  (e: 'open-settings'): void;
+  (e: 'open-mail'): void;
 }>();
 
 const user = useUserStore();
 const ui = useUiStore();
+const mail = useMailStore();
 const defaultAvatar = defaultAvatarImg;
+const settingsPopRef = ref<{ hide: () => void } | null>(null);
+
+function openSettings() {
+  settingsPopRef.value?.hide();
+  emit('open-settings');
+}
 
 const animatedExp = useCountUp(() => user.profile?.exp ?? 0);
 const animatedVocab = useCountUp(() => user.profile?.vocabulary ?? 0);

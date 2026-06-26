@@ -11,8 +11,12 @@
           <div class="cultivation-body" v-loading="loading">
             <div v-if="messages.length === 0 && !loading" class="empty">暂无传音</div>
             <div v-for="msg in messages" :key="msg.id" class="mail-item" :class="{ unread: !msg.read }" @click="handleMail(msg)">
-              <div class="mail-title">{{ msg.title }}</div>
+              <div class="mail-row">
+                <span class="mail-title">{{ msg.title }}</span>
+                <span v-if="!msg.read" class="dot" />
+              </div>
               <div class="mail-body">{{ msg.body }}</div>
+              <div v-if="msg.time" class="mail-time">{{ msg.time }}</div>
             </div>
           </div>
         </div>
@@ -22,9 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { useApiClient } from '../../services/api';
+import { useMailStore, type MailMessage } from '../../stores/mail';
 
 const props = defineProps<{
   visible: boolean;
@@ -33,34 +37,20 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{ (e: 'update:visible', value: boolean): void }>();
 
-const api = useApiClient();
 const router = useRouter();
-const loading = ref(false);
-const messages = ref<any[]>([]);
-const unread = ref(0);
+const mail = useMailStore();
 
-watch(() => props.visible, async (val) => {
-  if (!val) return;
-  loading.value = true;
-  try {
-    const res = await api.get('/mail/inbox');
-    if (res?.success) {
-      messages.value = res.data?.messages || [];
-      unread.value = res.data?.unread ?? 0;
-    }
-  } catch {
-    messages.value = [];
-  } finally {
-    loading.value = false;
-  }
+const loading = computed(() => mail.loading);
+const messages = computed(() => mail.messages);
+const unread = computed(() => mail.unread);
+
+// 打开面板即刷新一次：保证未读数与内容是最新的（其它入口可能已读过）。
+watch(() => props.visible, (val) => {
+  if (val) mail.fetchInbox();
 });
 
-function handleMail(msg: any) {
-  if (!msg.read && msg.id !== 'welcome') {
-    api.post('/mail/read', { message_id: msg.id }).catch(() => {});
-    msg.read = true;
-    unread.value = messages.value.filter((m) => !m.read).length;
-  }
+function handleMail(msg: MailMessage) {
+  mail.markRead(msg.id);
   close();
   if (msg.action === 'signin') props.onOpenSignIn?.();
   else if (msg.action === 'dailyQuest') props.onOpenDailyQuest?.();
@@ -82,7 +72,11 @@ function close() {
 .cultivation-body { padding: 16px; overflow-y: auto; }
 .mail-item { padding: 12px; margin-bottom: 8px; border-radius: 10px; background: rgba(255,255,255,0.03); cursor: pointer; color: #c8b685; }
 .mail-item.unread { border: 1px solid rgba(212,168,67,0.35); }
-.mail-title { color: #f7f3e8; font-weight: 600; margin-bottom: 4px; }
+.mail-item:hover { background: rgba(212,168,67,0.08); }
+.mail-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.mail-title { color: #f7f3e8; font-weight: 600; flex: 1; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: #ff8c00; box-shadow: 0 0 6px rgba(255,140,0,0.7); flex-shrink: 0; }
 .mail-body { font-size: 13px; line-height: 1.6; }
+.mail-time { font-size: 11px; color: #6c6c80; margin-top: 6px; }
 .empty { text-align: center; padding: 30px; color: #8a8a9a; }
 </style>

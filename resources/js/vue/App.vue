@@ -17,7 +17,7 @@
         :total="preloadCounts.total" />
 
       <TopHud v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash" @open-profile="openProfile"
-        @logout="logout" />
+        @logout="logout" @open-settings="showSettings = true" @open-mail="showMail = true" />
 
       <main class="shell-main" v-show="!showAssetSplash">
         <router-view v-slot="{ Component }">
@@ -40,6 +40,14 @@
 
     <ProfilePanel v-model:visible="showProfile" @open-review="openReviewFromProfile"
       @open-parent="showParentDashboard = true" />
+    <SettingsPanel v-model:visible="showSettings" @open-parent="showParentDashboard = true" />
+    <MailPanel
+      v-model:visible="showMail"
+      :on-open-sign-in="() => { showMail = false; showSignIn = true; }"
+      :on-open-daily-quest="() => { showMail = false; showDailyQuest = true; }"
+    />
+    <SignInPanel v-model:visible="showSignIn" />
+    <DailyQuestPanel v-model:visible="showDailyQuest" />
     <ReviewModal v-model:visible="showReviewFromProfile" />
     <ParentDashboardPanel v-model:visible="showParentDashboard" />
     <DemonEncounter />
@@ -56,6 +64,7 @@ import { useAuthStore } from './stores/auth';
 import { useUserStore } from './stores/user';
 import { useUiStore } from './stores/ui';
 import { useStoryStore } from './stores/story';
+import { useMailStore } from './stores/mail';
 import { resolveProfileRealm } from '../utils/cultivation.js';
 import { useLegacyBridge } from './composables/useLegacyBridge';
 import { initGameSoundSettings } from './composables/useGameSound';
@@ -63,6 +72,10 @@ import TopHud from './components/layout/TopHud.vue';
 import ProfilePanel from './components/profile/ProfilePanel.vue';
 import ReviewModal from './views/ReviewModal.vue';
 import ParentDashboardPanel from './components/features/ParentDashboardPanel.vue';
+import SettingsPanel from './components/features/SettingsPanel.vue';
+import MailPanel from './components/features/MailPanel.vue';
+import SignInPanel from './components/features/SignInPanel.vue';
+import DailyQuestPanel from './views/DailyQuestPanel.vue';
 import DemonEncounter from './components/demons/DemonEncounter.vue';
 import WorldMapOverlay from './views/WorldMapOverlay.vue';
 import LoadingSplash from './components/layout/LoadingSplash.vue';
@@ -82,6 +95,7 @@ const auth = useAuthStore();
 const user = useUserStore();
 const ui = useUiStore();
 const story = useStoryStore();
+const mail = useMailStore();
 const api = useApiClient();
 const bridge = useLegacyBridge();
 
@@ -122,6 +136,10 @@ async function logout() {
 
 const showProfile = ref(false);
 const showParentDashboard = ref(false);
+const showSettings = ref(false);
+const showMail = ref(false);
+const showSignIn = ref(false);
+const showDailyQuest = ref(false);
 const showGlobalReview = ref(false);
 const showGlobalAchievements = ref(false);
 const showReviewFromProfile = ref(false);
@@ -140,6 +158,7 @@ watch(
   (isReady) => {
     if (!isReady) {
       // 登出 / token 失效后重置，下次登录会再次显示
+      mail.reset();
       showAssetSplash.value = false;
       if (splashWatchdog !== null) {
         clearTimeout(splashWatchdog);
@@ -157,6 +176,9 @@ watch(
       const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/practice';
       router.replace(redirect).catch(() => router.replace('/practice'));
     }
+
+    // 顶栏邮件红点：auth 通过后拉取一次未读数，进入即可见提醒
+    mail.fetchInbox();
 
     // 已经预热过就不重复显示（同一会话内 logout → login 是 window.location.assign 整页刷新，
     // 走的是新页面，这里的 essentialDone 已经回到初始 false。所以这条主要是防御 watch 重复触发）
