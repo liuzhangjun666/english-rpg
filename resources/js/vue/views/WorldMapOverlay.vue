@@ -90,7 +90,6 @@ watch(() => props.visible, async (val) => {
   await nextTick();
   overlayRef.value?.focus();
 
-  ui.showLoading('同步进度...');
   try {
     const game = await bridge.getGame();
     await game.syncDailyStatus();
@@ -108,8 +107,8 @@ watch(() => props.visible, async (val) => {
       userRealmLevel: userRealmLevel.value,
       buildingImages: getSceneBuildingImages(),
     });
-    // 重活分阶段做、每阶段让出一帧给浏览器画 loading
-    await worldManager.init((label) => ui.showLoading(label));
+    // 3D 场景分阶段初始化；不在此处弹出 CultLoadingOverlay（避免与全局 LoadingSplash 重叠）
+    await worldManager.init();
     if (!props.visible || !hallSceneRef.value) {
       worldManager.dispose();
       worldManager = null;

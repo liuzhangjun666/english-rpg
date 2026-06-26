@@ -30,6 +30,7 @@ import { useUiStore } from '../stores/ui';
 import { WorldSceneManager } from '../core/sect/WorldSceneManager';
 import { findMapBuilding, getSceneBuildingImages } from '../composables/useMapBuildings';
 import { useHallPanels } from '../composables/useHallPanels';
+import { markSceneReady } from '../services/startupGate';
 
 import RadialMenu from '../components/map/RadialMenu.vue';
 import HallModals from '../components/features/HallModals.vue';
@@ -47,6 +48,11 @@ const activeRadialBuilding = ref<any>(null);
 
 const { mapBuildings, panels, navigation } = useHallPanels();
 
+function signalHallReady() {
+  markSceneReady();
+  window.dispatchEvent(new CustomEvent('app:splash-gate'));
+}
+
 onMounted(async () => {
   try {
     const game = await bridge.getGame();
@@ -63,8 +69,12 @@ onMounted(async () => {
         userRealmLevel: userRealmLevel.value,
         buildingImages: getSceneBuildingImages(),
       });
-      // 重活分阶段做、每阶段让出一帧给浏览器画 loading
-      await worldManager.init((label) => ui.showLoading(label));
+      // 3D 场景分阶段初始化；进度由 LoadingSplash 统一展示，此处不再叠第二层 CultLoadingOverlay
+      await worldManager.init();
+      await new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      });
+      signalHallReady();
       if (!hallSceneRef.value) {
         worldManager.dispose();
         worldManager = null;
@@ -86,10 +96,13 @@ onMounted(async () => {
       };
 
       hallPageRef.value?.focus();
+    } else {
+      signalHallReady();
     }
   } catch (error) {
     console.error('[HallView] 地图初始化失败', error);
     ElMessage.error('地图加载失败，请刷新重试');
+    signalHallReady();
   } finally {
     ui.hideLoading();
   }

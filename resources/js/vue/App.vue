@@ -19,7 +19,11 @@
       <TopHud v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash" @open-profile="openProfile"
         @logout="logout" @open-settings="showSettings = true" @open-mail="showMail = true" />
 
-      <main class="shell-main" v-show="!showAssetSplash">
+      <main
+        v-if="auth.bootstrapped && auth.isAuthenticated"
+        class="shell-main"
+        :class="{ 'is-behind-splash': showAssetSplash }"
+      >
         <router-view v-slot="{ Component }">
           <transition name="scene-fade" mode="out-in">
             <component :is="Component" :key="$route.path" />
@@ -88,6 +92,12 @@ import {
   preloadCounts,
   essentialDone,
 } from './services/assetPreloader';
+import {
+  configureStartupGate,
+  markEssentialsReady,
+  canDismissSplash,
+  resetStartupGate,
+} from './services/startupGate';
 
 const router = useRouter();
 const route = useRoute();
@@ -152,6 +162,20 @@ function openReviewFromProfile() {
 // 用 ref 而非 computed，是为了能加保护性超时 / 手动控制。
 const showAssetSplash = ref(false);
 let splashWatchdog: number | null = null;
+let splashDismissTimer: number | null = null;
+
+function tryDismissSplash() {
+  if (!showAssetSplash.value || !canDismissSplash()) return;
+  if (splashDismissTimer !== null) clearTimeout(splashDismissTimer);
+  splashDismissTimer = window.setTimeout(() => {
+    showAssetSplash.value = false;
+    splashDismissTimer = null;
+  }, 400);
+}
+
+function onSplashGate() {
+  tryDismissSplash();
+}
 
 watch(
   () => auth.bootstrapped && auth.isAuthenticated,
@@ -159,10 +183,15 @@ watch(
     if (!isReady) {
       // 登出 / token 失效后重置，下次登录会再次显示
       mail.reset();
+      resetStartupGate();
       showAssetSplash.value = false;
       if (splashWatchdog !== null) {
         clearTimeout(splashWatchdog);
         splashWatchdog = null;
+      }
+      if (splashDismissTimer !== null) {
+        clearTimeout(splashDismissTimer);
+        splashDismissTimer = null;
       }
       return;
     }
@@ -193,10 +222,16 @@ watch(
       }
     } catch { /* localStorage 不可用（隐私模式）就算了 */ }
 
+    configureStartupGate(route.path);
     showAssetSplash.value = true;
-    preloadEssentials().finally(() => {
-      // 至少展示 600ms 避免一闪而过
-      setTimeout(() => { showAssetSplash.value = false; }, 600);
+
+    // GLB 预热 + legacy 游戏并行加载；大厅场景在 splash 背后初始化
+    Promise.all([
+      preloadEssentials(),
+      bridge.getGame().catch(() => null),
+    ]).finally(() => {
+      markEssentialsReady();
+      tryDismissSplash();
     });
 
     // 网慢 / 失败兜底：12 秒强制放行，避免用户卡在 splash
@@ -224,6 +259,7 @@ const handleProfileUpdate = (e: Event) => {
 onMounted(() => {
   initGameSoundSettings();
   window.addEventListener('profile-updated', handleProfileUpdate);
+  window.addEventListener('app:splash-gate', onSplashGate);
   router.afterEach(() => { ui.hideMapOverlay(); });
   // 后台预热改由 LoadingSplash + assetPreloader.preloadEssentials() 统一承载，
   // 不再在这里 setTimeout 触发——避免重复加载和预热进度无法被 splash 感知的问题。
@@ -231,6 +267,15 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('profile-updated', handleProfileUpdate);
+  window.removeEventListener('app:splash-gate', onSplashGate);
   if (splashWatchdog !== null) clearTimeout(splashWatchdog);
+  if (splashDismissTimer !== null) clearTimeout(splashDismissTimer);
 });
 </script>
+
+<style scoped>
+.shell-main.is-behind-splash {
+  visibility: hidden;
+  pointer-events: none;
+}
+</style>
