@@ -40,7 +40,12 @@ class MallController extends Controller
         $user = $request->user()->fresh();
         return response()->json([
             'success' => true,
-            'data' => ['message'=>$result['message'], 'user'=>$user],
+            'data' => [
+                'message' => $result['message'],
+                'item_id' => $result['item_id'] ?? $data['item_id'],
+                'item' => $result['item'] ?? null,
+                'user' => $user,
+            ],
         ]);
     }
 

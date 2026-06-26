@@ -50,15 +50,10 @@ class MallService
             'quantity' => $quantity,
         ]);
 
-        // 即时生效类在购买时直接应用
-        $effect = $item->effect ?? [];
-        $instantMessage = $this->applyInstantEffect($user, (string) ($effect['type'] ?? ''), $effect);
-
         return [
             'success' => true,
-            'message' => $instantMessage
-                ? "购买成功！{$instantMessage}"
-                : "购买成功！消耗{$totalCost}灵石",
+            'message' => "购买成功！消耗{$totalCost}灵石",
+            'item_id' => $itemId,
             'item' => $item->name,
         ];
     }
@@ -81,7 +76,7 @@ class MallService
         $type = (string) ($effect['type'] ?? '');
         $message = $this->applyUsableEffect($user, $type, $effect);
         if ($message === null) {
-            return ['success' => false, 'message' => '该物品请直接在坊市购买后自动生效，或暂不可使用'];
+            return ['success' => false, 'message' => '该物品暂不可使用'];
         }
 
         $this->consumeInventoryRow($row);
@@ -249,10 +244,11 @@ class MallService
         }
         if ($type === 'spirit_restore') {
             $restore = (int) ($effect['value'] ?? 0);
-            $user->spirit_power = min((int) $user->spirit_power_max, (int) $user->spirit_power + $restore);
+            $before = (int) $user->spirit_power;
+            $user->spirit_power = $before + $restore;
             $user->save();
 
-            return "灵力 +{$restore}";
+            return '灵力 +' . ((int) $user->spirit_power - $before);
         }
 
         return null;

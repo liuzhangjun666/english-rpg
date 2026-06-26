@@ -76,18 +76,53 @@
         </div>
 
         <transition name="fade">
-          <div v-if="errorMsg || successMsg" class="mall-msg" :class="{ 'is-error': !!errorMsg }">
-            {{ errorMsg || successMsg }}
+          <div v-if="errorMsg" class="mall-msg is-error">
+            {{ errorMsg }}
           </div>
         </transition>
       </div>
     </div>
+
+    <Teleport to="body">
+      <transition name="fade">
+        <div v-if="purchasePrompt.visible" class="purchase-overlay" @click.self="storePurchasedItem">
+          <div class="purchase-dialog">
+            <div class="purchase-header">兑换成功</div>
+            <div class="purchase-body">
+              <div class="purchase-icon">{{ purchasePrompt.item?.icon || '📦' }}</div>
+              <div class="purchase-name">{{ purchasePrompt.item?.name }}</div>
+              <div class="purchase-desc">{{ purchasePrompt.item?.description || '' }}</div>
+              <p class="purchase-hint">灵材已入手，请选择处置方式：</p>
+            </div>
+            <div class="purchase-actions">
+              <button
+                type="button"
+                class="purchase-btn purchase-btn--use"
+                :disabled="usingPurchased"
+                @click="usePurchasedItem"
+              >
+                {{ usingPurchased ? '使用中…' : '立即使用' }}
+              </button>
+              <button
+                type="button"
+                class="purchase-btn purchase-btn--store"
+                :disabled="usingPurchased"
+                @click="storePurchasedItem"
+              >
+                放入仓库
+              </button>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';
 import { useApiClient } from '../services/api';
 import { useUserStore } from '../stores/user';
 import { vLoading } from 'element-plus';
@@ -115,8 +150,9 @@ const loading = ref(false);
 const items = ref<any[]>([]);
 const activeCategory = ref<MallCategory>('all');
 const buyingId = ref<string | null>(null);
+const usingPurchased = ref(false);
 const errorMsg = ref('');
-const successMsg = ref('');
+const purchasePrompt = ref<{ visible: boolean; item: any | null }>({ visible: false, item: null });
 
 const stones = computed(() => Number(userStore.profile?.spirit_stone || 0));
 
@@ -155,34 +191,61 @@ const buyItem = async (item: any) => {
   const price = Number(item.price || 0);
   if (stones.value < price) {
     errorMsg.value = '灵石不足！';
-    successMsg.value = '';
     return;
   }
 
   buyingId.value = item.id;
   errorMsg.value = '';
-  successMsg.value = '';
 
   try {
     const res = await api.post('/mall/buy', { item_id: item.id });
     if (res.success) {
-      successMsg.value = `✅ 成功兑换 ${item.name}！`;
-      if (res.data.user) {
+      if (res.data?.user) {
         userStore.updateProfile(res.data.user);
       }
+      purchasePrompt.value = { visible: true, item };
     } else {
       errorMsg.value = res.message || '兑换失败';
+      setTimeout(() => { errorMsg.value = ''; }, 3000);
     }
   } catch (err: any) {
     errorMsg.value = err.message || '网络异常';
+    setTimeout(() => { errorMsg.value = ''; }, 3000);
   } finally {
     buyingId.value = null;
-    setTimeout(() => {
-      successMsg.value = '';
-      errorMsg.value = '';
-    }, 3000);
   }
 };
+
+function closePurchasePrompt() {
+  purchasePrompt.value = { visible: false, item: null };
+}
+
+function storePurchasedItem() {
+  if (usingPurchased.value) return;
+  closePurchasePrompt();
+  ElMessage.success('已收入储物袋');
+}
+
+async function usePurchasedItem() {
+  const item = purchasePrompt.value.item;
+  if (!item?.id || usingPurchased.value) return;
+
+  usingPurchased.value = true;
+  try {
+    const res = await api.post('/mall/use', { item_id: item.id });
+    if (res?.success) {
+      if (res.data?.user) userStore.updateProfile(res.data.user);
+      closePurchasePrompt();
+      ElMessage.success(res.message || '使用成功');
+    } else {
+      ElMessage.warning(res?.message || '使用失败');
+    }
+  } catch {
+    ElMessage.error('使用失败');
+  } finally {
+    usingPurchased.value = false;
+  }
+}
 </script>
 
 <style scoped>
@@ -537,6 +600,111 @@ const buyItem = async (item: any) => {
 
 .mall-msg.is-error {
   color: #f0a0a0;
+}
+
+.purchase-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(10, 10, 26, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.purchase-dialog {
+  width: min(400px, 92vw);
+  background: #1a1a2e;
+  border: 2px solid #d4a843;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+}
+
+.purchase-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(212, 168, 67, 0.3);
+  color: #d4a843;
+  font-weight: 700;
+  font-size: 16px;
+  text-align: center;
+  letter-spacing: 0.12em;
+}
+
+.purchase-body {
+  padding: 24px 20px 12px;
+  text-align: center;
+  color: #c8b685;
+}
+
+.purchase-icon {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+}
+
+.purchase-name {
+  color: #f7f3e8;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.purchase-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.purchase-hint {
+  margin: 0;
+  font-size: 13px;
+  color: #a89870;
+}
+
+.purchase-actions {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px 20px;
+}
+
+.purchase-btn {
+  flex: 1;
+  padding: 11px 16px;
+  border-radius: 22px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+
+.purchase-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.purchase-btn--use {
+  border: 1px solid #8cc5ff;
+  background: linear-gradient(135deg, rgba(140, 197, 255, 0.28), rgba(140, 197, 255, 0.1));
+  color: #b8dcff;
+}
+
+.purchase-btn--use:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 0 14px rgba(140, 197, 255, 0.3);
+}
+
+.purchase-btn--store {
+  border: 1px solid #d4a843;
+  background: linear-gradient(135deg, rgba(212, 168, 67, 0.28), rgba(212, 168, 67, 0.1));
+  color: #fceea7;
+}
+
+.purchase-btn--store:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 0 14px rgba(212, 168, 67, 0.35);
 }
 
 .list-enter-active,

@@ -23,7 +23,7 @@ const props = defineProps<{
   visible: boolean;
   x: string;
   y: string;
-  nodes: Array<{ key: string; title: string; icon?: string; onClick: () => void }>;
+  nodes: Array<{ key: string; title: string; icon?: string; onClick: () => void; dismissRadial?: boolean }>;
   radius?: number; // 展开半径，默认 120px
 }>();
 
@@ -66,9 +66,11 @@ const getNodeStyle = (index: number) => {
   };
 };
 
-const onNodeClick = (node: any) => {
+const onNodeClick = (node: { onClick: () => void; dismissRadial?: boolean }) => {
   node.onClick();
-  emit('close');
+  if (node.dismissRadial) {
+    emit('close');
+  }
 };
 </script>
 

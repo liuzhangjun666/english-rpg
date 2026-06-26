@@ -104,7 +104,7 @@ export const MAP_BUILDING_DEFS: MapBuildingDef[] = [
   {
     sceneId: 'innerDemonHall',
     title: '心魔禁地',
-    unlockRealm: 2,
+    unlockRealm: 0,
     subNodes: [
       { key: 'demon-record', title: '心魔录', iconKey: 'vocab', action: { type: 'demons' } },
       { key: 'challenge', title: '心魔试炼', iconKey: 'speaking', action: { type: 'innerDemon', autoChallenge: true } },
@@ -119,14 +119,13 @@ export const MAP_BUILDING_DEFS: MapBuildingDef[] = [
     subNodes: [
       { key: 'info', title: '个人信息', iconKey: 'vocab', action: { type: 'profile' } },
       { key: 'achieve', title: '成就碑', iconKey: 'reading', action: { type: 'achievements' } },
-      { key: 'pets', title: '灵宠园', iconKey: 'grammar', action: { type: 'pets' }, enabled: false },
       { key: 'storage', title: '仓库', iconKey: 'listening', action: { type: 'storage' } },
     ],
   },
   {
     sceneId: 'farm',
     title: '虚空秘境',
-    unlockRealm: 3,
+    unlockRealm: 0,
     subNodes: [
       { key: 'dungeon', title: '副本', iconKey: 'writing', action: { type: 'mijing' } },
       { key: 'event', title: '活动', iconKey: 'speaking', action: { type: 'events' }, enabled: false },

@@ -61,12 +61,17 @@ class QuestionResolverService
 
         $type = (string) ($resolved['type'] ?? '');
         if ($type === 'vocab') {
-            $text = trim((string) ($answerText ?? ''));
-            if ($text !== '') {
-                return $this->vocabBuilder->isMeaningCorrect($questionId, $text);
+            if ($answerText !== null && trim($answerText) !== '') {
+                return $this->vocabBuilder->isMeaningCorrect($questionId, $answerText);
             }
 
-            return $this->normalize($resolved['correct_answer'] ?? '') === $this->normalize($answer);
+            $options = $resolved['options'] ?? [];
+            $key = strtoupper(trim($answer));
+            if (isset($options[$key])) {
+                return $this->vocabBuilder->isMeaningCorrect($questionId, (string) $options[$key]);
+            }
+
+            return $this->vocabBuilder->isMeaningCorrect($questionId, $answer);
         }
 
         if ($type === 'reading') {

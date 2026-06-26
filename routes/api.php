@@ -187,6 +187,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('mijing/timed-challenge')->group(function () {
+        Route::get('/status', [MijingChallengeController::class, 'status']);
         Route::post('/start', [MijingChallengeController::class, 'start']);
         Route::post('/next-question', [MijingChallengeController::class, 'nextQuestion']);
         Route::post('/submit-answer', [MijingChallengeController::class, 'submitAnswer']);

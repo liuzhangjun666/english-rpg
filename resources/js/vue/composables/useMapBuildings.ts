@@ -138,6 +138,21 @@ function resolveAction(action: MapBuildingAction, handlers: MapBuildingHandlers)
   }
 }
 
+function shouldDismissRadial(action: MapBuildingAction): boolean {
+  switch (action.type) {
+    case 'practice':
+    case 'reading':
+    case 'exam':
+    case 'mijing':
+    case 'leaderboard':
+    case 'mall':
+    case 'wanyaoTower':
+      return true;
+    default:
+      return false;
+  }
+}
+
 export function useMapBuildings(handlers: MapBuildingHandlers) {
   const mapBuildings = computed(() =>
     MAP_BUILDING_DEFS.map((def) => {
@@ -148,6 +163,7 @@ export function useMapBuildings(handlers: MapBuildingHandlers) {
           title: node.title,
           icon: ABILITY_ICONS[node.iconKey],
           onClick: () => resolveAction(node.action, handlers),
+          dismissRadial: shouldDismissRadial(node.action),
         }));
 
       return {

@@ -588,7 +588,10 @@ const arcadeAbility = computed<ArcadeAbility>(() => {
   if (t === 'reading') return 'reading';
   return t as ArcadeAbility;
 });
-const supportsArcadeMode = computed(() => !!getArcadeModeByAbility(arcadeAbility.value));
+const supportsArcadeMode = computed(() => {
+  if (currentType.value === 'speaking') return false;
+  return !!getArcadeModeByAbility(arcadeAbility.value);
+});
 const arcadePlayable = computed(() => isArcadePlayable(arcadeAbility.value));
 const isArcadeVariant = computed(() => practiceVariant.value === 'arcade' && supportsArcadeMode.value);
 const isArenaMode = computed(
@@ -1077,6 +1080,11 @@ function parseMode(raw: unknown): PracticeType {
   return supported.includes(str as PracticeType) ? (str as PracticeType) : 'vocab';
 }
 
+function normalizePracticeVariant(type: PracticeType, variant: PracticeVariant): PracticeVariant {
+  if (type === 'speaking' && variant === 'arcade') return 'classic';
+  return variant;
+}
+
 function sceneLoadingText(type: PracticeType): string {
   return `切换${VENUE_TITLES[type] || '练功房'}场景...`;
 }
@@ -1092,7 +1100,7 @@ async function bootstrapModuleFromRoute() {
 
   currentType.value = type;
   const fromQuery = route.query.variant != null ? parsePracticeVariant(route.query.variant) : null;
-  practiceVariant.value = fromQuery ?? loadVariantPreference(type);
+  practiceVariant.value = normalizePracticeVariant(type, fromQuery ?? loadVariantPreference(type));
   resetQuestionState();
   resumeSession.value = null;
 
@@ -1138,7 +1146,8 @@ async function switchModule(type: PracticeType) {
 
 function buildPracticeQuery(type: PracticeType, variant: PracticeVariant) {
   const query: Record<string, string> = { mode: type };
-  if (variant === 'arcade' && getArcadeModeByAbility(type as ArcadeAbility)) {
+  const normalized = normalizePracticeVariant(type, variant);
+  if (normalized === 'arcade' && getArcadeModeByAbility(type as ArcadeAbility)) {
     query.variant = 'arcade';
   }
   return query;
@@ -1146,7 +1155,8 @@ function buildPracticeQuery(type: PracticeType, variant: PracticeVariant) {
 
 function resolveEntrySessionState(type: PracticeType, variant: PracticeVariant) {
   const ability = (type === 'grammar' ? 'grammar' : type) as ArcadeAbility;
-  if (variant === 'arcade' && getArcadeModeByAbility(ability)) {
+  const normalized = normalizePracticeVariant(type, variant);
+  if (normalized === 'arcade' && getArcadeModeByAbility(ability)) {
     return 'idle';
   }
   return 'rules';

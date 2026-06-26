@@ -31,6 +31,49 @@ class TimedChallengeService
     ) {
     }
 
+    public function getEntryStatus(User $user, string $mode = 'normal'): array
+    {
+        $mode = $mode === 'boss' ? 'boss' : 'normal';
+
+        if ($mode === 'boss') {
+            $this->expireBossSessionsBeforeCurrentWeek($user);
+        }
+
+        $playsCount = $this->countPlays($user, $mode);
+        $playLimit = $this->playLimitForMode($mode);
+        $running = $this->findResumableSession($user, $mode);
+
+        return [
+            'mode' => $mode,
+            'limit_type' => $this->limitTypeForMode($mode),
+            'plays_count' => $playsCount,
+            'play_limit' => $playLimit,
+            'plays_today' => $mode === 'normal' ? $playsCount : null,
+            'daily_limit' => $mode === 'normal' ? $playLimit : null,
+            'plays_this_week' => $mode === 'boss' ? $playsCount : null,
+            'weekly_limit' => $mode === 'boss' ? $playLimit : null,
+            'can_start' => $this->canStart($user, $mode) && $running === null,
+            'can_resume' => $running !== null,
+            'limit_reset_hint' => $mode === 'boss' ? '下周再来' : '明日再来',
+            'week_period_start' => $mode === 'boss'
+                ? $this->periodStartForMode('boss')->toDateString()
+                : null,
+            'spirit_cost' => $mode === 'boss' ? self::BOSS_SPIRIT_COST : self::SPIRIT_COST,
+            'duration_sec' => $mode === 'boss' ? self::BOSS_DURATION_SEC : self::DURATION_SEC,
+            'reward_tiers' => $this->getRewardTiers($mode),
+            'reward_hint' => '结算时按最终得分对应档位发放修为与灵石',
+            'running_challenge' => $running ? [
+                'challenge_id' => $running->challenge_id,
+                'remain_sec' => $this->remainingSeconds($running),
+                'module_type' => $running->module_type,
+                'level' => $running->level,
+                'stage' => $running->stage,
+                'start_at' => $running->started_at?->toIso8601String(),
+                'duration_sec' => (int) $running->duration_sec,
+            ] : null,
+        ];
+    }
+
     public function start(User $user, string $moduleType, string $level, string $stage, string $mode = 'normal'): array
     {
         $isBoss = $mode === 'boss';
@@ -40,6 +83,22 @@ class TimedChallengeService
 
         if (!in_array($moduleType, self::MODULE_TYPES, true)) {
             return ['success' => false, 'code' => 'MODULE_NOT_SUPPORTED', 'message' => '不支持的挑战类型'];
+        }
+
+        if (!$this->canStart($user, $isBoss ? 'boss' : 'normal')) {
+            return [
+                'success' => false,
+                'code' => $isBoss ? 'WEEKLY_LIMIT_REACHED' : 'DAILY_LIMIT_REACHED',
+                'message' => $this->limitReachedMessage($isBoss ? 'boss' : 'normal'),
+            ];
+        }
+
+        if ($isBoss && $this->findResumableSession($user, 'boss')) {
+            return [
+                'success' => false,
+                'code' => 'RESUME_AVAILABLE',
+                'message' => '本周尚有未完成的挑战，请继续上次进度',
+            ];
         }
 
         $spiritCost = $isBoss ? self::BOSS_SPIRIT_COST : self::SPIRIT_COST;
@@ -73,6 +132,7 @@ class TimedChallengeService
                 'start_at' => $session->started_at?->toIso8601String(),
                 'spirit_cost' => $session->spirit_cost,
                 'question_count_hint' => 999,
+                'reward_tiers' => $this->getRewardTiers($isBoss ? 'boss' : 'normal'),
             ],
         ];
     }
@@ -217,13 +277,17 @@ class TimedChallengeService
             ? (int) round(($session->correct_count / $session->total_answered) * 100)
             : 0;
 
-        $expGained = (int) floor($session->correct_count * 1.5);
-        $pointsGained = $this->calcPoints((int) $session->final_score);
+        $rewards = $this->calcScoreRewards((int) $session->final_score, $this->sessionMode($session));
+        $expGained = $rewards['exp'];
+        $pointsGained = $rewards['spirit_stone'];
 
         if (!$session->rewards_granted) {
             DB::transaction(function () use ($user, $session, $expGained, $pointsGained, $accuracy) {
                 $user->increment('exp', $expGained);
                 $user->increment('spirit_stone', $pointsGained);
+
+                $durationSec = max(1, (int) ($session->duration_sec ?: self::DURATION_SEC));
+                $timeSpent = min($durationSec, max(0, $durationSec - $this->remainingSeconds($session)));
 
                 LearningRecord::create([
                     'user_id' => $user->id,
@@ -233,7 +297,7 @@ class TimedChallengeService
                     'is_correct' => $accuracy >= 60,
                     'exp_gained' => $expGained,
                     'spirit_cost' => (int) $session->spirit_cost,
-                    'time_spent' => self::DURATION_SEC - max(0, $this->remainingSeconds($session)),
+                    'time_spent' => $timeSpent,
                     'answer_data' => [
                         'final_score' => (int) $session->final_score,
                         'total_answered' => (int) $session->total_answered,
@@ -260,6 +324,11 @@ class TimedChallengeService
             'accuracy' => $accuracy,
         ]);
 
+        $dimension = $this->resolveDimensionKey((string) $session->module_type);
+        $realmProgress = $dimension
+            ? $this->realmService->applyCultivationGain($user->fresh(), $dimension, (int) $session->correct_count)
+            : $this->realmService->getCultivationProgress($user->fresh());
+
         return [
             'success' => true,
             'data' => [
@@ -269,6 +338,7 @@ class TimedChallengeService
                 'final_score' => (int) $session->final_score,
                 'exp_gained' => $expGained,
                 'points_gained' => $pointsGained,
+                'spirit_stone_gained' => $pointsGained,
                 'weak_tags' => $weakTags,
                 'collectible_id' => $storyReward['collectible_id'] ?? null,
                 'story_progress' => $storyReward['story_progress'] ?? StoryProgressSupport::normalizeStoryProgress($user->story_progress),
@@ -396,8 +466,11 @@ class TimedChallengeService
         if (!$session->started_at) {
             return 0;
         }
-        $elapsed = now()->diffInSeconds($session->started_at);
-        return max(0, (int) $session->duration_sec - $elapsed);
+
+        $duration = max(1, (int) ($session->duration_sec ?: self::DURATION_SEC));
+        $elapsed = max(0, (int) $session->started_at->diffInSeconds(now()));
+
+        return max(0, $duration - $elapsed);
     }
 
     private function normalizeAnswer(?string $value): string
@@ -422,6 +495,119 @@ class TimedChallengeService
         return implode('_', array_filter([(string) $question->type, (string) $question->realm, (string) $question->stage]));
     }
 
+    private function sessionsForMode(User $user, string $mode)
+    {
+        $query = TimedChallengeSession::where('user_id', $user->id);
+
+        if ($mode === 'boss') {
+            return $query->where('spirit_cost', '>=', self::BOSS_SPIRIT_COST);
+        }
+
+        return $query->where('spirit_cost', '<', self::BOSS_SPIRIT_COST);
+    }
+
+    private function periodStartForMode(string $mode): \Illuminate\Support\Carbon
+    {
+        return $mode === 'boss' ? now()->startOfWeek() : now()->startOfDay();
+    }
+
+    private function countPlays(User $user, string $mode): int
+    {
+        return $this->sessionsForMode($user, $mode)
+            ->where('started_at', '>=', $this->periodStartForMode($mode))
+            ->count();
+    }
+
+    private function playLimitForMode(string $mode): int
+    {
+        if ($mode === 'boss') {
+            return max(1, (int) config('mijing.boss_weekly_plays', 1));
+        }
+
+        return max(1, (int) config('mijing.daily_plays', 1));
+    }
+
+    private function limitTypeForMode(string $mode): string
+    {
+        return $mode === 'boss' ? 'weekly' : 'daily';
+    }
+
+    private function canStart(User $user, string $mode): bool
+    {
+        return $this->countPlays($user, $mode) < $this->playLimitForMode($mode);
+    }
+
+    private function limitReachedMessage(string $mode): string
+    {
+        if ($mode === 'boss') {
+            return '本周世界挑战次数已用尽，请下周再来';
+        }
+
+        return '今日秘境试炼次数已用尽，请明日再来';
+    }
+
+    /** 跨周时作废上周未完成的挑战（本周内仍可续玩）。 */
+    private function expireBossSessionsBeforeCurrentWeek(User $user): void
+    {
+        $this->sessionsForMode($user, 'boss')
+            ->where('status', 'running')
+            ->where('started_at', '<', $this->periodStartForMode('boss'))
+            ->update([
+                'status' => 'expired',
+                'ended_at' => now(),
+            ]);
+    }
+
+    private function findResumableSession(User $user, string $mode): ?TimedChallengeSession
+    {
+        $session = $this->sessionsForMode($user, $mode)
+            ->where('status', 'running')
+            ->where('started_at', '>=', $this->periodStartForMode($mode))
+            ->orderByDesc('started_at')
+            ->first();
+
+        if (!$session || $this->remainingSeconds($session) <= 0) {
+            return null;
+        }
+
+        return $session;
+    }
+
+    private function sessionMode(TimedChallengeSession $session): string
+    {
+        return (int) $session->spirit_cost >= self::BOSS_SPIRIT_COST ? 'boss' : 'normal';
+    }
+
+    private function calcScoreRewards(int $score, string $mode): array
+    {
+        $score = max(0, $score);
+        $key = $mode === 'boss' ? 'boss' : 'normal';
+        $tiers = config("mijing.score_tiers.{$key}", config('mijing.score_tiers.normal', []));
+
+        foreach ($tiers as $tier) {
+            if ($score >= (int) ($tier['min_score'] ?? 0)) {
+                return [
+                    'exp' => max(0, (int) ($tier['exp'] ?? 0)),
+                    'spirit_stone' => max(0, (int) ($tier['spirit_stone'] ?? 0)),
+                ];
+            }
+        }
+
+        return ['exp' => 0, 'spirit_stone' => 0];
+    }
+
+    private function getRewardTiers(string $mode): array
+    {
+        $key = $mode === 'boss' ? 'boss' : 'normal';
+        $tiers = config("mijing.score_tiers.{$key}", config('mijing.score_tiers.normal', []));
+
+        return array_values(array_map(static fn (array $tier) => [
+            'min_score' => max(0, (int) ($tier['min_score'] ?? 0)),
+            'exp' => max(0, (int) ($tier['exp'] ?? 0)),
+            'spirit_stone' => max(0, (int) ($tier['spirit_stone'] ?? 0)),
+        ], $tiers));
+    }
+
     private function extractWeakTags(array $stats): array
     {
         $ranked = [];
@@ -440,15 +626,5 @@ class TimedChallengeService
 
         usort($ranked, fn ($a, $b) => ($b['rate'] <=> $a['rate']) ?: ($b['wrong'] <=> $a['wrong']));
         return array_values(array_map(fn ($item) => $item['tag'], array_slice($ranked, 0, 3)));
-    }
-
-    private function calcPoints(int $score): int
-    {
-        return match (true) {
-            $score >= 300 => 12,
-            $score >= 220 => 8,
-            $score >= 120 => 5,
-            default => 0,
-        };
     }
 }

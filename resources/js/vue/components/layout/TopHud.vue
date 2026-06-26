@@ -48,11 +48,11 @@
           <span class="res-label">词汇</span>
         </div>
       </div>
-      <div class="resource-item" title="灵力">
+      <div class="resource-item" :title="spiritTitle">
         <span class="res-icon">⚡</span>
         <div class="res-copy">
-          <span class="res-value">{{ animatedSpiritPower }}/{{ user.profile?.spirit_power_max ?? 100 }}</span>
-          <span class="res-label">灵力</span>
+          <span class="res-value">{{ spiritDisplay }}</span>
+          <span class="res-label">{{ spiritSubLabel }}</span>
         </div>
       </div>
       <div class="resource-item" title="灵石">
@@ -100,6 +100,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useUserStore } from '../../stores/user';
 import { useUiStore } from '../../stores/ui';
 import { useCountUp } from '../../composables/useCountUp';
+import { useSpiritPower } from '../../composables/useSpiritPower';
 import gsap from 'gsap';
 import defaultAvatarImg from '../../../../assets/images/avatar_default.png';
 
@@ -114,8 +115,16 @@ const defaultAvatar = defaultAvatarImg;
 
 const animatedExp = useCountUp(() => user.profile?.exp ?? 0);
 const animatedVocab = useCountUp(() => user.profile?.vocabulary ?? 0);
-const animatedSpiritPower = useCountUp(() => user.profile?.spirit_power ?? 0);
 const animatedSpiritStone = useCountUp(() => user.profile?.spirit_stone ?? 0);
+const { view: spiritView, spiritTitle } = useSpiritPower();
+
+const spiritDisplay = computed(() => `${spiritView.value.current}/${spiritView.value.max}`);
+const spiritSubLabel = computed(() => {
+  if (spiritView.value.isNaturalFull) {
+    return spiritView.value.current > spiritView.value.max ? '灵力·溢满' : '灵力·已满';
+  }
+  return `灵力 · ${spiritView.value.countdownText}`;
+});
 
 const expPercent = computed(() => {
   const current = user.profile?.exp ?? 0;
@@ -125,10 +134,10 @@ const expPercent = computed(() => {
 });
 
 const powerPercent = computed(() => {
-  const current = user.profile?.spirit_power ?? 0;
-  const max = user.profile?.spirit_power_max ?? 100;
+  const current = spiritView.value.current;
+  const max = spiritView.value.max;
   if (max <= 0) return 0;
-  return Math.min(100, Math.max(0, (current / max) * 100));
+  return Math.min(100, Math.max(0, (Math.min(current, max) / max) * 100));
 });
 
 const levelNumber = computed(() => user.profile?.level ?? 1);

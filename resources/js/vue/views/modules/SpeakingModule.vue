@@ -67,7 +67,6 @@
               再喊一次
             </button>
             <button class="btn-cast" type="button" @click="handleContinue">
-              <img class="btn-cast-bg" :src="assets.btnCast" alt="" aria-hidden="true" />
               <span class="btn-cast-text">{{ passed || skippedVerify ? '传声过关 →' : '强行过关（记未过）' }}</span>
             </button>
           </div>
@@ -304,6 +303,7 @@ function handleSkip() {
   position: relative;
   width: 100%;
   z-index: 1;
+  overflow: hidden;
 }
 .gallery-bg {
   width: 100%;
@@ -314,6 +314,8 @@ function handleSkip() {
   inset: 10% 6% 8%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .gallery-head {
@@ -321,7 +323,8 @@ function handleSkip() {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  flex-shrink: 0;
 }
 .tier-badge {
   font-size: 20px;
@@ -337,23 +340,28 @@ function handleSkip() {
 
 .verdict {
   text-align: center;
-  font-size: 14px;
+  font-size: 13px;
   color: #c8dce8;
-  margin: 0 0 14px;
-  line-height: 1.6;
+  margin: 0 0 10px;
+  line-height: 1.5;
+  flex-shrink: 0;
 }
 
 .echo-compare {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 16px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  padding-right: 2px;
 }
 .echo-line {
-  padding: 10px 12px;
+  padding: 8px 10px;
   border-radius: 10px;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 12px;
+  line-height: 1.45;
 }
 .echo-line.yours {
   background: rgba(60, 100, 160, 0.2);
@@ -372,13 +380,17 @@ function handleSkip() {
   margin-bottom: 4px;
 }
 .echo-content {
+  display: block;
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: #e8f4ff;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 .echo-divider {
   text-align: center;
   font-size: 11px;
   color: rgba(126, 232, 255, 0.5);
+  flex-shrink: 0;
 }
 
 .gallery-actions {
@@ -386,30 +398,29 @@ function handleSkip() {
   flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
+  flex-shrink: 0;
+  margin-top: auto;
 }
 
 .btn-cast {
-  position: relative;
-  min-width: 200px;
-  height: 48px;
-  border: 0;
-  background: transparent;
+  padding: 10px 20px;
+  min-height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(126, 232, 255, 0.55);
+  background: linear-gradient(135deg, #7ecfff 0%, #4da8e8 50%, #2d7ec0 100%);
+  box-shadow: 0 2px 10px rgba(45, 126, 192, 0.35);
   cursor: pointer;
-  padding: 0;
+  transition: transform 0.15s, box-shadow 0.15s;
 }
-.btn-cast-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
+.btn-cast:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(45, 126, 192, 0.45);
 }
 .btn-cast-text {
-  position: relative;
-  z-index: 1;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
   color: #0a1830;
+  line-height: 1.3;
 }
 .btn-outline {
   padding: 10px 18px;
