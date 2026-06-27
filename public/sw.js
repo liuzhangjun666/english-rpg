@@ -1,6 +1,6 @@
-const CACHE_VERSION = 'levelup-cache-v1';
-const RUNTIME_CACHE = 'levelup-runtime-v1';
-const APP_SHELL = ['/', '/manifest.webmanifest', '/favicon.ico'];
+const CACHE_VERSION = 'levelup-cache-v2';
+const RUNTIME_CACHE = 'levelup-runtime-v2';
+const APP_SHELL = ['/manifest.webmanifest', '/favicon.ico'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -20,6 +20,19 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+/** Vite 产物带 hash，部署后必须 network-first，否则缓存旧 JS 会导致白屏/黑屏。 */
+function networkFirst(req, cacheName = RUNTIME_CACHE) {
+  return fetch(req)
+    .then((resp) => {
+      if (resp.ok) {
+        const copy = resp.clone();
+        caches.open(cacheName).then((cache) => cache.put(req, copy));
+      }
+      return resp;
+    })
+    .catch(() => caches.match(req));
+}
+
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
@@ -27,38 +40,32 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
   if (url.pathname.startsWith('/api/')) return;
 
-  const isStaticAsset =
-    url.pathname.startsWith('/build/') ||
-    url.pathname.endsWith('.js') ||
-    url.pathname.endsWith('.css') ||
+  if (url.pathname.startsWith('/build/') || url.pathname === '/sw.js') {
+    event.respondWith(networkFirst(req));
+    return;
+  }
+
+  const isImmutableAsset =
     url.pathname.endsWith('.png') ||
     url.pathname.endsWith('.jpg') ||
     url.pathname.endsWith('.jpeg') ||
     url.pathname.endsWith('.svg') ||
-    url.pathname.endsWith('.webp');
+    url.pathname.endsWith('.webp') ||
+    url.pathname.endsWith('.glb') ||
+    url.pathname.endsWith('.mp3');
 
-  if (isStaticAsset) {
+  if (isImmutableAsset) {
     event.respondWith(
       caches.match(req).then((cached) => {
         if (cached) return cached;
-        return fetch(req).then((resp) => {
-          const copy = resp.clone();
-          caches.open(RUNTIME_CACHE).then((cache) => cache.put(req, copy));
-          return resp;
-        });
+        return networkFirst(req);
       })
     );
     return;
   }
 
   event.respondWith(
-    fetch(req)
-      .then((resp) => {
-        const copy = resp.clone();
-        caches.open(RUNTIME_CACHE).then((cache) => cache.put(req, copy));
-        return resp;
-      })
-      .catch(() => caches.match(req).then((cached) => cached || caches.match('/')))
+    networkFirst(req).catch(() => caches.match(req).then((cached) => cached || caches.match('/')))
   );
 });
 

@@ -11,34 +11,44 @@
       </div>
     </div>
 
-    <template v-else>
-      <!-- 资源预热遮罩：登录后到进入游戏之间承载 GLB 下载 + 解码 -->
-      <LoadingSplash :visible="showAssetSplash" :progress="preloadProgress" :done="preloadCounts.done"
-        :total="preloadCounts.total" />
+    <!-- 资源预热遮罩：登录后到进入游戏之间承载 GLB 下载 + 解码 -->
+    <LoadingSplash
+      v-if="auth.bootstrapped"
+      :visible="showAssetSplash"
+      :progress="preloadProgress"
+      :done="preloadCounts.done"
+      :total="preloadCounts.total"
+    />
 
-      <TopHud v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash" @open-profile="openProfile"
-        @logout="logout" @open-settings="showSettings = true" @open-mail="showMail = true" />
+    <TopHud
+      v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash"
+      @open-profile="openProfile"
+      @logout="logout"
+      @open-settings="showSettings = true"
+      @open-mail="showMail = true"
+    />
 
-      <main
-        v-if="auth.bootstrapped && auth.isAuthenticated"
-        class="shell-main"
-        :class="{ 'is-behind-splash': showAssetSplash }"
-      >
-        <router-view v-slot="{ Component }">
-          <transition name="scene-fade" mode="out-in">
-            <component :is="Component" :key="$route.path" />
-          </transition>
-        </router-view>
-      </main>
+    <main
+      class="shell-main"
+      :class="{ 'is-behind-splash': auth.bootstrapped && showAssetSplash && auth.isAuthenticated }"
+    >
+      <router-view v-slot="{ Component }">
+        <transition v-if="!isLoginRoute" name="scene-fade" mode="out-in">
+          <component :is="Component" :key="$route.path" />
+        </transition>
+        <component v-else :is="Component" :key="$route.path" />
+      </router-view>
+    </main>
 
-      <!-- 全局侧边栏：登录后所有路由可见，hide 由用户偏好控制（ui.sidebarVisible） -->
-      <GlobalHud
-        v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash && !isLoginRoute && ui.sidebarVisible"
-        @open-review="showGlobalReview = true" @open-achievements="showGlobalAchievements = true"
-        @open-profile="openProfile" />
-      <ReviewModal v-model:visible="showGlobalReview" />
-      <AchievementsModal v-model:visible="showGlobalAchievements" />
-    </template>
+    <!-- 全局侧边栏：登录后所有路由可见，hide 由用户偏好控制（ui.sidebarVisible） -->
+    <GlobalHud
+      v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash && !isLoginRoute && ui.sidebarVisible"
+      @open-review="showGlobalReview = true"
+      @open-achievements="showGlobalAchievements = true"
+      @open-profile="openProfile"
+    />
+    <ReviewModal v-model:visible="showGlobalReview" />
+    <AchievementsModal v-model:visible="showGlobalAchievements" />
 
     <CultLoadingOverlay :visible="ui.loading" :text="ui.loadingText" />
 

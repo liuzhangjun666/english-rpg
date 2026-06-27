@@ -37,10 +37,10 @@
     @if ($shouldUseDevServer)
         @vite($viteEntries)
     @else
-        {{
-            Illuminate\Support\Facades\Vite::useHotFile(storage_path('framework/vite.disabled.hot'))
-                ->withEntryPoints($viteEntries)
-        }}
+        @php
+            Illuminate\Support\Facades\Vite::useHotFile(storage_path('framework/vite.disabled.hot'));
+        @endphp
+        @vite($viteEntries)
     @endif
 </head>
 <body>

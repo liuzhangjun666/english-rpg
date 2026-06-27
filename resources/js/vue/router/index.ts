@@ -1,4 +1,5 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
+import LoginView from '../views/LoginView.vue';
 import { useAuthStore } from '../stores/auth';
 import { useApiClient } from '../services/api';
 import { useUserStore } from '../stores/user';
@@ -103,7 +104,7 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('../views/LoginView.vue'),
+    component: LoginView,
     meta: { guestOnly: true },
   },
   {

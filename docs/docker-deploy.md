@@ -112,20 +112,45 @@ docker compose run --rm --entrypoint php app artisan key:generate
 
 ---
 
-## 四、首次启动
+## 四、宿主机预构建（国内服务器必做）
+
+Docker 镜像**不再**在构建时执行 `composer install` / `npm run build`（避免 GitHub 超时）。
+
+在 **启动 Docker 之前**，于项目目录执行：
 
 ```bash
-cd /opt/english-rpg
+cd ~/english-rpg-main
 
-# 构建镜像并后台启动（首次较慢，需编译前端 + Composer）
-docker compose up -d --build
+# PHP 依赖（你已完成可跳过）
+composer install --no-dev --optimize-autoloader
+
+# 前端资源（必须）
+npm ci
+npm run build
+
+# 确认目录存在
+ls vendor/autoload.php public/build/manifest.json
+```
+
+---
+
+## 五、首次启动 Docker
+
+```bash
+cd ~/english-rpg-main
+
+# 生成 APP_KEY（仅需一次）
+sudo docker compose run --rm --entrypoint php app artisan key:generate
+
+# 构建并启动（此时只打包 vendor + public/build，很快）
+sudo docker compose up -d --build
 ```
 
 查看状态：
 
 ```bash
-docker compose ps
-docker compose logs -f app
+sudo docker compose ps
+sudo docker compose logs -f app
 ```
 
 首次 `RUN_BOOTSTRAP=true` 时会执行 `app:bootstrap-content --fresh`（**清空并重建题库**，仅首次使用）。

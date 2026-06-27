@@ -1,33 +1,10 @@
 # syntax=docker/dockerfile:1
-
-FROM node:20-bookworm-slim AS frontend
-
-WORKDIR /app
-
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends python3 \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY package.json package-lock.json ./
-RUN npm ci
-
-COPY vite.config.js tsconfig.json ./
-COPY resources ./resources
-COPY tools ./tools
-
-RUN npm run build
-
-FROM composer:2 AS vendor
-
-WORKDIR /app
-
-COPY composer.json composer.lock ./
-RUN composer install \
-    --no-dev \
-    --no-interaction \
-    --prefer-dist \
-    --optimize-autoloader \
-    --no-scripts
+#
+# 国内服务器推荐：在宿主机先装好依赖，再 docker build（避免镜像内访问 GitHub 失败）
+#
+#   composer install --no-dev --optimize-autoloader
+#   npm ci && npm run build
+#   sudo docker compose up -d --build
 
 FROM php:8.3-fpm-bookworm AS app
 
@@ -38,6 +15,7 @@ RUN apt-get update \
         libzip-dev \
         libpng-dev \
         libonig-dev \
+        libicu-dev \
         unzip \
     && docker-php-ext-install -j"$(nproc)" \
         pdo_mysql \
@@ -45,21 +23,20 @@ RUN apt-get update \
         zip \
         bcmath \
         opcache \
+        intl \
     && rm -rf /var/lib/apt/lists/*
 
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-COPY --from=vendor /app/vendor ./vendor
-COPY --from=frontend /app/public/build ./public/build
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY composer.json composer.lock ./
+COPY vendor ./vendor
+COPY public/build ./public/build
 
 COPY . .
 
-RUN composer dump-autoload --optimize --no-interaction \
-    && rm /usr/bin/composer \
-    && mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache \
+RUN mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

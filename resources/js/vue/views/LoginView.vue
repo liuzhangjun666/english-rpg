@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative min-h-screen w-full overflow-hidden bg-gray-900 text-white font-sans selection:bg-yellow-500 selection:text-black">
+    class="login-page relative min-h-screen w-full overflow-hidden bg-gray-900 text-white font-sans selection:bg-yellow-500 selection:text-black">
     <!-- 全屏 3D 仙门场景 (Three.js + Bloom) -->
     <div ref="gateCanvasRef" class="absolute inset-0 z-0 gate-canvas"></div>
     <!-- 渐变遮罩：让表单/文字始终清晰可读 -->
