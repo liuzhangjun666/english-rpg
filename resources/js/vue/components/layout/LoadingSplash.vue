@@ -65,6 +65,12 @@ const statusText = computed(() => {
   if (typeof props.done === 'number' && typeof props.total === 'number' && props.total > 0) {
     return `${stage.label} (${props.done}/${props.total})`;
   }
+  if (props.visible && props.progress > 0 && props.progress < 1) {
+    return `${stage.label} (${Math.round(props.progress * 100)}%)`;
+  }
+  if (props.visible && (props.total ?? 0) === 0) {
+    return '正在开启仙门...';
+  }
   return stage.label;
 });
 const tipText = computed(() => currentStage.value.tip);

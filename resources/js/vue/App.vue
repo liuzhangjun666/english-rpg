@@ -15,9 +15,9 @@
     <LoadingSplash
       v-if="auth.bootstrapped"
       :visible="showAssetSplash"
-      :progress="preloadProgress"
-      :done="preloadCounts.done"
-      :total="preloadCounts.total"
+      :progress="splashProgress"
+      :done="splashCounts.done"
+      :total="splashCounts.total"
     />
 
     <TopHud
@@ -79,7 +79,7 @@ import { useUserStore } from './stores/user';
 import { useUiStore } from './stores/ui';
 import { useStoryStore } from './stores/story';
 import { useMailStore } from './stores/mail';
-import { resolveProfileRealm } from '../utils/cultivation.js';
+import { getDisplayRealm } from '../utils/cultivation.js';
 import { useLegacyBridge } from './composables/useLegacyBridge';
 import { initGameSoundSettings } from './composables/useGameSound';
 import TopHud from './components/layout/TopHud.vue';
@@ -97,14 +97,17 @@ import CultLoadingOverlay from './components/layout/CultLoadingOverlay.vue';
 import GlobalHud from './components/map/GlobalHud.vue';
 import AchievementsModal from './views/AchievementsModal.vue';
 import {
-  preloadEssentials,
+  preloadEssentialsForRoute,
   preloadProgress,
   preloadCounts,
-  essentialDone,
+  hallPreloadProgress,
+  hallPreloadCounts,
+  bootstrapDone,
 } from './services/assetPreloader';
 import {
   configureStartupGate,
   markEssentialsReady,
+  markSceneReady,
   canDismissSplash,
   resetStartupGate,
 } from './services/startupGate';
@@ -119,7 +122,21 @@ const mail = useMailStore();
 const api = useApiClient();
 const bridge = useLegacyBridge();
 
-const displayRealm = computed(() => resolveProfileRealm(user.profile));
+const displayRealm = computed(() => getDisplayRealm(user.profile));
+
+const isHallWarmup = computed(() => {
+  const path = route.path;
+  return path === '/hall' || path.startsWith('/hall/');
+});
+
+const splashProgress = computed(() => (
+  isHallWarmup.value ? hallPreloadProgress.value : preloadProgress.value
+));
+const splashCounts = computed(() => (
+  isHallWarmup.value ? hallPreloadCounts.value : preloadCounts.value
+));
+
+const MIN_LOGIN_SPLASH_MS = 1500;
 
 const isLoginRoute = computed(() => route.path === '/login');
 const isAssessmentRoute = computed(() => route.meta.assessmentFlow === true);
@@ -171,8 +188,24 @@ function openReviewFromProfile() {
 // auth 通过后 splash 立刻显示；预热完成（或保护超时）后隐藏。
 // 用 ref 而非 computed，是为了能加保护性超时 / 手动控制。
 const showAssetSplash = ref(false);
-let splashWatchdog: number | null = null;
+let splashSoftWarnTimer: number | null = null;
+let splashHardCapTimer: number | null = null;
 let splashDismissTimer: number | null = null;
+
+function clearSplashTimers() {
+  if (splashSoftWarnTimer !== null) {
+    clearTimeout(splashSoftWarnTimer);
+    splashSoftWarnTimer = null;
+  }
+  if (splashHardCapTimer !== null) {
+    clearTimeout(splashHardCapTimer);
+    splashHardCapTimer = null;
+  }
+  if (splashDismissTimer !== null) {
+    clearTimeout(splashDismissTimer);
+    splashDismissTimer = null;
+  }
+}
 
 function tryDismissSplash() {
   if (!showAssetSplash.value || !canDismissSplash()) return;
@@ -180,12 +213,61 @@ function tryDismissSplash() {
   splashDismissTimer = window.setTimeout(() => {
     showAssetSplash.value = false;
     splashDismissTimer = null;
+    clearSplashTimers();
   }, 400);
 }
 
 function onSplashGate() {
   tryDismissSplash();
 }
+
+function beginAssetWarmup(targetPath: string) {
+  if (bootstrapDone.value) {
+    tryDismissSplash();
+    return;
+  }
+
+  configureStartupGate(targetPath);
+  showAssetSplash.value = true;
+  clearSplashTimers();
+
+  const startedAt = Date.now();
+
+  Promise.all([
+    preloadEssentialsForRoute(targetPath),
+    bridge.getGame().catch(() => null),
+  ]).finally(() => {
+    const elapsed = Date.now() - startedAt;
+    const waitMore = Math.max(0, MIN_LOGIN_SPLASH_MS - elapsed);
+    window.setTimeout(() => {
+      markEssentialsReady();
+      tryDismissSplash();
+    }, waitMore);
+  });
+
+  // 仅提示，不强制关掉加载页（避免顶栏已出、场景仍黑屏）
+  splashSoftWarnTimer = window.setTimeout(() => {
+    if (showAssetSplash.value && !canDismissSplash()) {
+      console.warn('[assetPreloader] 资源加载较慢，请稍候...');
+    }
+  }, 25_000);
+
+  // 最终兜底：仅当确实卡住过久才降级放行
+  splashHardCapTimer = window.setTimeout(() => {
+    if (!showAssetSplash.value) return;
+    console.warn('[assetPreloader] 预热超时，降级进入游戏');
+    markEssentialsReady();
+    markSceneReady();
+    tryDismissSplash();
+  }, 90_000);
+}
+
+watch(
+  () => canDismissSplash(),
+  (ready) => {
+    if (ready) tryDismissSplash();
+  },
+);
 
 watch(
   () => auth.bootstrapped && auth.isAuthenticated,
@@ -195,14 +277,7 @@ watch(
       mail.reset();
       resetStartupGate();
       showAssetSplash.value = false;
-      if (splashWatchdog !== null) {
-        clearTimeout(splashWatchdog);
-        splashWatchdog = null;
-      }
-      if (splashDismissTimer !== null) {
-        clearTimeout(splashDismissTimer);
-        splashDismissTimer = null;
-      }
+      clearSplashTimers();
       return;
     }
 
@@ -221,7 +296,7 @@ watch(
 
     // 已经预热过就不重复显示（同一会话内 logout → login 是 window.location.assign 整页刷新，
     // 走的是新页面，这里的 essentialDone 已经回到初始 false。所以这条主要是防御 watch 重复触发）
-    if (essentialDone.value) return;
+    if (bootstrapDone.value) return;
 
     // 头像本地持久化：未接 /user/avatar 接口前，头像 dataURL 存在 localStorage 里。
     // auth 通过后第一时间合并回 store，让 TopHud / ProfilePanel 立即能看到上次设置的头像。
@@ -232,27 +307,18 @@ watch(
       }
     } catch { /* localStorage 不可用（隐私模式）就算了 */ }
 
-    configureStartupGate(route.path);
-    showAssetSplash.value = true;
-
-    // GLB 预热 + legacy 游戏并行加载；大厅场景在 splash 背后初始化
-    Promise.all([
-      preloadEssentials(),
-      bridge.getGame().catch(() => null),
-    ]).finally(() => {
-      markEssentialsReady();
-      tryDismissSplash();
-    });
-
-    // 网慢 / 失败兜底：12 秒强制放行，避免用户卡在 splash
-    splashWatchdog = window.setTimeout(() => {
-      if (showAssetSplash.value) {
-        console.warn('[assetPreloader] 预热超时，强制进入游戏');
-        showAssetSplash.value = false;
-      }
-    }, 12000);
+    beginAssetWarmup(route.path);
   },
   { immediate: true },
+);
+
+watch(
+  () => route.path,
+  (path) => {
+    if (!auth.isAuthenticated || !auth.bootstrapped) return;
+    configureStartupGate(path);
+    if (showAssetSplash.value) tryDismissSplash();
+  },
 );
 
 function openProfile() {
@@ -278,8 +344,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('profile-updated', handleProfileUpdate);
   window.removeEventListener('app:splash-gate', onSplashGate);
-  if (splashWatchdog !== null) clearTimeout(splashWatchdog);
-  if (splashDismissTimer !== null) clearTimeout(splashDismissTimer);
+  clearSplashTimers();
 });
 </script>
 

@@ -22,7 +22,7 @@
         <div class="name-realm-row">
           <span class="role-name">{{ user.profile?.nickname || '匿名前辈' }}</span>
           <div class="realm-plaque">
-            <span class="realm-text">{{ user.profile?.current_realm || '初入仙途' }}</span>
+            <span class="realm-text">{{ displayRealm }}</span>
           </div>
         </div>
         <div class="exp-bar-container">
@@ -104,6 +104,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useUserStore } from '../../stores/user';
 import { useUiStore } from '../../stores/ui';
 import { useMailStore } from '../../stores/mail';
+import { getDisplayRealm } from '../../../utils/cultivation.js';
 import { useCountUp } from '../../composables/useCountUp';
 import { useSpiritPower } from '../../composables/useSpiritPower';
 import gsap from 'gsap';
@@ -155,6 +156,7 @@ const powerPercent = computed(() => {
 });
 
 const levelNumber = computed(() => user.profile?.level ?? 1);
+const displayRealm = computed(() => getDisplayRealm(user.profile));
 
 const hudRef = ref<HTMLElement | null>(null);
 

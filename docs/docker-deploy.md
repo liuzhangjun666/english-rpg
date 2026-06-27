@@ -232,10 +232,62 @@ docker compose down
 docker compose down -v
 ```
 
-### 更新发布
+### 更新发布（宿主机改代码，无需 docker cp）
+
+`docker-compose.yml` 已将宿主机目录挂载进容器：
+
+| 宿主机路径 | 容器内 | 改完后 |
+|-----------|--------|--------|
+| `app/` | PHP 业务代码 | 刷新页面即可（约 2 秒 OPcache 生效） |
+| `routes/` `config/` | 路由 / 配置 | 需清缓存（见下） |
+| `resources/` | Blade / 前端源码 | PHP 视图：清缓存；Vue：需 `npm run build` |
+| `public/` | 静态资源 + `build/` | 前端改完执行 `npm run build` |
+| `vendor/` | Composer 依赖 | 宿主机 `composer install` 后 `restart app queue scheduler` |
+
+**日常改 Controller / Service（如 `SmsController.php`）：**
+
+```bash
+# 改完保存即可，无需 cp / --build
+# 可选：立刻生效（不等 OPcache 2 秒）
+sudo docker compose exec app php artisan optimize:clear
+```
+
+**改路由 / 配置 / `.env`：**
+
+```bash
+sudo docker compose exec app php artisan optimize:clear
+sudo docker compose restart app queue scheduler
+```
+
+**改 Vue / JS / CSS：**
+
+```bash
+npm run build
+# public/ 已挂载，build 完刷新浏览器（建议无痕或清站点数据）
+```
+
+**改 Composer 依赖：**
+
+```bash
+composer install --no-dev --optimize-autoloader
+sudo docker compose restart app queue scheduler
+```
+
+**首次启用挂载或换了 `docker-compose.yml`：**
+
+```bash
+sudo docker compose down
+sudo docker compose up -d
+```
+
+**仍需要 `docker compose up -d --build` 的情况：** 改了 `Dockerfile`、`docker/` 配置、PHP 扩展等镜像内容。
+
+### 更新发布（重建镜像方式，可选）
 
 ```bash
 git pull
+composer install --no-dev --optimize-autoloader
+npm run build
 docker compose up -d --build
 docker compose exec app php artisan migrate --force
 ```
@@ -290,7 +342,8 @@ docker compose exec app php artisan app:bootstrap-content
 | 文件 | 说明 |
 |------|------|
 | `Dockerfile` | 多阶段构建：Node 前端 + Composer + PHP-FPM + Nginx |
-| `docker-compose.yml` | app / web / mysql / queue / scheduler |
+| `docker-compose.yml` | app / web / mysql / queue / scheduler；**宿主机源码挂载** |
+| `docker/php/opcache-live.ini` | 挂载部署时允许 OPcache 检测 PHP 文件变更 |
 | `.env.docker.example` | Docker 环境变量模板 |
 | `docker/nginx/default.conf` | Nginx 配置 |
 | `docker/entrypoint.sh` | 启动时迁移、缓存、可选 bootstrap |

@@ -24,6 +24,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
+import { getDisplayRealm } from '../../utils/cultivation.js';
+import { preloadHallEssentials, hallPreloadCounts, areHallAssetsReady } from '../services/assetPreloader';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUserStore } from '../stores/user';
 import { useUiStore } from '../stores/ui';
@@ -53,14 +55,34 @@ function signalHallReady() {
   window.dispatchEvent(new CustomEvent('app:splash-gate'));
 }
 
+async function ensureHallAssetsLoaded() {
+  if (areHallAssetsReady()) return;
+
+  let progressTimer: number | null = null;
+  const tick = () => {
+    const { done, total } = hallPreloadCounts.value;
+    ui.showLoading(`正在加载宗门建筑 (${done}/${total})...`);
+  };
+
+  tick();
+  progressTimer = window.setInterval(tick, 250);
+  try {
+    await preloadHallEssentials();
+  } finally {
+    if (progressTimer !== null) window.clearInterval(progressTimer);
+  }
+}
+
 onMounted(async () => {
   try {
+    await ensureHallAssetsLoaded();
+
     const game = await bridge.getGame();
     await game.syncDailyStatus();
     game.ui.hideAllPanels();
 
     if (hallSceneRef.value) {
-      const realmStr = userStore.profile?.current_realm || '练气一层';
+      const realmStr = getDisplayRealm(userStore.profile, '练气一层');
       if (realmStr.includes('筑基')) userRealmLevel.value = 1;
       else if (realmStr.includes('金丹')) userRealmLevel.value = 2;
       else if (realmStr.includes('元婴') || realmStr.includes('化神')) userRealmLevel.value = 3;

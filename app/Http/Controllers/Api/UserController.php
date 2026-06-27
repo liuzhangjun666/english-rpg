@@ -57,6 +57,7 @@ class UserController extends Controller
             $user->save();
             $user->refresh();
             $cultivationSnapshot = $this->realmService->getCultivationProgress($user);
+            $resolvedRealm = $this->realmService->resolveCurrentRealm($user);
         }
 
         $storySnapshot = $this->storyService->snapshot($user);

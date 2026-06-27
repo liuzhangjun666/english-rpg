@@ -49,6 +49,8 @@ import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
 import { findMapBuilding, getSceneBuildingImages } from '../composables/useMapBuildings';
+import { getDisplayRealm } from '../../utils/cultivation.js';
+import { preloadHallEssentials, hallPreloadCounts, areHallAssetsReady } from '../services/assetPreloader';
 import { useHallPanels } from '../composables/useHallPanels';
 import { WorldSceneManager } from '../core/sect/WorldSceneManager';
 
@@ -91,6 +93,22 @@ watch(() => props.visible, async (val) => {
   overlayRef.value?.focus();
 
   try {
+    if (!areHallAssetsReady()) {
+      let progressTimer: number | null = null;
+      const tick = () => {
+        const { done, total } = hallPreloadCounts.value;
+        ui.showLoading(`正在加载宗门建筑 (${done}/${total})...`);
+      };
+      tick();
+      progressTimer = window.setInterval(tick, 250);
+      try {
+        await preloadHallEssentials();
+      } finally {
+        if (progressTimer !== null) window.clearInterval(progressTimer);
+        ui.hideLoading();
+      }
+    }
+
     const game = await bridge.getGame();
     await game.syncDailyStatus();
     game.ui.hideAllPanels();
@@ -98,7 +116,7 @@ watch(() => props.visible, async (val) => {
     if (!hallSceneRef.value) return;
     if (!props.visible) return;
 
-    const realmStr = userStore.profile?.current_realm || '练气一层';
+    const realmStr = getDisplayRealm(userStore.profile, '练气一层');
     if (realmStr.includes('筑基')) userRealmLevel.value = 1;
     else if (realmStr.includes('金丹')) userRealmLevel.value = 2;
     else if (realmStr.includes('元婴') || realmStr.includes('化神')) userRealmLevel.value = 3;

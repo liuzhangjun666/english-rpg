@@ -1,3 +1,20 @@
+# 宿主机源码挂载：改 app/routes/resources 等后无需 docker cp / --build。
+# 仍需在宿主机执行 composer install、npm run build；改完后 queue/scheduler 建议 restart app。
+x-app-code-volumes: &app_code_volumes
+  - ./.env:/var/www/html/.env:ro
+  - ./app:/var/www/html/app:ro
+  - ./routes:/var/www/html/routes:ro
+  - ./config:/var/www/html/config:ro
+  - ./resources:/var/www/html/resources:ro
+  - ./database:/var/www/html/database:ro
+  - ./bootstrap/app.php:/var/www/html/bootstrap/app.php:ro
+  - ./bootstrap/providers.php:/var/www/html/bootstrap/providers.php:ro
+  - ./vendor:/var/www/html/vendor:ro
+  - ./public:/var/www/html/public:ro
+  - ./docker/php/opcache-live.ini:/usr/local/etc/php/conf.d/zz-opcache-live.ini:ro
+  - app_storage:/var/www/html/storage
+  - app_cache:/var/www/html/bootstrap/cache
+
 services:
   app:
     build:
@@ -8,11 +25,7 @@ services:
     env_file: .env
     environment:
       DB_HOST: mysql
-    volumes:
-      - ./.env:/var/www/html/.env:ro
-      - ./public:/var/www/html/public:ro
-      - app_storage:/var/www/html/storage
-      - app_cache:/var/www/html/bootstrap/cache
+    volumes: *app_code_volumes
     depends_on:
       mysql:
         condition: service_healthy
@@ -65,11 +78,7 @@ services:
     environment:
       DB_HOST: mysql
     command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
-    volumes:
-      - ./.env:/var/www/html/.env:ro
-      - ./public:/var/www/html/public:ro
-      - app_storage:/var/www/html/storage
-      - app_cache:/var/www/html/bootstrap/cache
+    volumes: *app_code_volumes
     depends_on:
       app:
         condition: service_started
@@ -86,11 +95,7 @@ services:
     environment:
       DB_HOST: mysql
     command: php artisan schedule:work
-    volumes:
-      - ./.env:/var/www/html/.env:ro
-      - ./public:/var/www/html/public:ro
-      - app_storage:/var/www/html/storage
-      - app_cache:/var/www/html/bootstrap/cache
+    volumes: *app_code_volumes
     depends_on:
       app:
         condition: service_started

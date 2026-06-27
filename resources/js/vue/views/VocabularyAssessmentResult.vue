@@ -79,7 +79,7 @@
         <div class="note">境界已按你的学段与实测表现测定，修炼内容将匹配{{ majorRealmLabel }}词库与关卡。</div>
 
         <div class="cult-actions">
-          <el-button type="primary" data-btn-skin="enter" @click="goHall">开启修仙之旅</el-button>
+          <el-button type="primary" data-btn-skin="enter" :loading="navigating" @click="goHall">开启修仙之旅</el-button>
         </div>
       </div>
       </div>
@@ -93,16 +93,20 @@ import { ElMessage } from 'element-plus';
 import { useRoute, useRouter } from 'vue-router';
 import { useApiClient } from '../services/api';
 import { useUserStore } from '../stores/user';
+import { refreshUserProfileFromApi } from '../services/profile';
+import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { formatAssessmentLevel } from '../data/assessmentLevels';
 
 const route = useRoute();
 const router = useRouter();
 const api = useApiClient();
 const user = useUserStore();
+const bridge = useLegacyBridge();
 
 const assessmentId = Number(route.params.assessmentId || 0);
 
 const loading = ref(true);
+const navigating = ref(false);
 const result = ref<any>(null);
 
 const levelRows = computed(() => {
@@ -152,9 +156,38 @@ const majorRealmLabel = computed(() => {
   return match?.[1] || '对应';
 });
 
-function goHall() {
-  const redirect = String(route.query.redirect || '/practice');
-  router.replace(redirect);
+function applyAssessmentResultToProfile(assessmentResult: Record<string, any>) {
+  if (!assessmentResult?.final_realm) return;
+  user.updateProfile({
+    initial_assessment_done: 1,
+    current_realm: assessmentResult.final_realm,
+    realm: assessmentResult.realm_code,
+    realm_stage: assessmentResult.realm_stage ?? 1,
+  });
+}
+
+async function syncProfileAfterAssessment() {
+  if (result.value) {
+    applyAssessmentResultToProfile(result.value);
+    await bridge.applySessionFromProfile(user.profile!);
+  }
+
+  const profile = await refreshUserProfileFromApi({ skipAuthLogout: true });
+  if (profile) {
+    await bridge.applySessionFromProfile(profile);
+  }
+}
+
+async function goHall() {
+  if (navigating.value) return;
+  navigating.value = true;
+  try {
+    await syncProfileAfterAssessment();
+    const redirect = String(route.query.redirect || '/practice');
+    await router.replace(redirect);
+  } finally {
+    navigating.value = false;
+  }
 }
 
 onMounted(async () => {
@@ -176,14 +209,8 @@ onMounted(async () => {
     }
 
     result.value = res.data;
-    if (user.profile) {
-      user.updateProfile({
-        initial_assessment_done: 1,
-        current_realm: res.data.final_realm || user.profile.current_realm,
-        realm: res.data.realm_code || user.profile.realm,
-        realm_stage: res.data.realm_stage ?? user.profile.realm_stage,
-      });
-    }
+    applyAssessmentResultToProfile(res.data);
+    await syncProfileAfterAssessment();
   } finally {
     loading.value = false;
   }

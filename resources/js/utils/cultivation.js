@@ -93,6 +93,47 @@ export function resolveProfileRealm(profile) {
     return stored || derived || '';
 }
 
+/** 注册占位「练气一层」在未完成灵根测试时不应展示为真实境界 */
+export function isRegistrationRealmPlaceholder(profile) {
+    if (!profile) return false;
+    if (Number(profile.initial_assessment_done ?? 0) === 1) return false;
+    const realm = resolveProfileRealm(profile);
+    return !realm || getCultivationRealmIndex(realm) === 0;
+}
+
+/** TopHud / 个人资料等 UI 用的境界文案 */
+export function getDisplayRealm(profile, fallback = '初入仙途') {
+    if (!profile) return fallback;
+    if (isRegistrationRealmPlaceholder(profile)) {
+        return '灵根待测';
+    }
+    return resolveProfileRealm(profile) || fallback;
+}
+
+export function preferHigherRealmProfile(existingProfile, incomingProfile) {
+    if (!existingProfile || !incomingProfile) return incomingProfile;
+
+    const existingRealm = resolveProfileRealm(existingProfile);
+    const incomingRealm = resolveProfileRealm(incomingProfile);
+    const existingIndex = getCultivationRealmIndex(existingRealm);
+    const incomingIndex = getCultivationRealmIndex(incomingRealm);
+
+    if (existingIndex >= 0 && incomingIndex >= 0 && existingIndex > incomingIndex) {
+        return {
+            ...incomingProfile,
+            current_realm: existingProfile.current_realm ?? existingRealm,
+            realm: existingProfile.realm ?? incomingProfile.realm,
+            realm_stage: existingProfile.realm_stage ?? incomingProfile.realm_stage,
+            initial_assessment_done: Math.max(
+                Number(existingProfile.initial_assessment_done ?? 0),
+                Number(incomingProfile.initial_assessment_done ?? 0),
+            ),
+        };
+    }
+
+    return incomingProfile;
+}
+
 export function mergeRealmPatch(existingProfile, patch) {
     if (!patch || typeof patch !== 'object') return {};
 

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { mergeRealmPatch, normalizeUserProfile } from '../../utils/cultivation.js';
+import { mergeRealmPatch, normalizeUserProfile, preferHigherRealmProfile } from '../../utils/cultivation.js';
 
 export type UserProfile = Record<string, any> | null;
 
@@ -43,7 +43,10 @@ export const useUserStore = defineStore('user', {
   },
   actions: {
     setProfile(profile: Record<string, any>) {
-      this.profile = normalizeUserProfile(profile);
+      const merged = this.profile
+        ? preferHigherRealmProfile(this.profile, profile)
+        : profile;
+      this.profile = normalizeUserProfile(merged);
       persistProfile(this.profile);
     },
     updateProfile(updates: Record<string, any>) {

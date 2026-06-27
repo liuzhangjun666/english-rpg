@@ -4,6 +4,7 @@ import { useAuthStore } from '../stores/auth';
 import { useApiClient } from '../services/api';
 import { useUserStore } from '../stores/user';
 import { restoreSessionFromStorage } from '../services/session';
+import { refreshUserProfileFromApi } from '../services/profile';
 
 const LEGACY_HASH_MAP: Record<string, string> = {
   '#hall': '/hall',
@@ -204,6 +205,17 @@ const routes = [
 export const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.afterEach(async (to, from) => {
+  const leftAssessment = from.meta.assessmentFlow === true && to.meta.assessmentFlow !== true;
+  if (leftAssessment) {
+    try {
+      await refreshUserProfileFromApi({ skipAuthLogout: true });
+    } catch {
+      // 离开灵根测试后拉取失败时，保留本地已合并的结算境界。
+    }
+  }
 });
 
 router.beforeEach(async (to) => {

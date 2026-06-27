@@ -139,7 +139,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
-import { resolveProfileRealm } from '../../../utils/cultivation.js';
+import { resolveProfileRealm, getDisplayRealm } from '../../../utils/cultivation.js';
 import { useApiClient } from '../../services/api';
 import { refreshUserProfileFromApi } from '../../services/profile';
 import { useLegacyBridge } from '../../composables/useLegacyBridge';
@@ -184,7 +184,7 @@ const realmProgress = ref<Record<string, any> | null>(null);
 
 const profile = computed(() => user.profile || {});
 const hasPassword = computed(() => Boolean(profile.value?.has_password));
-const currentRealmLabel = computed(() => resolveProfileRealm(profile.value) || '练气一层');
+const currentRealmLabel = computed(() => getDisplayRealm(profile.value));
 const equippedTitle = computed(() => {
   const pc = profile.value?.progress_currency;
   if (pc && typeof pc === 'object' && pc.equipped_title) {
