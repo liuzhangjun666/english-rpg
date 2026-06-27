@@ -46,7 +46,15 @@ class SmsController extends Controller
                 'success' => false,
                 'code' => 'PHONE_ALREADY_REGISTERED',
                 'next_action' => 'login',
-                'message' => '该手机号已被注册，请返回登录页面进行登录',
+                'message' => '该手机号已经注册，请前往登录',
+            ]);
+        }
+
+        if ($action === 'login' && !User::where('phone', $request->phone)->exists()) {
+            return response()->json([
+                'success' => false,
+                'code' => 'PHONE_NOT_REGISTERED',
+                'message' => '该手机号未注册',
             ]);
         }
 

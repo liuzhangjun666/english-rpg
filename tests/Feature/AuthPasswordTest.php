@@ -89,6 +89,45 @@ class AuthPasswordTest extends TestCase
             ->assertJsonPath('success', true);
     }
 
+    public function test_login_sms_send_rejects_unregistered_phone(): void
+    {
+        $response = $this->postJson('/api/sms/send', [
+            'phone' => '13900139999',
+            'action' => 'login',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('code', 'PHONE_NOT_REGISTERED');
+    }
+
+    public function test_register_sms_send_rejects_registered_phone(): void
+    {
+        User::factory()->create(['phone' => '13900139998']);
+
+        $response = $this->postJson('/api/sms/send', [
+            'phone' => '13900139998',
+            'action' => 'register',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('code', 'PHONE_ALREADY_REGISTERED');
+    }
+
+    public function test_login_sms_send_allows_registered_phone(): void
+    {
+        User::factory()->create(['phone' => '13900139997']);
+
+        $response = $this->postJson('/api/sms/send', [
+            'phone' => '13900139997',
+            'action' => 'login',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true);
+    }
+
     public function test_reset_password_via_sms(): void
     {
         User::factory()->create(['phone' => '13900139005']);

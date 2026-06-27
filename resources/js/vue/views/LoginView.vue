@@ -151,7 +151,7 @@
 <script setup lang="ts">
 import { reactive, ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessage } from 'element-plus';
 import { useApiClient } from '../services/api';
 import { useAuthStore } from '../stores/auth';
 import { useUserStore } from '../stores/user';
@@ -284,7 +284,15 @@ async function sendCode(action: 'login' | 'register' | 'reset') {
   const smsAction = action === 'reset' ? 'reset_password' : action;
   const res = await api.post('/sms/send', { phone, action: smsAction });
   if (!res?.success && res?.code === 'PHONE_ALREADY_REGISTERED' && action === 'register') {
-    promptRegisteredPhoneAndGoLogin(phone);
+    goToLoginWithPhone(phone, res?.message || '该手机号已经注册，请前往登录');
+    return;
+  }
+  if (!res?.success && res?.code === 'PHONE_NOT_REGISTERED' && action === 'login') {
+    ElMessage.warning(res?.message || '该手机号未注册');
+    return;
+  }
+  if (!res?.success && res?.code === 'USER_NOT_FOUND' && action === 'reset') {
+    ElMessage.warning(res?.message || '该手机号未注册');
     return;
   }
   if (!res?.success) {
@@ -514,19 +522,16 @@ async function guestLogin() {
   }
 }
 
+async function goToLoginWithPhone(phone: string, message?: string) {
+  ElMessage.warning(message || '该手机号已经注册，请前往登录');
+  formMode.value = 'login';
+  loginMode.value = 'sms';
+  loginForm.phone = String(phone || '').trim();
+  loginForm.code = '';
+}
+
 async function promptRegisteredPhoneAndGoLogin(phone: string) {
-  try {
-    await ElMessageBox.confirm(
-      '该手机号已被注册，是否返回登录页面？',
-      '手机号已注册',
-      { confirmButtonText: '去登录', cancelButtonText: '取消', type: 'warning' }
-    );
-    formMode.value = 'login';
-    loginForm.phone = String(phone || '').trim();
-    loginForm.code = '';
-  } catch {
-    // user cancelled
-  }
+  goToLoginWithPhone(phone, '该手机号已经注册，请前往登录');
 }
 </script>
 

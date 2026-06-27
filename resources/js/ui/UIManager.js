@@ -194,6 +194,11 @@ export class UIManager {
                     this.redirectToLoginFromRegister(phone, res.message);
                     return;
                 }
+                if (action === 'login' && res.code === 'PHONE_NOT_REGISTERED') {
+                    this.clearErrorCountdown(errorId);
+                    this.showError(errorId, res.message || '该手机号未注册');
+                    return;
+                }
                 if (res.code === 'SMS_RESEND_COOLDOWN' && Number(res.retry_after) > 0) {
                     this.startErrorCountdown(errorId, Number(res.retry_after));
                     return;
