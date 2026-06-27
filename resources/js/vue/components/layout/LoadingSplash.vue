@@ -14,10 +14,7 @@
 
         <div class="splash-progress">
           <div class="splash-progress-track">
-            <div
-              class="splash-progress-fill"
-              :style="{ width: `${Math.round(progress * 100)}%` }"
-            ></div>
+            <div class="splash-progress-fill" :style="{ width: `${Math.round(progress * 100)}%` }"></div>
             <div class="splash-progress-shine"></div>
           </div>
           <div class="splash-progress-text">
@@ -44,10 +41,10 @@ const props = defineProps<{
 
 // 4 个修仙阶段文本，按进度阶梯切换，避免长时间停在同一句
 const STAGES = [
-  { at: 0,    label: '凝聚灵气...',  tip: '云海正缓缓散开' },
-  { at: 0.25, label: '推演星图...',  tip: '七星方位正在归位' },
-  { at: 0.55, label: '贯通灵脉...',  tip: '宗门殿宇逐一显形' },
-  { at: 0.85, label: '即将入门...',  tip: '收束最后一缕仙气' },
+  { at: 0, label: '凝聚灵气...', tip: '云海正缓缓散开' },
+  { at: 0.25, label: '推演星图...', tip: '七星方位正在归位' },
+  { at: 0.55, label: '贯通灵脉...', tip: '宗门殿宇逐一显形' },
+  { at: 0.85, label: '即将入门...', tip: '收束最后一缕仙气' },
 ];
 
 const currentStage = computed(() => {
@@ -118,8 +115,13 @@ watch(
 }
 
 @keyframes nebulaDrift {
-  0%   { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(2%, -1%) scale(1.06); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(2%, -1%) scale(1.06);
+  }
 }
 
 .splash-stars {
@@ -136,8 +138,13 @@ watch(
 }
 
 @keyframes starsTwinkle {
-  0%   { opacity: 0.6; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0.6;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 .splash-center {
@@ -165,7 +172,8 @@ watch(
   font-size: clamp(13px, 1.4vw, 16px);
   color: rgba(244, 222, 175, 0.7);
   letter-spacing: 0.4em;
-  padding-left: 0.4em; /* 视觉补偿字距 */
+  padding-left: 0.4em;
+  /* 视觉补偿字距 */
   margin-bottom: 48px;
 }
 
@@ -192,12 +200,11 @@ watch(
   left: 0;
   height: 100%;
   background: linear-gradient(90deg,
-    #c8893a 0%,
-    #f3d481 35%,
-    #fff2c6 55%,
-    #f3d481 75%,
-    #c8893a 100%
-  );
+      #c8893a 0%,
+      #f3d481 35%,
+      #fff2c6 55%,
+      #f3d481 75%,
+      #c8893a 100%);
   background-size: 200% 100%;
   border-radius: 999px;
   box-shadow: 0 0 10px rgba(255, 215, 130, 0.7);
@@ -206,8 +213,13 @@ watch(
 }
 
 @keyframes fillFlow {
-  0%   { background-position: 0% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: 0% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .splash-progress-shine {
@@ -222,8 +234,13 @@ watch(
 }
 
 @keyframes shineSweep {
-  0%   { left: -40%; }
-  100% { left: 120%; }
+  0% {
+    left: -40%;
+  }
+
+  100% {
+    left: 120%;
+  }
 }
 
 .splash-progress-text {
@@ -256,6 +273,7 @@ watch(
 .splash-fade-leave-active {
   transition: opacity 0.5s ease;
 }
+
 .splash-fade-enter-from,
 .splash-fade-leave-to {
   opacity: 0;

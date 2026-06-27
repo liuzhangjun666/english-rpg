@@ -12,26 +12,14 @@
     </div>
 
     <!-- 资源预热遮罩：登录后到进入游戏之间承载 GLB 下载 + 解码 -->
-    <LoadingSplash
-      v-if="auth.bootstrapped"
-      :visible="showAssetSplash"
-      :progress="splashProgress"
-      :done="splashCounts.done"
-      :total="splashCounts.total"
-    />
+    <LoadingSplash v-if="auth.bootstrapped" :visible="showAssetSplash" :progress="splashProgress"
+      :done="splashCounts.done" :total="splashCounts.total" />
 
-    <TopHud
-      v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash"
-      @open-profile="openProfile"
-      @logout="logout"
-      @open-settings="showSettings = true"
-      @open-mail="showMail = true"
-    />
+    <TopHud v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash" @open-profile="openProfile"
+      @logout="logout" @open-settings="showSettings = true" @open-mail="showMail = true" />
 
-    <main
-      class="shell-main"
-      :class="{ 'is-behind-splash': auth.bootstrapped && showAssetSplash && auth.isAuthenticated }"
-    >
+    <main class="shell-main"
+      :class="{ 'is-behind-splash': auth.bootstrapped && showAssetSplash && auth.isAuthenticated }">
       <router-view v-slot="{ Component }">
         <transition v-if="!isLoginRoute" name="scene-fade" mode="out-in">
           <component :is="Component" :key="$route.path" />
@@ -43,10 +31,8 @@
     <!-- 全局侧边栏：登录后所有路由可见，hide 由用户偏好控制（ui.sidebarVisible） -->
     <GlobalHud
       v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash && !isLoginRoute && ui.sidebarVisible"
-      @open-review="showGlobalReview = true"
-      @open-achievements="showGlobalAchievements = true"
-      @open-profile="openProfile"
-    />
+      @open-review="showGlobalReview = true" @open-achievements="showGlobalAchievements = true"
+      @open-profile="openProfile" />
     <ReviewModal v-model:visible="showGlobalReview" />
     <AchievementsModal v-model:visible="showGlobalAchievements" />
 
@@ -55,11 +41,8 @@
     <ProfilePanel v-model:visible="showProfile" @open-review="openReviewFromProfile"
       @open-parent="showParentDashboard = true" />
     <SettingsPanel v-model:visible="showSettings" @open-parent="showParentDashboard = true" />
-    <MailPanel
-      v-model:visible="showMail"
-      :on-open-sign-in="() => { showMail = false; showSignIn = true; }"
-      :on-open-daily-quest="() => { showMail = false; showDailyQuest = true; }"
-    />
+    <MailPanel v-model:visible="showMail" :on-open-sign-in="() => { showMail = false; showSignIn = true; }"
+      :on-open-daily-quest="() => { showMail = false; showDailyQuest = true; }" />
     <SignInPanel v-model:visible="showSignIn" />
     <DailyQuestPanel v-model:visible="showDailyQuest" />
     <ReviewModal v-model:visible="showReviewFromProfile" />
