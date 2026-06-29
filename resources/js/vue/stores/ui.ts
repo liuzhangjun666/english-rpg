@@ -19,6 +19,7 @@ export const useUiStore = defineStore('ui', {
   state: () => ({
     loading: false,
     loadingText: '加载中...',
+    loadingProgress: null as number | null,
     legacyPracticeOpen: false,
     isMapDragging: false,
     mapOverlayVisible: false,
@@ -29,9 +30,14 @@ export const useUiStore = defineStore('ui', {
     showLoading(text = '加载中...') {
       this.loading = true;
       this.loadingText = text;
+      this.loadingProgress = null;
+    },
+    setLoadingProgress(progress: number) {
+      this.loadingProgress = Math.min(1, Math.max(0, progress));
     },
     hideLoading() {
       this.loading = false;
+      this.loadingProgress = null;
     },
     setLegacyPracticeOpen(open: boolean) {
       this.legacyPracticeOpen = open;

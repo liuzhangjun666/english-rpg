@@ -1,5 +1,5 @@
 <template>
-  <div class="practice-page" :class="{ 'practice-page-arena': isArenaMode }">
+  <div v-if="sceneReady" class="practice-page" :class="{ 'practice-page-arena': isArenaMode }">
     <template v-if="isArenaMode">
       <div v-if="sessionState === 'answering' && isVocabModule" class="vocab-arena">
         <img class="ws-bg" :src="wsSceneBg" alt="木桩场景" />
@@ -366,6 +366,8 @@ import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useApiClient } from '../services/api';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
+import { useSceneEntry } from '../composables/useSceneEntry';
+import { getPracticeSceneAssets } from '../data/sceneViewAssets';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
 import { useDemonStore } from '../stores/demon';
@@ -500,6 +502,7 @@ const router = useRouter();
 const api = useApiClient();
 const bridge = useLegacyBridge();
 const ui = useUiStore();
+const { sceneReady, runSceneEntry } = useSceneEntry();
 const user = useUserStore();
 const demonStore = useDemonStore();
 
@@ -1104,29 +1107,35 @@ async function bootstrapModuleFromRoute() {
   resetQuestionState();
   resumeSession.value = null;
 
-  ui.showLoading(sceneType.value === 'grammar' ? sceneLoadingText('grammar') : sceneLoadingText(type));
+  const modeKey = sceneType.value === 'grammar' ? 'grammar' : type;
+  const loadingText = sceneLoadingText(modeKey as PracticeType);
+
   try {
-    await fetchLevelLayout(type);
-    if (sceneType.value === 'grammar') {
-      await bridge.switchToGrammarScene();
-    } else {
-      await bridge.switchToPracticeScene(type);
-    }
-    await bridge.closeLegacyPanels();
-    if ((levelLayout.value?.total_questions ?? 0) <= 0) {
-      clearPracticeSession(type);
-      resumeSession.value = null;
-    } else {
-      resumeSession.value = loadPracticeSession(type);
-      if (resumeSession.value) {
-        ElMessage.info('检测到上次修炼进度，请选择继续或重开');
-      }
-    }
-    sessionState.value = resolveEntrySessionState(type, practiceVariant.value);
+    await runSceneEntry({
+      text: loadingText,
+      assets: getPracticeSceneAssets(modeKey),
+      bootstrap: async () => {
+        await fetchLevelLayout(type);
+        if (sceneType.value === 'grammar') {
+          await bridge.switchToGrammarScene();
+        } else {
+          await bridge.switchToPracticeScene(type);
+        }
+        await bridge.closeLegacyPanels();
+        if ((levelLayout.value?.total_questions ?? 0) <= 0) {
+          clearPracticeSession(type);
+          resumeSession.value = null;
+        } else {
+          resumeSession.value = loadPracticeSession(type);
+          if (resumeSession.value) {
+            ElMessage.info('检测到上次修炼进度，请选择继续或重开');
+          }
+        }
+        sessionState.value = resolveEntrySessionState(type, practiceVariant.value);
+      },
+    });
   } catch {
     ElMessage.error('练功场景切换失败');
-  } finally {
-    ui.hideLoading();
   }
 }
 

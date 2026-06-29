@@ -1,5 +1,5 @@
 <template>
-  <div class="mall-page cultivation-theme">
+  <div v-if="sceneReady" class="mall-page cultivation-theme">
     <div class="mall-scene">
       <img class="mall-scene-bg" :src="sceneBg" alt="" />
       <div class="mall-scene-vignette" />
@@ -125,6 +125,8 @@ import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useApiClient } from '../services/api';
 import { useUserStore } from '../stores/user';
+import { useSceneEntry } from '../composables/useSceneEntry';
+import { getMallSceneAssets, SCENE_ENTRY_TEXT } from '../data/sceneViewAssets';
 import { vLoading } from 'element-plus';
 
 const sceneBg = '/images/bg_hall_map.png';
@@ -141,6 +143,7 @@ type MallCategory = typeof categoryTabs[number]['key'];
 const router = useRouter();
 const api = useApiClient();
 const userStore = useUserStore();
+const { sceneReady, runSceneEntry } = useSceneEntry();
 
 const goBack = () => {
   router.push('/hall');
@@ -169,8 +172,16 @@ const categoryLabel = (category?: string) => {
   }
 };
 
-onMounted(() => {
-  fetchItems();
+onMounted(async () => {
+  try {
+    await runSceneEntry({
+      text: SCENE_ENTRY_TEXT.mall,
+      assets: getMallSceneAssets(),
+      bootstrap: fetchItems,
+    });
+  } catch {
+    ElMessage.error('坊市加载失败');
+  }
 });
 
 const fetchItems = async () => {

@@ -1,5 +1,5 @@
 <template>
-  <div class="exam-page">
+  <div v-if="sceneReady" class="exam-page">
     <div class="cult-panel exam-panel">
       <header class="cult-panel-header">
         <div class="cult-panel-title">
@@ -129,6 +129,8 @@ import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useApiClient } from '../services/api';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
+import { useSceneEntry } from '../composables/useSceneEntry';
+import { SCENE_ENTRY_TEXT } from '../data/sceneViewAssets';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
 import { useDemonStore } from '../stores/demon';
@@ -148,6 +150,7 @@ const router = useRouter();
 const api = useApiClient();
 const bridge = useLegacyBridge();
 const ui = useUiStore();
+const { sceneReady, runSceneEntry } = useSceneEntry();
 const user = useUserStore();
 
 const stage = ref<Stage>('rules');
@@ -184,20 +187,22 @@ const dimensionRows = computed(() => {
 });
 
 onMounted(async () => {
-  ui.showLoading('进入试炼场...');
   try {
-    await bridge.switchToExamScene();
-    await bridge.closeLegacyPanels();
-    await loadCurrent();
-    const restored = loadSession();
-    if (restored) {
-      resumeCandidate.value = restored;
-      ElMessage.info('检测到上次渡劫进度，请选择继续或重开');
-    }
+    await runSceneEntry({
+      text: SCENE_ENTRY_TEXT.exam,
+      bootstrap: async () => {
+        await bridge.switchToExamScene();
+        await bridge.closeLegacyPanels();
+        await loadCurrent();
+        const restored = loadSession();
+        if (restored) {
+          resumeCandidate.value = restored;
+          ElMessage.info('检测到上次渡劫进度，请选择继续或重开');
+        }
+      },
+    });
   } catch {
     ElMessage.error('试炼场加载失败');
-  } finally {
-    ui.hideLoading();
   }
 });
 

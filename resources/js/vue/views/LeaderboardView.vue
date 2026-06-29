@@ -1,5 +1,5 @@
 <template>
-  <div class="leaderboard-page cultivation-theme">
+  <div v-if="sceneReady" class="leaderboard-page cultivation-theme">
     <div class="profile-container">
       <div class="profile-header">
         <div class="card-header" style="font-size: 24px; text-align: center; width: 100%;">
@@ -48,10 +48,13 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useApiClient } from '../services/api';
+import { useSceneEntry } from '../composables/useSceneEntry';
+import { SCENE_ENTRY_TEXT } from '../data/sceneViewAssets';
 import { vLoading } from 'element-plus';
 
 const router = useRouter();
 const api = useApiClient();
+const { sceneReady, runSceneEntry } = useSceneEntry();
 
 const goBack = () => {
   router.push('/hall');
@@ -73,8 +76,15 @@ const leaderboard = ref<any[]>([]);
 const myRank = ref<number | null>(null);
 const myPercentile = ref<number>(1);
 
-onMounted(() => {
-  fetchLeaderboard(currentTab.value);
+onMounted(async () => {
+  try {
+    await runSceneEntry({
+      text: SCENE_ENTRY_TEXT.leaderboard,
+      bootstrap: () => fetchLeaderboard(currentTab.value),
+    });
+  } catch {
+    // fetchLeaderboard 内部已处理错误状态
+  }
 });
 
 const switchTab = (tab: keyof typeof tabs) => {

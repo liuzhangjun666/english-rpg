@@ -4,6 +4,8 @@ import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useTowerStore } from '../stores/towerStore';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
+import { useSceneEntry } from '../composables/useSceneEntry';
+import { SCENE_ENTRY_TEXT } from '../data/sceneViewAssets';
 import TowerLobby from '../components/wanyaoTower/TowerLobby.vue';
 import TowerQuestionRunner from '../components/wanyaoTower/TowerQuestionRunner.vue';
 import TowerBossPanel from '../components/wanyaoTower/TowerBossPanel.vue';
@@ -12,13 +14,19 @@ import TowerSettleModal from '../components/wanyaoTower/TowerSettleModal.vue';
 const router = useRouter();
 const store = useTowerStore();
 const bridge = useLegacyBridge();
+const { sceneReady, runSceneEntry } = useSceneEntry();
 
 const showExit = computed(() => store.status === 'answering' || store.status === 'boss');
 
 onMounted(async () => {
-  bridge.switchToWanyaoTowerScene?.();
   try {
-    await store.fetchStatus();
+    await runSceneEntry({
+      text: SCENE_ENTRY_TEXT['wanyao-tower'],
+      bootstrap: async () => {
+        await bridge.switchToWanyaoTowerScene?.();
+        await store.fetchStatus();
+      },
+    });
   } catch {
     ElMessage.error('塔层信息加载失败');
   }
@@ -68,7 +76,7 @@ function onContinue() {
 </script>
 
 <template>
-  <div class="wanyao-tower-view">
+  <div v-if="sceneReady" class="wanyao-tower-view">
     <button
       v-if="showExit"
       type="button"

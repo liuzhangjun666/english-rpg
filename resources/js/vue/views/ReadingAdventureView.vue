@@ -1,5 +1,5 @@
 <template>
-  <div class="cangjing-page" :style="{ backgroundImage: `url(${bgImage})` }">
+  <div v-if="sceneReady" class="cangjing-page" :style="{ backgroundImage: `url(${bgImage})` }">
     <div class="cangjing-shell">
       <template v-if="stage === 'rules'">
         <div class="lobby-card" :style="{ backgroundImage: `url(${bgImage})` }">
@@ -268,6 +268,8 @@ import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useApiClient } from '../services/api';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
+import { useSceneEntry } from '../composables/useSceneEntry';
+import { getReadingSceneAssets, SCENE_ENTRY_TEXT } from '../data/sceneViewAssets';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
 import {
@@ -334,6 +336,7 @@ const route = useRoute();
 const api = useApiClient();
 const bridge = useLegacyBridge();
 const ui = useUiStore();
+const { sceneReady, runSceneEntry } = useSceneEntry();
 const user = useUserStore();
 
 const stage = ref<Stage>('rules');
@@ -436,16 +439,19 @@ const passageDisplayHtml = computed(() => {
 });
 
 onMounted(async () => {
-  ui.showLoading('进入藏经阁...');
   try {
-    await bridge.switchToReadingScene();
-    await bridge.closeLegacyPanels();
-    syncProgressWithRealmFloor();
-    await reloadQuestions();
+    await runSceneEntry({
+      text: SCENE_ENTRY_TEXT.reading,
+      assets: getReadingSceneAssets(),
+      bootstrap: async () => {
+        await bridge.switchToReadingScene();
+        await bridge.closeLegacyPanels();
+        syncProgressWithRealmFloor();
+        await reloadQuestions();
+      },
+    });
   } catch {
     ElMessage.error('藏经阁加载失败');
-  } finally {
-    ui.hideLoading();
   }
 });
 

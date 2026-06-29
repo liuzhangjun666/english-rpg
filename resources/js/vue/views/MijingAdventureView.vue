@@ -1,5 +1,5 @@
 <template>
-  <div class="mijing-page">
+  <div v-if="sceneReady" class="mijing-page">
     <div class="cult-panel mijing-panel" :class="{ 'is-challenge': stage === 'challenge' }">
       <header v-if="stage !== 'challenge'" class="cult-panel-header">
         <div class="cult-panel-title">
@@ -177,6 +177,8 @@ import { useRouter, useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useApiClient } from '../services/api';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
+import { useSceneEntry } from '../composables/useSceneEntry';
+import { SCENE_ENTRY_TEXT } from '../data/sceneViewAssets';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
 import { useStoryStore } from '../stores/story';
@@ -202,6 +204,7 @@ const route = useRoute();
 const api = useApiClient();
 const bridge = useLegacyBridge();
 const ui = useUiStore();
+const { sceneReady, runSceneEntry } = useSceneEntry();
 const user = useUserStore();
 const story = useStoryStore();
 
@@ -307,48 +310,49 @@ watch(
 
 onMounted(async () => {
   window.addEventListener('scene:interact', onSceneInteract);
-  ui.showLoading('进入秘境...');
   try {
-    await bridge.switchToMijingScene();
-    await bridge.closeLegacyPanels();
-    await fetchEntryStatus();
+    await runSceneEntry({
+      text: SCENE_ENTRY_TEXT.mijing,
+      bootstrap: async () => {
+        await bridge.switchToMijingScene();
+        await bridge.closeLegacyPanels();
+        await fetchEntryStatus();
 
-    const restored = loadSession();
-    const canRestore = restored
-      && restored.stage === 'challenge'
-      && Date.now() - restored.startedAtMs < restored.durationSec * 1000
-      && (!isBossMode.value || restored.weekPeriodStart === entryStatus.value?.week_period_start);
+        const restored = loadSession();
+        const canRestore = restored
+          && restored.stage === 'challenge'
+          && Date.now() - restored.startedAtMs < restored.durationSec * 1000
+          && (!isBossMode.value || restored.weekPeriodStart === entryStatus.value?.week_period_start);
 
-    if (canRestore) {
-      resumeCandidate.value = restored;
-      ElMessage.info(isBossMode.value ? '检测到本周未完成挑战，可继续进度' : '检测到上次秘境进度，请选择继续或重开');
-    } else {
-      clearSession();
-    }
+        if (canRestore) {
+          resumeCandidate.value = restored;
+          ElMessage.info(isBossMode.value ? '检测到本周未完成挑战，可继续进度' : '检测到上次秘境进度，请选择继续或重开');
+        } else {
+          clearSession();
+        }
 
-    if (!resumeCandidate.value && entryStatus.value?.running_challenge) {
-      const running = entryStatus.value.running_challenge;
-      resumeCandidate.value = {
-        stage: 'challenge',
-        challengeId: String(running.challenge_id || ''),
-        durationSec: Number(running.duration_sec || 60),
-        startedAtMs: Date.parse(running.start_at || new Date().toISOString()),
-        moduleType: String(running.module_type || 'vocab'),
-        level: String(running.level || 'L1'),
-        stageCode: String(running.stage || '01'),
-        score: 0,
-        combo: 0,
-        currentQuestion: null,
-        weekPeriodStart: entryStatus.value?.week_period_start,
-      };
-      ElMessage.info(isBossMode.value ? '检测到本周未完成挑战，可继续进度' : '检测到进行中的秘境，可继续上次挑战');
-    }
-    // 场景加载完毕后，手动同步一次 3D 选项
-    sync3dOptions();
+        if (!resumeCandidate.value && entryStatus.value?.running_challenge) {
+          const running = entryStatus.value.running_challenge;
+          resumeCandidate.value = {
+            stage: 'challenge',
+            challengeId: String(running.challenge_id || ''),
+            durationSec: Number(running.duration_sec || 60),
+            startedAtMs: Date.parse(running.start_at || new Date().toISOString()),
+            moduleType: String(running.module_type || 'vocab'),
+            level: String(running.level || 'L1'),
+            stageCode: String(running.stage || '01'),
+            score: 0,
+            combo: 0,
+            currentQuestion: null,
+            weekPeriodStart: entryStatus.value?.week_period_start,
+          };
+          ElMessage.info(isBossMode.value ? '检测到本周未完成挑战，可继续进度' : '检测到进行中的秘境，可继续上次挑战');
+        }
+        sync3dOptions();
+      },
+    });
   } catch {
     ElMessage.error('秘境加载失败');
-  } finally {
-    ui.hideLoading();
   }
 });
 

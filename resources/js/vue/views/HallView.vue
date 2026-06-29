@@ -25,10 +25,9 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getDisplayRealm } from '../../utils/cultivation.js';
-import { preloadHallEssentials, hallPreloadCounts, areHallAssetsReady } from '../services/assetPreloader';
+import { preloadHallEssentials, areHallAssetsReady } from '../services/assetPreloader';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useUserStore } from '../stores/user';
-import { useUiStore } from '../stores/ui';
 import { WorldSceneManager } from '../core/sect/WorldSceneManager';
 import { findMapBuilding, getSceneBuildingImages } from '../composables/useMapBuildings';
 import { useHallPanels } from '../composables/useHallPanels';
@@ -39,7 +38,6 @@ import HallModals from '../components/features/HallModals.vue';
 
 const bridge = useLegacyBridge();
 const userStore = useUserStore();
-const ui = useUiStore();
 
 const hallPageRef = ref<HTMLElement | null>(null);
 const hallSceneRef = ref<HTMLElement | null>(null);
@@ -57,20 +55,8 @@ function signalHallReady() {
 
 async function ensureHallAssetsLoaded() {
   if (areHallAssetsReady()) return;
-
-  let progressTimer: number | null = null;
-  const tick = () => {
-    const { done, total } = hallPreloadCounts.value;
-    ui.showLoading(`正在加载宗门建筑 (${done}/${total})...`);
-  };
-
-  tick();
-  progressTimer = window.setInterval(tick, 250);
-  try {
-    await preloadHallEssentials();
-  } finally {
-    if (progressTimer !== null) window.clearInterval(progressTimer);
-  }
+  // 进度由 App.vue LoadingSplash 统一展示，此处不再弹出 CultLoadingOverlay
+  await preloadHallEssentials();
 }
 
 onMounted(async () => {
@@ -125,8 +111,6 @@ onMounted(async () => {
     console.error('[HallView] 地图初始化失败', error);
     ElMessage.error('地图加载失败，请刷新重试');
     signalHallReady();
-  } finally {
-    ui.hideLoading();
   }
 });
 

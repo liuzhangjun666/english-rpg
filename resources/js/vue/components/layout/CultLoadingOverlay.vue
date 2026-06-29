@@ -15,8 +15,13 @@
           </div>
           <p class="cult-loading-text">{{ text }}</p>
           <div class="cult-loading-bar" aria-hidden="true">
-            <span class="cult-loading-bar-fill"></span>
+            <span
+              class="cult-loading-bar-fill"
+              :class="{ 'is-determinate': progress != null }"
+              :style="progress != null ? { width: `${Math.round(progress * 100)}%` } : undefined"
+            ></span>
           </div>
+          <p v-if="progress != null" class="cult-loading-pct">{{ Math.round(progress * 100) }}%</p>
         </div>
       </div>
     </Transition>
@@ -29,6 +34,7 @@ import loadingTai from '../../../../assets/images/clean/loading_tai_clean.svg';
 defineProps<{
   visible: boolean;
   text?: string;
+  progress?: number | null;
 }>();
 </script>
 
@@ -110,6 +116,20 @@ defineProps<{
   border-radius: inherit;
   background: linear-gradient(90deg, #8b6914, #f4d98a, #8b6914);
   animation: cult-bar-slide 1.4s ease-in-out infinite;
+}
+
+.cult-loading-bar-fill.is-determinate {
+  width: 0;
+  animation: none;
+  transition: width 0.25s ease;
+}
+
+.cult-loading-pct {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: rgba(244, 217, 138, 0.75);
+  letter-spacing: 0.08em;
+  font-family: 'Inter', sans-serif;
 }
 
 @keyframes cult-tai-spin {

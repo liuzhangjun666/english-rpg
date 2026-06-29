@@ -36,7 +36,11 @@
     <ReviewModal v-model:visible="showGlobalReview" />
     <AchievementsModal v-model:visible="showGlobalAchievements" />
 
-    <CultLoadingOverlay :visible="ui.loading" :text="ui.loadingText" />
+    <CultLoadingOverlay
+      :visible="ui.loading && !showAssetSplash"
+      :text="ui.loadingText"
+      :progress="ui.loadingProgress"
+    />
 
     <ProfilePanel v-model:visible="showProfile" @open-review="openReviewFromProfile"
       @open-parent="showParentDashboard = true" />
