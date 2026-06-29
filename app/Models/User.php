@@ -34,6 +34,8 @@ class User extends Authenticatable
         'spirit_power',
         'spirit_power_max',
         'spirit_stone',
+        'jade_balance',
+        'first_recharge_at',
         'spirit_power_date',
         'spirit_power_last_recover_at',
         'vip_type',
@@ -74,6 +76,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'first_recharge_at' => 'datetime',
             'vip_expired_at' => 'datetime',
             'last_login_at' => 'datetime',
             'initiation_completed_at' => 'datetime',

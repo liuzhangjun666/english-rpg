@@ -12,6 +12,7 @@ use App\Services\CurrencyService;
 use App\Services\RealmService;
 use App\Services\ReportService;
 use App\Services\StoryProgressService;
+use App\Services\VipService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -23,6 +24,7 @@ class UserController extends Controller
         private readonly RealmService $realmService,
         private readonly CurrencyService $currencyService,
         private readonly StoryProgressService $storyService,
+        private readonly VipService $vipService,
     ) {
     }
     /**
@@ -91,6 +93,9 @@ class UserController extends Controller
         $data['realm'] = (string) $user->realm;
         $data['realm_stage'] = max(1, (int) $user->realm_stage);
         $data['has_password'] = filled($user->password);
+        $data['jade_balance'] = (int) ($user->jade_balance ?? 0);
+        $data['spirit_power_max_effective'] = app(VipService::class)->effectiveSpiritMax($user);
+        $data = array_merge($data, $this->vipService->snapshot($user));
 
         $currency = is_array($user->progress_currency) ? $user->progress_currency : [];
         if (!empty($currency['equipped_title'])) {

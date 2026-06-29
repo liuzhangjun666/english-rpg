@@ -16,7 +16,8 @@
       :done="splashCounts.done" :total="splashCounts.total" />
 
     <TopHud v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash" @open-profile="openProfile"
-      @logout="logout" @open-settings="showSettings = true" @open-mail="showMail = true" />
+      @logout="logout" @open-settings="showSettings = true" @open-mail="showMail = true"
+      @open-recharge="ui.openRechargePanel('jade')" />
 
     <GuestBanner
       v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash && !isLoginRoute"
@@ -71,6 +72,13 @@
     <DemonEncounter />
 
     <WorldMapOverlay :visible="ui.mapOverlayVisible" @close="ui.hideMapOverlay()" />
+
+    <RechargePanel
+      :visible="ui.rechargePanelVisible"
+      :initial-tab="ui.rechargePanelTab"
+      @update:visible="(v) => { if (!v) ui.hideRechargePanel(); }"
+      @register="openGuestRegister"
+    />
   </div>
 </template>
 
@@ -102,6 +110,7 @@ import WorldMapOverlay from './views/WorldMapOverlay.vue';
 import LoadingSplash from './components/layout/LoadingSplash.vue';
 import CultLoadingOverlay from './components/layout/CultLoadingOverlay.vue';
 import GuestBanner from './components/layout/GuestBanner.vue';
+import RechargePanel from './components/features/RechargePanel.vue';
 import GlobalHud from './components/map/GlobalHud.vue';
 import AchievementsModal from './views/AchievementsModal.vue';
 import {

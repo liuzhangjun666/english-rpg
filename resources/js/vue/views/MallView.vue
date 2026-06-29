@@ -125,6 +125,7 @@ import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useApiClient } from '../services/api';
 import { useUserStore } from '../stores/user';
+import { useUiStore } from '../stores/ui';
 import { useSceneEntry } from '../composables/useSceneEntry';
 import { useReturnToHall } from '../composables/useReturnToHall';
 import { getMallSceneAssets, SCENE_ENTRY_TEXT } from '../data/sceneViewAssets';
@@ -144,6 +145,7 @@ type MallCategory = typeof categoryTabs[number]['key'];
 const router = useRouter();
 const api = useApiClient();
 const userStore = useUserStore();
+const ui = useUiStore();
 const { sceneReady, runSceneEntry } = useSceneEntry();
 const { returnToHall } = useReturnToHall();
 
@@ -204,6 +206,9 @@ const buyItem = async (item: any) => {
   const price = Number(item.price || 0);
   if (stones.value < price) {
     errorMsg.value = '灵石不足！';
+    if (!userStore.isGuest) {
+      ui.openRechargePanel('exchange');
+    }
     return;
   }
 

@@ -19,7 +19,7 @@ use App\Http\Controllers\Api\MijingChallengeController;
 use App\Http\Controllers\Api\ReadingAdventureController;
 use App\Http\Controllers\Api\ReadingBankController;
 use App\Http\Controllers\Api\ReviewController;
-use App\Http\Controllers\Api\ShareController;
+use App\Http\Controllers\Api\RechargeController;
 use App\Http\Controllers\Api\SkillPracticeController;
 use App\Http\Controllers\Api\SmsController;
 use App\Http\Controllers\Api\StoryController;
@@ -40,6 +40,8 @@ Route::prefix('auth')->group(function () {
     // 刷新必须在 auth:sanctum 之外：访问令牌过期后正靠它恢复会话，凭据是独立的刷新令牌。
     Route::post('/refresh', [AuthController::class, 'refresh']);
 });
+
+Route::post('/recharge/notify/wechat', [RechargeController::class, 'wechatNotify']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
@@ -186,6 +188,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/buffs', [MallController::class, 'buffs']);
         Route::post('/buy', [MallController::class, 'buy']);
         Route::post('/use', [MallController::class, 'useItem']);
+    });
+
+    Route::prefix('recharge')->group(function () {
+        Route::get('/catalog', [RechargeController::class, 'catalog']);
+        Route::post('/orders', [RechargeController::class, 'createOrder']);
+        Route::get('/orders/{orderNo}', [RechargeController::class, 'showOrder']);
+        Route::post('/mock-pay/{orderNo}', [RechargeController::class, 'mockPay']);
+        Route::post('/exchange', [RechargeController::class, 'exchange']);
     });
 
     Route::prefix('mijing/timed-challenge')->group(function () {

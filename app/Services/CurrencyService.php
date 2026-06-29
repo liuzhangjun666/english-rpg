@@ -13,6 +13,7 @@ class CurrencyService
 {
     public function __construct(
         private readonly MallService $mallService,
+        private readonly VipService $vipService,
     ) {}
 
     const SPIRIT_COST_PER_LEVEL = 5;
@@ -61,7 +62,8 @@ class CurrencyService
 
             // 恢复灵力（×倍率额外恢复）
             $bonusRecovery = (int)(10 * ($multiplier - 1));  // 额外恢复
-            $user->spirit_power = $user->spirit_power_max + max(0, $bonusRecovery);
+            $effectiveMax = $this->vipService->effectiveSpiritMax($user);
+            $user->spirit_power = $effectiveMax + max(0, $bonusRecovery);
             if ((bool) $user->is_minor) {
                 $user->spirit_power = min($user->spirit_power, 50);
             }
@@ -78,14 +80,14 @@ class CurrencyService
             'recovered' => $changed,
             'streak_days' => $streakDays,
             'spirit_power' => $user->spirit_power,
-            'spirit_power_max' => $user->spirit_power_max,
+            'spirit_power_max' => $this->vipService->effectiveSpiritMax($user->fresh()),
             'spirit_power_last_recover_at' => optional($user->spirit_power_last_recover_at)->toIso8601String(),
         ];
     }
 
     public function recoverSpiritPower(User $user): array
     {
-        $maxSpirit = max(0, (int) ($user->spirit_power_max ?? 0));
+        $maxSpirit = $this->vipService->effectiveSpiritMax($user);
         $currentSpirit = max(0, (int) ($user->spirit_power ?? 0));
         $now = now();
         $lastRecoverAt = $user->spirit_power_last_recover_at
@@ -104,8 +106,9 @@ class CurrencyService
             ];
         }
 
+        $interval = $this->vipService->spiritRecoverIntervalSeconds($user);
         $elapsedSeconds = max(0, (int) $lastRecoverAt->diffInSeconds($now));
-        $ticks = (int) floor($elapsedSeconds / self::SPIRIT_RECOVER_INTERVAL_SECONDS);
+        $ticks = (int) floor($elapsedSeconds / $interval);
         if ($ticks <= 0) {
             if (!$user->spirit_power_last_recover_at) {
                 $user->spirit_power_last_recover_at = $now;
@@ -127,7 +130,7 @@ class CurrencyService
             ];
         }
 
-        $secondsUsed = (int) floor($recoverAmount / self::SPIRIT_RECOVER_PER_TICK) * self::SPIRIT_RECOVER_INTERVAL_SECONDS;
+        $secondsUsed = (int) floor($recoverAmount / self::SPIRIT_RECOVER_PER_TICK) * $interval;
         $user->spirit_power = min($maxSpirit, $currentSpirit + $recoverAmount);
         $user->spirit_power_last_recover_at = $lastRecoverAt->addSeconds($secondsUsed);
         $user->save();
@@ -175,6 +178,7 @@ class CurrencyService
             $expGained += self::EXP_BONUS_PERFECT;
         }
 
+        $expGained = (int) round($expGained * $this->vipService->expMultiplier($user));
         $buffResult = $this->mallService->applySettlementBuffs($user, $expGained, $correctCount);
         $expGained = (int) $buffResult['adjusted_exp'];
 
@@ -182,6 +186,7 @@ class CurrencyService
         if ($accuracy === 100) {
             $stonesGained += self::STONE_PERFECT_BONUS;
         }
+        $stonesGained = (int) round($stonesGained * $this->vipService->stoneMultiplier($user));
 
         $user->increment('exp', $expGained);
         $user->increment('spirit_stone', $stonesGained);

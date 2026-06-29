@@ -23,6 +23,8 @@ export const useUiStore = defineStore('ui', {
     legacyPracticeOpen: false,
     isMapDragging: false,
     mapOverlayVisible: false,
+    rechargePanelVisible: false,
+    rechargePanelTab: 'jade' as 'jade' | 'vip' | 'exchange',
     sidebarVisible: true,
     sidebarExpanded: readSidebarExpanded(),
   }),
@@ -47,6 +49,11 @@ export const useUiStore = defineStore('ui', {
     },
     showMapOverlay() { this.mapOverlayVisible = true; },
     hideMapOverlay() { this.mapOverlayVisible = false; },
+    openRechargePanel(tab: 'jade' | 'vip' | 'exchange' = 'jade') {
+      this.rechargePanelTab = tab;
+      this.rechargePanelVisible = true;
+    },
+    hideRechargePanel() { this.rechargePanelVisible = false; },
     setSidebarExpanded(v: boolean) {
       this.sidebarExpanded = v;
       try { localStorage.setItem(SIDEBAR_EXPANDED_KEY, v ? '1' : '0'); } catch { /* ignore */ }

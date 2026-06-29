@@ -55,6 +55,20 @@
           <span class="res-label">{{ spiritSubLabel }}</span>
         </div>
       </div>
+      <div class="resource-item resource-item--jade" title="仙玉">
+        <span class="res-icon">💠</span>
+        <div class="res-copy">
+          <span class="res-value">{{ animatedJade }}</span>
+          <span class="res-label">仙玉</span>
+        </div>
+        <button
+          v-if="!user.isGuest"
+          type="button"
+          class="recharge-plus-btn"
+          title="充值仙玉"
+          @click="emit('open-recharge')"
+        >+</button>
+      </div>
       <div class="resource-item" title="灵石">
         <span class="res-icon">💎</span>
         <div class="res-copy">
@@ -115,6 +129,7 @@ const emit = defineEmits<{
   (e: 'logout'): void;
   (e: 'open-settings'): void;
   (e: 'open-mail'): void;
+  (e: 'open-recharge'): void;
 }>();
 
 const user = useUserStore();
@@ -131,6 +146,7 @@ function openSettings() {
 const animatedExp = useCountUp(() => user.profile?.exp ?? 0);
 const animatedVocab = useCountUp(() => user.profile?.vocabulary ?? 0);
 const animatedSpiritStone = useCountUp(() => user.profile?.spirit_stone ?? 0);
+const animatedJade = useCountUp(() => user.profile?.jade_balance ?? 0);
 const { view: spiritView, spiritTitle } = useSpiritPower();
 
 const spiritDisplay = computed(() => `${spiritView.value.current}/${spiritView.value.max}`);
@@ -496,6 +512,26 @@ watch(() => ui.isMapDragging, (isDragging) => {
   padding: 4px 12px;
   border-radius: 20px;
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.resource-item--jade {
+  position: relative;
+  padding-right: 28px;
+}
+
+.recharge-plus-btn {
+  position: absolute;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 168, 67, 0.55);
+  background: rgba(212, 168, 67, 0.18);
+  color: #ffd700;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
 }
 
 .res-copy {

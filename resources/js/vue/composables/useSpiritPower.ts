@@ -14,7 +14,8 @@ export function getSpiritPowerView(
   profile: Record<string, any> | null | undefined,
   nowMs = Date.now(),
 ): SpiritPowerView {
-  const max = Math.max(0, Number(profile?.spirit_power_max ?? 100));
+  const max = Math.max(0, Number(profile?.spirit_power_max_effective ?? profile?.spirit_power_max ?? 100));
+  const interval = profile?.is_vip ? 240 : SPIRIT_RECOVER_INTERVAL_SECONDS;
   const stored = Math.max(0, Number(profile?.spirit_power ?? 0));
 
   if (max <= 0) {
@@ -34,14 +35,14 @@ export function getSpiritPowerView(
   const parsed = rawLast ? new Date(rawLast).getTime() : nowMs;
   const lastMs = Number.isFinite(parsed) ? parsed : nowMs;
   const elapsedSec = Math.max(0, Math.floor((nowMs - lastMs) / 1000));
-  const ticks = Math.floor(elapsedSec / SPIRIT_RECOVER_INTERVAL_SECONDS);
+  const ticks = Math.floor(elapsedSec / interval);
   const current = Math.min(max, stored + ticks);
 
   if (current >= max) {
     return { current: max, max, isNaturalFull: true, countdownText: '已满' };
   }
 
-  const remainSec = SPIRIT_RECOVER_INTERVAL_SECONDS - (elapsedSec % SPIRIT_RECOVER_INTERVAL_SECONDS);
+  const remainSec = interval - (elapsedSec % interval);
   const mm = String(Math.floor(remainSec / 60)).padStart(2, '0');
   const ss = String(remainSec % 60).padStart(2, '0');
 
