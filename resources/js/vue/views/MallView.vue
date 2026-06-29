@@ -126,6 +126,7 @@ import { ElMessage } from 'element-plus';
 import { useApiClient } from '../services/api';
 import { useUserStore } from '../stores/user';
 import { useSceneEntry } from '../composables/useSceneEntry';
+import { useReturnToHall } from '../composables/useReturnToHall';
 import { getMallSceneAssets, SCENE_ENTRY_TEXT } from '../data/sceneViewAssets';
 import { vLoading } from 'element-plus';
 
@@ -144,9 +145,10 @@ const router = useRouter();
 const api = useApiClient();
 const userStore = useUserStore();
 const { sceneReady, runSceneEntry } = useSceneEntry();
+const { returnToHall } = useReturnToHall();
 
 const goBack = () => {
-  router.push('/hall');
+  void returnToHall();
 };
 
 const loading = ref(false);

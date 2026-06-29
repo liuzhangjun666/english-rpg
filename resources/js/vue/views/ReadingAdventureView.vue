@@ -269,6 +269,7 @@ import { ElMessage } from 'element-plus';
 import { useApiClient } from '../services/api';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useSceneEntry } from '../composables/useSceneEntry';
+import { useReturnToHall } from '../composables/useReturnToHall';
 import { getReadingSceneAssets, SCENE_ENTRY_TEXT } from '../data/sceneViewAssets';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
@@ -337,6 +338,7 @@ const api = useApiClient();
 const bridge = useLegacyBridge();
 const ui = useUiStore();
 const { sceneReady, runSceneEntry } = useSceneEntry();
+const { returnToHall } = useReturnToHall();
 const user = useUserStore();
 
 const stage = ref<Stage>('rules');
@@ -1009,8 +1011,7 @@ function onArcadeSettled(payload: { exp: number; stones: number }) {
 }
 
 function backHall() {
-  void bridge.closeLegacyPanels();
-  router.push('/hall');
+  void returnToHall();
 }
 </script>
 

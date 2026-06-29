@@ -32,6 +32,7 @@ import { WorldSceneManager } from '../core/sect/WorldSceneManager';
 import { findMapBuilding, getSceneBuildingImages } from '../composables/useMapBuildings';
 import { useHallPanels } from '../composables/useHallPanels';
 import { markSceneReady } from '../services/startupGate';
+import { beginHallMount, markHallReady, resetHallReady } from '../services/hallNavigation';
 
 import RadialMenu from '../components/map/RadialMenu.vue';
 import HallModals from '../components/features/HallModals.vue';
@@ -50,6 +51,7 @@ const { mapBuildings, panels, navigation } = useHallPanels();
 
 function signalHallReady() {
   markSceneReady();
+  markHallReady();
   window.dispatchEvent(new CustomEvent('app:splash-gate'));
 }
 
@@ -60,6 +62,7 @@ async function ensureHallAssetsLoaded() {
 }
 
 onMounted(async () => {
+  beginHallMount();
   try {
     await ensureHallAssetsLoaded();
 
@@ -117,6 +120,7 @@ onMounted(async () => {
 onUnmounted(() => {
   worldManager?.dispose();
   worldManager = null;
+  resetHallReady();
 });
 
 function closeFocus() {

@@ -211,21 +211,37 @@ class UserController extends Controller
      */
     public function uploadAvatar(Request $request): JsonResponse
     {
+        $uploaded = $request->file('avatar');
+        if ($uploaded && ! $uploaded->isValid()) {
+            $message = match ($uploaded->getError()) {
+                UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => '图片过大，请换一张较小的图片（服务器单文件限制约 2MB）',
+                UPLOAD_ERR_PARTIAL => '图片上传不完整，请重试',
+                UPLOAD_ERR_NO_FILE => '请选择要上传的图片',
+                default => '图片上传失败，请重试',
+            };
+
+            return response()->json([
+                'success' => false,
+                'message' => $message,
+            ], 422);
+        }
+
         $request->validate([
-            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'avatar' => 'required|file|image|mimes:jpeg,jpg,png,gif,webp|max:4096',
         ], [
             'avatar.required' => '请选择要上传的图片',
             'avatar.image' => '文件必须是图片',
-            'avatar.max' => '图片大小不能超过 2MB',
-            'avatar.mimes' => '仅支持 JPG, PNG, GIF, WEBP 格式',
+            'avatar.max' => '图片大小不能超过 4MB',
+            'avatar.mimes' => '仅支持 JPG、PNG、GIF、WEBP 格式',
         ]);
 
         $user = $request->user();
         
         if ($request->hasFile('avatar')) {
             $path = $request->file('avatar')->store('avatars', 'public');
-            $url = \Illuminate\Support\Facades\Storage::url($path);
-            
+            // 存相对路径，避免 APP_URL 指向 Vite(5173) 时生成错误绝对地址
+            $url = '/storage/' . str_replace('\\', '/', $path);
+
             $user->update(['avatar_url' => $url]);
             
             return response()->json([

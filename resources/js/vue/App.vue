@@ -18,6 +18,12 @@
     <TopHud v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash" @open-profile="openProfile"
       @logout="logout" @open-settings="showSettings = true" @open-mail="showMail = true" />
 
+    <GuestBanner
+      v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash && !isLoginRoute"
+      :show="user.isGuest"
+      @register="openGuestRegister"
+    />
+
     <main class="shell-main"
       :class="{ 'is-behind-splash': auth.bootstrapped && showAssetSplash && auth.isAuthenticated }">
       <router-view v-slot="{ Component }">
@@ -31,8 +37,13 @@
     <!-- 全局侧边栏：登录后所有路由可见，hide 由用户偏好控制（ui.sidebarVisible） -->
     <GlobalHud
       v-if="auth.bootstrapped && auth.isAuthenticated && !showAssetSplash && !isLoginRoute && ui.sidebarVisible"
-      @open-review="showGlobalReview = true" @open-achievements="showGlobalAchievements = true"
-      @open-profile="openProfile" />
+      @open-review="showGlobalReview = true"
+      @open-achievements="showGlobalAchievements = true"
+      @open-profile="openProfile"
+      @open-events="showEvents = true"
+      @open-mail="showMail = true"
+      @open-settings="showSettings = true"
+    />
     <ReviewModal v-model:visible="showGlobalReview" />
     <AchievementsModal v-model:visible="showGlobalAchievements" />
 
@@ -49,6 +60,12 @@
       :on-open-daily-quest="() => { showMail = false; showDailyQuest = true; }" />
     <SignInPanel v-model:visible="showSignIn" />
     <DailyQuestPanel v-model:visible="showDailyQuest" />
+    <EventsPanel
+      v-model:visible="showEvents"
+      :on-open-daily-quest="() => { showEvents = false; showDailyQuest = true; }"
+      :on-open-sign-in="() => { showEvents = false; showSignIn = true; }"
+      :on-open-mijing="openMijingFromEvents"
+    />
     <ReviewModal v-model:visible="showReviewFromProfile" />
     <ParentDashboardPanel v-model:visible="showParentDashboard" />
     <DemonEncounter />
@@ -67,7 +84,9 @@ import { useUiStore } from './stores/ui';
 import { useStoryStore } from './stores/story';
 import { useMailStore } from './stores/mail';
 import { getDisplayRealm } from '../utils/cultivation.js';
+import { signOut } from './services/session';
 import { useLegacyBridge } from './composables/useLegacyBridge';
+import { returnToHall } from './services/hallNavigation';
 import { initGameSoundSettings } from './composables/useGameSound';
 import TopHud from './components/layout/TopHud.vue';
 import ProfilePanel from './components/profile/ProfilePanel.vue';
@@ -76,11 +95,13 @@ import ParentDashboardPanel from './components/features/ParentDashboardPanel.vue
 import SettingsPanel from './components/features/SettingsPanel.vue';
 import MailPanel from './components/features/MailPanel.vue';
 import SignInPanel from './components/features/SignInPanel.vue';
+import EventsPanel from './components/features/EventsPanel.vue';
 import DailyQuestPanel from './views/DailyQuestPanel.vue';
 import DemonEncounter from './components/demons/DemonEncounter.vue';
 import WorldMapOverlay from './views/WorldMapOverlay.vue';
 import LoadingSplash from './components/layout/LoadingSplash.vue';
 import CultLoadingOverlay from './components/layout/CultLoadingOverlay.vue';
+import GuestBanner from './components/layout/GuestBanner.vue';
 import GlobalHud from './components/map/GlobalHud.vue';
 import AchievementsModal from './views/AchievementsModal.vue';
 import {
@@ -129,8 +150,14 @@ const isLoginRoute = computed(() => route.path === '/login');
 const isAssessmentRoute = computed(() => route.meta.assessmentFlow === true);
 const showGlobalHeader = computed(() => auth.bootstrapped && auth.isAuthenticated && !isAssessmentRoute.value);
 const showHallBackButton = computed(() => auth.isAuthenticated && route.path !== '/hall' && route.path !== '/login' && !isAssessmentRoute.value);
+
 function goHall() {
-  router.push('/hall');
+  void returnToHall(router);
+}
+
+async function openGuestRegister() {
+  await signOut();
+  window.location.assign('/login?mode=register');
 }
 
 async function logout() {
@@ -164,11 +191,18 @@ const showSettings = ref(false);
 const showMail = ref(false);
 const showSignIn = ref(false);
 const showDailyQuest = ref(false);
+const showEvents = ref(false);
 const showGlobalReview = ref(false);
 const showGlobalAchievements = ref(false);
 const showReviewFromProfile = ref(false);
 function openReviewFromProfile() {
   showReviewFromProfile.value = true;
+}
+
+function openMijingFromEvents() {
+  showEvents.value = false;
+  ui.hideMapOverlay();
+  void router.push('/mijing');
 }
 
 // ─── 资源预热遮罩 ─────────────────────────────────────────────
@@ -289,8 +323,11 @@ watch(
     // auth 通过后第一时间合并回 store，让 TopHud / ProfilePanel 立即能看到上次设置的头像。
     try {
       const savedAvatar = localStorage.getItem('levelup_user_avatar');
-      if (savedAvatar && user.profile && !user.profile.avatar_url) {
-        user.updateProfile({ avatar_url: savedAvatar });
+      if (savedAvatar && user.profile) {
+        // 本地缓存的头像作为兜底；服务端路径优先由 normalizeUserProfile 规范化
+        if (!user.profile.avatar_url) {
+          user.updateProfile({ avatar_url: savedAvatar });
+        }
       }
     } catch { /* localStorage 不可用（隐私模式）就算了 */ }
 

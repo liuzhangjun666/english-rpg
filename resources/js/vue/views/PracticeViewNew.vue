@@ -55,6 +55,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useReturnToHall } from '../composables/useReturnToHall';
 import { useComboSystem } from '../../composables/useComboSystem';
 import { usePracticeTimer } from '../../composables/usePracticeTimer';
 
@@ -70,6 +71,7 @@ import FinalScoreBoard from '../../components/practice/FinalScoreBoard.vue';
 
 const route = useRoute();
 const router = useRouter();
+const { returnToHall } = useReturnToHall();
 
 // 状态定义
 const moduleType = computed(() => route.query.mode as string || 'vocab');
@@ -172,7 +174,7 @@ const resetSession = () => {
 };
 
 const exitToHall = () => {
-  router.push('/hall');
+  void returnToHall();
 };
 </script>
 

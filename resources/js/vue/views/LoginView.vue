@@ -63,7 +63,9 @@
               忘记密令？
             </button>
             <button type="submit" class="jade-btn"><span>破 关 登 入</span></button>
-            <button type="button" class="ghost-btn" @click="guestLogin">神游太虚（游客体验）</button>
+            <button type="button" class="ghost-btn" :disabled="guestLoading" @click="guestLogin">
+              {{ guestLoading ? '神游入境中...' : '神游太虚（游客体验）' }}
+            </button>
           </form>
 
           <!-- 注册 -->
@@ -160,6 +162,7 @@ import { useUiStore } from '../stores/ui';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { resolveAssessmentDone } from '../router';
 import { refreshUserProfileFromApi } from '../services/profile';
+import { getOrCreateGuestKey, persistGuestKey, clearGuestKey } from '../services/guestSession';
 import { LoginGateScene } from '../core/login/LoginGateScene';
 
 const router = useRouter();
@@ -185,6 +188,11 @@ const gateCanvasRef = ref<HTMLDivElement | null>(null);
 let gateScene: LoginGateScene | null = null;
 
 onMounted(() => {
+  if (String(route.query.mode || '') === 'register') {
+    showForm.value = true;
+    formMode.value = 'register';
+  }
+
   if (gateCanvasRef.value) {
     try {
       gateScene = new LoginGateScene(gateCanvasRef.value);
@@ -336,9 +344,13 @@ async function applyProfile(profile: Record<string, any>) {
 }
 
 const entering = ref(false);
+const guestLoading = ref(false);
 
-function navigateAfterAuth(needsAssessment: boolean, options?: { fromRegister?: boolean }) {
-  const redirect = String(route.query.redirect || '/practice');
+function navigateAfterAuth(
+  needsAssessment: boolean,
+  options?: { fromRegister?: boolean; defaultRedirect?: string },
+) {
+  const redirect = String(route.query.redirect || options?.defaultRedirect || '/practice');
   const target = needsAssessment
     ? {
       path: '/vocab-assessment/intro',
@@ -398,6 +410,7 @@ async function doLogin() {
     api.setToken(token);
     auth.setToken(token);
     if (res.data.refresh_token) api.setRefreshToken(String(res.data.refresh_token));
+    clearGuestKey();
     await syncProfileFromApi(res.data.user);
     ElMessage.success('登录成功');
     const done = await resolveAssessmentDone();
@@ -466,6 +479,7 @@ async function doRegister() {
     api.setToken(token);
     auth.setToken(token);
     if (res.data.refresh_token) api.setRefreshToken(String(res.data.refresh_token));
+    clearGuestKey();
     await syncProfileFromApi(res.data.user);
     // 注册成功后清掉本地缓存的邀请码，避免下次注册再次带上
     try { localStorage.removeItem('levelup_pending_invite_ref'); } catch { /* ignore */ }
@@ -515,10 +529,29 @@ async function doResetPassword() {
 }
 
 async function guestLogin() {
-  loginForm.phone = '13800138000';
-  await sendCode('login');
-  if (loginForm.code) {
-    await doLogin();
+  if (guestLoading.value) return;
+  guestLoading.value = true;
+  ui.showLoading('神游太虚中...');
+  try {
+    const guestKey = getOrCreateGuestKey();
+    const res = await api.post('/auth/guest', { guest_key: guestKey }, { skipAuthLogout: true });
+    if (!res?.success || !res?.data?.token) {
+      ElMessage.error(res?.message || '游客进入失败，请稍后再试');
+      return;
+    }
+
+    const token = String(res.data.token || '');
+    api.setToken(token);
+    auth.setToken(token);
+    if (res.data.refresh_token) api.setRefreshToken(String(res.data.refresh_token));
+    if (res.data.guest_key) persistGuestKey(String(res.data.guest_key));
+    await syncProfileFromApi(res.data.user);
+
+    ElMessage.success('欢迎云游道人，尽情体验修仙之旅');
+    navigateAfterAuth(false, { defaultRedirect: '/hall' });
+  } finally {
+    guestLoading.value = false;
+    ui.hideLoading();
   }
 }
 

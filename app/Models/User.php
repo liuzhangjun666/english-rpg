@@ -47,6 +47,8 @@ class User extends Authenticatable
         'last_login_at',
         'initiation_completed_at',
         'tutorial_step',
+        'is_guest',
+        'guest_key',
         'story_progress',
         'progress_currency',
         'current_chapter',
@@ -66,6 +68,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'guest_key',
     ];
 
     protected function casts(): array
@@ -78,6 +81,7 @@ class User extends Authenticatable
             'invite_first_clear_rewarded_at' => 'datetime',
             'password' => 'hashed',
             'is_minor' => 'boolean',
+            'is_guest' => 'boolean',
             'parent_verified' => 'boolean',
             'cultivation_energy' => 'integer',
             'vocabulary' => 'integer',

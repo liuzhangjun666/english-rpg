@@ -1193,10 +1193,17 @@ export class UIManager {
             const r = await this.game.api.post('/user/avatar', formData);
 
             if (r.success) {
-                this.game.store.updateUser({ avatar_url: r.data.avatar_url });
+                const avatarUrl = String(r.data?.avatar_url || '').trim();
+                const resolved = avatarUrl.startsWith('http')
+                    ? (() => { try { const u = new URL(avatarUrl); return u.pathname.startsWith('/storage/') ? u.pathname : avatarUrl; } catch { return avatarUrl; } })()
+                    : avatarUrl;
+                this.game.store.updateUser({ avatar_url: resolved });
+                try {
+                    if (resolved) localStorage.setItem('levelup_user_avatar', resolved);
+                } catch { /* ignore */ }
                 this.showHermesBubble('道影已焕然一新。');
                 const headerImg = panel.querySelector('.profile-header-avatar');
-                if (headerImg) headerImg.src = r.data.avatar_url || this.assets.avatarDefault;
+                if (headerImg) headerImg.src = resolved || this.assets.avatarDefault;
             } else {
                 this.showHermesBubble(r.message || '道影凝结失败');
             }

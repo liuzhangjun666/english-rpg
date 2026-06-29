@@ -134,7 +134,22 @@ export class APIClient {
 
     async safeJson(response) {
         try {
-            return await response.json();
+            const payload = await response.json();
+            if (!response.ok) {
+                const errors = payload?.errors;
+                let message = payload?.message;
+                if (errors && typeof errors === 'object') {
+                    const first = Object.values(errors).flat().find(Boolean);
+                    if (first) message = String(first);
+                }
+                return {
+                    success: false,
+                    code: payload?.code || `HTTP_${response.status}`,
+                    message: message || '请求失败，请稍后重试',
+                    errors: payload?.errors,
+                };
+            }
+            return payload;
         } catch {
             return {
                 success: false,

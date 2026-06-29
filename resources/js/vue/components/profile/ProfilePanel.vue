@@ -146,6 +146,7 @@ import { useLegacyBridge } from '../../composables/useLegacyBridge';
 import { useUserStore } from '../../stores/user';
 import { useUiStore } from '../../stores/ui';
 import InviteFriendsPanel from './InviteFriendsPanel.vue';
+import { prepareAvatarForUpload, extractApiErrorMessage } from '../../utils/avatarUpload';
 import defaultAvatar from '../../../../assets/images/avatar_default.png';
 import abilityReading from '../../../../assets/images/ui/ability_reading.png';
 import abilityVocab from '../../../../assets/images/ui/ability_vocab.png';
@@ -308,24 +309,43 @@ function triggerAvatarUpload() {
   fileInput.value?.click();
 }
 
+function persistAvatarLocally(avatarUrl: string) {
+  try {
+    if (avatarUrl) localStorage.setItem('levelup_user_avatar', avatarUrl);
+    else localStorage.removeItem('levelup_user_avatar');
+  } catch { /* ignore */ }
+}
+
 async function handleAvatarUpload(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0];
   if (!file) return;
-  const formData = new FormData();
-  formData.append('avatar', file);
-  ui.showLoading('正在凝结道影...');
+
+  const previousAvatar = profile.value.avatar_url || '';
+  let previewUrl = '';
   try {
+    const prepared = await prepareAvatarForUpload(file);
+    previewUrl = URL.createObjectURL(prepared);
+    user.updateProfile({ avatar_url: previewUrl });
+
+    const formData = new FormData();
+    formData.append('avatar', prepared);
+    ui.showLoading('正在凝结道影...');
     const res = await api.post('/user/avatar', formData);
-    if (res?.success) {
-      user.updateProfile({ avatar_url: res.data.avatar_url });
+    if (res?.success && res.data?.avatar_url) {
+      const avatarUrl = String(res.data.avatar_url);
+      user.updateProfile({ avatar_url: avatarUrl });
+      persistAvatarLocally(avatarUrl);
       ElMessage.success('道影已焕然一新。');
       window.dispatchEvent(new CustomEvent('profile-updated', { detail: res.data }));
     } else {
-      ElMessage.error(res?.message || '道影凝结失败');
+      user.updateProfile({ avatar_url: previousAvatar || undefined });
+      ElMessage.error(extractApiErrorMessage(res, '道影凝结失败'));
     }
-  } catch {
-    ElMessage.error('道影凝结失败');
+  } catch (err) {
+    user.updateProfile({ avatar_url: previousAvatar || undefined });
+    ElMessage.error(err instanceof Error ? err.message : '道影凝结失败');
   } finally {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
     ui.hideLoading();
     if (fileInput.value) fileInput.value.value = '';
   }

@@ -130,6 +130,7 @@ import { ElMessage } from 'element-plus';
 import { useApiClient } from '../services/api';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useSceneEntry } from '../composables/useSceneEntry';
+import { useReturnToHall } from '../composables/useReturnToHall';
 import { SCENE_ENTRY_TEXT } from '../data/sceneViewAssets';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
@@ -151,6 +152,7 @@ const api = useApiClient();
 const bridge = useLegacyBridge();
 const ui = useUiStore();
 const { sceneReady, runSceneEntry } = useSceneEntry();
+const { returnToHall } = useReturnToHall();
 const user = useUserStore();
 
 const stage = ref<Stage>('rules');
@@ -472,10 +474,12 @@ async function afterResult() {
 }
 
 function backHall() {
-  stopTimer();
-  persistSession();
-  void bridge.closeLegacyPanels();
-  router.push('/hall');
+  void returnToHall({
+    beforeNavigate: () => {
+      stopTimer();
+      persistSession();
+    },
+  });
 }
 </script>
 

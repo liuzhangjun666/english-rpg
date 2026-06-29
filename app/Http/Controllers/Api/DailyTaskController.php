@@ -49,6 +49,7 @@ class DailyTaskController extends Controller
             'data' => [
                 'already_signed' => $result['already_signed'],
                 'streak_days' => $result['streak_days'],
+                'signin_streak' => (int) ($result['signin_streak'] ?? 0),
                 'spirit_recovered' => $result['spirit_recovered'] ?? false,
                 'user' => $result['user'],
             ],

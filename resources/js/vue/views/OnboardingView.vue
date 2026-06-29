@@ -77,6 +77,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { returnToHall } from '../services/hallNavigation';
 import { useApiClient } from '../services/api';
 import { useUserStore } from '../stores/user';
 import hermesAvatar from '../../../assets/images/hermes_avatar.png';
@@ -163,13 +164,13 @@ async function finishOnboarding() {
   } catch {
     // Non-critical — proceed anyway
   }
-  router.replace('/hall');
+  void returnToHall(router, { replace: true, loadingText: '正在进入宗门...' });
 }
 
 onMounted(() => {
   // If tutorial already done, skip straight to hall
   if (user.profile && (user.profile as any).tutorial_step > 0) {
-    router.replace('/hall');
+    void returnToHall(router, { replace: true, loadingText: '正在进入宗门...' });
   }
 });
 </script>

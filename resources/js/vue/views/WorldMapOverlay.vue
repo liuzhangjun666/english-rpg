@@ -53,6 +53,7 @@ import { getDisplayRealm } from '../../utils/cultivation.js';
 import { preloadHallEssentials, hallPreloadCounts, areHallAssetsReady } from '../services/assetPreloader';
 import { useHallPanels } from '../composables/useHallPanels';
 import { WorldSceneManager } from '../core/sect/WorldSceneManager';
+import { returnToHall } from '../services/hallNavigation';
 
 import RadialMenu from '../components/map/RadialMenu.vue';
 import HallModals from '../components/features/HallModals.vue';
@@ -72,14 +73,17 @@ const radialPos = ref({ x: '50%', y: '50%' });
 
 const activeRadialBuilding = ref<any>(null);
 
-function returnToLobby() {
+function dismissMapOverlay() {
   activeRadialBuilding.value = null;
   ui.hideMapOverlay();
   void bridge.closeLegacyPanels();
-  void router.push('/hall');
 }
 
-const { panels, navigation, mapBuildings } = useHallPanels({ beforeNavigate: returnToLobby });
+function returnToLobby() {
+  void returnToHall(router);
+}
+
+const { panels, navigation, mapBuildings } = useHallPanels({ beforeNavigate: dismissMapOverlay });
 
 // 当 overlay 变为可见时初始化 3D 场景
 watch(() => props.visible, async (val) => {

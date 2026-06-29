@@ -39,6 +39,7 @@ export const useUserStore = defineStore('user', {
   }),
   getters: {
     isLoggedIn: (state) => !!state.profile,
+    isGuest: (state) => !!state.profile?.is_guest,
     nickname: (state) => state.profile?.nickname || '',
   },
   actions: {

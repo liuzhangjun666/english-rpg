@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\GuestAuthService;
 use App\Services\RealmService;
 use App\Services\ShareRewardService;
 use App\Services\SmsService;
@@ -28,11 +29,16 @@ class AuthController extends Controller
 
     private SmsService $smsService;
     private RealmService $realmService;
+    private GuestAuthService $guestAuthService;
 
-    public function __construct(SmsService $smsService, RealmService $realmService)
-    {
+    public function __construct(
+        SmsService $smsService,
+        RealmService $realmService,
+        GuestAuthService $guestAuthService,
+    ) {
         $this->smsService = $smsService;
         $this->realmService = $realmService;
+        $this->guestAuthService = $guestAuthService;
     }
 
     private const CHINESE_MESSAGES = [
@@ -227,6 +233,39 @@ class AuthController extends Controller
         }
 
         return $this->completeLogin($user);
+    }
+
+    /**
+     * 游客一键体验（神游太虚）
+     * POST /api/auth/guest
+     */
+    public function guest(Request $request): JsonResponse
+    {
+        $ipKey = 'guest-login:' . $request->ip();
+        if (RateLimiter::tooManyAttempts($ipKey, 20)) {
+            $retryAfter = RateLimiter::availableIn($ipKey);
+            return response()->json([
+                'success' => false,
+                'code' => 'TOO_MANY_ATTEMPTS',
+                'message' => "游客进入过于频繁，请 {$retryAfter} 秒后再试",
+                'retry_after' => $retryAfter,
+            ], 429);
+        }
+        RateLimiter::hit($ipKey, 3600);
+
+        $guestKey = $this->guestAuthService->resolveGuestKey($request->input('guest_key'));
+        $user = $this->guestAuthService->findOrCreateGuest($guestKey);
+        $user->update(['last_login_at' => now()]);
+        $user->tokens()->delete();
+        $tokens = $this->issueAuthTokens($user);
+
+        return response()->json([
+            'success' => true,
+            'data' => array_merge([
+                'user' => $user->fresh(),
+                'guest_key' => $guestKey,
+            ], $tokens),
+        ]);
     }
 
     private function loginWithPassword(Request $request): JsonResponse

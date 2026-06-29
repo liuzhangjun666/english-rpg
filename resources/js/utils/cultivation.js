@@ -167,10 +167,32 @@ export function mergeRealmPatch(existingProfile, patch) {
     return next;
 }
 
+/** 头像 URL 统一为当前站点可访问的路径（修正历史绝对地址 / 错误端口） */
+export function resolveAvatarUrl(url) {
+    if (!url) return '';
+    const raw = String(url).trim();
+    if (!raw) return '';
+    if (raw.startsWith('data:') || raw.startsWith('blob:')) return raw;
+    if (raw.startsWith('/')) return raw;
+    try {
+        const base = typeof window !== 'undefined' ? window.location.origin : 'http://localhost';
+        const parsed = new URL(raw, base);
+        if (parsed.pathname.startsWith('/storage/')) {
+            return parsed.pathname;
+        }
+        return raw;
+    } catch {
+        return raw;
+    }
+}
+
 export function normalizeUserProfile(profile) {
     if (!profile) return profile;
 
     const normalized = { ...profile };
+    if (normalized.avatar_url) {
+        normalized.avatar_url = resolveAvatarUrl(normalized.avatar_url);
+    }
     normalized.current_realm = resolveProfileRealm(normalized);
     normalized.cultivation_energy = Number(normalized.cultivation_energy || 0);
     normalized.vocabulary = Number(normalized.vocabulary || 0);

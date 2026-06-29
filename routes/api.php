@@ -36,6 +36,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('/guest', [AuthController::class, 'guest']);
     // 刷新必须在 auth:sanctum 之外：访问令牌过期后正靠它恢复会话，凭据是独立的刷新令牌。
     Route::post('/refresh', [AuthController::class, 'refresh']);
 });

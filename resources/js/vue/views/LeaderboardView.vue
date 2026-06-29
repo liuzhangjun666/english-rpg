@@ -49,15 +49,17 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useApiClient } from '../services/api';
 import { useSceneEntry } from '../composables/useSceneEntry';
+import { useReturnToHall } from '../composables/useReturnToHall';
 import { SCENE_ENTRY_TEXT } from '../data/sceneViewAssets';
 import { vLoading } from 'element-plus';
 
 const router = useRouter();
 const api = useApiClient();
 const { sceneReady, runSceneEntry } = useSceneEntry();
+const { returnToHall } = useReturnToHall();
 
 const goBack = () => {
-  router.push('/hall');
+  void returnToHall();
 };
 
 const tabs = {

@@ -367,6 +367,7 @@ import { ElMessage } from 'element-plus';
 import { useApiClient } from '../services/api';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useSceneEntry } from '../composables/useSceneEntry';
+import { useReturnToHall } from '../composables/useReturnToHall';
 import { getPracticeSceneAssets } from '../data/sceneViewAssets';
 import { useUiStore } from '../stores/ui';
 import { useUserStore } from '../stores/user';
@@ -503,6 +504,7 @@ const api = useApiClient();
 const bridge = useLegacyBridge();
 const ui = useUiStore();
 const { sceneReady, runSceneEntry } = useSceneEntry();
+const { returnToHall } = useReturnToHall();
 const user = useUserStore();
 const demonStore = useDemonStore();
 
@@ -1140,7 +1142,7 @@ async function bootstrapModuleFromRoute() {
 }
 
 function onLegacyEnterHall() {
-  router.replace('/hall');
+  void returnToHall({ replace: true });
 }
 
 async function switchModule(type: PracticeType) {
@@ -1885,8 +1887,7 @@ async function onSpeakingSubmit(payload?: {
 function backHall() {
   clearGrammarAutoAdvanceTimer();
   persistPracticeSession();
-  void bridge.closeLegacyPanels();
-  router.push('/hall');
+  void returnToHall();
 }
 </script>
 

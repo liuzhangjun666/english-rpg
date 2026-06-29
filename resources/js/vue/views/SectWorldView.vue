@@ -2,13 +2,14 @@
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUiStore } from '../stores/ui';
+import { returnToHall } from '../services/hallNavigation';
 
 const router = useRouter();
 const ui = useUiStore();
 
 onMounted(() => {
   ui.showMapOverlay();
-  router.replace('/hall');
+  void returnToHall(router, { replace: true, loadingText: '正在进入宗门大阵...' });
 });
 </script>
 

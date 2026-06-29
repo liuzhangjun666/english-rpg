@@ -5,6 +5,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { useTowerStore } from '../stores/towerStore';
 import { useLegacyBridge } from '../composables/useLegacyBridge';
 import { useSceneEntry } from '../composables/useSceneEntry';
+import { useReturnToHall } from '../composables/useReturnToHall';
 import { SCENE_ENTRY_TEXT } from '../data/sceneViewAssets';
 import TowerLobby from '../components/wanyaoTower/TowerLobby.vue';
 import TowerQuestionRunner from '../components/wanyaoTower/TowerQuestionRunner.vue';
@@ -15,6 +16,7 @@ const router = useRouter();
 const store = useTowerStore();
 const bridge = useLegacyBridge();
 const { sceneReady, runSceneEntry } = useSceneEntry();
+const { returnToHall } = useReturnToHall();
 
 const showExit = computed(() => store.status === 'answering' || store.status === 'boss');
 
@@ -62,7 +64,7 @@ async function onRestart() {
   }
 }
 
-function onBack() { router.push('/hall'); }
+function onBack() { void returnToHall(); }
 
 function onExit() {
   store.pauseRun();
