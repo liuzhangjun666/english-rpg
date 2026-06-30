@@ -496,7 +496,7 @@ class WritingPanel {
 const MODULE_META = {
     vocab: { title: '🌿 灵草园', shortName: '灵草园', countText: (stageNo) => (stageNo <= 3 ? '15题' : stageNo <= 6 ? '18题' : '20题') },
     grammar: { title: '🧭 阵法峰', shortName: '阵法峰', countText: () => '10题' },
-    listening: { title: '🎐 听风谷', shortName: '听风谷', countText: () => '10题' },
+    listening: { title: '🎧 听力', shortName: '听力', countText: () => '10题' },
     speaking: { title: '🗣️ 诵咒峰', shortName: '诵咒峰', countText: () => '10题' },
     reading: { title: '📚 阅读试炼', shortName: '阅读试炼', countText: () => '10题' },
     writing: { title: '🪶 符箓台', shortName: '符箓台', countText: () => '2题（命题+续写）' },
@@ -874,7 +874,7 @@ export class PracticePanel {
 
         panel.innerHTML = `
             <div class="practice-header">
-                <span class="practice-title"><img src="${herbIcon}" class="herb-icon"> ${isVocab ? '灵草园 · ' : ''}${isGrammar ? '阵法峰 · ' : ''}${isListening ? '听风谷 · ' : ''}${isSpeaking ? '诵咒峰 · ' : ''}${this.currentLevel} ${isDemon ? '🧘' : ''}</span>
+                <span class="practice-title"><img src="${herbIcon}" class="herb-icon"> ${isVocab ? '灵草园 · ' : ''}${isGrammar ? '阵法峰 · ' : ''}${isListening ? '听力 · ' : ''}${isSpeaking ? '诵咒峰 · ' : ''}${this.currentLevel} ${isDemon ? '🧘' : ''}</span>
                 <span class="practice-progress">${progressHeaderHtml}</span>
             </div>
             <div class="progress-bar">
@@ -885,7 +885,7 @@ export class PracticePanel {
             ${vocabQuestStatusHtml}
             ${isGrammar ? `<div class="grammar-mode-badge">${this.renderGrammarModeBadge(grammarPlayMode)}</div>` : ''}
             ${grammarQuestStatusHtml}
-            ${isListening ? `<div class="listening-mode-badge">🎐 听风谷试炼：以传音玉辨析英文灵音</div>` : ''}
+            ${isListening ? `<div class="listening-mode-badge">🎧 听力试炼：以浏览器朗读辨析英文灵音</div>` : ''}
             ${isSpeaking ? `<div class="listening-mode-badge">🗣️ 诵咒峰：播放原音 + 跟读打卡（今日打卡 ${speakingTodayCount} 次）</div>` : ''}
             ${showPronounce ? `
                 <div class="word-pronounce-row">

@@ -262,8 +262,12 @@
             <span class="cult-tag info">{{ currentIndex + 1 }} / {{ questions.length }}</span>
             <span class="cult-tag warning">{{ currentLevel.levelId }}</span>
           </div>
-          <ListeningModule :key="String(currentQuestion.question_id || currentIndex)" :question="listeningQuestion"
-            @submit-answer="onListeningSubmit" />
+          <ListeningModule
+            :key="listeningPassageKey"
+            :question="listeningQuestion"
+            :passage="currentListeningPassage"
+            @submit-answer="onListeningSubmit"
+          />
         </template>
 
         <template v-else-if="sessionState === 'answering'">
@@ -492,7 +496,7 @@ const PRACTICE_ABILITY_LABELS: Partial<Record<PracticeType, string>> = {
 const VENUE_TITLES: Record<PracticeType, string> = {
   vocab: '练功房',
   grammar: '阵法峰',
-  listening: '听风谷',
+  listening: '听力',
   speaking: '诵咒峰',
   reading: '藏经阁',
   writing: '符箓台',
@@ -658,6 +662,24 @@ const listeningQuestion = computed(() => {
     correct_answer: String(q.correct_answer || ''),
     wind_seal: windSeal,
     options: opts,
+  };
+});
+
+const listeningPassageKey = computed(() => {
+  const q = currentQuestion.value;
+  return String(q?.passage_id || q?.question_id || currentIndex.value);
+});
+
+const currentListeningPassage = computed(() => {
+  const q = currentQuestion.value;
+  const passageId = String(q?.passage_id || '').trim();
+  if (!passageId) return null;
+  return {
+    passageId,
+    listeningText: String(q?.listening_text || ''),
+    title: String(q?.passage_title || ''),
+    questionIndex: Number(q?.question_no_in_passage || 1),
+    questionTotal: Number(q?.passage_question_total || 1),
   };
 });
 const speakingQuestion = computed(() => {

@@ -65,8 +65,7 @@
       <div class="listen-meta">
         <span>剩余重听 {{ Math.max(0, maxReplays - replayCount) }} / {{ maxReplays }}</span>
         <span>当前倍率 {{ playbackLabel }}</span>
-        <span v-if="useTtsFallback">无音频，已启用朗读</span>
-        <span v-else-if="!materialText">缺少听力材料</span>
+        <span v-if="!materialText">缺少听力材料</span>
         <span v-else-if="!hasListened">先听风语，再补印诀</span>
       </div>
       <div class="skill-row">
@@ -329,13 +328,13 @@ function stopTts() {
 function prepareAudioSource() {
   stop();
   stopTts();
-  const audioUrl = String(currentRound.value?.audioUrl || '').trim();
-  if (audioUrl) {
-    useTtsFallback.value = false;
-    loadAudio(audioUrl);
+  if (materialText.value) {
+    useTtsFallback.value = true;
     return;
   }
-  useTtsFallback.value = materialText.value !== '';
+  const audioUrl = String(currentRound.value?.audioUrl || '').trim();
+  useTtsFallback.value = false;
+  if (audioUrl) loadAudio(audioUrl);
 }
 
 function playWithTts() {

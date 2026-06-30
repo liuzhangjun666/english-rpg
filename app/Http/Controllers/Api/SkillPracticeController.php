@@ -7,6 +7,7 @@ use App\Models\LearningRecord;
 use App\Services\AchievementService;
 use App\Services\CurrencyService;
 use App\Services\HeartDemonService;
+use App\Services\ListeningBankService;
 use App\Services\PracticeLevelService;
 use App\Services\QuestionResolverService;
 use App\Services\RealmService;
@@ -36,6 +37,7 @@ class SkillPracticeController extends Controller
         RealmService $realmService,
         PracticeLevelService $levelService,
         private readonly QuestionResolverService $questionResolver,
+        private readonly ListeningBankService $listeningBank,
     ) {
         $this->currencyService = $currencyService;
         $this->demonService = $demonService;
@@ -63,6 +65,37 @@ class SkillPracticeController extends Controller
         $layout = $this->levelService->getStageLayout($user, $type);
         $bankType = $type;
         $normalCount = $module['normal_count'];
+
+        if ($type === 'listening' && $this->listeningBank->hasPassageBank($user)) {
+            $session = $this->listeningBank->buildSession($user, $stageNo, $normalCount);
+            if (!empty($session['questions'])) {
+                $questions = $session['questions'];
+                $spiritCost = CurrencyService::SPIRIT_COST_PER_LEVEL;
+                $demonCount = count(array_filter($questions, fn ($q) => !empty($q['_is_demon'])));
+                $stageMeta = collect($layout['stages'])->firstWhere('stage_no', $stageNo) ?? [];
+
+                return response()->json([
+                    'success' => true,
+                    'data' => [
+                        'level' => $layout['realm'],
+                        'stage' => $stageMeta['stage_code'] ?? str_pad((string) $stageNo, 2, '0', STR_PAD_LEFT),
+                        'stage_no' => $stageNo,
+                        'current_realm' => $layout['current_realm'],
+                        'grade_labels' => $layout['grade_labels'],
+                        'level_id' => $stageMeta['level_id'] ?? sprintf('%s-%02d', $layout['realm'], $stageNo),
+                        'module_type' => $type,
+                        'question_bank_type' => $bankType,
+                        'questions' => $questions,
+                        'passages' => $session['passages'] ?? [],
+                        'total' => count($questions),
+                        'spirit_cost' => $spiritCost,
+                        'current_spirit_power' => (int) ($user->fresh()->spirit_power ?? 0),
+                        'demon_injected' => $demonCount,
+                    ],
+                ]);
+            }
+        }
+
         $questions = $this->demonService->getInjectedQuestions($user->id, $bankType, $stageNo, $normalCount);
 
         if (empty($questions)) {

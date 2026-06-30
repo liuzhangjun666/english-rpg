@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\File;
 use App\Models\Question;
 use App\Models\VocabularyWord;
 use App\Models\User;
+use App\Services\ListeningImportService;
 use App\Services\RealmService;
 use App\Support\CultivationProfile;
 
@@ -478,7 +479,7 @@ Artisan::command('vocab:import-excel {file} {--sheet=0}', function () {
     $fileArg = (string) $this->argument('file');
     $sheetIndex = (int) $this->option('sheet');
     $filePath = $fileArg;
-    if (!str_starts_with($fileArg, 'C:\\') && !str_starts_with($fileArg, 'D:\\')) {
+    if (!preg_match('/^[A-Za-z]:[\\\\\\/]/', $fileArg)) {
         $filePath = base_path($fileArg);
     }
 
@@ -579,10 +580,92 @@ Artisan::command('vocab:import-excel {file} {--sheet=0}', function () {
     return 0;
 })->purpose('从 Excel 导入词汇到 vocabulary_words 表');
 
+Artisan::command('listening:import-json {file} {--replace}', function () {
+    $fileArg = (string) $this->argument('file');
+    $filePath = $fileArg;
+    if (!preg_match('/^[A-Za-z]:[\\\\\\/]/', $fileArg)) {
+        $filePath = base_path($fileArg);
+    }
+
+    if (!File::exists($filePath)) {
+        $this->error("JSON 文件不存在: {$filePath}");
+        return 1;
+    }
+
+    $payload = json_decode(File::get($filePath), true);
+    if (!is_array($payload)) {
+        $this->error('JSON 解析失败');
+        return 1;
+    }
+
+    if (empty($payload['import_source'])) {
+        $payload['import_source'] = pathinfo($filePath, PATHINFO_FILENAME);
+    }
+
+    /** @var ListeningImportService $service */
+    $service = app(ListeningImportService::class);
+    $stats = $service->importFromPayload($payload, (bool) $this->option('replace'));
+
+    $this->info(sprintf(
+        '听力导入完成：%d 段材料，%d 道题（跳过 %d 条）',
+        $stats['passages'],
+        $stats['questions'],
+        $stats['skipped'],
+    ));
+
+    return 0;
+})->purpose('从 JSON 导入听力篇章题库（listening_passages / listening_questions）');
+
+Artisan::command('listening:import-excel {file} {--realm=Z1} {--grade-level=初二} {--replace}', function () {
+    $fileArg = (string) $this->argument('file');
+    $filePath = $fileArg;
+    if (!preg_match('/^[A-Za-z]:[\\\\\\/]/', $fileArg)) {
+        $filePath = base_path($fileArg);
+    }
+
+    if (!File::exists($filePath)) {
+        $this->error("Excel 文件不存在: {$filePath}");
+        return 1;
+    }
+
+    $jsonPath = storage_path('app/listening_import_' . md5($filePath) . '.json');
+    $script = base_path('tools/import_listening_excel_to_json.py');
+    if (!File::exists($script)) {
+        $this->error('缺少 tools/import_listening_excel_to_json.py');
+        return 1;
+    }
+
+    $realm = (string) $this->option('realm');
+    $gradeLevel = (string) $this->option('grade-level');
+    $cmd = sprintf(
+        'python "%s" "%s" -o "%s" --realm %s --grade-level "%s"',
+        $script,
+        $filePath,
+        $jsonPath,
+        $realm,
+        $gradeLevel,
+    );
+
+    $this->info("转换 Excel → JSON …");
+    exec($cmd, $output, $exitCode);
+    foreach ($output as $line) {
+        $this->line($line);
+    }
+    if ($exitCode !== 0 || !File::exists($jsonPath)) {
+        $this->error('Excel 转换失败，请确认已安装 Python 与 openpyxl');
+        return 1;
+    }
+
+    return $this->call('listening:import-json', [
+        'file' => $jsonPath,
+        '--replace' => (bool) $this->option('replace'),
+    ]);
+})->purpose('从 Excel 导入初二等听力题库（第2列原文，第3列题号，第4列题目，第5列答案）');
+
 Artisan::command('vocab:import-words-json {file}', function () {
     $fileArg = (string) $this->argument('file');
     $filePath = $fileArg;
-    if (!str_starts_with($fileArg, 'C:\\') && !str_starts_with($fileArg, 'D:\\')) {
+    if (!preg_match('/^[A-Za-z]:[\\\\\\/]/', $fileArg)) {
         $filePath = base_path($fileArg);
     }
 
@@ -647,7 +730,7 @@ Artisan::command('vocab:prune-legacy-questions {--dry-run : Only show counts}', 
 Artisan::command('reading:import-json {file}', function () {
     $fileArg = (string) $this->argument('file');
     $filePath = $fileArg;
-    if (!str_starts_with($fileArg, 'C:\\') && !str_starts_with($fileArg, 'D:\\')) {
+    if (!preg_match('/^[A-Za-z]:[\\\\\\/]/', $fileArg)) {
         $filePath = base_path($fileArg);
     }
 

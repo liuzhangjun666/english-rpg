@@ -103,7 +103,7 @@ export function getMallSceneAssets(): string[] {
 export const SCENE_ENTRY_TEXT: Record<string, string> = {
   vocab: '进入木桩练功房...',
   grammar: '进入阵法峰...',
-  listening: '进入听风谷...',
+  listening: '进入听力修炼...',
   speaking: '进入诵咒峰...',
   writing: '进入符箓台...',
   reading: '进入藏经阁...',

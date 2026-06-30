@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { mergeRealmPatch, normalizeUserProfile, preferHigherRealmProfile } from '../../utils/cultivation.js';
+import { mergeRealmPatch, normalizeUserProfile } from '../../utils/cultivation.js';
 
 export type UserProfile = Record<string, any> | null;
 
@@ -8,10 +8,12 @@ export type UserProfile = Record<string, any> | null;
  * 冷启动 / 弱网时 /user/profile 可能慢或瞬时失败，此时若无缓存，TopHud 会回退到
  * 「匿名前辈 / 0 / 0」默认值并卡住直到下次刷新。缓存可让界面立即显示上次真实资料。
  */
-const PROFILE_CACHE_KEY = 'levelup_profile';
+const PROFILE_CACHE_KEY = 'levelup_profile_v2';
+const LEGACY_PROFILE_CACHE_KEYS = ['levelup_profile'];
 
 function persistProfile(profile: UserProfile) {
   try {
+    LEGACY_PROFILE_CACHE_KEYS.forEach((key) => localStorage.removeItem(key));
     if (profile) {
       localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(profile));
     } else {
@@ -24,6 +26,7 @@ function persistProfile(profile: UserProfile) {
 
 function readCachedProfile(): UserProfile {
   try {
+    LEGACY_PROFILE_CACHE_KEYS.forEach((key) => localStorage.removeItem(key));
     const raw = localStorage.getItem(PROFILE_CACHE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
@@ -44,10 +47,8 @@ export const useUserStore = defineStore('user', {
   },
   actions: {
     setProfile(profile: Record<string, any>) {
-      const merged = this.profile
-        ? preferHigherRealmProfile(this.profile, profile)
-        : profile;
-      this.profile = normalizeUserProfile(merged);
+      // 服务端返回的是权威用户资料，不应再被本地旧缓存的更高境界反向覆盖。
+      this.profile = normalizeUserProfile(profile);
       persistProfile(this.profile);
     },
     updateProfile(updates: Record<string, any>) {

@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\ListeningQuestion;
+use App\Models\ListeningPassage;
 use App\Models\Question;
 use App\Models\User;
 use App\Models\VocabularyWord;
@@ -74,6 +76,13 @@ class PracticeLevelService
 
     public function getQuestionPool(User $user, string $type): Collection
     {
+        if ($type === 'listening') {
+            $listeningPool = $this->getListeningPassageQuestionPool($user);
+            if ($listeningPool->isNotEmpty()) {
+                return $listeningPool;
+            }
+        }
+
         $query = Question::query()->where('type', $type);
         $this->applyStrictRealmScope($query, $user);
 
@@ -102,6 +111,10 @@ class PracticeLevelService
         $questionId = trim($questionId);
         if ($questionId === '') {
             return false;
+        }
+
+        if ($type === 'listening' && preg_match('/^LQ-(\d+)$/', $questionId, $m)) {
+            return $this->isListeningPassageQuestionInPool($user, (int) $m[1]);
         }
 
         static $cache = [];
@@ -518,5 +531,58 @@ class PracticeLevelService
         }
 
         return array_values(array_unique(array_filter($labels)));
+    }
+
+    private function getListeningPassageQuestionPool(User $user): Collection
+    {
+        $realmCode = $this->getRealmCode($user);
+        $prefix = $this->getRealmPrefix($user);
+
+        $passages = ListeningPassage::query()
+            ->where(function ($q) use ($realmCode, $prefix) {
+                $q->where('realm', $realmCode)
+                    ->orWhere('realm', 'like', $prefix . '%');
+            })
+            ->with(['questions' => function ($q) {
+                $q->orderBy('question_no');
+            }])
+            ->orderBy('passage_code')
+            ->get();
+
+        if ($passages->isEmpty()) {
+            return collect();
+        }
+
+        $rows = collect();
+        foreach ($passages as $passage) {
+            $total = $passage->questions->count();
+            foreach ($passage->questions as $question) {
+                $rows->push([
+                    'question_id' => 'LQ-' . (string) $question->id,
+                    'type' => 'listening',
+                    'realm' => $passage->realm,
+                    'stage' => $passage->stage,
+                    'passage_id' => 'LP-' . (string) $passage->id,
+                    'question_no_in_passage' => (int) $question->question_no,
+                    'passage_question_total' => max(1, $total),
+                ]);
+            }
+        }
+
+        return $rows;
+    }
+
+    private function isListeningPassageQuestionInPool(User $user, int $questionId): bool
+    {
+        $question = ListeningQuestion::query()->with('passage')->find($questionId);
+        if (!$question || !$question->passage) {
+            return false;
+        }
+
+        $realm = strtoupper((string) ($question->passage->realm ?? ''));
+        $userRealm = $this->getRealmCode($user);
+        $prefix = $this->getRealmPrefix($user);
+
+        return $realm === $userRealm || str_starts_with($realm, $prefix);
     }
 }

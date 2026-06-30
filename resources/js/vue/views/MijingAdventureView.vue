@@ -82,7 +82,7 @@
                 <el-select v-model="entry.moduleType" placeholder="选择类型" class="cult-select">
                   <el-option label="采药识灵" value="vocab" />
                   <el-option label="基础功法" value="grammar" />
-                  <el-option label="听风谷" value="listening" />
+                  <el-option label="听力" value="listening" />
                   <el-option label="阅读副本" value="reading" />
                 </el-select>
               </div>

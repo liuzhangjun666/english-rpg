@@ -338,6 +338,11 @@ class HeartDemonService
         ];
     }
 
+    public function injectionRatioFor(int $userId, string $type, string $realm): float
+    {
+        return $this->dynamicInjectionRatio($userId, $type, $realm);
+    }
+
     private function dynamicInjectionRatio(int $userId, ?string $type = null, ?string $realm = null): float
     {
         $query = HeartDemon::where('user_id', $userId)->where('is_mastered', false);

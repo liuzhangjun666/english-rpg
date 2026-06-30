@@ -31,6 +31,9 @@
         <img class="panel-deco panel-deco-left" :src="windLeafIcon" alt="" aria-hidden="true" />
         <img class="panel-deco panel-deco-right" :src="windLeafIcon" alt="" aria-hidden="true" />
         <div class="panel-label">第一步 · 听风</div>
+      <p v-if="passage && passage.questionTotal > 1" class="passage-progress">
+        本段材料 · 第 {{ passage.questionIndex }} / {{ passage.questionTotal }} 题
+      </p>
       <p class="panel-desc">风中有声，记下关键词，莫让风叶散落。</p>
       <button
         class="play-btn"
@@ -40,7 +43,6 @@
         <img class="play-btn-icon" :src="windBellPlay" alt="" aria-hidden="true" />
         <span class="text">{{ playButtonLabel }}</span>
       </button>
-      <div v-if="useTtsFallback && materialText" class="tts-hint">暂无音频，已用浏览器朗读材料</div>
       <div v-if="!materialText" class="tts-hint warn">本题缺少听力材料</div>
       <div class="replay-info">可重听：{{ Math.max(0, maxReplays - replayCount) }} / {{ maxReplays }}</div>
       <div v-if="!hasListened && materialText" class="listen-tip">先听风，再捕叶印诀</div>
@@ -60,11 +62,11 @@
             class="seal-slot"
             :class="{
               filled: Boolean(slotTexts[puzzle.blanks[idx].id]),
-              correct: sealComplete,
-              wrong: wrongSlotId === puzzle.blanks[idx].id,
+              correct: isLocked && sealComplete,
+              wrong: wrongSlotId === puzzle.blanks[idx].id || (isLocked && wrongSlots[puzzle.blanks[idx].id]),
             }"
             type="button"
-            :disabled="!hasListened || sealComplete"
+            :disabled="!hasListened || isLocked"
             @click="handleSlotClick(puzzle.blanks[idx].id)"
           >
             {{ slotTexts[puzzle.blanks[idx].id] || '印' }}
@@ -79,7 +81,7 @@
           class="wind-leaf"
           :class="{ selected: selectedLeafId === leaf.id }"
           type="button"
-          :disabled="!hasListened || sealComplete"
+          :disabled="!hasListened || isLocked"
           @click="handleLeafClick(leaf.id)"
         >
           <img class="wind-leaf-icon" :src="windLeafIcon" alt="" aria-hidden="true" />
@@ -88,13 +90,15 @@
       </div>
 
       <div v-if="sealComplete" class="seal-success">印诀已成！风纹解锁，可作答矣</div>
-      <div v-else-if="hasListened" class="seal-progress">印诀进度 {{ filledBlankCount }} / {{ puzzle?.blanks.length || 0 }}</div>
+      <div v-else-if="hasListened" class="seal-progress">
+        印诀进度 {{ filledBlankCount }} / {{ puzzle?.blanks.length || 0 }}
+      </div>
       </div>
     </div>
 
     <div v-if="chimeToast" class="chime-toast">{{ chimeToast }}</div>
 
-    <div class="question-panel" :class="{ muted: !sealComplete, unlocked: sealComplete }">
+    <div class="question-panel" :class="{ muted: !sealFilledComplete, unlocked: sealFilledComplete }">
       <div class="panel-label">第三步 · 破风关</div>
       <div class="question-stem">{{ questionStem }}</div>
       <div class="options-container">
@@ -102,12 +106,29 @@
           v-for="(opt, idx) in displayOptions"
           :key="opt.key"
           class="option-btn"
-          :class="{ 'is-selected': selectedOption === opt.key }"
-          :disabled="isLocked || !sealComplete"
+          :class="{
+            'is-selected': selectedOption === opt.key,
+            'is-correct': isLocked && correctAnswerKey === opt.key.toUpperCase(),
+            'is-wrong': isLocked && selectedOption === opt.key && correctAnswerKey !== opt.key.toUpperCase(),
+          }"
+          :disabled="isLocked || !sealFilledComplete"
           @click="handleSelect(opt.key)"
         >
           <span class="option-index">{{ idx + 1 }}</span>
           <span class="option-text">{{ opt.text }}</span>
+        </button>
+      </div>
+      <div v-if="answerFeedback" class="answer-feedback" :class="`answer-feedback--${answerFeedback.type}`">
+        <div class="answer-feedback-title">{{ answerFeedback.title }}</div>
+        <div class="answer-feedback-text">{{ answerFeedback.text }}</div>
+        <div v-if="answerFeedback.source" class="answer-feedback-source">原文：{{ answerFeedback.source }}</div>
+        <button
+          v-if="answerFeedback.type === 'error'"
+          type="button"
+          class="answer-feedback-next-btn"
+          @click="submitCurrentAnswer"
+        >
+          下一题
         </button>
       </div>
     </div>
@@ -151,6 +172,13 @@ const props = defineProps<{
     };
     options?: Record<string, string> | Array<{ key: string; text: string }>;
   };
+  passage?: {
+    passageId: string;
+    listeningText: string;
+    title?: string;
+    questionIndex: number;
+    questionTotal: number;
+  } | null;
 }>();
 
 const emit = defineEmits<{
@@ -168,12 +196,16 @@ const wrongSlotId = ref('');
 const selectedLeafId = ref<string | null>(null);
 const slotTexts = reactive<Record<string, string>>({});
 const slotLeafIds = reactive<Record<string, string>>({});
+const wrongSlots = reactive<Record<string, boolean>>({});
 const ttsUtterance = ref<SpeechSynthesisUtterance | null>(null);
 const useTtsFallback = ref(false);
 const puzzle = ref<WindSealPuzzle | null>(null);
 const chimeTick = ref(0);
 const chimeToast = ref('');
+const answerFeedback = ref<{ type: 'success' | 'error'; title: string; text: string; source?: string } | null>(null);
+const pendingSubmitAnswer = ref<string | null>(null);
 let chimeToastTimer: ReturnType<typeof setTimeout> | null = null;
+let answerSubmitTimer: ReturnType<typeof setTimeout> | null = null;
 
 const topicKey = computed(() => normalizeWindChimeTopic(String(props.question?.word || '')));
 const sceneImage = computed(() => sceneImageForTopic(String(props.question?.word || '')));
@@ -203,7 +235,11 @@ function showChimeToast(message: string) {
   }, 2200);
 }
 
-const materialText = computed(() => String(props.question?.listening_text || '').trim());
+const materialText = computed(() => {
+  const fromPassage = String(props.passage?.listeningText || '').trim();
+  if (fromPassage) return fromPassage;
+  return String(props.question?.listening_text || '').trim();
+});
 const questionStem = computed(() => {
   return String(props.question?.question || props.question?.stem || '请根据捕风印诀作答。').trim();
 });
@@ -239,15 +275,23 @@ const filledBlankCount = computed(() => {
   if (!puzzle.value) return 0;
   return puzzle.value.blanks.filter((blank) => Boolean(slotTexts[blank.id])).length;
 });
+const sealFilledComplete = computed(() => {
+  if (!puzzle.value) return false;
+  return filledBlankCount.value >= puzzle.value.blanks.length;
+});
+const correctAnswerKey = computed(() => String(props.question?.correct_answer || '').trim().toUpperCase());
 
 function resetSealState() {
   puzzle.value = buildWindSeal(props.question);
   Object.keys(slotTexts).forEach((key) => delete slotTexts[key]);
   Object.keys(slotLeafIds).forEach((key) => delete slotLeafIds[key]);
+  Object.keys(wrongSlots).forEach((key) => delete wrongSlots[key]);
   selectedLeafId.value = null;
   sealComplete.value = false;
   sealShake.value = false;
   wrongSlotId.value = '';
+  answerFeedback.value = null;
+  pendingSubmitAnswer.value = null;
 }
 
 function stopTts() {
@@ -276,13 +320,13 @@ function playWithTts() {
 
 function prepareAudioSource() {
   stopTts();
-  const audioUrl = String(props.question?.audioUrl || props.question?.audio_url || '').trim();
-  if (audioUrl) {
-    useTtsFallback.value = false;
-    loadAudio(audioUrl);
+  if (materialText.value) {
+    useTtsFallback.value = true;
     return;
   }
-  useTtsFallback.value = materialText.value !== '';
+  const audioUrl = String(props.question?.audioUrl || props.question?.audio_url || '').trim();
+  useTtsFallback.value = false;
+  if (audioUrl) loadAudio(audioUrl);
 }
 
 function triggerSealShake(slotId: string) {
@@ -304,16 +348,18 @@ function checkSealComplete() {
 }
 
 function handleLeafClick(leafId: string) {
-  if (!hasListened.value || sealComplete.value) return;
+  if (!hasListened.value || isLocked.value) return;
   selectedLeafId.value = selectedLeafId.value === leafId ? null : leafId;
 }
 
 function handleSlotClick(blankId: string) {
-  if (!hasListened.value || sealComplete.value || !puzzle.value) return;
+  if (!hasListened.value || isLocked.value || !puzzle.value) return;
 
   if (slotTexts[blankId]) {
     delete slotTexts[blankId];
     delete slotLeafIds[blankId];
+    delete wrongSlots[blankId];
+    checkSealComplete();
     return;
   }
 
@@ -322,31 +368,29 @@ function handleSlotClick(blankId: string) {
   const blank = puzzle.value.blanks.find((item) => item.id === blankId);
   if (!leaf || !blank) return;
 
-  if (!isBlankAnswerCorrect(blank.answer, leaf.text)) {
-    triggerSealShake(blankId);
-    selectedLeafId.value = null;
-    return;
-  }
-
   slotTexts[blankId] = leaf.text;
   slotLeafIds[blankId] = leaf.id;
   selectedLeafId.value = null;
   checkSealComplete();
 }
 
-watch(() => props.question, (newQ) => {
-  if (!newQ) return;
+watch(() => props.passage?.passageId, () => {
   prepareAudioSource();
   resetReplayCount();
-  isLocked.value = false;
   hasListened.value = false;
-  selectedOption.value = null;
+}, { immediate: true });
+
+watch(() => props.question, (newQ) => {
+  if (!newQ) return;
   resetSealState();
+  isLocked.value = false;
+  selectedOption.value = null;
 }, { immediate: true });
 
 onBeforeUnmount(() => {
   stopTts();
   if (chimeToastTimer) clearTimeout(chimeToastTimer);
+  if (answerSubmitTimer) clearTimeout(answerSubmitTimer);
 });
 
 const handlePlay = () => {
@@ -363,12 +407,25 @@ const handlePlay = () => {
 };
 
 const handleSelect = (key: string) => {
-  if (isLocked.value || !sealComplete.value) return;
+  if (isLocked.value || !sealFilledComplete.value || !puzzle.value) return;
   selectedOption.value = key;
   isLocked.value = true;
 
-  const correctKey = String(props.question?.correct_answer || '').trim().toUpperCase();
-  if (correctKey && key.toUpperCase() === correctKey && topicKey.value) {
+  const pickedKey = key.toUpperCase();
+  const correctKey = correctAnswerKey.value;
+  const correctOption = displayOptions.value.find((item) => item.key.toUpperCase() === correctKey);
+  const pickedOption = displayOptions.value.find((item) => item.key.toUpperCase() === pickedKey);
+  const isCorrect = Boolean(correctKey && pickedKey === correctKey);
+  const wrongBlankSummaries = puzzle.value.blanks
+    .filter((blank) => !isBlankAnswerCorrect(blank.answer, slotTexts[blank.id] || ''))
+    .map((blank) => {
+      const placed = slotTexts[blank.id] || '空白';
+      wrongSlots[blank.id] = true;
+      return `「${placed}」应为「${blank.answer}」`;
+    });
+  sealComplete.value = wrongBlankSummaries.length === 0;
+
+  if (isCorrect && topicKey.value) {
     const isNew = collectWindChimeFragment(topicKey.value);
     if (isNew) {
       chimeTick.value += 1;
@@ -376,8 +433,38 @@ const handleSelect = (key: string) => {
     }
   }
 
-  emit('submit-answer', { answer: key });
+  const sealText = sealComplete.value
+    ? '捕风印正确。'
+    : `捕风印有误：${wrongBlankSummaries.join('；')}。`;
+  const answerText = isCorrect
+    ? `第三步答对了，你选择了 ${pickedKey}${pickedOption?.text ? `：${pickedOption.text}` : ''}。`
+    : `第三步答错了，正确答案是 ${correctKey}${correctOption?.text ? `：${correctOption.text}` : ''}。`;
+  answerFeedback.value = {
+    type: sealComplete.value && isCorrect ? 'success' : 'error',
+    title: sealComplete.value && isCorrect ? '本题完成' : '本题结果',
+    text: `${sealText}${answerText}`,
+    source: materialText.value,
+  };
+  pendingSubmitAnswer.value = key;
+
+  if (answerSubmitTimer) clearTimeout(answerSubmitTimer);
+  if (sealComplete.value && isCorrect) {
+    answerSubmitTimer = window.setTimeout(() => {
+      submitCurrentAnswer();
+    }, 1200);
+  }
 };
+
+function submitCurrentAnswer() {
+  if (!pendingSubmitAnswer.value) return;
+  if (answerSubmitTimer) {
+    clearTimeout(answerSubmitTimer);
+    answerSubmitTimer = null;
+  }
+  const answer = pendingSubmitAnswer.value;
+  pendingSubmitAnswer.value = null;
+  emit('submit-answer', { answer });
+}
 </script>
 
 <style scoped>
@@ -577,6 +664,13 @@ const handleSelect = (key: string) => {
   line-height: 1.5;
 }
 
+.passage-progress {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: #a8f5ff;
+  text-align: center;
+}
+
 .play-btn {
   display: flex;
   align-items: center;
@@ -673,6 +767,11 @@ const handleSelect = (key: string) => {
   background: rgba(16, 185, 129, 0.16);
 }
 
+.seal-slot.filled.wrong {
+  color: #ffe4e4;
+  background: rgba(248, 113, 113, 0.14);
+}
+
 .seal-slot.correct {
   border-color: rgba(52, 211, 153, 0.75);
   box-shadow: 0 0 12px rgba(52, 211, 153, 0.35);
@@ -750,6 +849,54 @@ const handleSelect = (key: string) => {
   text-align: center;
 }
 
+.seal-feedback,
+.answer-feedback {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.seal-feedback-title,
+.answer-feedback-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.seal-feedback--error,
+.answer-feedback--error {
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  background: rgba(120, 24, 24, 0.18);
+  color: #ffd6d6;
+}
+
+.seal-feedback--success,
+.answer-feedback--success {
+  border: 1px solid rgba(52, 211, 153, 0.32);
+  background: rgba(6, 78, 59, 0.2);
+  color: #cbffe8;
+}
+
+.seal-feedback-source,
+.answer-feedback-source {
+  margin-top: 6px;
+  color: #e9dcc0;
+  opacity: 0.92;
+}
+
+.answer-feedback-next-btn {
+  margin-top: 10px;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #ffe6a0, #cf9a34);
+  color: #3a2606;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .question-panel.unlocked {
   border-color: rgba(212, 168, 67, 0.45);
 }
@@ -788,6 +935,16 @@ const handleSelect = (key: string) => {
 .option-btn.is-selected {
   background: rgba(212, 168, 67, 0.3);
   border-color: var(--gold);
+}
+
+.option-btn.is-correct {
+  border-color: rgba(52, 211, 153, 0.72);
+  background: rgba(16, 185, 129, 0.18);
+}
+
+.option-btn.is-wrong {
+  border-color: rgba(248, 113, 113, 0.75);
+  background: rgba(185, 28, 28, 0.18);
 }
 
 .option-btn:disabled {

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\ListeningQuestion;
 use App\Models\Question;
 use App\Models\ReadingQuestion;
 use App\Models\VocabularyWord;
@@ -29,6 +30,10 @@ class QuestionResolverService
 
         if (preg_match('/^RQ-(\d+)$/', $questionId, $m)) {
             return $this->resolveReading((int) $m[1], $questionId);
+        }
+
+        if (preg_match('/^LQ-(\d+)$/', $questionId, $m)) {
+            return $this->resolveListening((int) $m[1], $questionId);
         }
 
         $question = Question::where('question_id', $questionId)->first();
@@ -158,6 +163,31 @@ class QuestionResolverService
             'answer_accept' => $rq->answer_accept,
             'explanation' => $rq->explanation,
             'word' => null,
+        ];
+    }
+
+    private function resolveListening(int $listeningQuestionId, string $questionId): ?array
+    {
+        $lq = ListeningQuestion::query()->with('passage')->find($listeningQuestionId);
+        if (!$lq || !$lq->passage) {
+            return null;
+        }
+
+        $passage = $lq->passage;
+
+        return [
+            'id' => $lq->id,
+            'question_id' => $questionId,
+            'type' => 'listening',
+            'realm' => $passage->realm,
+            'stage' => $passage->stage,
+            'question' => $lq->question,
+            'options' => $lq->options,
+            'correct_answer' => (string) $lq->correct_answer,
+            'explanation' => $lq->explanation,
+            'word' => $lq->word ?: $passage->word,
+            'listening_text' => $passage->listening_text,
+            'passage_id' => 'LP-' . (string) $passage->id,
         ];
     }
 

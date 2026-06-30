@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call(QuestionSeeder::class);
         $this->call(QuestionExpansionSeeder::class);
         $this->call(SkillModuleTestDataSeeder::class);
+        $this->call(ListeningBankSeeder::class);
         $this->call(WritingPromptSeeder::class);
         $this->call(VocabularyWordsSeeder::class);
         $this->call(ReadingBankSeeder::class);
